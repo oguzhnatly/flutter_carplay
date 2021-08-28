@@ -3,6 +3,7 @@
 # CarPlay with Flutter 🚗
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
+![Pub Version (including pre-releases)](https://img.shields.io/pub/v/flutter_carplay?include_prereleases)
 
 Flutter Apps now on Apple CarPlay! `flutter_carplay` aims to make it safe to use iPhone apps made with Flutter in the car by integrating with CarPlay. CarPlay takes the things you want to do while driving and puts them on the car’s built-in display.
 
@@ -78,7 +79,7 @@ For more detailed instructions about how to create and import the CarPlay Provis
 
 You are about to make some minor changes to your Xcode project after installing this package. This is due to the fact that It requires bitcode compilation which is missing in Flutter. You will procedure that will relocate (we won't remove or edit) some Flutter and its package engines. If you're planning to add this package to a critical project for you, you should proceed cautiously.
 
-**Please check [THE EXAMPLE PROJECT](https://github.com/oguzhnatly/flutter_carplay/blob/master/LICENSE) before you begin to the installation.**
+**Please check [THE EXAMPLE PROJECT](https://github.com/oguzhnatly/flutter_carplay/tree/master/example) before you begin to the installation.**
 
 THE INSTALLATION STEPS MAY BE DIFFICULT OR MAY NOT WORK PROPERLY WITH A FEW PACKAGES IN YOUR CURRENT PROJECT THAT COMMUNICATE WITH THE FLUTTER ENGINE. IF YOU ARE NOT COMPLETELY SURE WHAT YOU ARE DOING, PLEASE CREATE AN ISSUE, SO THAT I CAN HELP YOU TO SOLVE YOUR PROBLEM OR EXPLAIN WHAT YOU NEED TO.
 
