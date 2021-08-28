@@ -1,4 +1,4 @@
-![Flutter CarPlay](https://drive.google.com/uc?id=1Iae_yahMAMJUK7az1UgMX40gq0FG_XHc)
+![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/banner.png)
 
 # CarPlay with Flutter 🚗
 
@@ -24,7 +24,7 @@ Before you begin CarPlay integration, you must carefully read this section.
 ## Templates
 
 CarPlay apps are built from a fixed set of user interface templates that iOS renders on the CarPlay screen. Each CarPlay app category can only use a restricted number of templates. Your app entitlement determines your access to templates.
-![Flutter CarPlay](https://drive.google.com/uc?id=1-VbZi_ghvN315rBUbcjsFlQnaCq-B_O8)
+![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/templates.png)
 
 ## Supports
 
@@ -109,7 +109,7 @@ $ cd ios && pod install --repo-update
 
 2. Open `ios/Runner.xcworkspace` in Xcode. In your project navigator, open `AppDelegate.swift`.
 
-   ![Flutter CarPlay](https://drive.google.com/uc?id=1fkuvdYrRRR5diLSntTPQzG7zDmKp3HQx)
+   ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/step2.png)
 
    Delete the specified codes below from the application function in `AppDelegate.swift`, and change it with the code below:
 
@@ -150,7 +150,7 @@ override func application( _ application: UIApplication,
    }
    ```
 
-   ![Flutter CarPlay](https://drive.google.com/uc?id=1KpFE6feUxmVrwXKnDX40WPO0Ox_lqLK0)
+   ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/step3.png)
 
 4. One more step, open the `Info.plist` file whether in your favorite code editor or in the Xcode. I'm going to share the base code, so if you open in the Xcode, you can fill with the raw keys with the values.
 
@@ -347,7 +347,7 @@ CarPlay supports general purpose templates such as alerts, lists, and tab bars. 
 
 ## Tab Bar Template
 
-![Flutter CarPlay](https://drive.google.com/uc?id=1-enlNxmKNKU6Cyxm3Gx7kBQWI5qnl-V-)
+![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/tabbar_template.png)
 
 The tab bar is a multi-purpose container for other templates, with each template occupying one tab in the tab bar.
 
@@ -409,7 +409,7 @@ FlutterCarplay.setRootTemplate(rootTemplate: tabBarTemplate, animated: true);
 
 ## Grid Template
 
-![Flutter CarPlay](https://drive.google.com/uc?id=1YqG4di6hmLxn0TM_Jr14jtjl-tHEzg4r)
+![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/grid_template.png)
 
 Grid Template is a specific style of menu that presents up to 8 items represented by an image and a title. Use the grid template to let people select from a fixed list of categories.
 
@@ -435,7 +435,7 @@ FlutterCarplay.setRootTemplate(rootTemplate: gridTemplate, animated: true);
 
 ## Alert Template
 
-![Flutter CarPlay](https://drive.google.com/uc?id=1RCNljUB2Dk7OEiVUDBePTzE52PbddnCZ)
+![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/alert_template.png)
 
 Alerts provide important information about your app's status. An alert consists of a title and one or more buttons, depending on the type.
 
@@ -477,7 +477,7 @@ FlutterCarplay.showAlert(template: alertTemplate, animated: true);
 
 ## Action Sheet Template
 
-![Flutter CarPlay](https://drive.google.com/uc?id=1nMBjjUbZm84hO47QaRPAIA2ii6svTyz_)
+![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/actionsheet_template.png)
 
 Action Sheet Template is a type of alert that appears when control or action is taken and gives a collection of options based on the current context.
 
@@ -520,7 +520,7 @@ FlutterCarplay.showActionSheet(template: actionSheetTemplate, animated: true);
 
 ## List Template
 
-![Flutter CarPlay](https://drive.google.com/uc?id=17_P-3mQ_W2jbutuefE_9yOpaJ1n9Jt4K)
+![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/list_template.png)
 
 A list presents data as a scrolling, single-column table of rows that can be divided into sections. Lists are ideal for text-based content, and can be used as a means of navigation for hierarchical information. Each item in a list can include attributes such as an icon, title, subtitle, disclosure indicator, progress indicator, playback status, or read status.
 
