@@ -2,7 +2,7 @@
 
 # CarPlay with Flutter 🚗
 
-[![License: MIT](https://img.shields.io/github/license/oguzhnatly/flutter_carplay)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
 
 Flutter Apps now on Apple CarPlay! `flutter_carplay` aims to make it safe to use iPhone apps made with Flutter in the car by integrating with CarPlay. CarPlay takes the things you want to do while driving and puts them on the car’s built-in display.
 
