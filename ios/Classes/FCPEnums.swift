@@ -34,6 +34,9 @@ enum FCPChannelTypes {
   static let stopVoiceControl = "stopVoiceControl"
   static let getActiveVoiceControlStateIdentifier = "getActiveVoiceControlStateIdentifier"
   static let onVoiceControlTranscriptChanged = "onVoiceControlTranscriptChanged"
+  static let speak = "speak"
+  static let onSpeechCompleted = "onSpeechCompleted"
+  static let playAudio = "playAudio"
 }
 
 enum FCPAlertActionTypes {

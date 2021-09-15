@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_carplay/constants/constants.dart';
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
+import 'package:flutter_carplay/models/speaker/carplay_speaker.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'package:flutter_carplay/models/alert/alert_template.dart';
@@ -89,6 +90,10 @@ class FlutterCarplay {
           if (_onSpeechRecognitionTranscriptChange != null) {
             _onSpeechRecognitionTranscriptChange!(event["data"]["transcript"]);
           }
+          break;
+        case FCPChannelTypes.onSpeechCompleted:
+          _carPlayController
+              .processFCPSpeakerOnComplete(event["data"]["elementId"]);
           break;
         default:
           break;
@@ -312,6 +317,31 @@ class FlutterCarplay {
   /// on CarPlay speech recognition transcript changes.
   static void removeListenerOnSpeechRecognitionTranscriptChange() {
     _onSpeechRecognitionTranscriptChange = null;
+  }
+
+  /// Adds the specified [CPSpeaker] utterance to the queue of the speech synthesizer in CarPlay.
+  static void speak(CPSpeaker speakerController) {
+    if (speakerController.onComplete != null) {
+      FlutterCarPlayController.callbackObjects.add(speakerController);
+    }
+    _carPlayController.methodChannel
+        .invokeMethod(
+            CPEnumUtils.stringFromEnum(FCPChannelTypes.speak.toString()),
+            speakerController.toJson())
+        .then((value) {
+      if (value == false && speakerController.onComplete != null) {
+        FlutterCarPlayController.callbackObjects
+            .removeWhere((e) => e.uniqueId == speakerController.uniqueId);
+      }
+    });
+  }
+
+  /// Plays [CPAudio] data asynchronously.
+  static void play(CPAudio audio) {
+    _carPlayController.methodChannel.invokeMethod(
+      CPEnumUtils.stringFromEnum(FCPChannelTypes.playAudio.toString()),
+      audio.toJson(),
+    );
   }
 
   /// Removes the top-most template from the navigation hierarchy.

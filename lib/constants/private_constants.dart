@@ -21,4 +21,7 @@ enum FCPChannelTypes {
   stopVoiceControl,
   getActiveVoiceControlStateIdentifier,
   onVoiceControlTranscriptChanged,
+  speak,
+  onSpeechCompleted,
+  playAudio,
 }

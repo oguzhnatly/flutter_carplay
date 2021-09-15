@@ -259,6 +259,27 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       voiceControlTemplate.stop()
       result(true)
       break
+    case FCPChannelTypes.speak:
+      guard let args = call.arguments as? [String : Any] else {
+        result(false)
+        return
+      }
+      FCPSpeaker.shared.speak(args["text"] as! String, language: args["language"] as! String) {
+        if ((args["onComplete"] as! Bool) == true) {
+          FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onSpeechCompleted,
+                                           data: ["elementId": args["_elementId"] as! String])
+        }
+      }
+      result(true)
+      break
+    case FCPChannelTypes.playAudio:
+      guard let args = call.arguments as? [String : Any] else {
+        result(false)
+        return
+      }
+      FCPSoundEffects.shared.play(sound: args["soundPath"] as! String, volume: args["volume"] as! Float)
+      result(true)
+      break
     default:
       result(false)
       break

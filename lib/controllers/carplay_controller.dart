@@ -28,6 +28,9 @@ class FlutterCarPlayController {
   /// [CPAlertTemplate], [CPActionSheetTemplate], [CPVoiceControlTemplate]
   static dynamic currentPresentTemplate;
 
+  /// Specific objects that are waiting to receive callback.
+  static List<dynamic> callbackObjects = [];
+
   MethodChannel get methodChannel {
     return _methodChannel;
   }
@@ -148,5 +151,16 @@ class FlutterCarPlayController {
       }
     }
     if (barButton != null) barButton.onPress();
+  }
+
+  void processFCPSpeakerOnComplete(String elementId) {
+    callbackObjects.removeWhere((e) {
+      if (e.runtimeType == CPSpeaker) {
+        e.uniqueId == elementId;
+        e.onComplete();
+        return true;
+      }
+      return false;
+    });
   }
 }

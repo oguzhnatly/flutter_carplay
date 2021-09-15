@@ -8,6 +8,8 @@
 import AVFoundation
 
 internal class FCPSpeaker: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+  static let shared = FCPSpeaker()
+  
   internal var errorDescription: String? = nil
   private let synthesizer: AVSpeechSynthesizer = AVSpeechSynthesizer()
   private var willEnd: (() -> Void)?

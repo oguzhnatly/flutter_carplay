@@ -14,7 +14,7 @@ public final class FCPSoundEffects: NSObject {
   
   private override init() {}
   
-  func play(sound: String) {
+  func play(sound: String, volume: Float) {
     let x = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: sound)
     
     guard let s = Bundle.main.path(forResource: x, ofType: nil) else {
@@ -27,6 +27,7 @@ public final class FCPSoundEffects: NSObject {
       fatalError("[FlutterCarPlay]: Music could not be played. If you're not sure, please create an issue in https://github.com/oguzhnatly/flutter_carplay/issues")
     }
     
+    audioPlayer?.volume = volume
     audioPlayer?.play()
   }
 }

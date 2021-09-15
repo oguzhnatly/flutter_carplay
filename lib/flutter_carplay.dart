@@ -28,4 +28,7 @@ export "package:flutter_carplay/models/voice_control/voice_control_state.dart"
     show CPVoiceControlState;
 export "package:flutter_carplay/models/voice_control/voice_control_template.dart"
     show CPVoiceControlTemplate;
+export 'package:flutter_carplay/models/speaker/carplay_speaker.dart'
+    show CPSpeaker;
+export 'package:flutter_carplay/models/audio/carplay_audio.dart' show CPAudio;
 export 'package:flutter_carplay/carplay_worker.dart' show FlutterCarplay;
