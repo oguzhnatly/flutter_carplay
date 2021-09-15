@@ -25,10 +25,6 @@ class FCPStreamHandlerPlugin: NSObject, FlutterStreamHandler {
     return nil
   }
   
-  public func sendCarplayConnectionChangeEvent(status: String) {
-    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onCarplayConnectionChange, data: ["status": status])
-  }
-  
   public static func sendEvent(type: String, data: Dictionary<String, Any>) {
     guard let eventSink = FCPStreamHandlerPlugin.eventSink else {
       return

@@ -25,7 +25,7 @@ class FlutterCarPlayController {
   /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate]
   static dynamic currentRootTemplate;
 
-  /// [CPAlertTemplate], [CPActionSheetTemplate]
+  /// [CPAlertTemplate], [CPActionSheetTemplate], [CPVoiceControlTemplate]
   static dynamic currentPresentTemplate;
 
   MethodChannel get methodChannel {
@@ -116,7 +116,7 @@ class FlutterCarPlayController {
     selectedAlertAction.onPress();
   }
 
-  void processFCPAlertTemplateCompleted(bool completed) {
+  void processFCPPresentTemplateCompleted(bool completed) {
     if (currentPresentTemplate?.onPresent != null) {
       currentPresentTemplate!.onPresent!(completed);
     }

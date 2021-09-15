@@ -15,4 +15,10 @@ enum FCPChannelTypes {
   setActionSheet,
   onBarButtonPressed,
   popToRootTemplate,
+  setVoiceControl,
+  activateVoiceControlState,
+  startVoiceControl,
+  stopVoiceControl,
+  getActiveVoiceControlStateIdentifier,
+  onVoiceControlTranscriptChanged,
 }

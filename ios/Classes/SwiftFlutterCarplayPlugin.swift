@@ -191,6 +191,74 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       self.objcPresentTemplate = nil
       result(true)
       break
+    case FCPChannelTypes.setVoiceControl:
+      guard self.objcPresentTemplate == nil else {
+        result(FlutterError(code: "ERROR",
+                            message: "CarPlay can only present one modal template at a time.",
+                            details: nil))
+        return
+      }
+      guard let args = call.arguments as? [String : Any] else {
+        result(false)
+        return
+      }
+      let voiceControlTemplate = FCPVoiceControlTemplate.init(obj: args["rootTemplate"] as! [String : Any])
+      self.objcPresentTemplate = voiceControlTemplate
+      let animated = args["animated"] as! Bool
+      FlutterCarPlaySceneDelegate.presentTemplate(template: voiceControlTemplate.get, animated: animated, onPresent: { completed in
+        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
+                                         data: ["completed": completed])
+      })
+      result(true)
+      break
+    case FCPChannelTypes.activateVoiceControlState:
+      guard self.objcPresentTemplate != nil else {
+        result(FlutterError(code: "ERROR",
+                            message: "To activate a voice control state, a voice control template must be presented to CarPlay Screen at first.",
+                            details: nil))
+        return
+      }
+      guard let args = call.arguments as? String else {
+        result(false)
+        return
+      }
+      let voiceControlTemplate = self.objcPresentTemplate as! FCPVoiceControlTemplate
+      voiceControlTemplate.activateVoiceControlState(identifier: args)
+      result(true)
+      break
+    case FCPChannelTypes.getActiveVoiceControlStateIdentifier:
+      guard self.objcPresentTemplate != nil else {
+        result(FlutterError(code: "ERROR",
+                            message: "To get the active voice control state identifier, a voice control template must be presented to CarPlay Screen at first.",
+                            details: nil))
+        return
+      }
+      let voiceControlTemplate = self.objcPresentTemplate as! FCPVoiceControlTemplate
+      let identifier = voiceControlTemplate.getActiveVoiceControlStateIdentifier()
+      result(identifier)
+      break
+    case FCPChannelTypes.startVoiceControl:
+      guard self.objcPresentTemplate != nil else {
+        result(FlutterError(code: "ERROR",
+                            message: "To start the voice control, a voice control template must be presented to CarPlay Screen at first.",
+                            details: nil))
+        return
+      }
+      let voiceControlTemplate = self.objcPresentTemplate as! FCPVoiceControlTemplate
+      voiceControlTemplate.start()
+      result(true)
+      break
+    case FCPChannelTypes.stopVoiceControl:
+      guard self.objcPresentTemplate != nil else {
+        result(FlutterError(code: "ERROR",
+                            message: "To stop the voice control, a voice control template must be presented to CarPlay Screen at first.",
+                            details: nil))
+        return
+      }
+      let voiceControlTemplate = self.objcPresentTemplate as! FCPVoiceControlTemplate
+      voiceControlTemplate.stop()
+      result(true)
+      break
     default:
       result(false)
       break
@@ -206,6 +274,11 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   static func onCarplayConnectionChange(status: String) {
     FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onCarplayConnectionChange,
                                      data: ["status": status])
+  }
+  
+  static func sendSpeechRecognitionTranscriptChangeEvent(transcript: String) {
+    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onVoiceControlTranscriptChanged,
+                                     data: ["transcript": transcript])
   }
   
   static func findItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {

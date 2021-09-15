@@ -7,6 +7,7 @@ import 'package:flutter_carplay/models/alert/alert_template.dart';
 import 'package:flutter_carplay/models/grid/grid_template.dart';
 import 'package:flutter_carplay/models/tabbar/tabbar_template.dart';
 import 'package:flutter_carplay/constants/private_constants.dart';
+import 'package:flutter_carplay/models/voice_control/voice_control_template.dart';
 
 /// An object in order to integrate Apple CarPlay in navigation and
 /// manage all user interface elements appearing on your screens displayed on
@@ -36,6 +37,11 @@ class FlutterCarplay {
   /// and will be transmitted to the main code, allowing the user to access
   /// the current connection status.
   Function(CPConnectionStatusTypes status)? _onCarplayConnectionChange;
+
+  /// A listener function that will be triggered each time user's voice is recognized
+  /// and transcripted by CarPlay voice control, allows users to access the speech
+  /// recognition transcript.
+  static Function(String transcript)? _onSpeechRecognitionTranscriptChange;
 
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
@@ -69,7 +75,7 @@ class FlutterCarplay {
           break;
         case FCPChannelTypes.onPresentStateChanged:
           _carPlayController
-              .processFCPAlertTemplateCompleted(event["data"]["completed"]);
+              .processFCPPresentTemplateCompleted(event["data"]["completed"]);
           break;
         case FCPChannelTypes.onGridButtonPressed:
           _carPlayController
@@ -78,6 +84,11 @@ class FlutterCarplay {
         case FCPChannelTypes.onBarButtonPressed:
           _carPlayController
               .processFCPBarButtonPressed(event["data"]["elementId"]);
+          break;
+        case FCPChannelTypes.onVoiceControlTranscriptChanged:
+          if (_onSpeechRecognitionTranscriptChange != null) {
+            _onSpeechRecognitionTranscriptChange!(event["data"]["transcript"]);
+          }
           break;
         default:
           break;
@@ -214,6 +225,95 @@ class FlutterCarplay {
     });
   }
 
+  /// It will present [CPVoiceControlTemplate] modally.
+  ///
+  /// - template is to present modally.
+  /// - If animated is true, CarPlay animates the presentation of the template.
+  ///
+  /// [!] CarPlay can only present one modal template at a time.
+  static void showVoiceControl({
+    required CPVoiceControlTemplate template,
+    bool animated = true,
+  }) {
+    _carPlayController.methodChannel.invokeMethod(
+      CPEnumUtils.stringFromEnum(FCPChannelTypes.setVoiceControl.toString()),
+      <String, dynamic>{
+        'rootTemplate': template.toJson(),
+        'animated': animated,
+      },
+    ).then((value) {
+      if (value) {
+        FlutterCarPlayController.currentPresentTemplate = template;
+      }
+    });
+  }
+
+  /// Changes the [CPVoiceControlTemplate]'s state to the one matching the specified
+  /// identifier in [CPVoiceControlState].
+  ///
+  /// - identifier is a corresponding to one of the voiceControlStates associated with [CPVoiceControlTemplate].
+  ///
+  /// **[!] The [CPVoiceControlTemplate] applies a rate limit for voice control states, ignoring state changes
+  /// occurring too rapidly or frequently in a short period of time.**
+  ///
+  /// If this command is called before a voice control template is presented, a flutter error will occur.
+  static Future<bool> activateVoiceControlState({
+    required String identifier,
+  }) async {
+    final value = await _carPlayController.methodChannel.invokeMethod(
+      CPEnumUtils.stringFromEnum(FCPChannelTypes.activateVoiceControlState),
+      identifier,
+    );
+    return value;
+  }
+
+  /// The identifier of the [CPVoiceControlTemplate]'s current voice control state.
+  ///
+  /// If this command is called before a voice control template is presented, a flutter error will occur.
+  static Future<String> getActiveVoiceControlStateIdentifier() async {
+    final value = await _carPlayController.methodChannel.invokeMethod(
+      CPEnumUtils.stringFromEnum(
+          FCPChannelTypes.getActiveVoiceControlStateIdentifier),
+      null,
+    );
+    return value as String;
+  }
+
+  /// Starts recording for the voice recognition.
+  ///
+  /// If this command is called before a voice control template is presented, a flutter error will occur.
+  static Future<bool> startVoiceControl() async {
+    final value = await _carPlayController.methodChannel.invokeMethod(
+      CPEnumUtils.stringFromEnum(FCPChannelTypes.startVoiceControl),
+      null,
+    );
+    return value as bool;
+  }
+
+  /// Stops recording for the voice recognition.
+  ///
+  /// If this command is called before a voice control template is presented, a flutter error will occur.
+  static Future<bool> stopVoiceControl() async {
+    final value = await _carPlayController.methodChannel.invokeMethod(
+      CPEnumUtils.stringFromEnum(FCPChannelTypes.stopVoiceControl),
+      null,
+    );
+    return value as bool;
+  }
+
+  /// Callback function will be fired when CarPlay recognized and transcripted user's voice each time.
+  static void addListenerOnSpeechRecognitionTranscriptChange({
+    Function(String transcript)? onSpeechRecognitionTranscriptChange,
+  }) {
+    _onSpeechRecognitionTranscriptChange = onSpeechRecognitionTranscriptChange;
+  }
+
+  /// Removes the callback function that has been set before in order to listen
+  /// on CarPlay speech recognition transcript changes.
+  static void removeListenerOnSpeechRecognitionTranscriptChange() {
+    _onSpeechRecognitionTranscriptChange = null;
+  }
+
   /// Removes the top-most template from the navigation hierarchy.
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
@@ -241,7 +341,7 @@ class FlutterCarplay {
     );
   }
 
-  /// Removes a modal template. Since [CPAlertTemplate] and [CPActionSheetTemplate] are both
+  /// Removes a modal template. Since [CPAlertTemplate], [CPActionSheetTemplate], [CPVoiceControlTemplate] are
   /// modals, they can be removed. If animated is true, CarPlay animates the transition between templates.
   static Future<bool> popModal({bool animated = true}) async {
     FlutterCarPlayController.currentPresentTemplate = null;

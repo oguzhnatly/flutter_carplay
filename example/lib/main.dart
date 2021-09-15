@@ -2,11 +2,14 @@
 
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MaterialApp(
+    home: MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -19,6 +22,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   CPConnectionStatusTypes connectionStatus = CPConnectionStatusTypes.unknown;
   final FlutterCarplay _flutterCarplay = FlutterCarplay();
+  String voiceControlTranscript = "";
+
+  /// true = voice control recording started and listening, false = not recording
+  bool voiceControlStatus = false;
 
   @override
   void initState() {
@@ -85,6 +92,38 @@ class _MyAppState extends State<MyApp> {
     final List<CPListSection> section2Items = [];
     section2Items.add(CPListSection(
       items: [
+        CPListItem(
+          text: "Voice Control",
+          detailText: "Displays a voice control indicator during audio input",
+          onPress: (complete, self) {
+            final CPVoiceControlTemplate voiceControlTemplate =
+                CPVoiceControlTemplate(
+              voiceControlStates: [
+                CPVoiceControlState(
+                  titleVariants: ["Welcome to Voice Control"],
+                  image: "images/voice_recognition_animated_image.gif",
+                  repeats: true,
+                  identifier: "test",
+                ),
+              ],
+            );
+            complete();
+            FlutterCarplay.showVoiceControl(template: voiceControlTemplate);
+            FlutterCarplay.startVoiceControl();
+            setState(() {
+              voiceControlStatus = true;
+              voiceControlTranscript = "";
+            });
+            FlutterCarplay.addListenerOnSpeechRecognitionTranscriptChange(
+              onSpeechRecognitionTranscriptChange: (transcript) {
+                setState(() {
+                  voiceControlTranscript = transcript;
+                });
+                checkVoiceControlTranscript(transcript: transcript);
+              },
+            );
+          },
+        ),
         CPListItem(
           text: "Alert",
           detailText: "Action template that the user can perform on an alert",
@@ -157,6 +196,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     _flutterCarplay.removeListenerOnConnectionChange();
+    FlutterCarplay.removeListenerOnSpeechRecognitionTranscriptChange();
     super.dispose();
   }
 
@@ -329,178 +369,310 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  void showVoiceControl(BuildContext context) {
+    final CPVoiceControlTemplate voiceControlTemplate = CPVoiceControlTemplate(
+      voiceControlStates: [
+        CPVoiceControlState(
+          titleVariants: ["Welcome to Voice Control"],
+          image: "images/voice_recognition_animated_image.gif",
+          repeats: true,
+          identifier: "test",
+        ),
+      ],
+    );
+    FlutterCarplay.showVoiceControl(template: voiceControlTemplate);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Voice Control System"),
+          actions: [
+            StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    voiceControlStatus == false
+                        ? const Text(
+                            "You can start or stop voice control anytime. Currently, voice control is not listening you.",
+                            textAlign: TextAlign.center,
+                          )
+                        : const Text(
+                            "Voice control is listening, you can start talking. It will be shown below.",
+                            textAlign: TextAlign.center,
+                          ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      child: voiceControlTranscript != ""
+                          ? Text("Transcript: " + voiceControlTranscript)
+                          : const SizedBox(),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        if (voiceControlStatus == false) {
+                          FlutterCarplay.startVoiceControl();
+                          setState(() {
+                            voiceControlStatus = true;
+                            voiceControlTranscript = "";
+                          });
+                          FlutterCarplay
+                              .addListenerOnSpeechRecognitionTranscriptChange(
+                            onSpeechRecognitionTranscriptChange: (transcript) {
+                              setState(() {
+                                voiceControlTranscript = transcript;
+                              });
+                              checkVoiceControlTranscript(
+                                transcript: transcript,
+                                inModal: true,
+                              );
+                            },
+                          );
+                        }
+                      },
+                      child: const Text("Start Recording"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        if (voiceControlStatus == true) {
+                          setState(() {
+                            voiceControlStatus = false;
+                          });
+                          FlutterCarplay.stopVoiceControl();
+                          FlutterCarplay
+                              .removeListenerOnSpeechRecognitionTranscriptChange();
+                        }
+                      },
+                      child: const Text("Stop Recording"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        if (voiceControlStatus == true) {
+                          setState(() {
+                            voiceControlStatus = false;
+                          });
+                          FlutterCarplay.stopVoiceControl();
+                          FlutterCarplay
+                              .removeListenerOnSpeechRecognitionTranscriptChange();
+                        }
+                        setState(() {
+                          voiceControlTranscript = "";
+                        });
+                        FlutterCarplay.popModal();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Close Voice Control'),
+                    ),
+                  ],
+                );
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void checkVoiceControlTranscript({
+    required String transcript,
+    bool inModal = false,
+  }) {
+    if (transcript.toUpperCase().contains('STOP THE VOICE CONTROL')) {
+      setState(() {
+        voiceControlStatus = false;
+        voiceControlTranscript = "";
+      });
+      FlutterCarplay.stopVoiceControl();
+      FlutterCarplay.removeListenerOnSpeechRecognitionTranscriptChange();
+      FlutterCarplay.popModal();
+      if (inModal) Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Carplay'),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 15),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                  ),
-                  onPressed: () => addNewTemplate(
-                    CPListTemplate(
-                      sections: [],
-                      title: "Blank Screen",
-                      emptyViewTitleVariants: ["Blank Screen Example"],
-                      emptyViewSubtitleVariants: [
-                        "You've just added a blank screen to carplay from your iphone.",
-                      ],
-                      showsTabBadge: true,
-                      systemIcon: "airpods",
-                    ),
-                  ),
-                  child: const Text(
-                    'Add blank\nscreen',
-                    textAlign: TextAlign.center,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Flutter Carplay'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
                   ),
                 ),
-                const SizedBox(width: 20, height: 0),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 15),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                  ),
-                  onPressed: () => removeLastTemplate(),
-                  child: const Text(
-                    'Remove last\nscreen',
-                    textAlign: TextAlign.center,
+                onPressed: () => addNewTemplate(
+                  CPListTemplate(
+                    sections: [],
+                    title: "Blank Screen",
+                    emptyViewTitleVariants: ["Blank Screen Example"],
+                    emptyViewSubtitleVariants: [
+                      "You've just added a blank screen to carplay from your iphone.",
+                    ],
+                    showsTabBadge: true,
+                    systemIcon: "airpods",
                   ),
                 ),
-              ],
-            ),
-            Center(
-              child: Text(
-                'Carplay Status: ' +
-                    CPEnumUtils.stringFromEnum(connectionStatus),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 15),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                  ),
-                  onPressed: () => showAlert(),
-                  child: const Text('Alert'),
-                ),
-                const SizedBox(width: 15, height: 0),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 15),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                  ),
-                  onPressed: () => showActionSheet(),
-                  child: const Text('Action Sheet'),
-                ),
-                const SizedBox(width: 15, height: 0),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 15),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                  ),
-                  onPressed: () => FlutterCarplay.popModal(animated: true),
-                  child: const Text('Close Modal'),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 15),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                  ),
-                  onPressed: () => FlutterCarplay.pop(animated: true),
-                  child: const Text('Pop Screen'),
-                ),
-                const SizedBox(width: 20, height: 0),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 15),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                  ),
-                  onPressed: () => FlutterCarplay.popToRoot(animated: true),
-                  child: const Text('Pop To Root'),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 15),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                  ),
-                  onPressed: () => openListTemplate(),
-                  child: const Text('Open List\nTemplate'),
-                ),
-                const SizedBox(width: 20, height: 0),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 15),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                  ),
-                  onPressed: () => openGridTemplate(),
-                  child: const Text('Open Grid\nTemplate'),
-                ),
-              ],
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                textStyle: const TextStyle(fontSize: 15),
-                primary: Colors.red,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 24,
+                child: const Text(
+                  'Add blank\nscreen',
+                  textAlign: TextAlign.center,
                 ),
               ),
-              onPressed: () => _flutterCarplay.forceUpdateRootTemplate(),
-              child: const Text('Force Update Carplay'),
+              const SizedBox(width: 20, height: 0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                ),
+                onPressed: () => removeLastTemplate(),
+                child: const Text(
+                  'Remove last\nscreen',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+          Center(
+            child: Text(
+              'Carplay Status: ' + CPEnumUtils.stringFromEnum(connectionStatus),
             ),
-            const SizedBox(width: 50, height: 0),
-          ],
-        ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                ),
+                onPressed: () => showAlert(),
+                child: const Text('Alert'),
+              ),
+              const SizedBox(width: 15, height: 0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                ),
+                onPressed: () => showActionSheet(),
+                child: const Text('Action Sheet'),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 9,
+                    horizontal: 18,
+                  ),
+                ),
+                onPressed: () => showVoiceControl(context),
+                child: const Text('Voice Control 🎉'),
+              ),
+              const SizedBox(width: 15, height: 0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                ),
+                onPressed: () => FlutterCarplay.popModal(animated: true),
+                child: const Text('Close Modal'),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                ),
+                onPressed: () => FlutterCarplay.pop(animated: true),
+                child: const Text('Pop Screen'),
+              ),
+              const SizedBox(width: 20, height: 0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                ),
+                onPressed: () => FlutterCarplay.popToRoot(animated: true),
+                child: const Text('Pop To Root'),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                ),
+                onPressed: () => openListTemplate(),
+                child: const Text('Open List\nTemplate'),
+              ),
+              const SizedBox(width: 20, height: 0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                ),
+                onPressed: () => openGridTemplate(),
+                child: const Text('Open Grid\nTemplate'),
+              ),
+            ],
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              textStyle: const TextStyle(fontSize: 15),
+              primary: Colors.red,
+              padding: const EdgeInsets.symmetric(
+                vertical: 12,
+                horizontal: 24,
+              ),
+            ),
+            onPressed: () => _flutterCarplay.forceUpdateRootTemplate(),
+            child: const Text('Force Update Carplay'),
+          ),
+          const SizedBox(width: 50, height: 0),
+        ],
       ),
     );
   }
