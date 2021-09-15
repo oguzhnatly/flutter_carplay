@@ -96,32 +96,10 @@ class _MyAppState extends State<MyApp> {
           text: "Voice Control",
           detailText: "Displays a voice control indicator during audio input",
           onPress: (complete, self) {
-            final CPVoiceControlTemplate voiceControlTemplate =
-                CPVoiceControlTemplate(
-              voiceControlStates: [
-                CPVoiceControlState(
-                  titleVariants: ["Welcome to Voice Control"],
-                  image: "images/voice_recognition_animated_image.gif",
-                  repeats: true,
-                  identifier: "test",
-                ),
-              ],
-            );
-            complete();
-            FlutterCarplay.showVoiceControl(template: voiceControlTemplate);
-            FlutterCarplay.startVoiceControl();
-            setState(() {
-              voiceControlStatus = true;
-              voiceControlTranscript = "";
+            Future.delayed(Duration.zero, () {
+              showVoiceControl(context);
+              complete();
             });
-            FlutterCarplay.addListenerOnSpeechRecognitionTranscriptChange(
-              onSpeechRecognitionTranscriptChange: (transcript) {
-                setState(() {
-                  voiceControlTranscript = transcript;
-                });
-                checkVoiceControlTranscript(transcript: transcript);
-              },
-            );
           },
         ),
         CPListItem(
@@ -370,17 +348,37 @@ class _MyAppState extends State<MyApp> {
   }
 
   void showVoiceControl(BuildContext context) {
-    final CPVoiceControlTemplate voiceControlTemplate = CPVoiceControlTemplate(
-      voiceControlStates: [
-        CPVoiceControlState(
-          titleVariants: ["Welcome to Voice Control"],
-          image: "images/voice_recognition_animated_image.gif",
-          repeats: true,
-          identifier: "test",
-        ),
-      ],
+    /// Clearing previous transcript and sets the status as started.
+    setState(() {
+      voiceControlStatus = false;
+      voiceControlTranscript = "";
+    });
+
+    /// Displaying voice control to CarPlay.
+    FlutterCarplay.showVoiceControl(
+      template: CPVoiceControlTemplate(
+        voiceControlStates: [
+          CPVoiceControlState(
+            titleVariants: ["Example Voice Control"],
+            image: "images/voice_recognition_animated_image.gif",
+            identifier: "test",
+          ),
+        ],
+      ),
     );
-    FlutterCarplay.showVoiceControl(template: voiceControlTemplate);
+
+    /// Greet the user with a localized speech from a text.
+    FlutterCarplay.speak(CPSpeaker(
+      text:
+          "Welcome to voice control. To stop, you can say stop the voice control.",
+      language: const Locale('en', 'US'),
+    ));
+
+    /// [DISCLAIMER]
+    /// THE DIALOG IS USED FOR EXAMPLE-ONLY IN ORDER TO
+    /// INTRODUCE ALL ACTIONS OF THIS PACKAGE BETTER.
+    /// YOU SHOULD NEVER SHOW ANY DIALOG OR ALERT TO
+    /// ANY USER'S OR ESPECIALLY ANY DRIVER'S PHONE.
     showDialog(
       context: context,
       builder: (context) {
@@ -407,43 +405,15 @@ class _MyAppState extends State<MyApp> {
                           ? Text("Transcript: " + voiceControlTranscript)
                           : const SizedBox(),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        if (voiceControlStatus == false) {
-                          FlutterCarplay.startVoiceControl();
-                          setState(() {
-                            voiceControlStatus = true;
-                            voiceControlTranscript = "";
-                          });
-                          FlutterCarplay
-                              .addListenerOnSpeechRecognitionTranscriptChange(
-                            onSpeechRecognitionTranscriptChange: (transcript) {
-                              setState(() {
-                                voiceControlTranscript = transcript;
-                              });
-                              checkVoiceControlTranscript(
-                                transcript: transcript,
-                                inModal: true,
-                              );
-                            },
-                          );
-                        }
-                      },
-                      child: const Text("Start Recording"),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        if (voiceControlStatus == true) {
-                          setState(() {
-                            voiceControlStatus = false;
-                          });
-                          FlutterCarplay.stopVoiceControl();
-                          FlutterCarplay
-                              .removeListenerOnSpeechRecognitionTranscriptChange();
-                        }
-                      },
-                      child: const Text("Stop Recording"),
-                    ),
+                    voiceControlStatus == false
+                        ? TextButton(
+                            onPressed: () => startVoiceControl(setState),
+                            child: const Text("Start Recording"),
+                          )
+                        : TextButton(
+                            onPressed: () => endVoiceControl(setState),
+                            child: const Text("Stop Recording"),
+                          ),
                     TextButton(
                       onPressed: () {
                         if (voiceControlStatus == true) {
@@ -457,8 +427,12 @@ class _MyAppState extends State<MyApp> {
                         setState(() {
                           voiceControlTranscript = "";
                         });
-                        FlutterCarplay.popModal();
                         Navigator.of(context).pop();
+                        FlutterCarplay.speak(CPSpeaker(
+                          text: "Voice control is stopping.",
+                          language: const Locale('en', 'US'),
+                          onComplete: () => FlutterCarplay.popModal(),
+                        ));
                       },
                       child: const Text('Close Voice Control'),
                     ),
@@ -472,6 +446,46 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  void startVoiceControl(void Function(void Function()) setState) {
+    if (voiceControlStatus == false) {
+      /// Play a sound to signal the user to begin speaking
+      FlutterCarplay.play(CPAudio(
+        soundPath: 'musics/ping_sound_effect.mp3',
+        volume: 1.0,
+      ));
+      FlutterCarplay.startVoiceControl();
+      setState(() {
+        voiceControlStatus = true;
+        voiceControlTranscript = "";
+      });
+      FlutterCarplay.addListenerOnSpeechRecognitionTranscriptChange(
+        onSpeechRecognitionTranscriptChange: (transcript) {
+          setState(() {
+            voiceControlTranscript = transcript;
+          });
+          checkVoiceControlTranscript(
+            transcript: transcript,
+            inModal: true,
+          );
+        },
+      );
+    }
+  }
+
+  void endVoiceControl(void Function(void Function()) setState) {
+    if (voiceControlStatus == true) {
+      FlutterCarplay.speak(CPSpeaker(
+        text: "You said that, " + voiceControlTranscript,
+        language: const Locale('en', 'US'),
+      ));
+      setState(() {
+        voiceControlStatus = false;
+      });
+      FlutterCarplay.stopVoiceControl();
+      FlutterCarplay.removeListenerOnSpeechRecognitionTranscriptChange();
+    }
+  }
+
   void checkVoiceControlTranscript({
     required String transcript,
     bool inModal = false,
@@ -483,7 +497,11 @@ class _MyAppState extends State<MyApp> {
       });
       FlutterCarplay.stopVoiceControl();
       FlutterCarplay.removeListenerOnSpeechRecognitionTranscriptChange();
-      FlutterCarplay.popModal();
+      FlutterCarplay.speak(CPSpeaker(
+        text: "Okay, voice control is stopping.",
+        language: const Locale('en', 'US'),
+        onComplete: () => FlutterCarplay.popModal(),
+      ));
       if (inModal) Navigator.of(context).pop();
     }
   }
