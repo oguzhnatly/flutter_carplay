@@ -14,9 +14,11 @@ class FCPVoiceControlTemplate {
   private var speechRecognizer: FCPSpeechRecognizer = FCPSpeechRecognizer()
   private var voiceControlStates: [CPVoiceControlState]
   private var objcVoiceControlStates: [FCPVoiceControlState]
+  private var locale: String
   
   init(obj: [String : Any]) {
     self.elementId = obj["_elementId"] as! String
+    self.locale = obj["locale"] as! String
     self.objcVoiceControlStates = (obj["voiceControlStates"] as! Array<[String : Any]>).map {
       FCPVoiceControlState(obj: $0)
     }
@@ -40,7 +42,7 @@ class FCPVoiceControlTemplate {
   }
   
   func start() {
-    self.speechRecognizer.record()
+    self.speechRecognizer.record(locale: locale)
   }
   
   func stop() {

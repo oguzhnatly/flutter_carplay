@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_carplay/models/voice_control/voice_control_state.dart';
 import 'package:uuid/uuid.dart';
 
@@ -18,6 +19,15 @@ class CPVoiceControlTemplate {
   /// If completed is true, the template successfully presented. If not, you may want to show an error to the user.
   final Function(bool completed)? onPresent;
 
+  /// A BCP 47 code that identifies the language and locale for a voice
+  /// by defining [Locale](https://api.flutter.dev/flutter/dart-ui/Locale-class.html).
+  ///
+  /// Default is `Locale('en', 'US')`.
+  ///
+  /// For a complete list of supported languages, see
+  /// [languages supported by VoiceOver](https://support.apple.com/en-us/HT206175).
+  final Locale locale;
+
   /// Creates [CPVoiceControlTemplate] with a list of voice control states.
   ///
   /// When the voice control template is first presented, it defaults to the first state in
@@ -26,10 +36,12 @@ class CPVoiceControlTemplate {
   CPVoiceControlTemplate({
     required this.voiceControlStates,
     this.onPresent,
+    this.locale = const Locale('en', 'US'),
   });
 
   Map<String, dynamic> toJson() => {
         "_elementId": _elementId,
+        "locale": locale.toLanguageTag(),
         "voiceControlStates":
             voiceControlStates.map((e) => e.toJson()).toList(),
         "onPresent": onPresent != null ? true : false,

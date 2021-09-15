@@ -357,6 +357,7 @@ class _MyAppState extends State<MyApp> {
     /// Displaying voice control to CarPlay.
     FlutterCarplay.showVoiceControl(
       template: CPVoiceControlTemplate(
+        locale: const Locale('en', 'US'),
         voiceControlStates: [
           CPVoiceControlState(
             titleVariants: ["Example Voice Control"],

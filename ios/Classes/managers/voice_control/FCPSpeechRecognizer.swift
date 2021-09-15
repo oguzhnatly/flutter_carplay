@@ -27,7 +27,7 @@ struct FCPSpeechRecognizer {
     var audioEngine: AVAudioEngine?
     var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     var recognitionTask: SFSpeechRecognitionTask?
-    let speechRecognizer = SFSpeechRecognizer()
+    var speechRecognizer = SFSpeechRecognizer()
 
     deinit {
       reset()
@@ -40,13 +40,20 @@ struct FCPSpeechRecognizer {
       recognitionRequest = nil
       recognitionTask = nil
     }
+    
+    func setLocale(locale: String?) {
+      speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: locale ?? "en-US"))
+      print("[FlutterCarPlay]: Voice Control for locale " + (locale ?? "en-US") + " is initialized.")
+    }
   }
 
   private let transcript = FCPSpeechTranscript()
   private let assistant = FCPSpeechAssist()
 
-  func record() {
+  func record(locale: String?) {
     print("[FlutterCarPlay]: Requesting access for Voice Control.")
+    
+    assistant.setLocale(locale: locale)
     
     canAccess { authorized in
       guard authorized else {
