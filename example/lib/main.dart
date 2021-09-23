@@ -38,6 +38,10 @@ class _MyAppState extends State<MyApp> {
           text: "Item 1",
           detailText: "Detail Text",
           onPress: (complete, self) {
+            FlutterCarplay.play(CPAudio(
+              soundPath: 'musics/ncs_music1.mp3',
+              volume: 0.4,
+            ));
             self.setDetailText("You can change the detail text.. 🚀");
             self.setAccessoryType(CPListItemAccessoryTypes.cloud);
             Future.delayed(const Duration(seconds: 1), () {

@@ -277,7 +277,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         result(false)
         return
       }
-      FCPSoundEffects.shared.play(sound: args["soundPath"] as! String, volume: args["volume"] as! Float)
+      FCPSoundEffects.shared.prepare(sound: args["soundPath"] as! String, volume: (args["volume"] as! NSNumber).floatValue)
+      FCPSoundEffects.shared.play()
       result(true)
       break
     default:

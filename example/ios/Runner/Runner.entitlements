@@ -4,7 +4,5 @@
 <dict>
 	<key>com.apple.developer.carplay-audio</key>
 	<true/>
-	<key>com.apple.developer.carplay-maps</key>
-	<true/>
 </dict>
 </plist>
