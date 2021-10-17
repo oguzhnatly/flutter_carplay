@@ -50,7 +50,7 @@ class FlutterCarPlayController {
         for (var h in templateHistory) {
           switch (h.runtimeType) {
             case CPTabBarTemplate:
-              for (var t in h.templates) {
+              for (var t in (h as CPTabBarTemplate).templates) {
                 for (var s in t.sections) {
                   for (var i in s.items) {
                     if (i.uniqueId == updatedListItem.uniqueId) {
@@ -65,12 +65,11 @@ class FlutterCarPlayController {
               }
               break;
             case CPListTemplate:
-              for (var s in h.sections) {
+              for (var s in (h as CPListTemplate).sections) {
                 for (var i in s.items) {
                   if (i.uniqueId == updatedListItem.uniqueId) {
                     currentRootTemplate!
-                        .templates[currentRootTemplate!.templates.indexOf(h)]
-                        .sections[h.sections.indexOf(s)]
+                        .sections[currentRootTemplate!.sections.indexOf(s)]
                         .items[s.items.indexOf(i)] = updatedListItem;
                     break l1;
                   }
