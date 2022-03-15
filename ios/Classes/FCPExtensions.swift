@@ -17,6 +17,14 @@ extension UIImage {
     let image: UIImage? = UIImage(imageLiteralResourceName: key!)
     return image ?? UIImage(systemName: "questionmark")!
   }
+    
+  func resizeImageTo(size: CGSize) -> UIImage? {
+      UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+      self.draw(in: CGRect(origin: CGPoint.zero, size: size))
+      let newImage = UIGraphicsGetImageFromCurrentImageContext()!
+      UIGraphicsEndImageContext()
+      return newImage
+    }
 }
 
 extension String {

@@ -4,9 +4,13 @@ import 'package:flutter_carplay/helpers/carplay_helper.dart';
 import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'package:flutter_carplay/models/alert/alert_action.dart';
 import 'package:flutter_carplay/models/button/bar_button.dart';
+import 'package:flutter_carplay/models/button/text_button.dart';
 import 'package:flutter_carplay/models/grid/grid_button.dart';
 import 'package:flutter_carplay/models/grid/grid_template.dart';
 import 'package:flutter_carplay/models/list/list_template.dart';
+import 'package:flutter_carplay/models/information/information_template.dart';
+import 'package:flutter_carplay/models/poi/poi.dart';
+import 'package:flutter_carplay/models/poi/poi_template.dart';
 import 'package:flutter_carplay/models/tabbar/tabbar_template.dart';
 import 'package:flutter_carplay/constants/private_constants.dart';
 
@@ -19,10 +23,10 @@ class FlutterCarPlayController {
   static final EventChannel _eventChannel =
       EventChannel(_carplayHelper.makeFCPChannelId(event: "/event"));
 
-  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate] in a List
+  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate] in a List
   static List<dynamic> templateHistory = [];
 
-  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate]
+  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate]
   static dynamic currentRootTemplate;
 
   /// [CPAlertTemplate], [CPActionSheetTemplate]
@@ -86,6 +90,8 @@ class FlutterCarPlayController {
   void addTemplateToHistory(dynamic template) {
     if (template.runtimeType == CPTabBarTemplate ||
         template.runtimeType == CPGridTemplate ||
+        template.runtimeType == CPInformationTemplate ||
+        template.runtimeType == CPPointOfInterestTemplate ||
         template.runtimeType == CPListTemplate) {
       templateHistory.add(template);
     } else {
@@ -148,4 +154,38 @@ class FlutterCarPlayController {
     }
     if (barButton != null) barButton.onPress();
   }
-}
+
+  void processFCPTextButtonPressed(String elementId) {
+    l1:
+    for (var t in templateHistory) {
+      if (t.runtimeType.toString() == "CPPointOfInterestTemplate") {
+        for (CPPointOfInterest p in t.poi) {
+          if (p.primaryButton != null &&
+              p.primaryButton!.uniqueId == elementId) {
+            p.primaryButton!.onPress();
+            break l1;
+          }
+          if (p.secondaryButton != null &&
+              p.secondaryButton!.uniqueId == elementId) {
+            p.secondaryButton!.onPress();
+            break l1;
+          }
+        }
+      }
+      else
+      {
+        if (t.runtimeType.toString() == "CPInformationTemplate") {
+          l2:
+          for (CPTextButton b in t.actions) {
+            if (b.uniqueId == elementId) {
+              b.onPress();
+              break l2;
+            }
+          }
+        }
+      }
+    }
+  }
+  }
+
+

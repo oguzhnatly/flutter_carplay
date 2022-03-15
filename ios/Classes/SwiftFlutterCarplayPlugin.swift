@@ -59,6 +59,14 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         rootTemplate = FCPGridTemplate(obj: args["rootTemplate"] as! [String : Any])
         SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPGridTemplate).get
         break
+      case String(describing: FCPInformationTemplate.self):
+        rootTemplate = FCPInformationTemplate(obj: args["rootTemplate"] as! [String : Any])
+        SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPInformationTemplate).get
+        break
+      case String(describing: FCPPointOfInterestTemplate.self):
+        rootTemplate = FCPPointOfInterestTemplate(obj: args["rootTemplate"] as! [String : Any])
+        SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPPointOfInterestTemplate).get
+        break
       case String(describing: FCPListTemplate.self):
         rootTemplate = FCPListTemplate(obj: args["rootTemplate"] as! [String : Any], templateType: FCPListTemplateTypes.DEFAULT)
         SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPListTemplate).get
@@ -172,6 +180,13 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       case String(describing: FCPGridTemplate.self):
         pushTemplate = FCPGridTemplate(obj: args["template"] as! [String : Any]).get
         break
+      case String(describing: FCPPointOfInterestTemplate.self):
+        pushTemplate = FCPPointOfInterestTemplate(obj: args["template"] as! [String : Any]).get
+        break
+      case String(describing: FCPInformationTemplate.self):
+        pushTemplate = FCPInformationTemplate(obj: args["template"] as! [String : Any]).get
+        break
+    
       case String(describing: FCPListTemplate.self):
         pushTemplate = FCPListTemplate(obj: args["template"] as! [String : Any], templateType: FCPListTemplateTypes.DEFAULT).get
         break

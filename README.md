@@ -36,7 +36,9 @@ CarPlay apps are built from a fixed set of user interface templates that iOS ren
 - [x] Action Sheet Template
 - [x] Alert Template
 - [x] Grid Template
+- [x] Information Template
 - [x] List Template
+- [x] Point of Interest Template
 - [x] Tab Bar Template
 
 By evaluating this information, you can request for the relevant entitlement from Apple.
@@ -575,6 +577,82 @@ final CPListTemplate listTemplate = CPListTemplate(
 FlutterCarplay.push(template: listTemplate, animated: true);
 // OR
 FlutterCarplay.setRootTemplate(rootTemplate: listTemplate, animated: true);
+```
+
+
+## Information Template
+
+![Flutter CarPlay](previews/information_template.png)
+
+An Information Template shows a list of items, and actions (max. three)) as array of text buttons.
+
+> The list is limited to 10 items. Items beyond the maximum will not be shown. Up to three actions are supported.
+
+```dart
+final CPInformationTemplate informationTemplate = CPInformationTemplate(
+  title: "Title",
+  layout: CPInformationTemplateLayout.twoColumn,
+  actions: [
+    CPTextButton(
+      title: "Button Title 1",
+      onPress: () {
+        print("Button 1");
+      }
+    ),
+    CPTextButton(
+      title: "Button Title 2",
+      onPress: () {
+        print("Button 2");
+       }
+    ),
+  ],
+  informationItems: [
+    CPInformationItem(title: "Title", detail: "Detail"),
+  ]
+);
+
+FlutterCarplay.push(template: informationTemplate, animated: true);
+// OR
+FlutterCarplay.setRootTemplate(rootTemplate: informationTemplate, animated: true);
+```
+
+## Point Of Interest Template
+
+![Flutter CarPlay](previews/point_of_interest_template.png)
+
+A Point Of Interest  template shows multiple points of interest on a Map
+The map section is determined by the points of interest.
+> The Template is limited to 12 Points of Interest.
+
+```dart
+ final CPPointOfInterestTemplate pointOfInterestTemplate =
+   CPPointOfInterestTemplate(title: "Title", poi: [
+     CPPointOfInterest(
+       latitude: 51.5052,
+       longitude: 7.4938,
+       title: "Title",
+       subtitle: "Subtitle",
+       summary: "Summary",
+       detailTitle: "DetailTitle",
+       detailSubtitle: "detailSubtitle",
+       detailSummary: "detailSummary",
+       image: "images/logo_flutter_1080px_clr.png",
+       primaryButton: CPTextButton(
+         title: "Primary",
+         onPress: () {
+           print("Primary button pressed");
+         }
+       ),
+       secondaryButton: CPTextButton(
+         title: "Secondary",
+         onPress: () {
+           print("Secondary button pressed");
+         }))
+    ]);
+
+    FlutterCarplay.push(template: pointOfInterestTemplate, animated: true);
+    // OR
+    FlutterCarplay.setRootTemplate(rootTemplate: pointOfInterestTemplate, animated: true);
 ```
 
 # LICENSE

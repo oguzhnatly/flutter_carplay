@@ -15,6 +15,12 @@ export "package:flutter_carplay/models/button/alert_constants.dart"
 export "package:flutter_carplay/models/grid/grid_button.dart" show CPGridButton;
 export "package:flutter_carplay/models/grid/grid_template.dart"
     show CPGridTemplate;
+export "package:flutter_carplay/models/information/information_item.dart"
+    show CPInformationItem;
+export "package:flutter_carplay/models/information/information_template.dart"
+    show CPInformationTemplate;
+export 'package:flutter_carplay/models/information/information_constants.dart'
+    show CPInformationTemplateLayout;
 export "package:flutter_carplay/models/list/list_constants.dart"
     show CPListItemAccessoryTypes, CPListItemPlayingIndicatorLocations;
 export "package:flutter_carplay/models/list/list_item.dart" show CPListItem;
@@ -22,6 +28,13 @@ export "package:flutter_carplay/models/list/list_section.dart"
     show CPListSection;
 export "package:flutter_carplay/models/list/list_template.dart"
     show CPListTemplate;
+export "package:flutter_carplay/models/poi/poi.dart"
+    show CPPointOfInterest;
+export "package:flutter_carplay/models/poi/poi_template.dart"
+    show CPPointOfInterestTemplate;
 export "package:flutter_carplay/models/tabbar/tabbar_template.dart"
     show CPTabBarTemplate;
+export "package:flutter_carplay/models/button/text_button.dart"
+    show CPTextButton;
+
 export 'package:flutter_carplay/carplay_worker.dart' show FlutterCarplay;
