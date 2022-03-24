@@ -1,3 +1,7 @@
+## 1.0.2
+
+- Point Of Interest and Information Template added.
+
 ## 1.0.1
 
 - CarPlay List Template issue #4 fixed.
