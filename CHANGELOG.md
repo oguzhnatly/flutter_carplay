@@ -1,3 +1,7 @@
+## 1.0.2+1
+
+- Point Of Interest and Information Template added. Previews added to README.md.
+
 ## 1.0.2
 
 - Point Of Interest and Information Template added.
