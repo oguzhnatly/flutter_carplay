@@ -5,6 +5,8 @@ import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'package:flutter_carplay/models/alert/alert_template.dart';
 import 'package:flutter_carplay/models/grid/grid_template.dart';
+import 'package:flutter_carplay/models/information/information_template.dart';
+import 'package:flutter_carplay/models/poi/poi_template.dart';
 import 'package:flutter_carplay/models/tabbar/tabbar_template.dart';
 import 'package:flutter_carplay/constants/private_constants.dart';
 
@@ -79,6 +81,10 @@ class FlutterCarplay {
           _carPlayController
               .processFCPBarButtonPressed(event["data"]["elementId"]);
           break;
+        case FCPChannelTypes.onTextButtonPressed:
+          _carPlayController
+              .processFCPTextButtonPressed(event["data"]["elementId"]);
+          break;
         default:
           break;
       }
@@ -143,7 +149,9 @@ class FlutterCarplay {
   }) {
     if (rootTemplate.runtimeType == CPTabBarTemplate ||
         rootTemplate.runtimeType == CPGridTemplate ||
-        rootTemplate.runtimeType == CPListTemplate) {
+        rootTemplate.runtimeType == CPListTemplate ||
+        rootTemplate.runtimeType == CPInformationTemplate ||
+        rootTemplate.runtimeType == CPPointOfInterestTemplate) {
       _carPlayController.methodChannel
           .invokeMethod('setRootTemplate', <String, dynamic>{
         'rootTemplate': rootTemplate.toJson(),
@@ -254,7 +262,7 @@ class FlutterCarplay {
   /// Adds a template to the navigation hierarchy and displays it.
   ///
   /// - template is to add to the navigation hierarchy. **Must be one of the type:**
-  /// [CPGridTemplate] or [CPListTemplate] If not, it will throw an [TypeError]
+  /// [CPGridTemplate] or [CPListTemplate] [CPInformationTemplat] [CPPointOfInterestTemplate] If not, it will throw an [TypeError]
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
   static Future<bool> push({
@@ -262,7 +270,10 @@ class FlutterCarplay {
     bool animated = true,
   }) async {
     if (template.runtimeType == CPGridTemplate ||
-        template.runtimeType == CPListTemplate) {
+        template.runtimeType == CPListTemplate ||
+        template.runtimeType == CPInformationTemplate ||
+        template.runtimeType == CPPointOfInterestTemplate
+    ) {
       bool isCompleted = await _carPlayController
           .reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
         "template": template.toJson(),
