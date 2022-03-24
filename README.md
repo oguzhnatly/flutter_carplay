@@ -36,23 +36,21 @@ CarPlay apps are built from a fixed set of user interface templates that iOS ren
 - [x] Action Sheet Template
 - [x] Alert Template
 - [x] Grid Template
-- [x] Information Template
 - [x] List Template
-- [x] Point of Interest Template
 - [x] Tab Bar Template
+- [x] Information Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
+- [x] Point of Interest Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
 
 By evaluating this information, you can request for the relevant entitlement from Apple.
 
 ## Road Map
 
-Since I don't have some required entitlements, other templates will be supported in the future releases by `flutter_carplay`.
+Other templates will be supported in the future releases by `flutter_carplay`.
 
 - [ ] Map
 - [ ] Search
 - [ ] Voice Control & "Hey Siri" for hands-free voice activation
-- [ ] Information
 - [ ] Contact
-- [ ] Point of Interest
 - [ ] Now Playing
 
 ## Contributing
@@ -60,7 +58,7 @@ Since I don't have some required entitlements, other templates will be supported
 - Pull Requests are always welcome.
 - Pull Request Reviews are even more welcome! I need help in testing.
 - If you are interested in contributing more actively, please contact me at info@oguzhanatalay.com Thanks!
-- If you want to help in coding, join [Slack Channel](https://join.slack.com/t/fluttercarplay/shared_invite/zt-v67vdugx-8RfFPdCUPKXCQ_J4gY94vQ), so we can chat over there.
+- If you want to help in coding, join [Discord Server](https://discord.gg/Xz6WVezFfh), so we can chat over there.
 
 # Requesting the CarPlay Entitlements
 
@@ -191,6 +189,10 @@ override func application( _ application: UIApplication,
    ```
 
 ### That's it, you're ready to build your first CarPlay app! 🚀 😎
+
+# Solve problems configuring your project
+
+Take a look at [this detailed issue reply](https://github.com/oguzhnatly/flutter_carplay/issues/3#issuecomment-926146126) if you got any error.
 
 # Usage & Features
 
@@ -579,7 +581,6 @@ FlutterCarplay.push(template: listTemplate, animated: true);
 FlutterCarplay.setRootTemplate(rootTemplate: listTemplate, animated: true);
 ```
 
-
 ## Information Template
 
 ![Flutter CarPlay](previews/information_template.png)
@@ -620,8 +621,9 @@ FlutterCarplay.setRootTemplate(rootTemplate: informationTemplate, animated: true
 
 ![Flutter CarPlay](previews/point_of_interest_template.png)
 
-A Point Of Interest  template shows multiple points of interest on a Map
+A Point Of Interest template shows multiple points of interest on a Map
 The map section is determined by the points of interest.
+
 > The Template is limited to 12 Points of Interest.
 
 ```dart
