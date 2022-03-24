@@ -583,7 +583,7 @@ FlutterCarplay.setRootTemplate(rootTemplate: listTemplate, animated: true);
 
 ## Information Template
 
-![Flutter CarPlay](previews/information_template.png)
+![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/information_template.png)
 
 An Information Template shows a list of items, and actions (max. three)) as array of text buttons.
 
@@ -619,7 +619,7 @@ FlutterCarplay.setRootTemplate(rootTemplate: informationTemplate, animated: true
 
 ## Point Of Interest Template
 
-![Flutter CarPlay](previews/point_of_interest_template.png)
+![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/point_of_interest_template.png)
 
 A Point Of Interest template shows multiple points of interest on a Map
 The map section is determined by the points of interest.
