@@ -1,3 +1,7 @@
+## 1.0.3
+
+- Build fix for the issue [#7](https://github.com/oguzhnatly/flutter_carplay/issues/7)
+
 ## 1.0.2+1
 
 - Point Of Interest and Information Template added. Previews added to README.md.
