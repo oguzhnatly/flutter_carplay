@@ -62,12 +62,9 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
     let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
 
-    guard rootTemplate != nil else {
-      FlutterCarPlaySceneDelegate.interfaceController = nil
-      return
+    if rootTemplate != nil {
+      FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(rootTemplate!, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
     }
-    
-    FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(rootTemplate!, animated: SwiftFlutterCarplayPlugin.animated)
   }
   
   func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
