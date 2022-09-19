@@ -6,9 +6,9 @@
 //
 
 enum FCPConnectionTypes {
-  static let connected = "CONNECTED"
-  static let background = "BACKGROUND"
-  static let disconnected = "DISCONNECTED"
+  static let connected = "connected"
+  static let background = "background"
+  static let disconnected = "disconnected"
 }
 
 enum FCPChannelTypes {
