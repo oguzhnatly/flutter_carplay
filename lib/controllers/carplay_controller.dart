@@ -78,11 +78,11 @@ class FlutterCarPlayController {
   }
 
   void addTemplateToHistory(dynamic template) {
-    if (template.runtimeType == CPTabBarTemplate ||
-        template.runtimeType == CPGridTemplate ||
-        template.runtimeType == CPInformationTemplate ||
-        template.runtimeType == CPPointOfInterestTemplate ||
-        template.runtimeType == CPListTemplate) {
+    if (template is CPTabBarTemplate ||
+        template is CPGridTemplate ||
+        template is CPInformationTemplate ||
+        template is CPPointOfInterestTemplate ||
+        template is CPListTemplate) {
       templateHistory.add(template);
     } else {
       throw TypeError();
@@ -120,7 +120,7 @@ class FlutterCarPlayController {
     CPGridButton? gridButton;
     l1:
     for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPGridTemplate") {
+      if (t is CPGridTemplate) {
         for (var b in t.buttons) {
           if (b.uniqueId == elementId) {
             gridButton = b;
@@ -136,7 +136,7 @@ class FlutterCarPlayController {
     CPBarButton? barButton;
     l1:
     for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPListTemplate") {
+      if (t is CPListTemplate) {
         barButton = t.backButton;
         break l1;
       }
@@ -147,7 +147,7 @@ class FlutterCarPlayController {
   void processFCPTextButtonPressed(String elementId) {
     l1:
     for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPPointOfInterestTemplate") {
+      if (t is CPPointOfInterestTemplate) {
         for (CPPointOfInterest p in t.poi) {
           if (p.primaryButton != null && p.primaryButton!.uniqueId == elementId) {
             p.primaryButton!.onPress();
@@ -159,7 +159,7 @@ class FlutterCarPlayController {
           }
         }
       } else {
-        if (t.runtimeType.toString() == "CPInformationTemplate") {
+        if (t is CPInformationTemplate) {
           l2:
           for (CPTextButton b in t.actions) {
             if (b.uniqueId == elementId) {

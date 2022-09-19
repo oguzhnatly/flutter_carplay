@@ -137,7 +137,7 @@ class FlutterCarplay {
       _carPlayController.methodChannel.invokeMethod('setRootTemplate', <String, dynamic>{
         'rootTemplate': rootTemplate.toJson(),
         'animated': animated,
-        'runtimeType': "F" + rootTemplate.runtimeType.toString(),
+        'runtimeType': "F" + _getTemplateType(rootTemplate),
       }).then((value) {
         if (value) {
           FlutterCarPlayController.currentRootTemplate = rootTemplate;
@@ -251,12 +251,28 @@ class FlutterCarplay {
       bool isCompleted = await _carPlayController.reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
         "template": template.toJson(),
         "animated": animated,
-        "runtimeType": "F" + template.runtimeType.toString(),
+        "runtimeType": "F" + _getTemplateType(template),
       });
       if (isCompleted) {
         _carPlayController.addTemplateToHistory(template);
       }
       return isCompleted;
+    } else {
+      throw TypeError();
+    }
+  }
+
+  static String _getTemplateType(dynamic template) {
+    if (template is CPTabBarTemplate) {
+      return 'CPTabBarTemplate';
+    } else if (template is CPGridTemplate) {
+      return 'CPGridTemplate';
+    } else if (template is CPInformationTemplate) {
+      return 'CPInformationTemplate';
+    } else if (template is CPPointOfInterestTemplate) {
+      return 'CPPointOfInterestTemplate';
+    } else if (template is CPListTemplate) {
+      return 'CPListTemplate';
     } else {
       throw TypeError();
     }
