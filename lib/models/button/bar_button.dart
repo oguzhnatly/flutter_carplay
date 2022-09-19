@@ -1,4 +1,3 @@
-import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'package:flutter_carplay/models/button/alert_constants.dart';
 import 'package:uuid/uuid.dart';
 
@@ -27,7 +26,7 @@ class CPBarButton {
   Map<String, dynamic> toJson() => {
         "_elementId": _elementId,
         "title": title,
-        "style": CPEnumUtils.stringFromEnum(style.toString()),
+        "style": style.stringValue(),
       };
 
   String get uniqueId {

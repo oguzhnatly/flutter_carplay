@@ -1,5 +1,4 @@
 import 'package:flutter_carplay/models/button/text_button.dart';
-import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'information_constants.dart';
 import 'information_item.dart';
 
@@ -34,7 +33,7 @@ class CPInformationTemplate {
 
   Map<String, dynamic> toJson() => {
     "_elementId": _elementId,
-    "layout": CPEnumUtils.stringFromEnum(layout.toString()),
+    "layout": layout.stringValue(),
     "title": title,
     "actions": actions.map((e) => e.toJson()).toList(),
     "informationItems": informationItems.map((e) => e.toJson()).toList(),

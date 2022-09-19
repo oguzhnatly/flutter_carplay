@@ -1,14 +1,42 @@
-import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'package:uuid/uuid.dart';
-
 
 enum CPTextButtonStyles {
   normal,
   cancel,
   confirm,
-
 }
 
+class CPTextButtonStylesUtil {
+  CPTextButtonStylesUtil._();
+
+  static CPTextButtonStyles parseValue(String value) {
+    switch (value) {
+      case 'normal':
+        return CPTextButtonStyles.normal;
+      case 'cancel':
+        return CPTextButtonStyles.cancel;
+      case 'confirm':
+        return CPTextButtonStyles.confirm;
+      default:
+        throw ArgumentError('$value is not supported');
+    }
+  }
+}
+
+extension CPTextButtonStylesExtension on CPTextButtonStyles {
+  String stringValue() {
+    switch (this) {
+      case CPTextButtonStyles.normal:
+        return 'normal';
+      case CPTextButtonStyles.cancel:
+        return 'cancel';
+      case CPTextButtonStyles.confirm:
+        return 'confirm';
+      default:
+        throw ArgumentError('$this is not supported');
+    }
+  }
+}
 
 /// A button object for placement in a point of interest or information template.
 class CPTextButton {
@@ -33,10 +61,10 @@ class CPTextButton {
   });
 
   Map<String, dynamic> toJson() => {
-    "_elementId": _elementId,
-    "title": title,
-    "style": CPEnumUtils.stringFromEnum(style.toString()),
-  };
+        "_elementId": _elementId,
+        "title": title,
+        "style": style.stringValue(),
+      };
 
   String get uniqueId {
     return _elementId;
