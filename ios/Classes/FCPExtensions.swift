@@ -16,7 +16,7 @@ extension UIImage {
   func fromCorrectSource(name: String) -> UIImage {
     if (name.starts(with: "http")) {
       return fromUrl(url: name)
-    } else if (name.starts(with: "//")) {
+    } else if (name.starts(with: "file://")) {
       return fromFile(path: name)
     }
     return fromFlutterAsset(name: name)
@@ -31,7 +31,8 @@ extension UIImage {
 
   @available(iOS 14.0, *)
   func fromFile(path: String) -> UIImage {
-    let image: UIImage? = UIImage(contentsOfFile: path)
+    let cleanPath = path.replacingOccurrences(of: "file://", with: "")
+    let image: UIImage? = UIImage(contentsOfFile: cleanPath)
     return image ?? UIImage(systemName: "questionmark")!
   }
 
