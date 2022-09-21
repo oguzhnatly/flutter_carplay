@@ -1,14 +1,7 @@
 import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'package:uuid/uuid.dart';
 
-
-enum CPTextButtonStyles {
-  normal,
-  cancel,
-  confirm,
-
-}
-
+enum CPTextButtonStyles { normal, cancel, confirm }
 
 /// A button object for placement in a point of interest or information template.
 class CPTextButton {

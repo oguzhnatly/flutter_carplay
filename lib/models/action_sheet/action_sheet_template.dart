@@ -16,18 +16,14 @@ class CPActionSheetTemplate {
   final List<CPAlertAction> actions;
 
   /// Creates [CPActionSheetTemplate] with a title, a message and a list of actions available on the action sheet.
-  CPActionSheetTemplate({
-    this.title,
-    this.message,
-    required this.actions,
-  });
+  CPActionSheetTemplate({this.title, this.message, required this.actions});
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "message": message,
-        "actions": actions.map((e) => e.toJson()).toList(),
-      };
+    "_elementId": _elementId,
+    "title": title,
+    "message": message,
+    "actions": actions.map((e) => e.toJson()).toList(),
+  };
 
   String get uniqueId {
     return _elementId;

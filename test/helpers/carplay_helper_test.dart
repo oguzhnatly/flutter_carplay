@@ -6,18 +6,22 @@ void main() {
   group('FlutterCarplayHelper', () {
     late FlutterCarplayHelper flutterCarplayHelper;
 
-    final cpListItem=CPListItem(text: '<CPListItem>');
+    final cpListItem = CPListItem(text: '<CPListItem>');
 
     final cpListTemplate = CPListTemplate(
-        title: '<CPListTemplate>',
-        sections: [
-          CPListSection(items: [cpListItem])
-        ],
-        systemIcon: '<CarIcon>');
+      title: '<CPListTemplate>',
+      sections: [
+        CPListSection(items: [cpListItem]),
+      ],
+      systemIcon: '<CarIcon>',
+    );
 
     final templates = [
-      CPTabBarTemplate(title: '<CPTabBarTemplate>', templates: [cpListTemplate]),
-      cpListTemplate
+      CPTabBarTemplate(
+        title: '<CPTabBarTemplate>',
+        templates: [cpListTemplate],
+      ),
+      cpListTemplate,
     ];
 
     setUp(() {
@@ -25,12 +29,17 @@ void main() {
     });
 
     test('find CPListItem from dynamic list item and element id', () {
-      CPListItem? item = flutterCarplayHelper.findCPListItem(templates: templates, elementId: cpListItem.uniqueId);
+      CPListItem? item = flutterCarplayHelper.findCPListItem(
+        templates: templates,
+        elementId: cpListItem.uniqueId,
+      );
 
       expect(item, cpListItem);
 
       CPListItem? nullableItem = flutterCarplayHelper.findCPListItem(
-          templates: templates, elementId: '');
+        templates: templates,
+        elementId: '',
+      );
 
       expect(nullableItem, null);
     });

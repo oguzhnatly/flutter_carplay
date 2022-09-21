@@ -1,6 +1,1 @@
-enum CPConnectionStatusTypes {
-  connected,
-  background,
-  disconnected,
-  unknown,
-}
+enum CPConnectionStatusTypes { connected, background, disconnected, unknown }

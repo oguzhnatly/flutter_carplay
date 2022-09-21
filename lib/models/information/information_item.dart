@@ -8,10 +8,7 @@ class CPInformationItem {
   final String? title;
   final String? detail;
 
-  CPInformationItem({
-    this.title,
-    this.detail
-  });
+  CPInformationItem({this.title, this.detail});
 
   Map<String, dynamic> toJson() => {
     "_elementId": _elementId,

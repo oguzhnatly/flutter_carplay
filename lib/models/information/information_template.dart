@@ -3,7 +3,6 @@ import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'information_constants.dart';
 import 'information_item.dart';
 
-
 import 'package:uuid/uuid.dart';
 
 /// A template object that displays and manages information items and text buttons.
@@ -22,7 +21,6 @@ class CPInformationTemplate {
   /// The array of information items  as [CPInformationItem] displayed on the template.
 
   final List<CPInformationItem> informationItems;
-
 
   /// Creates [CPInformationTemplate]
   CPInformationTemplate({

@@ -1,27 +1,18 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_carplay/constants/private_constants.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:flutter_carplay/helpers/carplay_helper.dart';
-import 'package:flutter_carplay/helpers/enum_utils.dart';
-import 'package:flutter_carplay/models/alert/alert_action.dart';
-import 'package:flutter_carplay/models/button/bar_button.dart';
-import 'package:flutter_carplay/models/button/text_button.dart';
-import 'package:flutter_carplay/models/grid/grid_button.dart';
-import 'package:flutter_carplay/models/grid/grid_template.dart';
-import 'package:flutter_carplay/models/list/list_template.dart';
-import 'package:flutter_carplay/models/information/information_template.dart';
-import 'package:flutter_carplay/models/poi/poi.dart';
-import 'package:flutter_carplay/models/poi/poi_template.dart';
-import 'package:flutter_carplay/models/tabbar/tabbar_template.dart';
-import 'package:flutter_carplay/constants/private_constants.dart';
 
 /// [FlutterCarPlayController] is an root object in order to control and communication
 /// system with the Apple CarPlay and native functions.
 class FlutterCarPlayController {
   static final FlutterCarplayHelper _carplayHelper = FlutterCarplayHelper();
-  static final MethodChannel _methodChannel =
-      MethodChannel(_carplayHelper.makeFCPChannelId());
-  static final EventChannel _eventChannel =
-      EventChannel(_carplayHelper.makeFCPChannelId(event: "/event"));
+  static final MethodChannel _methodChannel = MethodChannel(
+    _carplayHelper.makeFCPChannelId(),
+  );
+  static final EventChannel _eventChannel = EventChannel(
+    _carplayHelper.makeFCPChannelId(event: "/event"),
+  );
 
   /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate] in a List
   static List<dynamic> templateHistory = [];
@@ -42,49 +33,59 @@ class FlutterCarPlayController {
 
   Future<bool> reactToNativeModule(FCPChannelTypes type, dynamic data) async {
     final value = await _methodChannel.invokeMethod(
-        CPEnumUtils.stringFromEnum(type.toString()), data);
+      CPEnumUtils.stringFromEnum(type.toString()),
+      data,
+    );
     return value;
   }
 
   static void updateCPListItem(CPListItem updatedListItem) {
-    _methodChannel.invokeMethod('updateListItem',
-        <String, dynamic>{...updatedListItem.toJson()}).then((value) {
-      if (value) {
-        l1:
-        for (var h in templateHistory) {
-          switch (h.runtimeType) {
-            case CPTabBarTemplate:
-              for (var t in (h as CPTabBarTemplate).templates) {
-                for (var s in t.sections) {
-                  for (var i in s.items) {
-                    if (i.uniqueId == updatedListItem.uniqueId) {
-                      currentRootTemplate!
-                          .templates[currentRootTemplate!.templates.indexOf(t)]
-                          .sections[t.sections.indexOf(s)]
-                          .items[s.items.indexOf(i)] = updatedListItem;
-                      break l1;
+    _methodChannel
+        .invokeMethod('updateListItem', <String, dynamic>{
+          ...updatedListItem.toJson(),
+        })
+        .then((value) {
+          if (value) {
+            l1:
+            for (var h in templateHistory) {
+              switch (h.runtimeType) {
+                case CPTabBarTemplate _:
+                  for (var t in (h as CPTabBarTemplate).templates) {
+                    for (var s in t.sections) {
+                      for (var i in s.items) {
+                        if (i.uniqueId == updatedListItem.uniqueId) {
+                          currentRootTemplate!
+                                  .templates[currentRootTemplate!.templates
+                                      .indexOf(t)]
+                                  .sections[t.sections.indexOf(s)]
+                                  .items[s.items.indexOf(i)] =
+                              updatedListItem;
+                          break l1;
+                        }
+                      }
                     }
                   }
-                }
-              }
-              break;
-            case CPListTemplate:
-              for (var s in (h as CPListTemplate).sections) {
-                for (var i in s.items) {
-                  if (i.uniqueId == updatedListItem.uniqueId) {
-                    currentRootTemplate!
-                        .sections[currentRootTemplate!.sections.indexOf(s)]
-                        .items[s.items.indexOf(i)] = updatedListItem;
-                    break l1;
+                  break;
+                case CPListTemplate _:
+                  for (var s in (h as CPListTemplate).sections) {
+                    for (var i in s.items) {
+                      if (i.uniqueId == updatedListItem.uniqueId) {
+                        currentRootTemplate!
+                                .sections[currentRootTemplate!.sections.indexOf(
+                                  s,
+                                )]
+                                .items[s.items.indexOf(i)] =
+                            updatedListItem;
+                        break l1;
+                      }
+                    }
                   }
-                }
+                  break;
+                default:
               }
-              break;
-            default:
+            }
           }
-        }
-      }
-    });
+        });
   }
 
   void addTemplateToHistory(dynamic template) {
@@ -171,9 +172,7 @@ class FlutterCarPlayController {
             break l1;
           }
         }
-      }
-      else
-      {
+      } else {
         if (t.runtimeType.toString() == "CPInformationTemplate") {
           l2:
           for (CPTextButton b in t.actions) {
@@ -186,6 +185,4 @@ class FlutterCarPlayController {
       }
     }
   }
-  }
-
-
+}

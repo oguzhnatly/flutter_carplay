@@ -12,6 +12,8 @@ class FCPSharedNowPlayingTemplate {
   var get: CPNowPlayingTemplate {
     return CPNowPlayingTemplate.shared
   }
+
+  init() {}
 }
 
 @available(iOS 14.0, *)

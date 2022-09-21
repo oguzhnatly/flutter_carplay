@@ -1,5 +1,1 @@
-enum CPAlertActionStyles {
-  normal,
-  cancel,
-  destructive,
-}
+enum CPAlertActionStyles { normal, cancel, destructive }

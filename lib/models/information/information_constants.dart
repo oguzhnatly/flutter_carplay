@@ -1,4 +1,1 @@
-enum CPInformationTemplateLayout {
-  leading,
-  twoColumn,
-}
+enum CPInformationTemplateLayout { leading, twoColumn }

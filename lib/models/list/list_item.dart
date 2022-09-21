@@ -51,17 +51,18 @@ class CPListItem {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "text": text,
-        "detailText": detailText,
-        "onPress": onPress != null ? true : false,
-        "image": image,
-        "playbackProgress": playbackProgress,
-        "isPlaying": isPlaying,
-        "playingIndicatorLocation":
-            CPEnumUtils.stringFromEnum(playingIndicatorLocation.toString()),
-        "accessoryType": CPEnumUtils.stringFromEnum(accessoryType.toString()),
-      };
+    "_elementId": _elementId,
+    "text": text,
+    "detailText": detailText,
+    "onPress": onPress != null ? true : false,
+    "image": image,
+    "playbackProgress": playbackProgress,
+    "isPlaying": isPlaying,
+    "playingIndicatorLocation": CPEnumUtils.stringFromEnum(
+      playingIndicatorLocation.toString(),
+    ),
+    "accessoryType": CPEnumUtils.stringFromEnum(accessoryType.toString()),
+  };
 
   /// Updating the list item's primary text.
   void setText(String text) {
@@ -109,7 +110,8 @@ class CPListItem {
 
   /// Setter for playingIndicatorLocation
   void setPlayingIndicatorLocation(
-      CPListItemPlayingIndicatorLocations playingIndicatorLocation) {
+    CPListItemPlayingIndicatorLocations playingIndicatorLocation,
+  ) {
     this.playingIndicatorLocation = playingIndicatorLocation;
     FlutterCarPlayController.updateCPListItem(this);
   }

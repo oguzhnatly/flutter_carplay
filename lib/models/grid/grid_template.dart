@@ -15,16 +15,13 @@ class CPGridTemplate {
   /// Creates [CPGridTemplate] in order to display a grid of items as buttons.
   /// When creating the grid template, provide an array of [CPGridButton] objects.
   /// Each button must contain a title that is shown in the grid template's navigation bar.
-  CPGridTemplate({
-    required this.title,
-    required this.buttons,
-  });
+  CPGridTemplate({required this.title, required this.buttons});
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "buttons": buttons.map((e) => e.toJson()).toList(),
-      };
+    "_elementId": _elementId,
+    "title": title,
+    "buttons": buttons.map((e) => e.toJson()).toList(),
+  };
 
   String get uniqueId {
     return _elementId;

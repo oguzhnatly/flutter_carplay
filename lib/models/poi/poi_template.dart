@@ -11,10 +11,7 @@ class CPPointOfInterestTemplate {
   final List<CPPointOfInterest> poi;
 
   /// Creates [CPPointOfInterestTemplate]
-  CPPointOfInterestTemplate({
-    required this.title,
-    required this.poi
-  });
+  CPPointOfInterestTemplate({required this.title, required this.poi});
 
   Map<String, dynamic> toJson() => {
     "_elementId": _elementId,
