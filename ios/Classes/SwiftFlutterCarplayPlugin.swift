@@ -44,6 +44,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         result(false)
         return
       }
+  
+      SwiftFlutterCarplayPlugin.templateStack = []
       var rootTemplate: FCPRootTemplate?
       switch args["runtimeType"] as! String {
       case String(describing: FCPTabBarTemplate.self):
@@ -77,7 +79,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         return
       }
         
-      SwiftFlutterCarplayPlugin.templateStack = []
+      SwiftFlutterCarplayPlugin.templateStack.append(rootTemplate!)
       SwiftFlutterCarplayPlugin.objcRootTemplate = rootTemplate
       let animated = args["animated"] as! Bool
       SwiftFlutterCarplayPlugin.animated = animated
@@ -260,6 +262,14 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       return
     }
     for t in templateStack {
+      if (t is FCPTabBarTemplate) {
+        guard let tabBarTemplate = t as? FCPTabBarTemplate else {
+          break
+        }
+        for tbt in tabBarTemplate.getTemplates() {
+          templates.append(tbt)
+        }
+      }
       if (t is FCPListTemplate) {
         guard let template = t as? FCPListTemplate else {
           break;
