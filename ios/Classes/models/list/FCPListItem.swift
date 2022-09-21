@@ -47,6 +47,10 @@ class FCPListItem {
       }
     }
     if image != nil {
+      UIGraphicsBeginImageContext(CGSize.init(width: 100, height: 100))
+      let emptyImage = UIGraphicsGetImageFromCurrentImageContext()
+      UIGraphicsEndImageContext()
+      listItem.setImage(emptyImage)
       DispatchQueue.global(qos: .background).async {
         let uiImage = UIImage().fromCorrectSource(name: self.image!)
         DispatchQueue.main.async {
