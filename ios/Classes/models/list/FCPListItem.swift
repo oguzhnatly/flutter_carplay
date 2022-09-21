@@ -47,7 +47,12 @@ class FCPListItem {
       }
     }
     if image != nil {
-      listItem.setImage(UIImage().fromCorrectSource(name: image!))
+      DispatchQueue.global(qos: .background).async {
+        let uiImage = UIImage().fromCorrectSource(name: self.image!)
+        DispatchQueue.main.async {
+            listItem.setImage(uiImage)
+        }
+      }
     }
     if playbackProgress != nil {
       listItem.playbackProgress = playbackProgress!
@@ -83,7 +88,13 @@ class FCPListItem {
       self.detailText = detailText
     }
     if image != nil {
-      self._super?.setImage(UIImage().fromCorrectSource(name: image!))
+      DispatchQueue.global(qos: .background).async {
+        let uiImage = UIImage().fromCorrectSource(name: image!)
+        DispatchQueue.main.async {
+          self._super?.setImage(uiImage)
+        }
+      }
+      
       self.image = image
     }
     if playbackProgress != nil {
