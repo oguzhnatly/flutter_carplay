@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_carplay/constants/constants.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 
 void main() {
@@ -454,7 +455,7 @@ class _MyAppState extends State<MyApp> {
             Center(
               child: Text(
                 'Carplay Status: ' +
-                    CPEnumUtils.stringFromEnum(connectionStatus),
+                    connectionStatus.stringValue(),
               ),
             ),
             Row(

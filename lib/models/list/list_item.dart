@@ -1,5 +1,4 @@
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
-import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'package:flutter_carplay/models/list/list_constants.dart';
 import 'package:uuid/uuid.dart';
 
@@ -59,8 +58,8 @@ class CPListItem {
         "playbackProgress": playbackProgress,
         "isPlaying": isPlaying,
         "playingIndicatorLocation":
-            CPEnumUtils.stringFromEnum(playingIndicatorLocation.toString()),
-        "accessoryType": CPEnumUtils.stringFromEnum(accessoryType.toString()),
+            playingIndicatorLocation.stringValue(),
+        "accessoryType": accessoryType.stringValue(),
       };
 
   /// Updating the list item's primary text.

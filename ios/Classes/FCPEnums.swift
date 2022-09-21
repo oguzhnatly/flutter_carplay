@@ -6,9 +6,9 @@
 //
 
 enum FCPConnectionTypes {
-  static let connected = "CONNECTED"
-  static let background = "BACKGROUND"
-  static let disconnected = "DISCONNECTED"
+  static let connected = "connected"
+  static let background = "background"
+  static let disconnected = "disconnected"
 }
 
 enum FCPChannelTypes {
@@ -23,6 +23,7 @@ enum FCPChannelTypes {
   static let onPresentStateChanged = "onPresentStateChanged"
   static let popTemplate = "popTemplate"
   static let pushTemplate = "pushTemplate"
+  static let showNowPlaying = "showNowPlaying"
   static let closePresent = "closePresent"
   static let onGridButtonPressed = "onGridButtonPressed"
   static let setActionSheet = "setActionSheet"
