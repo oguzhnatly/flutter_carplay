@@ -5,6 +5,8 @@
 //  Created by Oğuzhan Atalay on 21.08.2021.
 //
 
+// Edited by bensalcie
+
 import CarPlay
 
 @available(iOS 14.0, *)
@@ -47,7 +49,15 @@ class FCPListItem {
       }
     }
     if image != nil {
-      listItem.setImage(UIImage().fromFlutterAsset(name: image!))
+        if image!.starts(with: "http"){
+            
+            let url = URL(string: image!)
+            let stationImage = try? UIImage(withURL: url!)
+            
+            listItem.setImage(stationImage)
+        }else{
+            listItem.setImage(UIImage().fromFlutterAsset(name: image!))
+        }
     }
     if playbackProgress != nil {
       listItem.playbackProgress = playbackProgress!
@@ -83,8 +93,19 @@ class FCPListItem {
       self.detailText = detailText
     }
     if image != nil {
-      self._super?.setImage(UIImage().fromFlutterAsset(name: image!))
-      self.image = image
+        // Added by bensalcie
+        if(image!.starts(with: "http")){
+            let url = URL(string: image!)
+            let stationImage = try? UIImage(withURL: url!)
+            
+            
+            
+            self._super?.setImage(stationImage)
+            self.image = image
+        }else{
+            self._super?.setImage(UIImage().fromFlutterAsset(name: image!))
+            self.image = image
+        }
     }
     if playbackProgress != nil {
       self._super?.playbackProgress = playbackProgress!
@@ -108,6 +129,9 @@ class FCPListItem {
     }
   }
   
+    
+    
+    
   private func setPlayingIndicatorLocation(fromString: String?) {
     if fromString == "leading" {
       self.playingIndicatorLocation = CPListItemPlayingIndicatorLocation.leading
