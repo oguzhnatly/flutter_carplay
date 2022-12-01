@@ -51,10 +51,18 @@ class FCPListItem {
     if image != nil {
         if image!.starts(with: "http"){
             
-            let url = URL(string: image!)
-            let stationImage = try? UIImage(withURL: url!)
+           
             
-            listItem.setImage(stationImage)
+            
+            DispatchQueue.global(qos: .background).async {
+                let url = URL(string: self.image!)
+                let stationImage = try? UIImage(withURL: url!)
+    //
+                    DispatchQueue.main.async {
+                        listItem.setImage(stationImage)
+
+                    }
+                  }
         }else{
             listItem.setImage(UIImage().fromFlutterAsset(name: image!))
         }
@@ -95,13 +103,19 @@ class FCPListItem {
     if image != nil {
         // Added by bensalcie
         if(image!.starts(with: "http")){
-            let url = URL(string: image!)
-            let stationImage = try? UIImage(withURL: url!)
             
             
+            DispatchQueue.global(qos: .background).async {
+                let url = URL(string: self.image!)
+                let stationImage = try? UIImage(withURL: url!)
+    //
+                    DispatchQueue.main.async {
+                                    self._super?.setImage(stationImage)
+                                    self.image = image
+
+                    }
+                  }
             
-            self._super?.setImage(stationImage)
-            self.image = image
         }else{
             self._super?.setImage(UIImage().fromFlutterAsset(name: image!))
             self.image = image
