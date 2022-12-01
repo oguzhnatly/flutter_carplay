@@ -29,6 +29,7 @@ enum FCPChannelTypes {
   static let onBarButtonPressed = "onBarButtonPressed"
   static let onTextButtonPressed = "onTextButtonPressed"
   static let popToRootTemplate = "popToRootTemplate"
+  static let showNowPlaying = "showNowPlaying"
 }
 
 enum FCPAlertActionTypes {

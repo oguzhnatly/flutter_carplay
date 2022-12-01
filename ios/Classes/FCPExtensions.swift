@@ -5,6 +5,8 @@
 //  Created by Oğuzhan Atalay on 21.08.2021.
 //
 
+
+
 extension UIImage {
   convenience init?(withURL url: URL) throws {
     let imageData = try Data(contentsOf: url)
@@ -18,6 +20,15 @@ extension UIImage {
     return image ?? UIImage(systemName: "questionmark")!
   }
     
+    // Added by bensalcie
+    func fromUrl(_ base64: String) -> UIImage? {
+        if let url = URL(string: base64),
+           let data = try? Data(contentsOf: url) {
+            return UIImage(data: data)
+        }
+        return UIImage(systemName: "questionmark")!
+    }
+
   func resizeImageTo(size: CGSize) -> UIImage? {
       UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
       self.draw(in: CGRect(origin: CGPoint.zero, size: size))
