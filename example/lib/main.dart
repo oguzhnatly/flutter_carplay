@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_print
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
+import 'package:flutter_carplay_example/new_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -138,32 +140,65 @@ class _MyAppState extends State<MyApp> {
     ));
 
     FlutterCarplay.setRootTemplate(
-      rootTemplate: CPTabBarTemplate(
-        templates: [
-          CPListTemplate(
-            sections: section1Items,
-            title: "Home",
-            showsTabBadge: false,
-            systemIcon: "house.fill",
+      rootTemplate: CPMapTemplate(
+        title: 'Map Template',
+        mapButtons: [
+          CPMapButton(
+            title: 'MB1',
+            onPress: () => log('MB1 pressed'),
           ),
-          CPListTemplate(
-            sections: section2Items,
-            title: "Features",
-            showsTabBadge: true,
-            systemIcon: "star.circle.fill",
+          CPMapButton(
+            title: 'MB2',
+            onPress: () => log('MB2 pressed'),
           ),
-          CPListTemplate(
-            sections: [],
-            title: "Settings",
-            emptyViewTitleVariants: ["Settings"],
-            emptyViewSubtitleVariants: [
-              "No settings have been added here yet. You can start adding right away"
-            ],
-            showsTabBadge: false,
-            systemIcon: "gear",
+        ],
+        leadingNavigationBarButtons: [
+          CPBarButton(
+            title: 'LBB1',
+            onPress: () => log('LBB1 pressed'),
+          ),
+          CPBarButton(
+            title: 'LBB2',
+            onPress: () => log('LBB2 pressed'),
+          ),
+        ],
+        trailingNavigationBarButtons: [
+          CPBarButton(
+            title: 'TBB1',
+            onPress: () => log('TBB1 pressed'),
+          ),
+          CPBarButton(
+            title: 'TBB2',
+            onPress: () => log('TBB2 pressed'),
           ),
         ],
       ),
+      // rootTemplate: CPTabBarTemplate(
+      //   templates: [
+      //     CPListTemplate(
+      //       sections: section1Items,
+      //       title: "Home",
+      //       showsTabBadge: false,
+      //       systemIcon: "house.fill",
+      //     ),
+      //     CPListTemplate(
+      //       sections: section2Items,
+      //       title: "Features",
+      //       showsTabBadge: true,
+      //       systemIcon: "star.circle.fill",
+      //     ),
+      //     CPListTemplate(
+      //       sections: [],
+      //       title: "Settings",
+      //       emptyViewTitleVariants: ["Settings"],
+      //       emptyViewSubtitleVariants: [
+      //         "No settings have been added here yet. You can start adding right away"
+      //       ],
+      //       showsTabBadge: false,
+      //       systemIcon: "gear",
+      //     ),
+      //   ],
+      // ),
       animated: true,
     );
 
@@ -365,8 +400,34 @@ class _MyAppState extends State<MyApp> {
               }),
         ],
             informationItems: [
-              CPInformationItem(title: "Item title 1", detail: "detail 1"),
-              CPInformationItem(title: "Item title 2", detail: "detail 2"),
+          CPInformationItem(title: "Item title 1", detail: "detail 1"),
+          CPInformationItem(title: "Item title 2", detail: "detail 2"),
+          CPInformationItem(title: "Item title 3", detail: "detail 2"),
+          CPInformationItem(title: "Item title 4", detail: "detail 2"),
+          CPInformationItem(title: "Item title 5", detail: "detail 2"),
+          CPInformationItem(title: "Item title 6", detail: "detail 2"),
+          CPInformationItem(title: "Item title 7", detail: "detail 2"),
+          CPInformationItem(title: "Item title 8", detail: "detail 2"),
+          CPInformationItem(title: "Item title 9", detail: "detail 2"),
+          CPInformationItem(title: "Item title 10", detail: "detail 2"),
+          CPInformationItem(title: "Item title 2", detail: "detail 2"),
+          CPInformationItem(title: "Item title 3", detail: "detail 2"),
+          CPInformationItem(title: "Item title 4", detail: "detail 2"),
+          CPInformationItem(title: "Item title 5", detail: "detail 2"),
+          CPInformationItem(title: "Item title 6", detail: "detail 2"),
+          CPInformationItem(title: "Item title 7", detail: "detail 2"),
+          CPInformationItem(title: "Item title 8", detail: "detail 2"),
+          CPInformationItem(title: "Item title 9", detail: "detail 2"),
+          CPInformationItem(title: "Item title 10", detail: "detail 2"),
+          CPInformationItem(title: "Item title 2", detail: "detail 2"),
+          CPInformationItem(title: "Item title 3", detail: "detail 2"),
+          CPInformationItem(title: "Item title 4", detail: "detail 2"),
+          CPInformationItem(title: "Item title 5", detail: "detail 2"),
+          CPInformationItem(title: "Item title 6", detail: "detail 2"),
+          CPInformationItem(title: "Item title 7", detail: "detail 2"),
+          CPInformationItem(title: "Item title 8", detail: "detail 2"),
+          CPInformationItem(title: "Item title 9", detail: "detail 2"),
+          CPInformationItem(title: "Item title 10", detail: "detail 2"),
         ]));
   }
 
@@ -408,6 +469,22 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+            Builder(builder: (context) {
+              return ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 15),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const NewPage()));
+                },
+                child: const Text('New Page'),
+              );
+            }),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -558,7 +635,7 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 textStyle: const TextStyle(fontSize: 15),
-                primary: Colors.red,
+                backgroundColor: Colors.red,
                 padding: const EdgeInsets.symmetric(
                   vertical: 12,
                   horizontal: 24,

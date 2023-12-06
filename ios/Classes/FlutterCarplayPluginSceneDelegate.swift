@@ -15,6 +15,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
     let animated = SwiftFlutterCarplayPlugin.animated
 
+      debugPrint("rootTemplate = \(String(describing: rootTemplate))")
     self.interfaceController?.setRootTemplate(rootTemplate!, animated: animated)
   }
 

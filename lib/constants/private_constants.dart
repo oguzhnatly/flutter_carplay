@@ -14,6 +14,7 @@ enum FCPChannelTypes {
   onGridButtonPressed,
   setActionSheet,
   onBarButtonPressed,
+  onMapButtonPressed,
   onTextButtonPressed,
   popToRootTemplate,
 }

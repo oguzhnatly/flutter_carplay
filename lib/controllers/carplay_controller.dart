@@ -1,18 +1,7 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_carplay/constants/private_constants.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:flutter_carplay/helpers/carplay_helper.dart';
-import 'package:flutter_carplay/helpers/enum_utils.dart';
-import 'package:flutter_carplay/models/alert/alert_action.dart';
-import 'package:flutter_carplay/models/button/bar_button.dart';
-import 'package:flutter_carplay/models/button/text_button.dart';
-import 'package:flutter_carplay/models/grid/grid_button.dart';
-import 'package:flutter_carplay/models/grid/grid_template.dart';
-import 'package:flutter_carplay/models/list/list_template.dart';
-import 'package:flutter_carplay/models/information/information_template.dart';
-import 'package:flutter_carplay/models/poi/poi.dart';
-import 'package:flutter_carplay/models/poi/poi_template.dart';
-import 'package:flutter_carplay/models/tabbar/tabbar_template.dart';
-import 'package:flutter_carplay/constants/private_constants.dart';
 
 /// [FlutterCarPlayController] is an root object in order to control and communication
 /// system with the Apple CarPlay and native functions.
@@ -91,6 +80,7 @@ class FlutterCarPlayController {
     if (template.runtimeType == CPTabBarTemplate ||
         template.runtimeType == CPGridTemplate ||
         template.runtimeType == CPInformationTemplate ||
+        template.runtimeType == CPMapTemplate ||
         template.runtimeType == CPPointOfInterestTemplate ||
         template.runtimeType == CPListTemplate) {
       templateHistory.add(template);
@@ -144,15 +134,46 @@ class FlutterCarPlayController {
   }
 
   void processFCPBarButtonPressed(String elementId) {
-    CPBarButton? barButton;
     l1:
     for (var t in templateHistory) {
       if (t.runtimeType.toString() == "CPListTemplate") {
+        CPBarButton? barButton;
         barButton = t.backButton;
+        if (barButton != null) barButton.onPress();
         break l1;
+      } else {
+        l2:
+        if (t.runtimeType.toString() == "CPMapTemplate") {
+          for (CPBarButton button in t.trailingNavigationBarButtons) {
+            if (button.uniqueId == elementId) {
+              button.onPress();
+              break l2;
+            }
+          }
+          for (CPBarButton button in t.leadingNavigationBarButtons) {
+            if (button.uniqueId == elementId) {
+              button.onPress();
+              break l2;
+            }
+          }
+        }
       }
     }
-    if (barButton != null) barButton.onPress();
+  }
+
+  void processFCPMapButtonPressed(String elementId) {
+    l1:
+    for (var t in templateHistory) {
+      if (t.runtimeType.toString() == "CPMapTemplate") {
+        for (CPMapButton button in t.mapButtons) {
+          if (button.uniqueId == elementId) {
+            button.onPress();
+            break l1;
+          }
+        }
+      }
+      break l1;
+    }
   }
 
   void processFCPTextButtonPressed(String elementId) {
@@ -171,9 +192,7 @@ class FlutterCarPlayController {
             break l1;
           }
         }
-      }
-      else
-      {
+      } else {
         if (t.runtimeType.toString() == "CPInformationTemplate") {
           l2:
           for (CPTextButton b in t.actions) {
@@ -186,6 +205,4 @@ class FlutterCarPlayController {
       }
     }
   }
-  }
-
-
+}

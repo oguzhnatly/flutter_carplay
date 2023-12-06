@@ -1,14 +1,8 @@
 import 'dart:async';
-import 'package:flutter_carplay/constants/constants.dart';
+
+import 'package:flutter_carplay/constants/private_constants.dart';
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
-import 'package:flutter_carplay/helpers/enum_utils.dart';
-import 'package:flutter_carplay/models/alert/alert_template.dart';
-import 'package:flutter_carplay/models/grid/grid_template.dart';
-import 'package:flutter_carplay/models/information/information_template.dart';
-import 'package:flutter_carplay/models/poi/poi_template.dart';
-import 'package:flutter_carplay/models/tabbar/tabbar_template.dart';
-import 'package:flutter_carplay/constants/private_constants.dart';
 
 /// An object in order to integrate Apple CarPlay in navigation and
 /// manage all user interface elements appearing on your screens displayed on
@@ -81,6 +75,10 @@ class FlutterCarplay {
           _carPlayController
               .processFCPBarButtonPressed(event["data"]["elementId"]);
           break;
+        case FCPChannelTypes.onMapButtonPressed:
+          _carPlayController
+              .processFCPMapButtonPressed(event["data"]["elementId"]);
+          break;
         case FCPChannelTypes.onTextButtonPressed:
           _carPlayController
               .processFCPTextButtonPressed(event["data"]["elementId"]);
@@ -151,6 +149,7 @@ class FlutterCarplay {
         rootTemplate.runtimeType == CPGridTemplate ||
         rootTemplate.runtimeType == CPListTemplate ||
         rootTemplate.runtimeType == CPInformationTemplate ||
+        rootTemplate.runtimeType == CPMapTemplate ||
         rootTemplate.runtimeType == CPPointOfInterestTemplate) {
       _carPlayController.methodChannel
           .invokeMethod('setRootTemplate', <String, dynamic>{
@@ -262,7 +261,7 @@ class FlutterCarplay {
   /// Adds a template to the navigation hierarchy and displays it.
   ///
   /// - template is to add to the navigation hierarchy. **Must be one of the type:**
-  /// [CPGridTemplate] or [CPListTemplate] [CPInformationTemplat] [CPPointOfInterestTemplate] If not, it will throw an [TypeError]
+  /// [CPGridTemplate] or [CPListTemplate] [CPInformationTemplate] [CPMapTemplate] [CPPointOfInterestTemplate] If not, it will throw an [TypeError]
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
   static Future<bool> push({
@@ -272,8 +271,8 @@ class FlutterCarplay {
     if (template.runtimeType == CPGridTemplate ||
         template.runtimeType == CPListTemplate ||
         template.runtimeType == CPInformationTemplate ||
-        template.runtimeType == CPPointOfInterestTemplate
-    ) {
+        template.runtimeType == CPMapTemplate ||
+        template.runtimeType == CPPointOfInterestTemplate) {
       bool isCompleted = await _carPlayController
           .reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
         "template": template.toJson(),
