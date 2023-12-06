@@ -167,6 +167,8 @@ class _MyAppState extends State<MyApp> {
       animated: true,
     );
 
+    _flutterCarplay.forceUpdateRootTemplate();
+
     _flutterCarplay.addListenerOnConnectionChange(onCarplayConnectionChange);
   }
 

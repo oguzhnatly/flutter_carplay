@@ -1,10 +1,15 @@
 import UIKit
 import Flutter
 
+let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadlessExecution: true)
+
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     override func application( _ application: UIApplication,
                                didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        return true;
+        flutterEngine.run()
+    GeneratedPluginRegistrant.register(with: flutterEngine)
+
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions);
     }
 }
