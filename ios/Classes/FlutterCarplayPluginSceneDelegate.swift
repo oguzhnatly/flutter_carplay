@@ -10,12 +10,12 @@ import CarPlay
 @available(iOS 14.0, *)
 class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
   static private var interfaceController: CPInterfaceController?
+  static private var carWindow: CPWindow?
 
   static public func forceUpdateRootTemplate() {
     let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
     let animated = SwiftFlutterCarplayPlugin.animated
 
-      debugPrint("rootTemplate = \(String(describing: rootTemplate))")
     self.interfaceController?.setRootTemplate(rootTemplate!, animated: animated)
   }
 
@@ -57,8 +57,13 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   }
 
   func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
-                                didConnect interfaceController: CPInterfaceController) {
+                                didConnect interfaceController: CPInterfaceController, to window: CPWindow) {
     FlutterCarPlaySceneDelegate.interfaceController = interfaceController
+
+    if let rootViewController = SwiftFlutterCarplayPlugin.rootViewController {
+      window.rootViewController = rootViewController
+      FlutterCarPlaySceneDelegate.carWindow = window
+    }
 
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
     let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate

@@ -11,6 +11,7 @@ import MapKit
 @available(iOS 14.0, *)
 class FCPMapTemplate: NSObject {
   private(set) var _super: CPMapTemplate?
+  private(set) var viewController: UIViewController?
   private(set) var elementId: String
   private var title: String?
   private var mapButtons: [FCPMapButton]
@@ -33,6 +34,7 @@ class FCPMapTemplate: NSObject {
 			}
 	self.automaticallyHidesNavigationBar = obj["automaticallyHidesNavigationBar"] as! Bool
 	self.hidesButtonsWithNavigationBar = obj["hidesButtonsWithNavigationBar"] as! Bool
+    self.viewController = FCPMapViewController()
   }
 
   var get: CPMapTemplate {
@@ -58,6 +60,7 @@ class FCPMapTemplate: NSObject {
 	mapTemplate.trailingNavigationBarButtons = tBButtons
 	mapTemplate.automaticallyHidesNavigationBar = automaticallyHidesNavigationBar
 	mapTemplate.hidesButtonsWithNavigationBar = hidesButtonsWithNavigationBar
+    mapTemplate.mapDelegate = self.viewController as! CPMapTemplateDelegate
 
 	self._super = mapTemplate
     return mapTemplate

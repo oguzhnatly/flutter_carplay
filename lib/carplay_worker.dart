@@ -89,7 +89,7 @@ class FlutterCarplay {
           _carPlayController
               .processFCPTextButtonPressed(event["data"]["elementId"]);
           break;
-          case FCPChannelTypes.onVoiceControlTranscriptChanged:
+        case FCPChannelTypes.onVoiceControlTranscriptChanged:
           if (_onSpeechRecognitionTranscriptChange != null) {
             _onSpeechRecognitionTranscriptChange!(event["data"]["transcript"]);
           }
@@ -168,8 +168,8 @@ class FlutterCarplay {
         rootTemplate.runtimeType == CPPointOfInterestTemplate) {
       _carPlayController.methodChannel
           .invokeMethod('setRootTemplate', <String, dynamic>{
-        'rootTemplate': rootTemplate.toJson(),
         'animated': animated,
+        'rootTemplate': rootTemplate.toJson(),
         'runtimeType': "F" + rootTemplate.runtimeType.toString(),
       }).then((value) {
         if (value) {

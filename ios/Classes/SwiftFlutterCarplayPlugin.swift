@@ -13,6 +13,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   private static var streamHandler: FCPStreamHandlerPlugin?
   private(set) static var registrar: FlutterPluginRegistrar?
   private static var objcRootTemplate: FCPRootTemplate?
+  private static var _rootViewController: UIViewController?
   private static var _rootTemplate: CPTemplate?
   public static var animated: Bool = false
   private var objcPresentTemplate: FCPPresentTemplate?
@@ -23,6 +24,15 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     }
     set(tabBarTemplate) {
       _rootTemplate = tabBarTemplate
+    }
+  }
+
+  public static var rootViewController: UIViewController? {
+    get {
+      return _rootViewController
+    }
+    set(viewController) {
+      _rootViewController = viewController
     }
   }
 
@@ -70,6 +80,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       case String(describing: FCPMapTemplate.self):
         rootTemplate = FCPMapTemplate(obj: args["rootTemplate"] as! [String : Any])
         SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPMapTemplate).get
+        SwiftFlutterCarplayPlugin.rootViewController = (rootTemplate as! FCPMapTemplate).viewController
         break
       case String(describing: FCPListTemplate.self):
         rootTemplate = FCPListTemplate(obj: args["rootTemplate"] as! [String : Any], templateType: FCPListTemplateTypes.DEFAULT)

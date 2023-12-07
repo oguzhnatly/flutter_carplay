@@ -154,65 +154,65 @@ class _MyAppState extends State<MyApp> {
     ));
 
     FlutterCarplay.setRootTemplate(
-      // rootTemplate: CPMapTemplate(
-      //   title: 'Map Template',
-      //   mapButtons: [
-      //     CPMapButton(
-      //       title: 'MB1',
-      //       onPress: () => log('MB1 pressed'),
-      //     ),
-      //     CPMapButton(
-      //       title: 'MB2',
-      //       onPress: () => log('MB2 pressed'),
-      //     ),
-      //   ],
-      //   leadingNavigationBarButtons: [
-      //     CPBarButton(
-      //       title: 'LBB1',
-      //       onPress: () => log('LBB1 pressed'),
-      //     ),
-      //     CPBarButton(
-      //       title: 'LBB2',
-      //       onPress: () => log('LBB2 pressed'),
-      //     ),
-      //   ],
-      //   trailingNavigationBarButtons: [
-      //     CPBarButton(
-      //       title: 'TBB1',
-      //       onPress: () => log('TBB1 pressed'),
-      //     ),
-      //     CPBarButton(
-      //       title: 'TBB2',
-      //       onPress: () => log('TBB2 pressed'),
-      //     ),
-      //   ],
-      // ),
-      rootTemplate: CPTabBarTemplate(
-        templates: [
-          CPListTemplate(
-            sections: section1Items,
-            title: "Home",
-            showsTabBadge: false,
-            systemIcon: "house.fill",
+      rootTemplate: CPMapTemplate(
+        title: 'Map Template',
+        mapButtons: [
+          CPMapButton(
+            title: 'MB1',
+            onPress: () => log('MB1 pressed'),
           ),
-          CPListTemplate(
-            sections: section2Items,
-            title: "Features",
-            showsTabBadge: true,
-            systemIcon: "star.circle.fill",
+          CPMapButton(
+            title: 'MB2',
+            onPress: () => log('MB2 pressed'),
           ),
-          CPListTemplate(
-            sections: [],
-            title: "Settings",
-            emptyViewTitleVariants: ["Settings"],
-            emptyViewSubtitleVariants: [
-              "No settings have been added here yet. You can start adding right away"
-            ],
-            showsTabBadge: false,
-            systemIcon: "gear",
+        ],
+        leadingNavigationBarButtons: [
+          CPBarButton(
+            title: 'LBB1',
+            onPress: () => log('LBB1 pressed'),
+          ),
+          CPBarButton(
+            title: 'LBB2',
+            onPress: () => log('LBB2 pressed'),
+          ),
+        ],
+        trailingNavigationBarButtons: [
+          CPBarButton(
+            title: 'TBB1',
+            onPress: () => log('TBB1 pressed'),
+          ),
+          CPBarButton(
+            title: 'TBB2',
+            onPress: () => log('TBB2 pressed'),
           ),
         ],
       ),
+      // rootTemplate: CPTabBarTemplate(
+      //   templates: [
+      //     CPListTemplate(
+      //       sections: section1Items,
+      //       title: "Home",
+      //       showsTabBadge: false,
+      //       systemIcon: "house.fill",
+      //     ),
+      //     CPListTemplate(
+      //       sections: section2Items,
+      //       title: "Features",
+      //       showsTabBadge: true,
+      //       systemIcon: "star.circle.fill",
+      //     ),
+      //     CPListTemplate(
+      //       sections: [],
+      //       title: "Settings",
+      //       emptyViewTitleVariants: ["Settings"],
+      //       emptyViewSubtitleVariants: [
+      //         "No settings have been added here yet. You can start adding right away"
+      //       ],
+      //       showsTabBadge: false,
+      //       systemIcon: "gear",
+      //     ),
+      //   ],
+      // ),
       animated: true,
     );
 
