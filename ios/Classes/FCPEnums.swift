@@ -31,6 +31,15 @@ enum FCPChannelTypes {
   static let onNavigationBarButtonPressed = "onNavigationBarButtonPressed"
   static let onTextButtonPressed = "onTextButtonPressed"
   static let popToRootTemplate = "popToRootTemplate"
+  static let setVoiceControl = "setVoiceControl"
+  static let activateVoiceControlState = "activateVoiceControlState"
+  static let startVoiceControl = "startVoiceControl"
+  static let stopVoiceControl = "stopVoiceControl"
+  static let getActiveVoiceControlStateIdentifier = "getActiveVoiceControlStateIdentifier"
+  static let onVoiceControlTranscriptChanged = "onVoiceControlTranscriptChanged"
+  static let speak = "speak"
+  static let onSpeechCompleted = "onSpeechCompleted"
+  static let playAudio = "playAudio"
 }
 
 enum FCPAlertActionTypes {

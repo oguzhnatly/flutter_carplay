@@ -17,4 +17,13 @@ enum FCPChannelTypes {
   onMapButtonPressed,
   onTextButtonPressed,
   popToRootTemplate,
+  setVoiceControl,
+  activateVoiceControlState,
+  startVoiceControl,
+  stopVoiceControl,
+  getActiveVoiceControlStateIdentifier,
+  onVoiceControlTranscriptChanged,
+  speak,
+  onSpeechCompleted,
+  playAudio,
 }

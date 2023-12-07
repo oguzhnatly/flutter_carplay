@@ -10,6 +10,7 @@ export "package:flutter_carplay/models/alert/alert_constants.dart"
     show CPAlertActionStyles;
 export "package:flutter_carplay/models/alert/alert_template.dart"
     show CPAlertTemplate;
+export 'package:flutter_carplay/models/audio/carplay_audio.dart' show CPAudio;
 export "package:flutter_carplay/models/button/alert_constants.dart"
     show CPBarButtonStyles;
 export "package:flutter_carplay/models/button/bar_button.dart" show CPBarButton;
@@ -37,5 +38,11 @@ export "package:flutter_carplay/models/map/map_template.dart"
 export "package:flutter_carplay/models/poi/poi.dart" show CPPointOfInterest;
 export "package:flutter_carplay/models/poi/poi_template.dart"
     show CPPointOfInterestTemplate;
+export 'package:flutter_carplay/models/speaker/carplay_speaker.dart'
+    show CPSpeaker;
 export "package:flutter_carplay/models/tabbar/tabbar_template.dart"
     show CPTabBarTemplate;
+export "package:flutter_carplay/models/voice_control/voice_control_state.dart"
+    show CPVoiceControlState;
+export "package:flutter_carplay/models/voice_control/voice_control_template.dart"
+    show CPVoiceControlTemplate;
