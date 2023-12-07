@@ -1,7 +1,7 @@
-import Foundation
-import UIKit
 import CarPlay
+import Foundation
 import MapKit
+import UIKit
 
 @available(iOS 14.0, *)
 class FCPMapViewController: UIViewController, CPMapTemplateDelegate {
@@ -41,15 +41,15 @@ class FCPMapViewController: UIViewController, CPMapTemplateDelegate {
     // Implement CPMapTemplateDelegate methods here
     // ...
 
-    func mapTemplateDidBeginPanGesture(_ mapTemplate: CPMapTemplate) {
+    func mapTemplateDidBeginPanGesture(_: CPMapTemplate) {
         print("🚙🚙🚙🚙🚙 Panning")
     }
 
-    func mapTemplate(_ mapTemplate: CPMapTemplate, panWith direction: CPMapTemplate.PanDirection) {
+    func mapTemplate(_: CPMapTemplate, panWith direction: CPMapTemplate.PanDirection) {
         print("🚙🚙🚙🚙🚙 Panning: \(direction)")
     }
 
-    func mapTemplate(_ mapTemplate: CPMapTemplate, buttonPressed button: CPBarButton) {
+    func mapTemplate(_: CPMapTemplate, buttonPressed button: CPBarButton) {
         if button.title == "Location" { // Replace with the actual button title
             calculateAndDisplayRoute()
         }
@@ -72,7 +72,7 @@ class FCPMapViewController: UIViewController, CPMapTemplateDelegate {
         directionRequest.transportType = .automobile
 
         let directions = MKDirections(request: directionRequest)
-        directions.calculate { response, error in
+        directions.calculate { response, _ in
             guard let route = response?.routes.first else {
                 print("Route calculation failed.")
                 return
@@ -87,9 +87,8 @@ class FCPMapViewController: UIViewController, CPMapTemplateDelegate {
     }
 }
 
-
 extension FCPMapViewController: MKMapViewDelegate {
-    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+    func mapView(_: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let polyline = overlay as? MKPolyline {
             let renderer = MKPolylineRenderer(polyline: polyline)
             renderer.strokeColor = UIColor.blue

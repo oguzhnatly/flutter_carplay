@@ -10,125 +10,125 @@ import Speech
 import SwiftUI
 
 struct FCPSpeechRecognizer {
-  private class FCPSpeechTranscript {
-    var transcript = ""
+    private class FCPSpeechTranscript {
+        var transcript = ""
 
-    func set(newValue: String) {
-      SwiftFlutterCarplayPlugin.sendSpeechRecognitionTranscriptChangeEvent(transcript: newValue)
-      transcript = newValue
-    }
-
-    func get() -> String {
-      return transcript
-    }
-  }
-
-  private class FCPSpeechAssist {
-    var audioEngine: AVAudioEngine?
-    var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
-    var recognitionTask: SFSpeechRecognitionTask?
-    var speechRecognizer = SFSpeechRecognizer()
-
-    deinit {
-      reset()
-    }
-
-    func reset() {
-      recognitionTask?.cancel()
-      audioEngine?.stop()
-      audioEngine = nil
-      recognitionRequest = nil
-      recognitionTask = nil
-    }
-
-    func setLocale(locale: String?) {
-      speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: locale ?? "en-US"))
-      print("[FlutterCarPlay]: Voice Control for locale " + (locale ?? "en-US") + " is initialized.")
-    }
-  }
-
-  private let transcript = FCPSpeechTranscript()
-  private let assistant = FCPSpeechAssist()
-
-  func record(locale: String?) {
-    print("[FlutterCarPlay]: Requesting access for Voice Control.")
-
-    assistant.setLocale(locale: locale)
-
-    canAccess { authorized in
-      guard authorized else {
-        print("[FlutterCarPlay]: Access denied.")
-        return
-      }
-      print("[FlutterCarPlay]: Access granted.")
-
-      assistant.audioEngine = AVAudioEngine()
-      guard let audioEngine = assistant.audioEngine else {
-        fatalError("[FlutterCarPlay]: Unable to create audio engine. If you're not sure, please create an issue in https://github.com/oguzhnatly/flutter_carplay/issues")
-      }
-      assistant.recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-      guard let recognitionRequest = assistant.recognitionRequest else {
-        fatalError("[FlutterCarPlay]: Unable to create recognition request. If you're not sure, please create an issue in https://github.com/oguzhnatly/flutter_carplay/issues")
-      }
-      recognitionRequest.shouldReportPartialResults = true
-
-      do {
-        print("[FlutterCarPlay]: Booting audio subsystem and finding input node, please wait.")
-
-        let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
-        try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
-        let inputNode = audioEngine.inputNode
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
-            recognitionRequest.append(buffer)
+        func set(newValue: String) {
+            SwiftFlutterCarplayPlugin.sendSpeechRecognitionTranscriptChangeEvent(transcript: newValue)
+            transcript = newValue
         }
-        print("[FlutterCarPlay]: Preparing audio engine.")
-        audioEngine.prepare()
-        try audioEngine.start()
-        assistant.recognitionTask = assistant.speechRecognizer?.recognitionTask(with: recognitionRequest) { (result, error) in
-          var isFinal = false
-          if let result = result {
-            relay(message: result.bestTranscription.formattedString)
-            isFinal = result.isFinal
-          } else {
-            debugPrint("Transcript from native: no result found")
-          }
 
-          if error != nil || isFinal {
-            audioEngine.stop()
-            inputNode.removeTap(onBus: 0)
-            self.assistant.recognitionRequest = nil
-          }
+        func get() -> String {
+            return transcript
         }
-      } catch {
-        print("[FlutterCarPlay]: Error while transcibing audio: " + error.localizedDescription)
+    }
+
+    private class FCPSpeechAssist {
+        var audioEngine: AVAudioEngine?
+        var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+        var recognitionTask: SFSpeechRecognitionTask?
+        var speechRecognizer = SFSpeechRecognizer()
+
+        deinit {
+            reset()
+        }
+
+        func reset() {
+            recognitionTask?.cancel()
+            audioEngine?.stop()
+            audioEngine = nil
+            recognitionRequest = nil
+            recognitionTask = nil
+        }
+
+        func setLocale(locale: String?) {
+            speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: locale ?? "en-US"))
+            print("[FlutterCarPlay]: Voice Control for locale " + (locale ?? "en-US") + " is initialized.")
+        }
+    }
+
+    private let transcript = FCPSpeechTranscript()
+    private let assistant = FCPSpeechAssist()
+
+    func record(locale: String?) {
+        print("[FlutterCarPlay]: Requesting access for Voice Control.")
+
+        assistant.setLocale(locale: locale)
+
+        canAccess { authorized in
+            guard authorized else {
+                print("[FlutterCarPlay]: Access denied.")
+                return
+            }
+            print("[FlutterCarPlay]: Access granted.")
+
+            assistant.audioEngine = AVAudioEngine()
+            guard let audioEngine = assistant.audioEngine else {
+                fatalError("[FlutterCarPlay]: Unable to create audio engine. If you're not sure, please create an issue in https://github.com/oguzhnatly/flutter_carplay/issues")
+            }
+            assistant.recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+            guard let recognitionRequest = assistant.recognitionRequest else {
+                fatalError("[FlutterCarPlay]: Unable to create recognition request. If you're not sure, please create an issue in https://github.com/oguzhnatly/flutter_carplay/issues")
+            }
+            recognitionRequest.shouldReportPartialResults = true
+
+            do {
+                print("[FlutterCarPlay]: Booting audio subsystem and finding input node, please wait.")
+
+                let audioSession = AVAudioSession.sharedInstance()
+                try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+                try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+                let inputNode = audioEngine.inputNode
+                let recordingFormat = inputNode.outputFormat(forBus: 0)
+                inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer: AVAudioPCMBuffer, _: AVAudioTime) in
+                    recognitionRequest.append(buffer)
+                }
+                print("[FlutterCarPlay]: Preparing audio engine.")
+                audioEngine.prepare()
+                try audioEngine.start()
+                assistant.recognitionTask = assistant.speechRecognizer?.recognitionTask(with: recognitionRequest) { result, error in
+                    var isFinal = false
+                    if let result = result {
+                        relay(message: result.bestTranscription.formattedString)
+                        isFinal = result.isFinal
+                    } else {
+                        debugPrint("Transcript from native: no result found")
+                    }
+
+                    if error != nil || isFinal {
+                        audioEngine.stop()
+                        inputNode.removeTap(onBus: 0)
+                        self.assistant.recognitionRequest = nil
+                    }
+                }
+            } catch {
+                print("[FlutterCarPlay]: Error while transcibing audio: " + error.localizedDescription)
+                assistant.reset()
+            }
+        }
+    }
+
+    func stopRecording() {
+        print("[FlutterCarPlay]: Voice Control Record has been stopped.")
         assistant.reset()
-      }
     }
-  }
 
-  func stopRecording() {
-    print("[FlutterCarPlay]: Voice Control Record has been stopped.")
-    assistant.reset()
-  }
-
-  private func canAccess(withHandler handler: @escaping (Bool) -> Void) {
-    SFSpeechRecognizer.requestAuthorization { status in
-      if status == .authorized {
-        AVAudioSession.sharedInstance().requestRecordPermission { authorized in
-          handler(authorized)
+    private func canAccess(withHandler handler: @escaping (Bool) -> Void) {
+        SFSpeechRecognizer.requestAuthorization { status in
+            if status == .authorized {
+                AVAudioSession.sharedInstance().requestRecordPermission { authorized in
+                    handler(authorized)
+                }
+            } else {
+                handler(false)
+            }
         }
-      } else {
-        handler(false)
-      }
     }
-  }
 
-  private func relay(message: String) {
-    debugPrint("Transcript from native: \(message)")
-    DispatchQueue.main.async {
-      transcript.set(newValue: message)
+    private func relay(message: String) {
+        debugPrint("Transcript from native: \(message)")
+        DispatchQueue.main.async {
+            transcript.set(newValue: message)
+        }
     }
-  }
 }

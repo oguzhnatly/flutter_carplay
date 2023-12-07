@@ -7,4 +7,4 @@
 
 protocol FCPPresentTemplate {}
 
-protocol FCPRootTemplate { }
+protocol FCPRootTemplate {}

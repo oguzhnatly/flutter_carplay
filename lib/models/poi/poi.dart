@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 import '../button/text_button.dart';
+
 /// A section object of list items that appear in a list template.
 class CPPointOfInterest {
   /// Unique id of the object.
@@ -19,37 +20,34 @@ class CPPointOfInterest {
   final CPTextButton? primaryButton;
   final CPTextButton? secondaryButton;
 
-
   /// Creates [CPPointOfInterest]
-  CPPointOfInterest({
-    required this.latitude,
-    required this.longitude,
-    required this.title,
-    this.subtitle,
-    this.summary,
-    this.detailTitle,
-    this.detailSubtitle,
-    this.detailSummary,
-    this.image,
-    this.primaryButton,
-    this.secondaryButton
-  });
+  CPPointOfInterest(
+      {required this.latitude,
+      required this.longitude,
+      required this.title,
+      this.subtitle,
+      this.summary,
+      this.detailTitle,
+      this.detailSubtitle,
+      this.detailSummary,
+      this.image,
+      this.primaryButton,
+      this.secondaryButton});
 
   Map<String, dynamic> toJson() => {
-    "_elementId": _elementId,
-    "latitude":latitude,
-    "longitude":longitude,
-    "title":title,
-    "subtitle":subtitle,
-    "summary":summary,
-    "detailTitle":detailTitle,
-    "detailSubtitle":detailSubtitle,
-    "detailSummary":detailSummary,
-    "image":image,
-    "primaryButton":primaryButton?.toJson(),
-    "secondaryButton":secondaryButton?.toJson()
-
-  };
+        "_elementId": _elementId,
+        "latitude": latitude,
+        "longitude": longitude,
+        "title": title,
+        "subtitle": subtitle,
+        "summary": summary,
+        "detailTitle": detailTitle,
+        "detailSubtitle": detailSubtitle,
+        "detailSummary": detailSummary,
+        "image": image,
+        "primaryButton": primaryButton?.toJson(),
+        "secondaryButton": secondaryButton?.toJson()
+      };
 
   String get uniqueId {
     return _elementId;
