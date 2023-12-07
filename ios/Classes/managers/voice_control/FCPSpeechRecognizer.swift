@@ -12,17 +12,17 @@ import SwiftUI
 struct FCPSpeechRecognizer {
   private class FCPSpeechTranscript {
     var transcript = ""
-    
+
     func set(newValue: String) {
       SwiftFlutterCarplayPlugin.sendSpeechRecognitionTranscriptChangeEvent(transcript: newValue)
       transcript = newValue
     }
-    
+
     func get() -> String {
       return transcript
     }
   }
-  
+
   private class FCPSpeechAssist {
     var audioEngine: AVAudioEngine?
     var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
@@ -40,7 +40,7 @@ struct FCPSpeechRecognizer {
       recognitionRequest = nil
       recognitionTask = nil
     }
-    
+
     func setLocale(locale: String?) {
       speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: locale ?? "en-US"))
       print("[FlutterCarPlay]: Voice Control for locale " + (locale ?? "en-US") + " is initialized.")
@@ -52,16 +52,16 @@ struct FCPSpeechRecognizer {
 
   func record(locale: String?) {
     print("[FlutterCarPlay]: Requesting access for Voice Control.")
-    
+
     assistant.setLocale(locale: locale)
-    
+
     canAccess { authorized in
       guard authorized else {
         print("[FlutterCarPlay]: Access denied.")
         return
       }
       print("[FlutterCarPlay]: Access granted.")
-      
+
       assistant.audioEngine = AVAudioEngine()
       guard let audioEngine = assistant.audioEngine else {
         fatalError("[FlutterCarPlay]: Unable to create audio engine. If you're not sure, please create an issue in https://github.com/oguzhnatly/flutter_carplay/issues")
@@ -91,6 +91,8 @@ struct FCPSpeechRecognizer {
           if let result = result {
             relay(message: result.bestTranscription.formattedString)
             isFinal = result.isFinal
+          } else {
+            debugPrint("Transcript from native: no result found")
           }
 
           if error != nil || isFinal {
@@ -105,12 +107,12 @@ struct FCPSpeechRecognizer {
       }
     }
   }
-  
+
   func stopRecording() {
     print("[FlutterCarPlay]: Voice Control Record has been stopped.")
     assistant.reset()
   }
-  
+
   private func canAccess(withHandler handler: @escaping (Bool) -> Void) {
     SFSpeechRecognizer.requestAuthorization { status in
       if status == .authorized {
@@ -122,8 +124,9 @@ struct FCPSpeechRecognizer {
       }
     }
   }
-  
+
   private func relay(message: String) {
+    debugPrint("Transcript from native: \(message)")
     DispatchQueue.main.async {
       transcript.set(newValue: message)
     }

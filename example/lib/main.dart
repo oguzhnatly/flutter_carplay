@@ -5,7 +5,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
-import 'package:flutter_carplay_example/new_page.dart';
 
 void main() {
   runApp(const MaterialApp(home: MyApp()));
@@ -626,22 +625,6 @@ class _MyAppState extends State<MyApp> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Builder(builder: (context) {
-            return ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                textStyle: const TextStyle(fontSize: 15),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 24,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const NewPage()));
-              },
-              child: const Text('New Page'),
-            );
-          }),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
