@@ -1,5 +1,7 @@
-import 'package:flutter_carplay/models/alert/alert_action.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
+
+import 'alert_action.dart';
 
 /// A template object that displays a modal alert.
 class CPAlertTemplate {
@@ -21,7 +23,7 @@ class CPAlertTemplate {
   /// with the [bool] completed data in it.
   ///
   /// If completed is true, the alert successfully presented. If not, you may want to show an error to the user.
-  final Function(bool completed)? onPresent;
+  final ValueChanged<bool>? onPresent;
 
   /// Creates [CPAlertTemplate]
   CPAlertTemplate({
@@ -31,10 +33,10 @@ class CPAlertTemplate {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "titleVariants": titleVariants,
-        "actions": actions.map((e) => e.toJson()).toList(),
-        "onPresent": onPresent != null ? true : false,
+        '_elementId': _elementId,
+        'onPresent': onPresent != null,
+        'titleVariants': titleVariants,
+        'actions': actions.map((e) => e.toJson()).toList(),
       };
 
   String get uniqueId {

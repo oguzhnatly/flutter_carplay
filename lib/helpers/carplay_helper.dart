@@ -1,4 +1,4 @@
-import 'package:flutter_carplay/flutter_carplay.dart';
+import '../flutter_carplay.dart';
 
 class FlutterCarplayHelper {
   CPListItem? findCPListItem({
@@ -7,19 +7,19 @@ class FlutterCarplayHelper {
   }) {
     CPListItem? listItem;
     l1:
-    for (var t in templates) {
-      List<CPListTemplate> listTemplates = [];
+    for (final t in templates) {
+      final listTemplates = <CPListTemplate>[];
       if (t.runtimeType.toString() == (CPTabBarTemplate).toString()) {
-        for (var template in t.templates) {
+        for (final template in t.templates) {
           listTemplates.add(template);
         }
       } else if (t.runtimeType.toString() == (CPListTemplate).toString()) {
         listTemplates.add(t);
       }
       if (listTemplates.isNotEmpty) {
-        for (var list in listTemplates) {
-          for (var section in list.sections) {
-            for (var item in section.items) {
+        for (final list in listTemplates) {
+          for (final section in list.sections) {
+            for (final item in section.items) {
               if (item.uniqueId == elementId) {
                 listItem = item;
                 break l1;
@@ -32,6 +32,6 @@ class FlutterCarplayHelper {
     return listItem;
   }
 
-  String makeFCPChannelId({String? event = ""}) =>
-      'com.oguzhnatly.flutter_carplay' + event!;
+  String makeFCPChannelId({String? event = ''}) =>
+      'com.oguzhnatly.flutter_carplay${event!}';
 }

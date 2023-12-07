@@ -1,5 +1,6 @@
-import 'package:flutter_carplay/models/list/list_template.dart';
 import 'package:uuid/uuid.dart';
+
+import '../list/list_template.dart';
 
 /// A template object that contains a collection of [CPListTemplate] templates,
 /// each of which occupies one tab in the tab bar.
@@ -30,9 +31,9 @@ class CPTabBarTemplate {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "templates": templates.map((e) => e.toJson()).toList(),
+        '_elementId': _elementId,
+        'title': title,
+        'templates': templates.map((e) => e.toJson()).toList(),
       };
 
   String get uniqueId {

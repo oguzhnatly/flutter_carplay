@@ -1,5 +1,6 @@
-import 'package:flutter_carplay/models/alert/alert_action.dart';
 import 'package:uuid/uuid.dart';
+
+import '../alert/alert_action.dart';
 
 /// A template object that displays a modal action sheet.
 class CPActionSheetTemplate {
@@ -23,10 +24,10 @@ class CPActionSheetTemplate {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "message": message,
-        "actions": actions.map((e) => e.toJson()).toList(),
+        '_elementId': _elementId,
+        'title': title,
+        'message': message,
+        'actions': actions.map((e) => e.toJson()).toList(),
       };
 
   String get uniqueId {

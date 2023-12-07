@@ -1,6 +1,7 @@
-import 'package:flutter_carplay/models/button/bar_button.dart';
-import 'package:flutter_carplay/models/list/list_section.dart';
 import 'package:uuid/uuid.dart';
+
+import '../button/bar_button.dart';
+import 'list_section.dart';
 
 /// A template object that displays and manages a list of items.
 class CPListTemplate {
@@ -73,14 +74,14 @@ class CPListTemplate {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "sections": sections.map((e) => e.toJson()).toList(),
-        "emptyViewTitleVariants": emptyViewTitleVariants,
-        "emptyViewSubtitleVariants": emptyViewSubtitleVariants,
-        "showsTabBadge": showsTabBadge,
-        "systemIcon": systemIcon,
-        "backButton": backButton?.toJson(),
+        '_elementId': _elementId,
+        'title': title,
+        'sections': sections.map((e) => e.toJson()).toList(),
+        'emptyViewTitleVariants': emptyViewTitleVariants,
+        'emptyViewSubtitleVariants': emptyViewSubtitleVariants,
+        'showsTabBadge': showsTabBadge,
+        'systemIcon': systemIcon,
+        'backButton': backButton?.toJson(),
       };
 
   String get uniqueId {

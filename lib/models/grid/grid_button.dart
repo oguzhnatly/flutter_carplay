@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 /// A grid button object displayed on a grid template.
@@ -20,18 +21,18 @@ class CPGridButton {
   final String image;
 
   /// Fired after the user taps the button.
-  final Function() onPress;
+  final VoidCallback onPressed;
 
   CPGridButton({
     required this.titleVariants,
     required this.image,
-    required this.onPress,
+    required this.onPressed,
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "titleVariants": titleVariants,
-        "image": image,
+        '_elementId': _elementId,
+        'titleVariants': titleVariants,
+        'image': image,
       };
 
   String get uniqueId {

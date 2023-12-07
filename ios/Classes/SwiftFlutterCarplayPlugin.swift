@@ -271,7 +271,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return
             }
             FCPSpeaker.shared.speak(args["text"] as! String, language: args["language"] as! String) {
-                if (args["onComplete"] as! Bool) == true {
+                if (args["onCompleted"] as! Bool) == true {
                     FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onSpeechCompleted,
                                                      data: ["elementId": args["_elementId"] as! String])
                 }

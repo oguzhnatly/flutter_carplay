@@ -1,8 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter_carplay/constants/private_constants.dart';
-import 'package:flutter_carplay/controllers/carplay_controller.dart';
-import 'package:flutter_carplay/flutter_carplay.dart';
+import 'constants/private_constants.dart';
+import 'controllers/carplay_controller.dart';
+import 'flutter_carplay.dart';
+
+// ignore_for_file: use_setters_to_change_properties
 
 /// An object in order to integrate Apple CarPlay in navigation and
 /// manage all user interface elements appearing on your screens displayed on
@@ -43,60 +45,61 @@ class FlutterCarplay {
     _eventBroadcast = _carPlayController.eventChannel
         .receiveBroadcastStream()
         .listen((event) {
-      final FCPChannelTypes receivedChannelType = CPEnumUtils.enumFromString(
+      final receivedChannelType = CPEnumUtils.enumFromString(
         FCPChannelTypes.values,
-        event["type"],
+        event['type'],
       );
       switch (receivedChannelType) {
         case FCPChannelTypes.onCarplayConnectionChange:
-          final CPConnectionStatusTypes connectionStatus =
-              CPEnumUtils.enumFromString(
+          final connectionStatus = CPEnumUtils.enumFromString(
             CPConnectionStatusTypes.values,
-            event["data"]["status"],
+            event['data']['status'],
           );
           _connectionStatus =
               CPEnumUtils.stringFromEnum(connectionStatus.toString());
           if (_onCarplayConnectionChange != null) {
-            _onCarplayConnectionChange!(connectionStatus);
+            _onCarplayConnectionChange?.call(connectionStatus);
           }
           break;
         case FCPChannelTypes.onFCPListItemSelected:
           _carPlayController
-              .processFCPListItemSelectedChannel(event["data"]["elementId"]);
+              .processFCPListItemSelectedChannel(event['data']['elementId']);
           break;
         case FCPChannelTypes.onFCPAlertActionPressed:
           _carPlayController
-              .processFCPAlertActionPressed(event["data"]["elementId"]);
+              .processFCPAlertActionPressed(event['data']['elementId']);
           break;
         case FCPChannelTypes.onPresentStateChanged:
-          _carPlayController
-              .processFCPAlertTemplateCompleted(event["data"]["completed"]);
+          _carPlayController.processFCPAlertTemplateCompleted(
+            completed: event['data']['completed'],
+          );
           break;
 
         case FCPChannelTypes.onGridButtonPressed:
           _carPlayController
-              .processFCPGridButtonPressed(event["data"]["elementId"]);
+              .processFCPGridButtonPressed(event['data']['elementId']);
           break;
         case FCPChannelTypes.onBarButtonPressed:
           _carPlayController
-              .processFCPBarButtonPressed(event["data"]["elementId"]);
+              .processFCPBarButtonPressed(event['data']['elementId']);
           break;
         case FCPChannelTypes.onMapButtonPressed:
           _carPlayController
-              .processFCPMapButtonPressed(event["data"]["elementId"]);
+              .processFCPMapButtonPressed(event['data']['elementId']);
           break;
         case FCPChannelTypes.onTextButtonPressed:
           _carPlayController
-              .processFCPTextButtonPressed(event["data"]["elementId"]);
+              .processFCPTextButtonPressed(event['data']['elementId']);
           break;
         case FCPChannelTypes.onVoiceControlTranscriptChanged:
           if (_onSpeechRecognitionTranscriptChange != null) {
-            _onSpeechRecognitionTranscriptChange!(event["data"]["transcript"]);
+            _onSpeechRecognitionTranscriptChange
+                ?.call(event['data']['transcript']);
           }
           break;
         case FCPChannelTypes.onSpeechCompleted:
           _carPlayController
-              .processFCPSpeakerOnComplete(event["data"]["elementId"]);
+              .processFCPSpeakerOnComplete(event['data']['elementId']);
           break;
         default:
           break;
@@ -160,17 +163,17 @@ class FlutterCarplay {
     required dynamic rootTemplate,
     bool animated = true,
   }) {
-    if (rootTemplate.runtimeType == CPTabBarTemplate ||
+    if (rootTemplate.runtimeType == CPMapTemplate ||
         rootTemplate.runtimeType == CPGridTemplate ||
         rootTemplate.runtimeType == CPListTemplate ||
+        rootTemplate.runtimeType == CPTabBarTemplate ||
         rootTemplate.runtimeType == CPInformationTemplate ||
-        rootTemplate.runtimeType == CPMapTemplate ||
         rootTemplate.runtimeType == CPPointOfInterestTemplate) {
       _carPlayController.methodChannel
           .invokeMethod('setRootTemplate', <String, dynamic>{
         'animated': animated,
         'rootTemplate': rootTemplate.toJson(),
-        'runtimeType': "F" + rootTemplate.runtimeType.toString(),
+        'runtimeType': 'F${rootTemplate.runtimeType}',
       }).then((value) {
         if (value) {
           FlutterCarPlayController.currentRootTemplate = rootTemplate;
@@ -204,9 +207,9 @@ class FlutterCarplay {
     _carPlayController.methodChannel.invokeMethod(
         CPEnumUtils.stringFromEnum(FCPChannelTypes.setAlert.toString()),
         <String, dynamic>{
-          'rootTemplate': template.toJson(),
           'animated': animated,
-          'onPresent': template.onPresent != null ? true : false,
+          'rootTemplate': template.toJson(),
+          'onPresent': template.onPresent != null,
         }).then((value) {
       if (value) {
         FlutterCarPlayController.currentPresentTemplate = template;
@@ -284,7 +287,8 @@ class FlutterCarplay {
   static Future<String> getActiveVoiceControlStateIdentifier() async {
     final value = await _carPlayController.methodChannel.invokeMethod(
       CPEnumUtils.stringFromEnum(
-          FCPChannelTypes.getActiveVoiceControlStateIdentifier),
+        FCPChannelTypes.getActiveVoiceControlStateIdentifier,
+      ),
       null,
     );
     return value as String;
@@ -327,15 +331,16 @@ class FlutterCarplay {
 
   /// Adds the specified [CPSpeaker] utterance to the queue of the speech synthesizer in CarPlay.
   static void speak(CPSpeaker speakerController) {
-    if (speakerController.onComplete != null) {
+    if (speakerController.onCompleted != null) {
       FlutterCarPlayController.callbackObjects.add(speakerController);
     }
     _carPlayController.methodChannel
         .invokeMethod(
-            CPEnumUtils.stringFromEnum(FCPChannelTypes.speak.toString()),
-            speakerController.toJson())
+      CPEnumUtils.stringFromEnum(FCPChannelTypes.speak.toString()),
+      speakerController.toJson(),
+    )
         .then((value) {
-      if (value == false && speakerController.onComplete != null) {
+      if (value == false && speakerController.onCompleted != null) {
         FlutterCarPlayController.callbackObjects
             .removeWhere((e) => e.uniqueId == speakerController.uniqueId);
       }
@@ -356,11 +361,11 @@ class FlutterCarplay {
   /// - count represents how many times this function will occur.
   static Future<bool> pop({bool animated = true, int count = 1}) async {
     FlutterCarPlayController.templateHistory.removeLast();
-    return await _carPlayController.reactToNativeModule(
+    return _carPlayController.reactToNativeModule(
       FCPChannelTypes.popTemplate,
       <String, dynamic>{
-        "count": count,
-        "animated": animated,
+        'count': count,
+        'animated': animated,
       },
     );
   }
@@ -369,9 +374,9 @@ class FlutterCarplay {
   /// If animated is true, CarPlay animates the presentation of the template.
   static Future<bool> popToRoot({bool animated = true}) async {
     FlutterCarPlayController.templateHistory = [
-      FlutterCarPlayController.currentRootTemplate
+      FlutterCarPlayController.currentRootTemplate,
     ];
-    return await _carPlayController.reactToNativeModule(
+    return _carPlayController.reactToNativeModule(
       FCPChannelTypes.popToRootTemplate,
       animated,
     );
@@ -381,7 +386,7 @@ class FlutterCarplay {
   /// modals, they can be removed. If animated is true, CarPlay animates the transition between templates.
   static Future<bool> popModal({bool animated = true}) async {
     FlutterCarPlayController.currentPresentTemplate = null;
-    return await _carPlayController.reactToNativeModule(
+    return _carPlayController.reactToNativeModule(
       FCPChannelTypes.closePresent,
       animated,
     );
@@ -397,16 +402,16 @@ class FlutterCarplay {
     required dynamic template,
     bool animated = true,
   }) async {
-    if (template.runtimeType == CPGridTemplate ||
+    if (template.runtimeType == CPMapTemplate ||
+        template.runtimeType == CPGridTemplate ||
         template.runtimeType == CPListTemplate ||
         template.runtimeType == CPInformationTemplate ||
-        template.runtimeType == CPMapTemplate ||
         template.runtimeType == CPPointOfInterestTemplate) {
-      bool isCompleted = await _carPlayController
+      final isCompleted = await _carPlayController
           .reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
-        "template": template.toJson(),
-        "animated": animated,
-        "runtimeType": "F" + template.runtimeType.toString(),
+        'template': template.toJson(),
+        'animated': animated,
+        'runtimeType': 'F${template.runtimeType}',
       });
       if (isCompleted) {
         _carPlayController.addTemplateToHistory(template);

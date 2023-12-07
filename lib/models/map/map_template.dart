@@ -1,5 +1,6 @@
-import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../flutter_carplay.dart';
 
 /// A template object that displays map.
 class CPMapTemplate {
@@ -24,15 +25,15 @@ class CPMapTemplate {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "mapButtons": mapButtons.map((e) => e.toJson()).toList(),
-        "leadingNavigationBarButtons":
+        '_elementId': _elementId,
+        'title': title,
+        'mapButtons': mapButtons.map((e) => e.toJson()).toList(),
+        'leadingNavigationBarButtons':
             leadingNavigationBarButtons.map((e) => e.toJson()).toList(),
-        "trailingNavigationBarButtons":
+        'trailingNavigationBarButtons':
             trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
-        "automaticallyHidesNavigationBar": automaticallyHidesNavigationBar,
-        "hidesButtonsWithNavigationBar": hidesButtonsWithNavigationBar,
+        'automaticallyHidesNavigationBar': automaticallyHidesNavigationBar,
+        'hidesButtonsWithNavigationBar': hidesButtonsWithNavigationBar,
       };
 
   String get uniqueId {

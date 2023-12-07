@@ -1,5 +1,6 @@
-import 'package:flutter_carplay/models/list/list_item.dart';
 import 'package:uuid/uuid.dart';
+
+import 'list_item.dart';
 
 /// A section object of list items that appear in a list template.
 class CPListSection {
@@ -20,9 +21,9 @@ class CPListSection {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "header": header,
-        "items": items.map((e) => e.toJson()).toList(),
+        '_elementId': _elementId,
+        'header': header,
+        'items': items.map((e) => e.toJson()).toList(),
       };
 
   String get uniqueId {

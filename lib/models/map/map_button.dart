@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 /// A button object for placement in a map.
@@ -13,12 +14,12 @@ class CPMapButton {
   final String? focusedImage;
 
   /// Fired when the user taps a map button.
-  final Function() onPress;
+  final VoidCallback onPressed;
 
   /// Creates [CPMapButton] with a title, style and handler.
   CPMapButton({
     required this.title,
-    required this.onPress,
+    required this.onPressed,
     this.isEnabled = true,
     this.isHidden = false,
     this.image,
@@ -26,12 +27,12 @@ class CPMapButton {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "isEnabled": isEnabled,
-        "isHidden": isHidden,
-        "image": image,
-        "focusedImage": focusedImage,
+        '_elementId': _elementId,
+        'title': title,
+        'isEnabled': isEnabled,
+        'isHidden': isHidden,
+        'image': image,
+        'focusedImage': focusedImage,
       };
 
   String get uniqueId {

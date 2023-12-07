@@ -22,9 +22,9 @@ class CPAudio {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "soundPath": soundPath,
-        "volume": volume,
+        '_elementId': _elementId,
+        'soundPath': soundPath,
+        'volume': volume,
       };
 
   String get uniqueId {

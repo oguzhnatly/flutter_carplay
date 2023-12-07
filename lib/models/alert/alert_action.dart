@@ -1,6 +1,8 @@
-import 'package:flutter_carplay/helpers/enum_utils.dart';
-import 'package:flutter_carplay/models/alert/alert_constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../helpers/enum_utils.dart';
+import 'alert_constants.dart';
 
 /// An object that encapsulates an action the user can take on [CPActionSheetTemplate] or [CPAlertTemplate].
 class CPAlertAction {
@@ -15,19 +17,19 @@ class CPAlertAction {
   final CPAlertActionStyles style;
 
   /// A callback function that CarPlay invokes after the user taps the action button.
-  final Function() onPress;
+  final VoidCallback onPressed;
 
   /// Creates [CPAlertAction] with a title, style, and action handler.
   CPAlertAction({
     required this.title,
     this.style = CPAlertActionStyles.normal,
-    required this.onPress,
+    required this.onPressed,
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "style": CPEnumUtils.stringFromEnum(style.toString()),
+        '_elementId': _elementId,
+        'title': title,
+        'style': CPEnumUtils.stringFromEnum(style.toString()),
       };
 
   String get uniqueId {

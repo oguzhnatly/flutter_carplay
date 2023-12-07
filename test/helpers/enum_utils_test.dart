@@ -10,10 +10,10 @@ void main() {
       expect(cpListItemAccessoryType, CPListItemAccessoryTypes.cloud);
 
       final cpListItemPlayingIndicatorLocation = CPEnumUtils.enumFromString(
-          CPListItemPlayingIndicatorLocations.values, 'trailing');
+          CPListItemPlayingIndicatorLocations.values, 'trailing',);
 
       expect(cpListItemPlayingIndicatorLocation,
-          CPListItemPlayingIndicatorLocations.trailing);
+          CPListItemPlayingIndicatorLocations.trailing,);
     });
 
     test('convert dynamic type into string after the `.`', () {

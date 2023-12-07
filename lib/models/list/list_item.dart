@@ -1,7 +1,9 @@
-import 'package:flutter_carplay/controllers/carplay_controller.dart';
-import 'package:flutter_carplay/helpers/enum_utils.dart';
-import 'package:flutter_carplay/models/list/list_constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../controllers/carplay_controller.dart';
+import '../../helpers/enum_utils.dart';
+import 'list_constants.dart';
 
 /// A selectable list item object that appears in a list template.
 class CPListItem {
@@ -15,7 +17,7 @@ class CPListItem {
   String? detailText;
 
   /// An optional callback function that CarPlay invokes when the user selects the list item.
-  final Function(Function() complete, CPListItem self)? onPress;
+  final Function(VoidCallback complete, CPListItem self)? onPressed;
 
   /// Displays an image on the leading edge of the list item cell.
   /// Image asset path in pubspec.yaml file.
@@ -42,7 +44,7 @@ class CPListItem {
   CPListItem({
     required this.text,
     this.detailText,
-    this.onPress,
+    this.onPressed,
     this.image,
     this.playbackProgress,
     this.isPlaying,
@@ -51,16 +53,16 @@ class CPListItem {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "text": text,
-        "detailText": detailText,
-        "onPress": onPress != null ? true : false,
-        "image": image,
-        "playbackProgress": playbackProgress,
-        "isPlaying": isPlaying,
-        "playingIndicatorLocation":
+        '_elementId': _elementId,
+        'text': text,
+        'detailText': detailText,
+        'onPressed': onPressed != null,
+        'image': image,
+        'playbackProgress': playbackProgress,
+        'isPlaying': isPlaying,
+        'playingIndicatorLocation':
             CPEnumUtils.stringFromEnum(playingIndicatorLocation.toString()),
-        "accessoryType": CPEnumUtils.stringFromEnum(accessoryType.toString()),
+        'accessoryType': CPEnumUtils.stringFromEnum(accessoryType.toString()),
       };
 
   /// Updating the list item's primary text.
@@ -102,14 +104,15 @@ class CPListItem {
   }
 
   /// Setter for isPlaying
-  void setIsPlaying(bool isPlaying) {
+  void setIsPlaying({bool isPlaying = false}) {
     this.isPlaying = isPlaying;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
   /// Setter for playingIndicatorLocation
   void setPlayingIndicatorLocation(
-      CPListItemPlayingIndicatorLocations playingIndicatorLocation) {
+    CPListItemPlayingIndicatorLocations playingIndicatorLocation,
+  ) {
     this.playingIndicatorLocation = playingIndicatorLocation;
     FlutterCarPlayController.updateCPListItem(this);
   }

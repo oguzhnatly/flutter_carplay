@@ -39,11 +39,11 @@ class CPVoiceControlState {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "identifier": identifier,
-        "titleVariants": titleVariants,
-        "image": image,
-        "repeats": repeats,
+        '_elementId': _elementId,
+        'identifier': identifier,
+        'titleVariants': titleVariants,
+        'image': image,
+        'repeats': repeats,
       };
 
   String get uniqueId {

@@ -25,7 +25,7 @@ class FCPListItem {
         elementId = obj["_elementId"] as! String
         text = obj["text"] as! String
         detailText = obj["detailText"] as? String
-        isOnPressListenerActive = obj["onPress"] as? Bool ?? false
+        isOnPressListenerActive = obj["onPressed"] as? Bool ?? false
         image = obj["image"] as? String
         playbackProgress = obj["playbackProgress"] as? CGFloat
         isPlaying = obj["isPlaying"] as? Bool

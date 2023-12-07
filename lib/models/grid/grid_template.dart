@@ -1,5 +1,6 @@
-import 'package:flutter_carplay/models/grid/grid_button.dart';
 import 'package:uuid/uuid.dart';
+
+import 'grid_button.dart';
 
 /// A template object that displays and manages a grid of items.
 class CPGridTemplate {
@@ -21,9 +22,9 @@ class CPGridTemplate {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "buttons": buttons.map((e) => e.toJson()).toList(),
+        '_elementId': _elementId,
+        'title': title,
+        'buttons': buttons.map((e) => e.toJson()).toList(),
       };
 
   String get uniqueId {

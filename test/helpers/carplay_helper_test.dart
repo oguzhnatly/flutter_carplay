@@ -11,14 +11,14 @@ void main() {
     final cpListTemplate = CPListTemplate(
         title: '<CPListTemplate>',
         sections: [
-          CPListSection(items: [cpListItem])
+          CPListSection(items: [cpListItem]),
         ],
-        systemIcon: '<CarIcon>');
+        systemIcon: '<CarIcon>',);
 
     final templates = [
       CPTabBarTemplate(
-          title: '<CPTabBarTemplate>', templates: [cpListTemplate]),
-      cpListTemplate
+          title: '<CPTabBarTemplate>', templates: [cpListTemplate],),
+      cpListTemplate,
     ];
 
     setUp(() {
@@ -26,19 +26,19 @@ void main() {
     });
 
     test('find CPListItem from dynamic list item and element id', () {
-      CPListItem? item = flutterCarplayHelper.findCPListItem(
-          templates: templates, elementId: cpListItem.uniqueId);
+      final item = flutterCarplayHelper.findCPListItem(
+          templates: templates, elementId: cpListItem.uniqueId,);
 
       expect(item, cpListItem);
 
-      CPListItem? nullableItem = flutterCarplayHelper.findCPListItem(
-          templates: templates, elementId: '');
+      final nullableItem = flutterCarplayHelper.findCPListItem(
+          templates: templates, elementId: '',);
 
       expect(nullableItem, null);
     });
 
     test('make FCP channel id', () {
-      String channelId = flutterCarplayHelper.makeFCPChannelId(event: '/event');
+      final channelId = flutterCarplayHelper.makeFCPChannelId(event: '/event');
 
       expect(channelId, 'com.oguzhnatly.flutter_carplay/event');
     });

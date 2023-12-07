@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_carplay/models/voice_control/voice_control_state.dart';
 import 'package:uuid/uuid.dart';
+
+import 'voice_control_state.dart';
 
 /// A voice control template with a list of voice control states [CPVoiceControlState].
 class CPVoiceControlTemplate {
@@ -17,7 +18,7 @@ class CPVoiceControlTemplate {
   /// with the [bool] completed data in it.
   ///
   /// If completed is true, the template successfully presented. If not, you may want to show an error to the user.
-  final Function(bool completed)? onPresent;
+  final ValueChanged<bool>? onPresent;
 
   /// A BCP 47 code that identifies the language and locale for a voice
   /// by defining [Locale](https://api.flutter.dev/flutter/dart-ui/Locale-class.html).
@@ -40,11 +41,11 @@ class CPVoiceControlTemplate {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "locale": locale.toLanguageTag(),
-        "voiceControlStates":
+        '_elementId': _elementId,
+        'onPresent': onPresent != null,
+        'locale': locale.toLanguageTag(),
+        'voiceControlStates':
             voiceControlStates.map((e) => e.toJson()).toList(),
-        "onPresent": onPresent != null ? true : false,
       };
 
   String get uniqueId {

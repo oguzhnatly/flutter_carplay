@@ -20,7 +20,7 @@ class CPSpeaker {
   final Locale language;
 
   /// Will be fired when the text is finished being voiced/speech in CarPlay.
-  final Function()? onComplete;
+  final VoidCallback? onCompleted;
 
   /// Creates [CPSpeaker] with the primary factors that distinguish
   /// a voice in speech synthesis such as language, locale, and quality.
@@ -30,14 +30,14 @@ class CPSpeaker {
   CPSpeaker({
     required this.text,
     this.language = const Locale('en', 'US'),
-    this.onComplete,
+    this.onCompleted,
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "text": text,
-        "language": language.toLanguageTag(),
-        "onComplete": onComplete != null ? true : false,
+        'text': text,
+        '_elementId': _elementId,
+        'language': language.toLanguageTag(),
+        'onCompleted': onCompleted != null,
       };
 
   String get uniqueId {

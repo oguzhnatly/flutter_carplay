@@ -1,5 +1,7 @@
-import 'package:flutter_carplay/helpers/enum_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../helpers/enum_utils.dart';
 
 enum CPTextButtonStyles {
   normal,
@@ -20,19 +22,19 @@ class CPTextButton {
   final CPTextButtonStyles style;
 
   /// Fired when the user taps a text button.
-  final Function() onPress;
+  final VoidCallback onPressed;
 
   /// Creates [CPTextButton] with a title, style and handler.
   CPTextButton({
     required this.title,
     this.style = CPTextButtonStyles.normal,
-    required this.onPress,
+    required this.onPressed,
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "style": CPEnumUtils.stringFromEnum(style.toString()),
+        '_elementId': _elementId,
+        'title': title,
+        'style': CPEnumUtils.stringFromEnum(style.toString()),
       };
 
   String get uniqueId {
