@@ -47,6 +47,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        MemoryLogger.shared.appendEvent("FlutterMethodCall received : \(call.method)")
         switch call.method {
         case FCPChannelTypes.setRootTemplate:
             guard let args = call.arguments as? [String: Any] else {

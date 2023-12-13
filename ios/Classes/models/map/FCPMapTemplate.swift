@@ -60,7 +60,7 @@ class FCPMapTemplate: NSObject {
         mapTemplate.trailingNavigationBarButtons = tBButtons
         mapTemplate.automaticallyHidesNavigationBar = automaticallyHidesNavigationBar
         mapTemplate.hidesButtonsWithNavigationBar = hidesButtonsWithNavigationBar
-        mapTemplate.mapDelegate = viewController as! CPMapTemplateDelegate
+        mapTemplate.mapDelegate = viewController as? CPMapTemplateDelegate
 
         _super = mapTemplate
         return mapTemplate
