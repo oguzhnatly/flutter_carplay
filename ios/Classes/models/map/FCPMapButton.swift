@@ -20,8 +20,12 @@ class FCPMapButton {
         elementId = obj["_elementId"] as! String
         isEnabled = obj["isEnabled"] as! Bool
         isHidden = obj["isHidden"] as! Bool
-        image = obj["image"] as? UIImage
-        focusedImage = obj["focusedImage"] as? UIImage
+        if let image = obj["image"] as? String {
+            self.image = UIImage().fromFlutterAsset(name: image)
+        }
+        if let focusedImage = obj["focusedImage"] as? String {
+            self.focusedImage = UIImage().fromFlutterAsset(name: focusedImage)
+        }
     }
 
     var get: CPMapButton {
@@ -32,8 +36,8 @@ class FCPMapButton {
         }
         mapButton.isHidden = isHidden
         mapButton.isEnabled = isEnabled
-        mapButton.image = image
         mapButton.focusedImage = focusedImage
+        mapButton.image = image
 
         _super = mapButton
         return mapButton

@@ -6,8 +6,6 @@ class CPMapButton {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
-  /// The title displayed on the bar button.
-  final String title;
   final bool isEnabled;
   final bool isHidden;
   final String? image;
@@ -18,17 +16,15 @@ class CPMapButton {
 
   /// Creates [CPMapButton] with a title, style and handler.
   CPMapButton({
-    required this.title,
     required this.onPressed,
     this.isEnabled = true,
     this.isHidden = false,
-    this.image,
     this.focusedImage,
+    this.image,
   });
 
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
-        'title': title,
         'isEnabled': isEnabled,
         'isHidden': isHidden,
         'image': image,

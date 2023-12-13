@@ -17,9 +17,9 @@ class CPMapTemplate {
   /// Creates [CPMapTemplate]
   CPMapTemplate({
     required this.title,
-    required this.mapButtons,
-    required this.leadingNavigationBarButtons,
-    required this.trailingNavigationBarButtons,
+    this.mapButtons = const [],
+    this.leadingNavigationBarButtons = const [],
+    this.trailingNavigationBarButtons = const [],
     this.automaticallyHidesNavigationBar = false,
     this.hidesButtonsWithNavigationBar = false,
   });
