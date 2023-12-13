@@ -37,3 +37,6 @@ class FCPPointOfInterestTemplate {
 
 @available(iOS 14.0, *)
 extension FCPPointOfInterestTemplate: FCPRootTemplate {}
+
+@available(iOS 14.0, *)
+extension FCPPointOfInterestTemplate: FCPTemplate {}

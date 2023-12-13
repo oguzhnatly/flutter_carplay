@@ -30,6 +30,9 @@ class CPListItem {
   /// Determines whether the list item displays its Now Playing indicator.
   bool? isPlaying;
 
+  /// Determines whether the list item is enabled.
+  bool? isEnabled;
+
   /// The location where the list item displays its Now Playing indicator.
   CPListItemPlayingIndicatorLocations? playingIndicatorLocation;
 
@@ -50,6 +53,7 @@ class CPListItem {
     this.isPlaying,
     this.playingIndicatorLocation,
     this.accessoryType,
+    this.isEnabled = true,
   });
 
   Map<String, dynamic> toJson() => {
@@ -60,6 +64,7 @@ class CPListItem {
         'image': image,
         'playbackProgress': playbackProgress,
         'isPlaying': isPlaying,
+        'isEnabled': isEnabled,
         'playingIndicatorLocation':
             CPEnumUtils.stringFromEnum(playingIndicatorLocation.toString()),
         'accessoryType': CPEnumUtils.stringFromEnum(accessoryType.toString()),
@@ -106,6 +111,12 @@ class CPListItem {
   /// Setter for isPlaying
   void setIsPlaying({bool isPlaying = false}) {
     this.isPlaying = isPlaying;
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
+  /// Setter for isEnabled
+  void setIsEnabled({bool isEnabled = true}) {
+    this.isEnabled = isEnabled;
     FlutterCarPlayController.updateCPListItem(this);
   }
 

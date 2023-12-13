@@ -69,3 +69,6 @@ class FCPMapTemplate: NSObject {
 
 @available(iOS 14.0, *)
 extension FCPMapTemplate: FCPRootTemplate {}
+
+@available(iOS 14.0, *)
+extension FCPMapTemplate: FCPTemplate {}

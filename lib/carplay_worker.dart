@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 
 import 'constants/private_constants.dart';
 import 'controllers/carplay_controller.dart';
@@ -360,6 +363,7 @@ class FlutterCarplay {
   /// - If animated is true, CarPlay animates the transition between templates.
   /// - count represents how many times this function will occur.
   static Future<bool> pop({bool animated = true, int count = 1}) async {
+    debugPrint('Pop called from dart');
     FlutterCarPlayController.templateHistory.removeLast();
     return _carPlayController.reactToNativeModule(
       FCPChannelTypes.popTemplate,
@@ -407,6 +411,9 @@ class FlutterCarplay {
         template.runtimeType == CPListTemplate ||
         template.runtimeType == CPInformationTemplate ||
         template.runtimeType == CPPointOfInterestTemplate) {
+      if (template.runtimeType == CPListTemplate) {
+        debugPrint('list template json: ${jsonEncode(template.toJson())}');
+      }
       final isCompleted = await _carPlayController
           .reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
         'template': template.toJson(),

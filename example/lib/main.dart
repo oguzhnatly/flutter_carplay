@@ -179,6 +179,7 @@ class _MyAppState extends State<MyApp> {
         trailingNavigationBarButtons: [
           CPBarButton(
             title: 'Features',
+            // image: 'images/logo_flutter_1080px_clr.png',
             onPressed: () async {
               final didPush = await FlutterCarplay.push(
                 template: CPListTemplate(
@@ -372,7 +373,20 @@ class _MyAppState extends State<MyApp> {
           CPListSection(
             header: 'A Section',
             items: [
-              CPListItem(text: 'Item 1'),
+              CPListItem(
+                text: 'Item 1',
+                onPressed: (onCompleted, item) {
+                  debugPrint('Item 1 clicked');
+                  item.setIsEnabled(isEnabled: false);
+                  // item
+                  //   ..text = 'ABC'
+                  //   ..detailText = 'New ABC';
+                  // FlutterCarPlayController.updateCPListItem(item);
+                  onCompleted();
+
+                  // openListTemplate();
+                },
+              ),
               CPListItem(text: 'Item 2'),
               CPListItem(text: 'Item 3'),
               CPListItem(text: 'Item 4'),
@@ -397,7 +411,10 @@ class _MyAppState extends State<MyApp> {
         title: 'List Template',
         backButton: CPBarButton(
           title: 'Back',
-          onPressed: FlutterCarplay.pop,
+          onPressed: () {
+            debugPrint('back button call back received');
+            FlutterCarplay.pop();
+          },
           style: CPBarButtonStyles.none,
         ),
       ),

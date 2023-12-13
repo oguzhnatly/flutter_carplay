@@ -35,3 +35,6 @@ class FCPAlertTemplate {
 
 @available(iOS 14.0, *)
 extension FCPAlertTemplate: FCPPresentTemplate {}
+
+@available(iOS 14.0, *)
+extension FCPAlertTemplate: FCPTemplate {}

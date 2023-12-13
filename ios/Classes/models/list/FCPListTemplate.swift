@@ -63,3 +63,6 @@ class FCPListTemplate {
 
 @available(iOS 14.0, *)
 extension FCPListTemplate: FCPRootTemplate {}
+
+@available(iOS 14.0, *)
+extension FCPListTemplate: FCPTemplate {}

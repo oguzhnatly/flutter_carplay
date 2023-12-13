@@ -52,3 +52,6 @@ class FCPInformationTemplate {
 
 @available(iOS 14.0, *)
 extension FCPInformationTemplate: FCPRootTemplate {}
+
+@available(iOS 14.0, *)
+extension FCPInformationTemplate: FCPTemplate {}

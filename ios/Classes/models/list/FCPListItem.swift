@@ -18,6 +18,7 @@ class FCPListItem {
     private var image: String?
     private var playbackProgress: CGFloat?
     private var isPlaying: Bool?
+    private var isEnabled: Bool = true
     private var playingIndicatorLocation: CPListItemPlayingIndicatorLocation?
     private var accessoryType: CPListItemAccessoryType?
 
@@ -29,6 +30,7 @@ class FCPListItem {
         image = obj["image"] as? String
         playbackProgress = obj["playbackProgress"] as? CGFloat
         isPlaying = obj["isPlaying"] as? Bool
+        isEnabled = obj["isEnabled"] as? Bool ?? true
         setPlayingIndicatorLocation(fromString: obj["playingIndicatorLocation"] as? String)
         setAccessoryType(fromString: obj["accessoryType"] as? String)
     }
@@ -61,11 +63,15 @@ class FCPListItem {
         if accessoryType != nil {
             listItem.accessoryType = accessoryType!
         }
+        if #available(iOS 15.0, *) {
+            listItem.isEnabled = isEnabled
+        }
         _super = listItem
         return listItem
     }
 
     public func stopHandler() {
+        MemoryLogger.shared.appendEvent("stopHandler called for: \(elementId)")
         guard completeHandler != nil else {
             return
         }
@@ -73,7 +79,7 @@ class FCPListItem {
         completeHandler = nil
     }
 
-    public func update(text: String?, detailText: String?, image: String?, playbackProgress: CGFloat?, isPlaying: Bool?, playingIndicatorLocation: String?, accessoryType: String?) {
+    public func update(text: String?, detailText: String?, image: String?, playbackProgress: CGFloat?, isPlaying: Bool?, playingIndicatorLocation: String?, accessoryType: String?, isEnabled: Bool?) {
         if text != nil {
             _super?.setText(text!)
             self.text = text!
@@ -93,6 +99,10 @@ class FCPListItem {
         if isPlaying != nil {
             _super?.isPlaying = isPlaying!
             self.isPlaying = isPlaying
+        }
+        if #available(iOS 15.0, *), isEnabled != nil {
+            _super?.isEnabled = isEnabled!
+            self.isEnabled = isEnabled!
         }
         if playingIndicatorLocation != nil {
             setPlayingIndicatorLocation(fromString: playingIndicatorLocation)

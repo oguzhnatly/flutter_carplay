@@ -38,3 +38,6 @@ class FCPTabBarTemplate {
 
 @available(iOS 14.0, *)
 extension FCPTabBarTemplate: FCPRootTemplate {}
+
+@available(iOS 14.0, *)
+extension FCPTabBarTemplate: FCPTemplate {}

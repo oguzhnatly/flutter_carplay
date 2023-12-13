@@ -8,3 +8,5 @@
 protocol FCPPresentTemplate {}
 
 protocol FCPRootTemplate {}
+
+protocol FCPTemplate {}

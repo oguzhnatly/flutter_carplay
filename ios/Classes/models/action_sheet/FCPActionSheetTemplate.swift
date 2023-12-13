@@ -37,3 +37,6 @@ class FCPActionSheetTemplate {
 
 @available(iOS 14.0, *)
 extension FCPActionSheetTemplate: FCPPresentTemplate {}
+
+@available(iOS 14.0, *)
+extension FCPActionSheetTemplate: FCPTemplate {}

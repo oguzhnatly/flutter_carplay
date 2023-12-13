@@ -35,3 +35,6 @@ class FCPGridTemplate {
 
 @available(iOS 14.0, *)
 extension FCPGridTemplate: FCPRootTemplate {}
+
+@available(iOS 14.0, *)
+extension FCPGridTemplate: FCPTemplate {}

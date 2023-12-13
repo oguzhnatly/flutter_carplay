@@ -52,3 +52,6 @@ class FCPVoiceControlTemplate {
 
 @available(iOS 14.0, *)
 extension FCPVoiceControlTemplate: FCPPresentTemplate {}
+
+@available(iOS 14.0, *)
+extension FCPVoiceControlTemplate: FCPTemplate {}
