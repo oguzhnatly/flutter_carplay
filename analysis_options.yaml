@@ -56,7 +56,6 @@ linter:
     prefer_null_aware_method_calls: true
     avoid_redundant_argument_values: true
     literal_only_boolean_expressions: true
-    use_setters_to_change_properties: true
     avoid_types_on_closure_parameters: true
     prefer_asserts_in_initializer_lists: true
     avoid_positional_boolean_parameters: true

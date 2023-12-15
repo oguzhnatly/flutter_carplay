@@ -109,13 +109,13 @@ class CPListItem {
   }
 
   /// Setter for isPlaying
-  void setIsPlaying({bool isPlaying = false}) {
+  void setIsPlaying({required bool isPlaying}) {
     this.isPlaying = isPlaying;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
   /// Setter for isEnabled
-  void setIsEnabled({bool isEnabled = true}) {
+  void setIsEnabled({required bool isEnabled}) {
     this.isEnabled = isEnabled;
     FlutterCarPlayController.updateCPListItem(this);
   }

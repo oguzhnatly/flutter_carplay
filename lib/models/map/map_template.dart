@@ -7,16 +7,16 @@ class CPMapTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
-  final String title;
+  String title;
   final List<CPMapButton> mapButtons;
   final List<CPBarButton> leadingNavigationBarButtons;
   final List<CPBarButton> trailingNavigationBarButtons;
-  final bool automaticallyHidesNavigationBar;
-  final bool hidesButtonsWithNavigationBar;
+  bool automaticallyHidesNavigationBar;
+  bool hidesButtonsWithNavigationBar;
 
   /// Creates [CPMapTemplate]
   CPMapTemplate({
-    required this.title,
+    this.title = '',
     this.mapButtons = const [],
     this.leadingNavigationBarButtons = const [],
     this.trailingNavigationBarButtons = const [],
@@ -35,6 +35,36 @@ class CPMapTemplate {
         'automaticallyHidesNavigationBar': automaticallyHidesNavigationBar,
         'hidesButtonsWithNavigationBar': hidesButtonsWithNavigationBar,
       };
+
+  void updateTitle(String value) {
+    title = value;
+  }
+
+  void updateAutomaticallyHidesNavigationBar({required bool value}) {
+    automaticallyHidesNavigationBar = value;
+  }
+
+  void updateHidesButtonsWithNavigationBar({required bool value}) {
+    hidesButtonsWithNavigationBar = value;
+  }
+
+  void updateMapButtons(List<CPMapButton> buttons) {
+    mapButtons
+      ..clear()
+      ..addAll(buttons);
+  }
+
+  void updateLeadingNavigationBarButtons(List<CPBarButton> buttons) {
+    leadingNavigationBarButtons
+      ..clear()
+      ..addAll(buttons);
+  }
+
+  void updateTrailingNavigationBarButtons(List<CPBarButton> buttons) {
+    leadingNavigationBarButtons
+      ..clear()
+      ..addAll(buttons);
+  }
 
   String get uniqueId {
     return _elementId;
