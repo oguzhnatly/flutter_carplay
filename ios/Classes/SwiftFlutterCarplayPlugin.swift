@@ -110,8 +110,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             let playingIndicatorLocation = args["playingIndicatorLocation"] as? String
             let accessoryType = args["accessoryType"] as? String
             SwiftFlutterCarplayPlugin.findItem(elementId: elementId, actionWhenFound: { item in
-                item.update(text: text, detailText: detailText, image: image, playbackProgress: playbackProgress, isPlaying: isPlaying, playingIndicatorLocation: playingIndicatorLocation, accessoryType: accessoryType,
-                            isEnabled: isEnabled)
+                item.update(text: text, detailText: detailText, image: image, playbackProgress: playbackProgress, isPlaying: isPlaying, playingIndicatorLocation: playingIndicatorLocation, accessoryType: accessoryType, isEnabled: isEnabled)
             })
             result(true)
         case FCPChannelTypes.onListItemSelectedComplete:
@@ -139,7 +138,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             objcPresentTemplate = alertTemplate
             let animated = args["animated"] as! Bool
             FlutterCarPlaySceneDelegate
-                .presentTemplate(template: alertTemplate.get, animated: animated, onPresent: { completed in
+                .presentTemplate(template: alertTemplate.get, animated: animated, completion: { completed, _ in
                     if completed {
                         SwiftFlutterCarplayPlugin.fcpTemplateHistory.append(alertTemplate)
                     }
@@ -161,7 +160,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             let actionSheetTemplate = FCPActionSheetTemplate(obj: args["rootTemplate"] as! [String: Any])
             objcPresentTemplate = actionSheetTemplate
             let animated = args["animated"] as! Bool
-            FlutterCarPlaySceneDelegate.presentTemplate(template: actionSheetTemplate.get, animated: animated, onPresent: { completed in
+            FlutterCarPlaySceneDelegate.presentTemplate(template: actionSheetTemplate.get, animated: animated, completion: { completed, _ in
                 if completed {
                     SwiftFlutterCarplayPlugin.fcpTemplateHistory.append(actionSheetTemplate)
                 }
@@ -253,7 +252,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             let voiceControlTemplate = FCPVoiceControlTemplate(obj: args["rootTemplate"] as! [String: Any])
             objcPresentTemplate = voiceControlTemplate
             let animated = args["animated"] as! Bool
-            FlutterCarPlaySceneDelegate.presentTemplate(template: voiceControlTemplate.get, animated: animated, onPresent: { completed in
+            FlutterCarPlaySceneDelegate.presentTemplate(template: voiceControlTemplate.get, animated: animated, completion: { completed, _ in
                 if completed {
                     SwiftFlutterCarplayPlugin.fcpTemplateHistory.append(voiceControlTemplate)
                 }
@@ -353,25 +352,19 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
         if !filteredTemplates.isEmpty {
             templates = filteredTemplates.map { $0 as! FCPListTemplate }
-            MemoryLogger.shared.appendEvent("templates from fcpTemplateHistory: \(templates)")
         }
         if objcRootTemplateType.elementsEqual(String(describing: FCPListTemplate.self)) {
             templates.append(SwiftFlutterCarplayPlugin.objcRootTemplate as! FCPListTemplate)
-            MemoryLogger.shared.appendEvent("templates from fcpTemplateHistory + root list: \(templates)")
-
         } else if objcRootTemplateType.elementsEqual(String(describing: FCPTabBarTemplate.self)) {
             templates.append(contentsOf: (SwiftFlutterCarplayPlugin.objcRootTemplate as! FCPTabBarTemplate).getTemplates())
-            MemoryLogger.shared.appendEvent("templates from fcpTemplateHistory + root tabbar: \(templates)")
-
         } else if templates.isEmpty {
-            MemoryLogger.shared.appendEvent("templates are empty on list item completion")
             return
         }
-        l1: for t in templates {
-            for s in t.getSections() {
-                for i in s.getItems() {
-                    if i.elementId == elementId {
-                        actionWhenFound(i)
+        l1: for template in templates {
+            for section in template.getSections() {
+                for item in section.getItems() {
+                    if item.elementId == elementId {
+                        actionWhenFound(item)
                         break l1
                     }
                 }

@@ -37,14 +37,18 @@ class FCPListItem {
 
     var get: CPListItem {
         let listItem = CPListItem(text: text, detailText: detailText)
-        listItem.handler = ((CPSelectableListItem, @escaping () -> Void) -> Void)? { _, complete in
+        listItem.handler = ((CPSelectableListItem, @escaping () -> Void) -> Void)? { [unowned self] _, complete in
             if self.isOnPressListenerActive == true {
+                MemoryLogger.shared.appendEvent("isOnPressListenerActive: \(self.isOnPressListenerActive) for \(self.elementId)")
                 DispatchQueue.main.async {
+                    MemoryLogger.shared.appendEvent("Selected call passed to dart for \(self.elementId)")
                     self.completeHandler = complete
                     FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onListItemSelected,
                                                      data: ["elementId": self.elementId])
+                    complete()
                 }
             } else {
+                MemoryLogger.shared.appendEvent("Complete called from swift for \(self.elementId)")
                 complete()
             }
         }
@@ -71,15 +75,19 @@ class FCPListItem {
     }
 
     public func stopHandler() {
-        MemoryLogger.shared.appendEvent("stopHandler called for: \(elementId)")
         guard completeHandler != nil else {
+            MemoryLogger.shared.appendEvent("stopHandler is null for: \(elementId)")
             return
         }
+        MemoryLogger.shared.appendEvent("stopHandler called for: \(elementId)")
         completeHandler!()
         completeHandler = nil
     }
 
     public func update(text: String?, detailText: String?, image: String?, playbackProgress: CGFloat?, isPlaying: Bool?, playingIndicatorLocation: String?, accessoryType: String?, isEnabled: Bool?) {
+        if completeHandler == nil {
+            MemoryLogger.shared.appendEvent("completeHandler is null when update for: \(elementId)")
+        }
         if text != nil {
             _super?.setText(text!)
             self.text = text!

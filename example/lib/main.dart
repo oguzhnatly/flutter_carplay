@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_carplay/controllers/carplay_controller.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 
 void main() {
@@ -378,17 +379,47 @@ class _MyAppState extends State<MyApp> {
                 onPressed: (onCompleted, item) {
                   debugPrint('Item 1 clicked');
                   item.setIsEnabled(isEnabled: false);
+
                   // item
                   //   ..text = 'ABC'
                   //   ..detailText = 'New ABC';
                   // FlutterCarPlayController.updateCPListItem(item);
                   onCompleted();
-
-                  // openListTemplate();
                 },
               ),
-              CPListItem(text: 'Item 2'),
-              CPListItem(text: 'Item 3'),
+              CPListItem(
+                text: 'Item 2',
+                onPressed: (onCompleted, item) {
+                  debugPrint('Item 2 clicked');
+                  // item.setIsEnabled(isEnabled: false);
+
+                  item
+                    ..setText('ABC')
+                    ..setDetailText('New ABC');
+                  // FlutterCarPlayController.updateCPListItem(item);
+                  onCompleted();
+                  for (final template
+                      in FlutterCarPlayController.templateHistory) {
+                    if (template is CPListTemplate) {
+                      for (final section in template.sections) {
+                        for (final i in section.items) {
+                          if (i.text == 'Item 1') {
+                            log('Item 1 isEnabled: ${i.isEnabled}');
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+              ),
+              CPListItem(
+                text: 'Item 3',
+                onPressed: (onCompleted, item) {
+                  debugPrint('Item 2 clicked');
+                  openListTemplate();
+                  onCompleted();
+                },
+              ),
               CPListItem(text: 'Item 4'),
             ],
           ),

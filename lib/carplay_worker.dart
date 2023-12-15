@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
@@ -77,7 +76,6 @@ class FlutterCarplay {
             completed: event['data']['completed'],
           );
           break;
-
         case FCPChannelTypes.onGridButtonPressed:
           _carPlayController
               .processFCPGridButtonPressed(event['data']['elementId']);
@@ -411,9 +409,6 @@ class FlutterCarplay {
         template.runtimeType == CPListTemplate ||
         template.runtimeType == CPInformationTemplate ||
         template.runtimeType == CPPointOfInterestTemplate) {
-      if (template.runtimeType == CPListTemplate) {
-        debugPrint('list template json: ${jsonEncode(template.toJson())}');
-      }
       final isCompleted = await _carPlayController
           .reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
         'template': template.toJson(),
