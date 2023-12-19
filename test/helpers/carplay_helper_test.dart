@@ -9,15 +9,18 @@ void main() {
     final cpListItem = CPListItem(text: '<CPListItem>');
 
     final cpListTemplate = CPListTemplate(
-        title: '<CPListTemplate>',
-        sections: [
-          CPListSection(items: [cpListItem]),
-        ],
-        systemIcon: '<CarIcon>',);
+      title: '<CPListTemplate>',
+      sections: [
+        CPListSection(items: [cpListItem]),
+      ],
+      systemIcon: '<CarIcon>',
+    );
 
     final templates = [
       CPTabBarTemplate(
-          title: '<CPTabBarTemplate>', templates: [cpListTemplate],),
+        title: '<CPTabBarTemplate>',
+        templates: [cpListTemplate],
+      ),
       cpListTemplate,
     ];
 
@@ -27,12 +30,16 @@ void main() {
 
     test('find CPListItem from dynamic list item and element id', () {
       final item = flutterCarplayHelper.findCPListItem(
-          templates: templates, elementId: cpListItem.uniqueId,);
+        templates: templates,
+        elementId: cpListItem.uniqueId,
+      );
 
       expect(item, cpListItem);
 
       final nullableItem = flutterCarplayHelper.findCPListItem(
-          templates: templates, elementId: '',);
+        templates: templates,
+        elementId: '',
+      );
 
       expect(nullableItem, null);
     });

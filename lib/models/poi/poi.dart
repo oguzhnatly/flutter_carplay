@@ -21,18 +21,19 @@ class CPPointOfInterest {
   final CPTextButton? secondaryButton;
 
   /// Creates [CPPointOfInterest]
-  CPPointOfInterest(
-      {required this.latitude,
-      required this.longitude,
-      required this.title,
-      this.subtitle,
-      this.summary,
-      this.detailTitle,
-      this.detailSubtitle,
-      this.detailSummary,
-      this.image,
-      this.primaryButton,
-      this.secondaryButton,});
+  CPPointOfInterest({
+    required this.latitude,
+    required this.longitude,
+    required this.title,
+    this.subtitle,
+    this.summary,
+    this.detailTitle,
+    this.detailSubtitle,
+    this.detailSummary,
+    this.image,
+    this.primaryButton,
+    this.secondaryButton,
+  });
 
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,

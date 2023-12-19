@@ -361,7 +361,6 @@ class FlutterCarplay {
   /// - If animated is true, CarPlay animates the transition between templates.
   /// - count represents how many times this function will occur.
   static Future<bool> pop({bool animated = true, int count = 1}) async {
-    debugPrint('Pop called from dart');
     FlutterCarPlayController.templateHistory.removeLast();
     return _carPlayController.reactToNativeModule(
       FCPChannelTypes.popTemplate,

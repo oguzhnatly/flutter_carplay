@@ -39,6 +39,9 @@ class CPListItem {
   /// An accessory that the list item displays in its trailing region.
   CPListItemAccessoryTypes? accessoryType;
 
+  /// An accessory image that the list item displays in its trailing region.
+  String? accessoryImage;
+
   /// Creates [CPListItem] that manages the content of a single row in a [CPListTemplate].
   /// CarPlay manages the layout of a list item and may adjust its layout to allow for
   /// the display of auxiliary content, such as, an accessory or a Now Playing indicator.
@@ -53,6 +56,7 @@ class CPListItem {
     this.isPlaying,
     this.playingIndicatorLocation,
     this.accessoryType,
+    this.accessoryImage,
     this.isEnabled = true,
   });
 
@@ -65,19 +69,20 @@ class CPListItem {
         'playbackProgress': playbackProgress,
         'isPlaying': isPlaying,
         'isEnabled': isEnabled,
+        'accessoryImage': accessoryImage,
         'playingIndicatorLocation':
             CPEnumUtils.stringFromEnum(playingIndicatorLocation.toString()),
         'accessoryType': CPEnumUtils.stringFromEnum(accessoryType.toString()),
       };
 
   /// Updating the list item's primary text.
-  void setText(String text) {
+  void updateText(String text) {
     this.text = text;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
   /// Updating the list item's secondary text.
-  void setDetailText(String detailText) {
+  void updateDetailText(String detailText) {
     this.detailText = detailText;
     FlutterCarPlayController.updateCPListItem(this);
   }
@@ -92,14 +97,14 @@ class CPListItem {
   /// Updating the image which will be displayed on the leading edge of the list item cell.
   /// Image asset path in pubspec.yaml file.
   /// For example: images/flutter_logo.png
-  set updateImage(String image) {
+  void updateImage(String image) {
     this.image = image;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
   /// Setter for playbackProgress
   /// When the given value is not between 0.0 and 1.0, throws [RangeError]
-  void setPlaybackProgress(double playbackProgress) {
+  void updatePlaybackProgress(double playbackProgress) {
     if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
       this.playbackProgress = playbackProgress;
       FlutterCarPlayController.updateCPListItem(this);
@@ -109,19 +114,19 @@ class CPListItem {
   }
 
   /// Setter for isPlaying
-  void setIsPlaying({required bool isPlaying}) {
+  void updateIsPlaying({required bool isPlaying}) {
     this.isPlaying = isPlaying;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
   /// Setter for isEnabled
-  void setIsEnabled({required bool isEnabled}) {
+  void updateIsEnabled({required bool isEnabled}) {
     this.isEnabled = isEnabled;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
   /// Setter for playingIndicatorLocation
-  void setPlayingIndicatorLocation(
+  void updatePlayingIndicatorLocation(
     CPListItemPlayingIndicatorLocations playingIndicatorLocation,
   ) {
     this.playingIndicatorLocation = playingIndicatorLocation;
@@ -129,8 +134,14 @@ class CPListItem {
   }
 
   /// Setter for accessoryType
-  void setAccessoryType(CPListItemAccessoryTypes accessoryType) {
+  void updateAccessoryType(CPListItemAccessoryTypes accessoryType) {
     this.accessoryType = accessoryType;
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
+  /// Setter for accessoryImage
+  void updateAccessoryImage(String? accessoryImage) {
+    this.accessoryImage = accessoryImage;
     FlutterCarPlayController.updateCPListItem(this);
   }
 

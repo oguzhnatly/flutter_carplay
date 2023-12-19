@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_carplay/controllers/carplay_controller.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 
 void main() {
@@ -39,10 +38,10 @@ class _MyAppState extends State<MyApp> {
             detailText: 'Detail Text',
             onPressed: (complete, self) {
               self
-                ..setDetailText('You can change the detail text.. 🚀')
-                ..setAccessoryType(CPListItemAccessoryTypes.cloud);
+                ..updateDetailText('You can change the detail text.. 🚀')
+                ..updateAccessoryType(CPListItemAccessoryTypes.cloud);
               Future.delayed(const Duration(seconds: 1), () {
-                self.setDetailText('Customizable Detail Text');
+                self.updateDetailText('Customizable Detail Text');
                 complete();
               });
             },
@@ -57,7 +56,7 @@ class _MyAppState extends State<MyApp> {
             onPressed: (complete, self) {
               for (var i = 1; i <= 100; i++) {
                 sleep(const Duration(milliseconds: 10));
-                self.setPlaybackProgress(i / 100);
+                self.updatePlaybackProgress(i / 100);
                 if (i == 100) {
                   complete();
                 }
@@ -78,7 +77,7 @@ class _MyAppState extends State<MyApp> {
                   text: 'You can also change the title',
                   detailText: 'and detail text while loading',
                 )
-                ..setAccessoryType(CPListItemAccessoryTypes.none);
+                ..updateAccessoryType(CPListItemAccessoryTypes.none);
               Future.delayed(const Duration(seconds: 1), () {
                 complete();
               });
@@ -377,45 +376,25 @@ class _MyAppState extends State<MyApp> {
               CPListItem(
                 text: 'Item 1',
                 onPressed: (onCompleted, item) {
-                  debugPrint('Item 1 clicked');
-                  item.setIsEnabled(isEnabled: false);
-
-                  // item
-                  //   ..text = 'ABC'
-                  //   ..detailText = 'New ABC';
-                  // FlutterCarPlayController.updateCPListItem(item);
+                  log('Item 1 clicked');
+                  item.updateIsEnabled(isEnabled: false);
                   onCompleted();
                 },
               ),
               CPListItem(
                 text: 'Item 2',
                 onPressed: (onCompleted, item) {
-                  debugPrint('Item 2 clicked');
-                  // item.setIsEnabled(isEnabled: false);
-
+                  log('Item 2 clicked');
                   item
-                    ..setText('ABC')
-                    ..setDetailText('New ABC');
-                  // FlutterCarPlayController.updateCPListItem(item);
+                    ..updateText('ABC')
+                    ..updateDetailText('New ABC');
                   onCompleted();
-                  for (final template
-                      in FlutterCarPlayController.templateHistory) {
-                    if (template is CPListTemplate) {
-                      for (final section in template.sections) {
-                        for (final i in section.items) {
-                          if (i.text == 'Item 1') {
-                            log('Item 1 isEnabled: ${i.isEnabled}');
-                          }
-                        }
-                      }
-                    }
-                  }
                 },
               ),
               CPListItem(
                 text: 'Item 3',
                 onPressed: (onCompleted, item) {
-                  debugPrint('Item 2 clicked');
+                  log('Item 2 clicked');
                   openListTemplate();
                   onCompleted();
                 },
@@ -443,7 +422,7 @@ class _MyAppState extends State<MyApp> {
         backButton: CPBarButton(
           title: 'Back',
           onPressed: () {
-            debugPrint('back button call back received');
+            log('back button call back received');
             FlutterCarplay.pop();
           },
           style: CPBarButtonStyles.none,

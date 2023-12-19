@@ -16,6 +16,7 @@ enum FCPChannelTypes {
     static let setRootTemplate = "setRootTemplate"
     static let forceUpdateRootTemplate = "forceUpdateRootTemplate"
     static let updateListItem = "updateListItem"
+    static let updateListTemplate = "updateListTemplate"
     static let onListItemSelected = "onFCPListItemSelected"
     static let onListItemSelectedComplete = "onFCPListItemSelectedComplete"
     static let onAlertActionPressed = "onFCPAlertActionPressed"

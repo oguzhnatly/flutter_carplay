@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 
+import '../../controllers/carplay_controller.dart';
 import '../button/bar_button.dart';
 import 'list_section.dart';
 
@@ -13,21 +14,21 @@ class CPListTemplate {
   final String? title;
 
   /// An array of list sections as [CPListSection], each can contain zero or more list items.
-  final List<CPListSection> sections;
+  List<CPListSection> sections;
 
   /// An optional array of title variants for the template’s empty view.
   /// Provide the strings as localized displayable content and order from most- to
   /// least- preferred. When there are no items in the list, the template displays
   /// an empty view with a title and a subtitle in place of the items. If you update
   /// the list and provide items, the template automatically removes the empty view.
-  final List<String>? emptyViewTitleVariants;
+  List<String> emptyViewTitleVariants;
 
   /// An optional array of subtitle variants for the template’s empty view.
   /// Provide the strings as localized displayable content and order from most- to
   /// least- preferred. When there are no items in the list, the template displays
   /// an empty view with a title and a subtitle in place of the items. If you update
   /// the list and provide items, the template automatically removes the empty view.
-  final List<String>? emptyViewSubtitleVariants;
+  List<String> emptyViewSubtitleVariants;
 
   /// An indicator you use to call attention to the tab. When it is true, a small
   /// red indicator will be displayed on the tab in order to show user that it requires
@@ -54,10 +55,16 @@ class CPListTemplate {
   /// trademark-related use. Apple reserves the right to review and, in its sole discretion, require modification
   /// or discontinuance of use of any Symbol used in violation of the foregoing restrictions, and you agree to
   /// promptly comply with any such request.
-  final String systemIcon;
+  final String? systemIcon;
 
   /// Back button object
   final CPBarButton? backButton;
+
+  /// An array of bar buttons to be displayed on the leading side of the navigation bar.
+  List<CPBarButton> leadingNavigationBarButtons;
+
+  /// An array of bar buttons to be displayed on the trailing side of the navigation bar.
+  List<CPBarButton> trailingNavigationBarButtons;
 
   /// Creates [CPListTemplate] to display a list of items, grouped into one or more sections.
   /// Each section contains an array of list items — objects that is [CPListItem]
@@ -66,10 +73,12 @@ class CPListTemplate {
   CPListTemplate({
     this.title,
     required this.sections,
-    this.emptyViewTitleVariants,
-    this.emptyViewSubtitleVariants,
     this.showsTabBadge = false,
-    required this.systemIcon,
+    this.emptyViewTitleVariants = const [],
+    this.emptyViewSubtitleVariants = const [],
+    this.leadingNavigationBarButtons = const [],
+    this.trailingNavigationBarButtons = const [],
+    this.systemIcon,
     this.backButton,
   });
 
@@ -79,10 +88,39 @@ class CPListTemplate {
         'sections': sections.map((e) => e.toJson()).toList(),
         'emptyViewTitleVariants': emptyViewTitleVariants,
         'emptyViewSubtitleVariants': emptyViewSubtitleVariants,
+        'leadingNavigationBarButtons':
+            leadingNavigationBarButtons.map((e) => e.toJson()).toList(),
+        'trailingNavigationBarButtons':
+            trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
         'showsTabBadge': showsTabBadge,
         'systemIcon': systemIcon,
         'backButton': backButton?.toJson(),
       };
+
+  void updateEmptyViewTitleVariants(List<String> variants) {
+    emptyViewTitleVariants = variants;
+    FlutterCarPlayController.updateListTemplate(_elementId, this);
+  }
+
+  void updateEmptyViewSubtitleVariants(List<String> variants) {
+    emptyViewSubtitleVariants = variants;
+    FlutterCarPlayController.updateListTemplate(_elementId, this);
+  }
+
+  void updateSections(List<CPListSection> sections) {
+    this.sections = sections;
+    FlutterCarPlayController.updateListTemplate(_elementId, this);
+  }
+
+  void updateLeadingNavigationBarButtons(List<CPBarButton> buttons) {
+    leadingNavigationBarButtons = buttons;
+    FlutterCarPlayController.updateListTemplate(_elementId, this);
+  }
+
+  void updateTrailingNavigationBarButtons(List<CPBarButton> buttons) {
+    trailingNavigationBarButtons = buttons;
+    FlutterCarPlayController.updateListTemplate(_elementId, this);
+  }
 
   String get uniqueId {
     return _elementId;

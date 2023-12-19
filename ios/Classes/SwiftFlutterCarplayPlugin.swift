@@ -93,7 +93,30 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             SwiftFlutterCarplayPlugin.animated = animated
             result(true)
         case FCPChannelTypes.forceUpdateRootTemplate:
-            FlutterCarPlaySceneDelegate.forceUpdateRootTemplate()
+            FlutterCarPlaySceneDelegate.forceUpdateRootTemplate(completion: { completed, _ in
+                result(completed)
+            })
+        case FCPChannelTypes.updateListTemplate:
+            guard let args = call.arguments as? [String: Any]
+            else {
+                result(false)
+                return
+            }
+            let elementId = args["_elementId"] as! String
+            let emptyViewTitleVariants = args["emptyViewTitleVariants"] as? [String]
+            let emptyViewSubtitleVariants = args["emptyViewSubtitleVariants"] as? [String]
+            let sections = (args["sections"] as? [[String: Any]])?.map {
+                FCPListSection(obj: $0)
+            }
+            let leadingNavigationBarButtons = (args["leadingNavigationBarButtons"] as? [[String: Any]])?.map {
+                FCPBarButton(obj: $0)
+            }
+            let trailingNavigationBarButtons = (args["trailingNavigationBarButtons"] as? [[String: Any]])?.map {
+                FCPBarButton(obj: $0)
+            }
+            SwiftFlutterCarplayPlugin.findListTemplate(elementId: elementId, actionWhenFound: { listTemplate in
+                listTemplate.update(emptyViewTitleVariants: emptyViewTitleVariants, emptyViewSubtitleVariants: emptyViewSubtitleVariants, sections: sections, leadingNavigationBarButtons: leadingNavigationBarButtons, trailingNavigationBarButtons: trailingNavigationBarButtons)
+            })
             result(true)
         case FCPChannelTypes.updateListItem:
             guard let args = call.arguments as? [String: Any] else {
@@ -109,8 +132,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             let isEnabled = args["isEnabled"] as? Bool
             let playingIndicatorLocation = args["playingIndicatorLocation"] as? String
             let accessoryType = args["accessoryType"] as? String
+            let accessoryImage = args["accessoryImage"] as? String
             SwiftFlutterCarplayPlugin.findItem(elementId: elementId, actionWhenFound: { item in
-                item.update(text: text, detailText: detailText, image: image, playbackProgress: playbackProgress, isPlaying: isPlaying, playingIndicatorLocation: playingIndicatorLocation, accessoryType: accessoryType, isEnabled: isEnabled)
+                item.update(text: text, detailText: detailText, image: image, accessoryImage: accessoryImage, playbackProgress: playbackProgress, isPlaying: isPlaying, playingIndicatorLocation: playingIndicatorLocation, accessoryType: accessoryType, isEnabled: isEnabled)
             })
             result(true)
         case FCPChannelTypes.onListItemSelectedComplete:
@@ -118,7 +142,6 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(false)
                 return
             }
-            MemoryLogger.shared.appendEvent("onListItemSelectedComplete called for: \(args)")
             SwiftFlutterCarplayPlugin.findItem(elementId: args, actionWhenFound: { item in
                 item.stopHandler()
             })
@@ -144,8 +167,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                     }
                     FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
                                                      data: ["completed": completed])
+                    result(completed)
                 })
-            result(true)
         case FCPChannelTypes.setActionSheet:
             guard objcPresentTemplate == nil else {
                 result(FlutterError(code: "ERROR",
@@ -164,8 +187,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 if completed {
                     SwiftFlutterCarplayPlugin.fcpTemplateHistory.append(actionSheetTemplate)
                 }
+                result(completed)
             })
-            result(true)
         case FCPChannelTypes.popTemplate:
             guard let args = call.arguments as? [String: Any] else {
                 result(false)
@@ -188,9 +211,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 if completed {
                     SwiftFlutterCarplayPlugin.fcpTemplateHistory.removeLast()
                 }
+                result(completed)
             })
             objcPresentTemplate = nil
-            result(true)
         case FCPChannelTypes.pushTemplate:
             guard let args = call.arguments as? [String: Any] else {
                 result(false)
@@ -224,8 +247,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 if completed {
                     SwiftFlutterCarplayPlugin.fcpTemplateHistory.append(fcpPushTemplate!)
                 }
+                result(completed)
             })
-            result(true)
         case FCPChannelTypes.popToRootTemplate:
             guard let animated = call.arguments as? Bool else {
                 result(false)
@@ -235,9 +258,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 if completed {
                     SwiftFlutterCarplayPlugin.fcpTemplateHistory = [SwiftFlutterCarplayPlugin.fcpTemplateHistory.first!]
                 }
+                result(completed)
             })
             objcPresentTemplate = nil
-            result(true)
         case FCPChannelTypes.setVoiceControl:
             guard objcPresentTemplate == nil else {
                 result(FlutterError(code: "ERROR",
@@ -258,8 +281,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 }
                 FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
                                                  data: ["completed": completed])
+                result(completed)
             })
-            result(true)
         case FCPChannelTypes.activateVoiceControlState:
             guard objcPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
@@ -345,6 +368,27 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                                          data: ["transcript": transcript])
     }
 
+    static func findListTemplate(elementId: String, actionWhenFound: (_ listTemplate: FCPListTemplate) -> Void) {
+        let objcRootTemplateType = String(describing: SwiftFlutterCarplayPlugin.objcRootTemplate).match(#"(.*flutter_carplay\.(.*)\))"#)[0][2]
+        var templates: [FCPListTemplate] = []
+        let filteredTemplates = SwiftFlutterCarplayPlugin.fcpTemplateHistory.filter { $0 is FCPListTemplate }
+
+        if !filteredTemplates.isEmpty {
+            templates = filteredTemplates.map { $0 as! FCPListTemplate }
+        }
+        if objcRootTemplateType.elementsEqual(String(describing: FCPListTemplate.self)) {
+            templates.append(SwiftFlutterCarplayPlugin.objcRootTemplate as! FCPListTemplate)
+        } else if objcRootTemplateType.elementsEqual(String(describing: FCPTabBarTemplate.self)) {
+            templates.append(contentsOf: (SwiftFlutterCarplayPlugin.objcRootTemplate as! FCPTabBarTemplate).getTemplates())
+        } else if templates.isEmpty {
+            return
+        }
+        l1: for template in templates where template.elementId == elementId {
+            actionWhenFound(template)
+            break l1
+        }
+    }
+
     static func findItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {
         let objcRootTemplateType = String(describing: SwiftFlutterCarplayPlugin.objcRootTemplate).match(#"(.*flutter_carplay\.(.*)\))"#)[0][2]
         var templates: [FCPListTemplate] = []
@@ -362,11 +406,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         }
         l1: for template in templates {
             for section in template.getSections() {
-                for item in section.getItems() {
-                    if item.elementId == elementId {
-                        actionWhenFound(item)
-                        break l1
-                    }
+                for item in section.getItems() where item.elementId == elementId {
+                    actionWhenFound(item)
+                    break l1
                 }
             }
         }

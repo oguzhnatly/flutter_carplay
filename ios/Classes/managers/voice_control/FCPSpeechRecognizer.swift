@@ -91,8 +91,6 @@ struct FCPSpeechRecognizer {
                     if let result = result {
                         relay(message: result.bestTranscription.formattedString)
                         isFinal = result.isFinal
-                    } else {
-                        debugPrint("Transcript from native: no result found")
                     }
 
                     if error != nil || isFinal {
@@ -126,7 +124,6 @@ struct FCPSpeechRecognizer {
     }
 
     private func relay(message: String) {
-        debugPrint("Transcript from native: \(message)")
         DispatchQueue.main.async {
             transcript.set(newValue: message)
         }

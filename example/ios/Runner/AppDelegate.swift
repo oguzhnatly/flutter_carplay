@@ -1,6 +1,6 @@
 import Flutter
-import UIKit
 import os
+import UIKit
 
 let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadlessExecution: true)
 

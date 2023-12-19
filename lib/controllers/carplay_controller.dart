@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../constants/private_constants.dart';
@@ -40,6 +39,36 @@ class FlutterCarPlayController {
       data,
     );
     return value;
+  }
+
+  static void updateListTemplate(
+    String elementId,
+    CPListTemplate updatedTemplate,
+  ) {
+    _methodChannel
+        .invokeMethod('updateListTemplate', updatedTemplate.toJson())
+        .then((value) {
+      if (value) {
+        l1:
+        for (var template in templateHistory) {
+          switch (template) {
+            case final CPTabBarTemplate tabBarTemplate:
+              for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
+                if (tab.uniqueId == elementId) {
+                  tabBarTemplate.templates[tabIndex] = updatedTemplate;
+                  break l1;
+                }
+              }
+            case final CPListTemplate listTemplate:
+              if (listTemplate.uniqueId == elementId) {
+                template = updatedTemplate;
+                break l1;
+              }
+            default:
+          }
+        }
+      }
+    });
   }
 
   static void updateCPListItem(CPListItem updatedListItem) {
@@ -94,7 +123,6 @@ class FlutterCarPlayController {
   }
 
   void processFCPListItemSelectedChannel(String elementId) {
-    debugPrint('Selected event received from swift for $elementId');
     final listItem = _carplayHelper.findCPListItem(
       templates: templateHistory,
       elementId: elementId,
@@ -102,7 +130,6 @@ class FlutterCarPlayController {
     if (listItem != null) {
       listItem.onPressed!(
         () {
-          debugPrint('Complete called from dart side for $elementId');
           reactToNativeModule(
             FCPChannelTypes.onFCPListItemSelectedComplete,
             listItem.uniqueId,
@@ -110,8 +137,6 @@ class FlutterCarPlayController {
         },
         listItem,
       );
-    } else {
-      debugPrint('listItem is null on dart side for $elementId');
     }
   }
 
@@ -147,10 +172,22 @@ class FlutterCarPlayController {
     l1:
     for (final template in templateHistory) {
       if (template is CPListTemplate) {
-        final barButton = template.backButton;
-        if (barButton != null) {
-          barButton.onPressed();
+        final backButton = template.backButton;
+        if (backButton != null && backButton.uniqueId == elementId) {
+          backButton.onPressed();
           break l1;
+        }
+        for (final button in template.trailingNavigationBarButtons) {
+          if (button.uniqueId == elementId) {
+            button.onPressed();
+            break l1;
+          }
+        }
+        for (final button in template.leadingNavigationBarButtons) {
+          if (button.uniqueId == elementId) {
+            button.onPressed();
+            break l1;
+          }
         }
       } else {
         l2:
