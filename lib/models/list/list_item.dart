@@ -17,7 +17,7 @@ class CPListItem {
   String? detailText;
 
   /// An optional callback function that CarPlay invokes when the user selects the list item.
-  final Function(VoidCallback complete, CPListItem self)? onPressed;
+  final Function(VoidCallback complete, CPListItem item)? onPressed;
 
   /// Displays an image on the leading edge of the list item cell.
   /// Image asset path in pubspec.yaml file.

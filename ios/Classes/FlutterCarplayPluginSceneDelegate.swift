@@ -9,8 +9,8 @@ import CarPlay
 
 @available(iOS 14.0, *)
 class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
-    private static var interfaceController: CPInterfaceController?
-    private static var carWindow: CPWindow?
+    static var interfaceController: CPInterfaceController?
+    static var carWindow: CPWindow?
 
     public static func forceUpdateRootTemplate(completion: ((Bool, Error?) -> Void)? = nil) {
         let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
@@ -69,24 +69,18 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     func templateApplicationScene(_: CPTemplateApplicationScene, didConnect interfaceController: CPInterfaceController, to window: CPWindow) {
         MemoryLogger.shared.appendEvent("Connected to CarPlay.")
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            FlutterCarPlaySceneDelegate.interfaceController = interfaceController
+        FlutterCarPlaySceneDelegate.carWindow = window
+        FlutterCarPlaySceneDelegate.interfaceController = interfaceController
 
-            if let rootViewController = SwiftFlutterCarplayPlugin.rootViewController {
-                window.rootViewController = rootViewController
-                FlutterCarPlaySceneDelegate.carWindow = window
-            }
+        SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
+        let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
 
-            SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
-            let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
-
-            guard rootTemplate != nil else {
-                // FlutterCarPlaySceneDelegate.interfaceController = nil
-                return
-            }
-
-            FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(rootTemplate!, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
+        guard rootTemplate != nil else {
+            // FlutterCarPlaySceneDelegate.interfaceController = nil
+            return
         }
+
+        FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(rootTemplate!, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
     }
 
     func templateApplicationScene(_: CPTemplateApplicationScene, didDisconnect _: CPInterfaceController, from _: CPWindow) {

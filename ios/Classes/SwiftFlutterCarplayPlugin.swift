@@ -80,6 +80,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 rootTemplate = FCPMapTemplate(obj: args["rootTemplate"] as! [String: Any])
                 SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPMapTemplate).get
                 SwiftFlutterCarplayPlugin.rootViewController = (rootTemplate as! FCPMapTemplate).viewController
+                FlutterCarPlaySceneDelegate.carWindow?.rootViewController = SwiftFlutterCarplayPlugin.rootViewController
             case String(describing: FCPListTemplate.self):
                 rootTemplate = FCPListTemplate(obj: args["rootTemplate"] as! [String: Any], templateType: FCPListTemplateTypes.DEFAULT)
                 SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPListTemplate).get
@@ -87,6 +88,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(false)
                 return
             }
+            FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(SwiftFlutterCarplayPlugin.rootTemplate!, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
             SwiftFlutterCarplayPlugin.objcRootTemplate = rootTemplate
             SwiftFlutterCarplayPlugin.fcpTemplateHistory = [rootTemplate as! FCPTemplate]
             let animated = args["animated"] as! Bool
