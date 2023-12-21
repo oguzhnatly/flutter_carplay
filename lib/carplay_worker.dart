@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-
 import 'constants/private_constants.dart';
 import 'controllers/carplay_controller.dart';
 import 'flutter_carplay.dart';
@@ -421,5 +419,15 @@ class FlutterCarplay {
     } else {
       throw TypeError();
     }
+  }
+
+  static Future<Map<String, dynamic>> getConfig() async {
+    final config = await _carPlayController.methodChannel.invokeMethod(
+      FCPChannelTypes.getConfig.name,
+    );
+    return {
+      'maximumItemCount': config['maximumItemCount'],
+      'maximumSectionCount': config['maximumSectionCount'],
+    };
   }
 }

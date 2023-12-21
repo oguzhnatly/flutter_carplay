@@ -349,6 +349,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             FCPSoundEffects.shared.prepare(sound: args["soundPath"] as! String, volume: (args["volume"] as! NSNumber).floatValue)
             FCPSoundEffects.shared.play()
             result(true)
+        case FCPChannelTypes.getConfig:
+            let config = [
+                "maximumItemCount": CPListTemplate.maximumItemCount,
+                "maximumSectionCount": CPListTemplate.maximumSectionCount,
+            ]
+            result(config)
         default:
             result(false)
         }

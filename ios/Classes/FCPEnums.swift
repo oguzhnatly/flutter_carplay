@@ -41,6 +41,7 @@ enum FCPChannelTypes {
     static let speak = "speak"
     static let onSpeechCompleted = "onSpeechCompleted"
     static let playAudio = "playAudio"
+    static let getConfig = "getConfig"
 }
 
 enum FCPAlertActionTypes {

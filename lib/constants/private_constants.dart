@@ -27,4 +27,5 @@ enum FCPChannelTypes {
   speak,
   onSpeechCompleted,
   playAudio,
+  getConfig,
 }
