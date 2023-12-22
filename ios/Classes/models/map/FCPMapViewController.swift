@@ -11,7 +11,13 @@ class FCPMapViewController: UIViewController, CPMapTemplateDelegate {
         super.viewDidLoad()
         setupMapView()
     }
-
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+//        showToast(message: "This is a toast message")
+//        showBanner(message: "This is a toast message")
+    }
+    
     private func setupMapView() {
         mapView = MKMapView(frame: view.bounds)
         mapView?.translatesAutoresizingMaskIntoConstraints = false
@@ -96,5 +102,41 @@ extension FCPMapViewController: MKMapViewDelegate {
             return renderer
         }
         return MKOverlayRenderer(overlay: overlay)
+    }
+}
+
+extension UIViewController {
+    func showToast(message: String, duration: TimeInterval = 2.0) {
+        let toastView = FCPToastView(frame: CGRect(x: (view.bounds.width/2)-60, y: view.bounds.height - 100, width: 200, height: 80))
+        
+        toastView.messageLabel.text = message
+
+        view.addSubview(toastView)
+
+        UIView.animate(withDuration: 0.5, delay: duration, options: .curveEaseOut, animations: {
+            toastView.alpha = 0.0
+        }, completion: { _ in
+            toastView.removeFromSuperview()
+        })
+    }
+    
+    func showBanner(message: String, duration: TimeInterval = 2.0) {
+        let toastView = FCPBannerView(frame: CGRect(x: 0, y: 40, width: view.bounds.width, height: 80))
+//        toastView.center = view.center
+        
+        debugPrint("mapView center: \(view.center)")
+        debugPrint("mapView width: \(view.frame.width)")
+        debugPrint("mapView height: \(view.frame.height)")
+
+        
+        toastView.messageLabel.text = message
+
+        view.addSubview(toastView)
+
+        UIView.animate(withDuration: 0.5, delay: duration, options: .curveEaseOut, animations: {
+            toastView.alpha = 0.0
+        }, completion: { _ in
+            toastView.removeFromSuperview()
+        })
     }
 }
