@@ -72,6 +72,10 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
         FlutterCarPlaySceneDelegate.carWindow = window
         FlutterCarPlaySceneDelegate.interfaceController = interfaceController
 
+        if let rootViewController = SwiftFlutterCarplayPlugin.rootViewController {
+            window.rootViewController = rootViewController
+        }
+
         SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
         let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
 
