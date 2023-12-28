@@ -105,6 +105,14 @@ class _MyAppState extends State<MyApp> {
             },
           ),
           CPListItem(
+            text: 'Search',
+            detailText: 'Displays a search template',
+            onPressed: (complete, self) {
+              openSearchTemplate();
+              complete();
+            },
+          ),
+          CPListItem(
             text: 'Alert',
             detailText: 'Action template that the user can perform on an alert',
             onPressed: (complete, self) {
@@ -338,6 +346,24 @@ class _MyAppState extends State<MyApp> {
       rootTemplate: currentRootTemplate,
     );
     _flutterCarplay.forceUpdateRootTemplate();
+  }
+
+  void openSearchTemplate() {
+    FlutterCarplay.push(
+      template: CPSearchTemplate(
+        onSearchTextUpdated: (query, searchComplete) {
+          searchComplete([
+            CPListItem(
+              text: query,
+              onPressed: (complete, item) {
+                log('Search item: ${item.text} selected');
+                FlutterCarplay.pop();
+              },
+            ),
+          ]);
+        },
+      ),
+    );
   }
 
   void openGridTemplate() {

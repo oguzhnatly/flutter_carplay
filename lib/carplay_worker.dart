@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:easy_debounce/easy_debounce.dart';
+
 import 'constants/private_constants.dart';
 import 'controllers/carplay_controller.dart';
 import 'flutter_carplay.dart';
@@ -60,6 +62,22 @@ class FlutterCarplay {
           if (_onCarplayConnectionChange != null) {
             _onCarplayConnectionChange?.call(connectionStatus);
           }
+          break;
+        case FCPChannelTypes.onSearchTextUpdated:
+          EasyDebounce.debounce(
+            'searchTextUpdated',
+            const Duration(milliseconds: 500),
+            () => _carPlayController.processFCPSearchTextUpdatedChannel(
+              event['data']['elementId'],
+              event['data']['query'],
+            ),
+          );
+          break;
+        case FCPChannelTypes.onSearchResultSelected:
+          _carPlayController.processFCPSearchResultSelectedChannel(
+            event['data']['elementId'],
+            event['data']['itemElementId'],
+          );
           break;
         case FCPChannelTypes.onFCPListItemSelected:
           _carPlayController
@@ -404,6 +422,7 @@ class FlutterCarplay {
     if (template.runtimeType == CPMapTemplate ||
         template.runtimeType == CPGridTemplate ||
         template.runtimeType == CPListTemplate ||
+        template.runtimeType == CPSearchTemplate ||
         template.runtimeType == CPInformationTemplate ||
         template.runtimeType == CPPointOfInterestTemplate) {
       final isCompleted = await _carPlayController

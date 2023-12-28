@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 
 import '../constants/private_constants.dart';
@@ -110,15 +111,56 @@ class FlutterCarPlayController {
   }
 
   void addTemplateToHistory(dynamic template) {
-    if (template.runtimeType == CPTabBarTemplate ||
+    if (template.runtimeType == CPMapTemplate ||
+        template.runtimeType == CPListTemplate ||
         template.runtimeType == CPGridTemplate ||
+        template.runtimeType == CPSearchTemplate ||
+        template.runtimeType == CPTabBarTemplate ||
         template.runtimeType == CPInformationTemplate ||
-        template.runtimeType == CPMapTemplate ||
-        template.runtimeType == CPPointOfInterestTemplate ||
-        template.runtimeType == CPListTemplate) {
+        template.runtimeType == CPPointOfInterestTemplate) {
       templateHistory.add(template);
     } else {
       throw TypeError();
+    }
+  }
+
+  void processFCPSearchTextUpdatedChannel(String elementId, String query) {
+    for (final template in templateHistory) {
+      if (template is CPSearchTemplate && template.uniqueId == elementId) {
+        template.onSearchTextUpdated(
+          query,
+          (searchResults) {
+            template.searchResults = searchResults;
+            reactToNativeModule(
+              FCPChannelTypes.onSearchTextUpdatedComplete,
+              {
+                '_elementId': elementId,
+                'searchResults': searchResults.map((e) => e.toJson()).toList(),
+              },
+            );
+          },
+        );
+        break;
+      }
+    }
+  }
+
+  void processFCPSearchResultSelectedChannel(
+    String elementId,
+    String itemElementId,
+  ) {
+    for (final template in templateHistory) {
+      if (template is CPSearchTemplate && template.uniqueId == elementId) {
+        final selectedItem = template.searchResults
+            .singleWhereOrNull((element) => element.uniqueId == itemElementId);
+        if (selectedItem != null) {
+          selectedItem.onPressed?.call(
+            () {},
+            selectedItem,
+          );
+        }
+        break;
+      }
     }
   }
 
@@ -257,7 +299,6 @@ class FlutterCarPlayController {
   void processFCPSpeakerOnComplete(String elementId) {
     callbackObjects.removeWhere((e) {
       if (e is CPSpeaker) {
-        // e.uniqueId == elementId;
         e.onCompleted?.call();
         return true;
       }

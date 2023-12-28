@@ -148,6 +148,22 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 item.stopHandler()
             })
             result(true)
+        case FCPChannelTypes.onSearchTextUpdatedComplete:
+            guard let args = call.arguments as? [String: Any]
+            else {
+                result(false)
+                return
+            }
+
+            let elementId = args["_elementId"] as! String
+            let searchResults = (args["searchResults"] as! [[String: Any]]).map {
+                FCPListItem(obj: $0)
+            }
+
+            SwiftFlutterCarplayPlugin.findSearchTemplate(elementId: elementId, actionWhenFound: { template in
+                template.searchPerformed(searchResults)
+            })
+            result(true)
         case FCPChannelTypes.setAlert:
             guard objcPresentTemplate == nil else {
                 result(FlutterError(code: "ERROR",
@@ -234,6 +250,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             case String(describing: FCPMapTemplate.self):
                 fcpPushTemplate = FCPMapTemplate(obj: args["template"] as! [String: Any])
                 pushTemplate = (fcpPushTemplate as! FCPMapTemplate).get
+            case String(describing: FCPSearchTemplate.self):
+                fcpPushTemplate = FCPSearchTemplate(obj: args["template"] as! [String: Any])
+                pushTemplate = (fcpPushTemplate as! FCPSearchTemplate).get
             case String(describing: FCPInformationTemplate.self):
                 fcpPushTemplate = FCPInformationTemplate(obj: args["template"] as! [String: Any])
                 pushTemplate = (fcpPushTemplate as! FCPInformationTemplate).get
@@ -374,6 +393,18 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     static func sendSpeechRecognitionTranscriptChangeEvent(transcript: String) {
         FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onVoiceControlTranscriptChanged,
                                          data: ["transcript": transcript])
+    }
+
+    static func findSearchTemplate(elementId: String, actionWhenFound: (_ searchTemplate: FCPSearchTemplate) -> Void) {
+        let filteredTemplates = SwiftFlutterCarplayPlugin.fcpTemplateHistory.filter { $0 is FCPSearchTemplate }
+
+        if !filteredTemplates.isEmpty {
+            let templates = filteredTemplates.map { $0 as! FCPSearchTemplate }
+            l1: for template in templates where template.elementId == elementId {
+                actionWhenFound(template)
+                break l1
+            }
+        }
     }
 
     static func findListTemplate(elementId: String, actionWhenFound: (_ listTemplate: FCPListTemplate) -> Void) {
