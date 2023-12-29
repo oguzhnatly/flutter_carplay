@@ -10,13 +10,9 @@ class CPSearchTemplate {
   List<CPListItem> searchResults = [];
 
   final Function(String, Function(List<CPListItem>)) onSearchTextUpdated;
-  // final Function(CPListItem) onSearchResultSelected;
 
   /// Creates [CPSearchTemplate]
-  CPSearchTemplate({
-    required this.onSearchTextUpdated,
-    // required this.onSearchResultSelected,
-  });
+  CPSearchTemplate({required this.onSearchTextUpdated});
 
   Map<String, dynamic> toJson() => {'_elementId': _elementId};
 
