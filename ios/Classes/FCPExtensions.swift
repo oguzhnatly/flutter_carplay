@@ -5,6 +5,8 @@
 //  Created by Oğuzhan Atalay on 21.08.2021.
 //
 
+import CarPlay
+
 extension UIImage {
     convenience init?(withURL url: URL) throws {
         let imageData = try Data(contentsOf: url)
@@ -33,5 +35,17 @@ extension String {
         return (try? NSRegularExpression(pattern: regex, options: []))?.matches(in: self, options: [], range: NSMakeRange(0, nsString.length)).map { match in
             (0 ..< match.numberOfRanges).map { match.range(at: $0).location == NSNotFound ? "" : nsString.substring(with: match.range(at: $0)) }
         } ?? []
+    }
+}
+
+extension CPTemplate {
+    func setFCPTemplate(_ template: FCPTemplate) {
+        userInfo = ["FCPObject": template]
+    }
+}
+
+extension CPListItem {
+    func setFCPTemplate(_ item: FCPListItem) {
+        userInfo = ["FCPObject": item]
     }
 }

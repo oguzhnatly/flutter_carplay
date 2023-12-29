@@ -161,6 +161,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             SwiftFlutterCarplayPlugin.findSearchTemplate(elementId: elementId, actionWhenFound: { template in
+                MemoryLogger.shared.appendEvent("searchTemplate found: \(elementId)")
                 template.searchPerformed(searchResults)
             })
             result(true)
@@ -431,10 +432,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     static func findItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {
         let objcRootTemplateType = String(describing: SwiftFlutterCarplayPlugin.objcRootTemplate).match(#"(.*flutter_carplay\.(.*)\))"#)[0][2]
         var templates: [FCPListTemplate] = []
-        let filteredTemplates = SwiftFlutterCarplayPlugin.fcpTemplateHistory.filter { $0 is FCPListTemplate }
-
-        if !filteredTemplates.isEmpty {
-            templates = filteredTemplates.map { $0 as! FCPListTemplate }
+        let filteredTemplates = FlutterCarPlaySceneDelegate.interfaceController?.templates.filter { $0 is CPListTemplate }
+        if let fcpTemplates = filteredTemplates as? [CPListTemplate] {
+            templates = fcpTemplates.compactMap { ($0.userInfo as? [String: Any])?["FCPObject"] as? FCPListTemplate }
         }
         if objcRootTemplateType.elementsEqual(String(describing: FCPListTemplate.self)) {
             templates.append(SwiftFlutterCarplayPlugin.objcRootTemplate as! FCPListTemplate)

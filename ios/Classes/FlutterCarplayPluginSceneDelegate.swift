@@ -71,6 +71,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 
         FlutterCarPlaySceneDelegate.carWindow = window
         FlutterCarPlaySceneDelegate.interfaceController = interfaceController
+        FlutterCarPlaySceneDelegate.interfaceController?.delegate = self
 
         if let rootViewController = SwiftFlutterCarplayPlugin.rootViewController {
             window.rootViewController = rootViewController
@@ -97,5 +98,23 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
         MemoryLogger.shared.appendEvent("Disconnected from CarPlay.")
         SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.disconnected)
         // FlutterCarPlaySceneDelegate.interfaceController = nil
+    }
+}
+
+extension FlutterCarPlaySceneDelegate: CPInterfaceControllerDelegate {
+    func templateWillAppear(_ aTemplate: CPTemplate, animated _: Bool) {
+        // MemoryLogger.shared.appendEvent("Template \(aTemplate.classForCoder) will appear.")
+    }
+
+    func templateDidAppear(_ aTemplate: CPTemplate, animated _: Bool) {
+        MemoryLogger.shared.appendEvent("Template \(aTemplate.classForCoder) did appear.")
+    }
+
+    func templateWillDisappear(_ aTemplate: CPTemplate, animated _: Bool) {
+        // MemoryLogger.shared.appendEvent("Template \(aTemplate.classForCoder) will disappear.")
+    }
+
+    func templateDidDisappear(_ aTemplate: CPTemplate, animated _: Bool) {
+        MemoryLogger.shared.appendEvent("Template \(aTemplate.classForCoder) did disappear.")
     }
 }

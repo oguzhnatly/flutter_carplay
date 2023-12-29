@@ -53,6 +53,7 @@ class FCPListTemplate {
 
     var get: CPListTemplate {
         let listTemplate = CPListTemplate(title: title, sections: sections)
+        listTemplate.setFCPTemplate(self)
         listTemplate.emptyViewTitleVariants = emptyViewTitleVariants
         listTemplate.emptyViewSubtitleVariants = emptyViewSubtitleVariants
         listTemplate.showsTabBadge = showsTabBadge
@@ -115,6 +116,7 @@ class FCPListTemplate {
                 $0.get
             }
         }
+        _super?.setFCPTemplate(self)
     }
 }
 

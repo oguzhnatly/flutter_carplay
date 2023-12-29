@@ -19,6 +19,7 @@ class FCPSearchTemplate: NSObject {
 
 	var get: CPSearchTemplate {
 		let template = CPSearchTemplate()
+		template.setFCPTemplate(self)
 		template.delegate = self
 		_super = template
 		return template
@@ -54,6 +55,7 @@ extension FCPSearchTemplate: CPSearchTemplateDelegate {
 
 	func searchPerformed(_ searchResults: [FCPListItem]) {
 		guard searchPerformedHandler != nil else {
+			MemoryLogger.shared.appendEvent("searchPerformedHandler is nil for \(elementId)")
 			return
 		}
 

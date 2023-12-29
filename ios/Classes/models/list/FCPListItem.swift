@@ -43,6 +43,7 @@ class FCPListItem {
 
     var get: CPListItem {
         let listItem = CPListItem(text: text, detailText: detailText)
+        listItem.setFCPTemplate(self)
         listItem.handler = ((CPSelectableListItem, @escaping () -> Void) -> Void)? { [unowned self] _, complete in
             if self.isOnPressListenerActive == true {
                 DispatchQueue.main.async {
@@ -137,6 +138,7 @@ class FCPListItem {
                 _super?.accessoryType = self.accessoryType!
             }
         }
+        _super?.setFCPTemplate(self)
     }
 
     private func setPlayingIndicatorLocation(fromString: String?) {
