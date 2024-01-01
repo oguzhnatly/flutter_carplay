@@ -28,7 +28,8 @@ class FCPStreamHandlerPlugin: NSObject, FlutterStreamHandler {
     ///   - eventSink: The Flutter event sink for communication.
     /// - Returns: A FlutterError if there is an issue, otherwise nil.
     public func onListen(withArguments _: Any?,
-                         eventSink: @escaping FlutterEventSink) -> FlutterError? {
+                         eventSink: @escaping FlutterEventSink) -> FlutterError?
+    {
         FCPStreamHandlerPlugin.eventSink = eventSink
         return nil
     }

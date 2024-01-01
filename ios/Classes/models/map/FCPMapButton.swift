@@ -11,22 +11,22 @@ import CarPlay
 class FCPMapButton {
     /// The underlying CPMapButton instance.
     private(set) var _super: CPMapButton?
-    
+
     /// The unique identifier for the map button.
     private(set) var elementId: String
-    
+
     /// A Boolean value indicating whether the map button is enabled.
     private var isEnabled: Bool = true
-    
+
     /// A Boolean value indicating whether the map button is hidden.
     private var isHidden: Bool = false
-    
+
     /// The image associated with the map button.
     private var image: UIImage?
-    
+
     /// The focused image associated with the map button.
     private var focusedImage: UIImage?
-    
+
     /// Initializes an instance of FCPMapButton with the provided parameters.
     ///
     /// - Parameter obj: A dictionary containing information about the map button.
@@ -34,20 +34,20 @@ class FCPMapButton {
         guard let elementId = obj["_elementId"] as? String else {
             fatalError("Missing required keys in dictionary for FCPMapButton initialization..")
         }
-        
+
         self.elementId = elementId
-        self.isEnabled = obj["isEnabled"] as? Bool ?? true
-        self.isHidden = obj["isHidden"] as? Bool ?? false
-        
+        isEnabled = obj["isEnabled"] as? Bool ?? true
+        isHidden = obj["isHidden"] as? Bool ?? false
+
         if let image = obj["image"] as? String {
             self.image = UIImage().fromFlutterAsset(name: image)
         }
-        
+
         if let focusedImage = obj["focusedImage"] as? String {
             self.focusedImage = UIImage().fromFlutterAsset(name: focusedImage)
         }
     }
-    
+
     /// Returns the underlying CPMapButton instance configured with the specified properties.
     var get: CPMapButton {
         let mapButton = CPMapButton { [weak self] _ in
@@ -60,7 +60,7 @@ class FCPMapButton {
         mapButton.isEnabled = isEnabled
         mapButton.focusedImage = focusedImage
         mapButton.image = image
-        
+
         _super = mapButton
         return mapButton
     }

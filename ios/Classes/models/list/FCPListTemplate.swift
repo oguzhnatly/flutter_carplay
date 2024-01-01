@@ -11,51 +11,51 @@ import CarPlay
 @available(iOS 14.0, *)
 class FCPListTemplate {
     // MARK: Properties
-    
+
     /// The underlying CPListTemplate instance.
     private(set) var _super: CPListTemplate?
-    
+
     /// The unique identifier for the list template.
     private(set) var elementId: String
-    
+
     /// The title text for the list template (optional).
     private var title: String?
-    
+
     /// The system icon for the list template (optional).
     private var systemIcon: String?
-    
+
     /// An array of CPListSection instances associated with the list template.
     private var sections: [CPListSection] = []
-    
+
     /// An array of FCPListSection instances associated with the list template.
     private var objcSections: [FCPListSection] = []
-    
+
     /// An array of title variants for the empty view.
     private var emptyViewTitleVariants: [String] = []
-    
+
     /// An array of subtitle variants for the empty view.
     private var emptyViewSubtitleVariants: [String] = []
-    
+
     /// Indicates whether the list template shows a tab badge.
     private var showsTabBadge: Bool = false
-    
+
     /// The template type of the list template.
     private var templateType: FCPListTemplateTypes
-    
+
     /// The back button associated with the list template (optional).
     private var objcBackButton: FCPBarButton?
-    
+
     /// The underlying CPBarButton instance associated with the back button.
     private var backButton: CPBarButton?
-    
+
     /// An array of leading navigation bar buttons for the list template.
     private var leadingNavigationBarButtons: [FCPBarButton]
-    
+
     /// An array of trailing navigation bar buttons for the list template.
     private var trailingNavigationBarButtons: [FCPBarButton]
-    
+
     // MARK: Initializer
-    
+
     /// Initializes an instance of FCPListTemplate with the provided parameters.
     ///
     /// - Parameters:
@@ -65,7 +65,7 @@ class FCPListTemplate {
         guard let elementIdValue = obj["_elementId"] as? String else {
             fatalError("Missing required keys in dictionary for FCPListTemplate initialization.")
         }
-        
+
         elementId = elementIdValue
         title = obj["title"] as? String
         systemIcon = obj["systemIcon"] as? String
@@ -90,30 +90,30 @@ class FCPListTemplate {
             FCPBarButton(obj: $0)
         }
     }
-    
+
     // MARK: Computed Property
-    
+
     /// Returns the underlying CPListTemplate instance configured with the specified properties.
     var get: CPListTemplate {
         // Implementation details for returning CPListTemplate instance
         let listTemplate = CPListTemplate(title: title, sections: sections)
-        listTemplate.setFCPTemplate(self)
+        listTemplate.setFCPObject(self)
         listTemplate.emptyViewTitleVariants = emptyViewTitleVariants
         listTemplate.emptyViewSubtitleVariants = emptyViewSubtitleVariants
         listTemplate.showsTabBadge = showsTabBadge
         if let icon = systemIcon {
             listTemplate.tabImage = UIImage(systemName: icon)
         }
-        
+
         if templateType == FCPListTemplateTypes.DEFAULT {
             listTemplate.backButton = backButton
         }
-        
+
         var lBButtons: [CPBarButton] = []
         for button in leadingNavigationBarButtons {
             lBButtons.append(button.get)
         }
-        
+
         var tBButtons: [CPBarButton] = []
         for button in trailingNavigationBarButtons {
             tBButtons.append(button.get)
@@ -123,16 +123,16 @@ class FCPListTemplate {
         _super = listTemplate
         return listTemplate
     }
-    
+
     // MARK: Public Methods
-    
+
     /// Retrieves an array of FCPListSection instances associated with the list template.
     ///
     /// - Returns: An array of FCPListSection instances.
     public func getSections() -> [FCPListSection] {
         return objcSections
     }
-    
+
     /// Updates the properties of the list template.
     ///
     /// - Parameters:
@@ -142,17 +142,16 @@ class FCPListTemplate {
     ///   - leadingNavigationBarButtons: The new array of leading navigation bar buttons.
     ///   - trailingNavigationBarButtons: The new array of trailing navigation bar buttons.
     public func update(emptyViewTitleVariants: [String]?, emptyViewSubtitleVariants: [String]?, sections: [FCPListSection]?, leadingNavigationBarButtons: [FCPBarButton]?, trailingNavigationBarButtons: [FCPBarButton]?) {
-        
         if let _emptyViewTitleVariants = emptyViewTitleVariants {
             self.emptyViewTitleVariants = _emptyViewTitleVariants
             _super?.emptyViewTitleVariants = _emptyViewTitleVariants
         }
-        
+
         if let _emptyViewSubtitleVariants = emptyViewSubtitleVariants {
             self.emptyViewSubtitleVariants = _emptyViewSubtitleVariants
             _super?.emptyViewSubtitleVariants = _emptyViewSubtitleVariants
         }
-        
+
         if let _sections = sections {
             objcSections = _sections
             self.sections = _sections.map {
@@ -160,21 +159,21 @@ class FCPListTemplate {
             }
             _super?.updateSections(self.sections)
         }
-        
+
         if let _leadingNavigationBarButtons = leadingNavigationBarButtons {
             self.leadingNavigationBarButtons = _leadingNavigationBarButtons
             _super?.leadingNavigationBarButtons = _leadingNavigationBarButtons.map {
                 $0.get
             }
         }
-        
+
         if let _trailingNavigationBarButtons = trailingNavigationBarButtons {
             self.trailingNavigationBarButtons = _trailingNavigationBarButtons
             _super?.trailingNavigationBarButtons = _trailingNavigationBarButtons.map {
                 $0.get
             }
         }
-        _super?.setFCPTemplate(self)
+        _super?.setFCPObject(self)
     }
 }
 

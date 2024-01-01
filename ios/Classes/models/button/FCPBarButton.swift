@@ -11,24 +11,24 @@ import CarPlay
 @available(iOS 14.0, *)
 class FCPBarButton {
     // MARK: Properties
-    
+
     /// The underlying CPBarButton instance.
     private(set) var _super: CPBarButton?
-    
+
     /// The unique identifier for the bar button.
     private(set) var elementId: String
-    
+
     /// The image associated with the bar button (optional).
     private var image: UIImage?
-    
+
     /// The title associated with the bar button (optional).
     private var title: String?
-    
+
     /// The style of the bar button.
     private var style: CPBarButtonStyle
-    
+
     // MARK: Initializer
-    
+
     /// Initializes an instance of FCPBarButton with the provided parameters.
     ///
     /// - Parameter obj: A dictionary containing information about the bar button.
@@ -37,23 +37,22 @@ class FCPBarButton {
             fatalError("Missing required key: _elementId")
         }
         elementId = elementIdValue
-        
+
         title = obj["title"] as? String
-        
+
         if let imageName = obj["image"] as? String {
             image = UIImage().fromFlutterAsset(name: imageName)
         }
-        
+
         style = (obj["style"] as? String == "none") ? .none : .rounded
-        
     }
-    
+
     // MARK: Computed Property
-    
+
     /// Returns the underlying CPBarButton instance configured with the specified properties.
     var get: CPBarButton {
         var barButton: CPBarButton?
-        
+
         if let barTitle = title {
             barButton = CPBarButton(title: barTitle, handler: { _ in
                 DispatchQueue.main.async {
@@ -69,7 +68,7 @@ class FCPBarButton {
                 }
             })
         }
-        
+
         barButton?.buttonStyle = style
         _super = barButton
         return barButton!

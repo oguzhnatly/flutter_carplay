@@ -14,29 +14,29 @@ struct FCPSpeechRecognizer {
     /// A nested class responsible for managing the speech transcript.
     private class FCPSpeechTranscript {
         var transcript = ""
-        
+
         func set(newValue: String) {
             SwiftFlutterCarplayPlugin.sendSpeechRecognitionTranscriptChangeEvent(transcript: newValue)
             transcript = newValue
         }
-        
+
         func get() -> String {
             return transcript
         }
     }
-    
+
     /// A nested class assisting in speech recognition tasks.
     private class FCPSpeechAssist {
         var audioEngine: AVAudioEngine?
         var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
         var recognitionTask: SFSpeechRecognitionTask?
         var speechRecognizer = SFSpeechRecognizer()
-        
+
         /// Deinitializes the speech assist class and resets recognition components.
         deinit {
             reset()
         }
-        
+
         /// Resets the speech recognition components.
         func reset() {
             recognitionTask?.cancel()
@@ -45,7 +45,7 @@ struct FCPSpeechRecognizer {
             recognitionRequest = nil
             recognitionTask = nil
         }
-        
+
         /// Sets the locale for the speech recognizer.
         ///
         /// - Parameter locale: The locale identifier.
@@ -54,28 +54,28 @@ struct FCPSpeechRecognizer {
             MemoryLogger.shared.appendEvent("[FlutterCarPlay]: Voice Control for locale " + (locale ?? "en-US") + " is initialized.")
         }
     }
-    
+
     /// An instance of FCPSpeechTranscript managing the speech transcript.
     private let transcript = FCPSpeechTranscript()
-    
+
     /// An instance of FCPSpeechAssist assisting in speech recognition tasks.
     private let assistant = FCPSpeechAssist()
-    
+
     /// Initiates the speech recognition process.
     ///
     /// - Parameter locale: The locale identifier.
     func record(locale: String?) {
         MemoryLogger.shared.appendEvent("[FlutterCarPlay]: Requesting access for Voice Control.")
-        
+
         assistant.setLocale(locale: locale)
-        
+
         canAccess { authorized in
             guard authorized else {
                 debugPrint("[FlutterCarPlay]: Access denied.")
                 return
             }
             MemoryLogger.shared.appendEvent("[FlutterCarPlay]: Access granted.")
-            
+
             assistant.audioEngine = AVAudioEngine()
             guard let audioEngine = assistant.audioEngine else {
                 fatalError("[FlutterCarPlay]: Unable to create audio engine.")
@@ -85,10 +85,10 @@ struct FCPSpeechRecognizer {
                 fatalError("[FlutterCarPlay]: Unable to create recognition request.")
             }
             recognitionRequest.shouldReportPartialResults = true
-            
+
             do {
                 MemoryLogger.shared.appendEvent("[FlutterCarPlay]: Booting audio subsystem and finding input node, please wait.")
-                
+
                 let audioSession = AVAudioSession.sharedInstance()
                 try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
                 try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
@@ -106,7 +106,7 @@ struct FCPSpeechRecognizer {
                         relay(message: result.bestTranscription.formattedString)
                         isFinal = result.isFinal
                     }
-                    
+
                     if error != nil || isFinal {
                         audioEngine.stop()
                         inputNode.removeTap(onBus: 0)
@@ -119,13 +119,13 @@ struct FCPSpeechRecognizer {
             }
         }
     }
-    
+
     /// Stops the ongoing speech recognition.
     func stopRecording() {
         MemoryLogger.shared.appendEvent("[FlutterCarPlay]: Voice Control Record has been stopped.")
         assistant.reset()
     }
-    
+
     /// Checks if the app has access to speech recognition and audio recording.
     ///
     /// - Parameter handler: A closure indicating whether access is granted.
@@ -140,7 +140,7 @@ struct FCPSpeechRecognizer {
             }
         }
     }
-    
+
     /// Relays the speech recognition result to the transcript.
     ///
     /// - Parameter message: The recognized speech message.

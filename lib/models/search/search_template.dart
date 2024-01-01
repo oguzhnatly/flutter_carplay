@@ -9,7 +9,8 @@ class CPSearchTemplate {
 
   List<CPListItem> searchResults = [];
 
-  final Function(String, Function(List<CPListItem>)) onSearchTextUpdated;
+  final void Function(String, void Function(List<CPListItem>))
+      onSearchTextUpdated;
 
   /// Creates [CPSearchTemplate]
   CPSearchTemplate({required this.onSearchTextUpdated});

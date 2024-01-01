@@ -55,7 +55,7 @@ extension String {
 extension CPTemplate {
     /// Sets a custom FCPTemplate object in the userInfo.
     /// - Parameter template: The FCPTemplate object to be associated with the CPTemplate.
-    func setFCPTemplate(_ template: FCPTemplate) {
+    func setFCPObject(_ template: FCPTemplate) {
         userInfo = ["FCPObject": template]
     }
 }
@@ -64,7 +64,7 @@ extension CPTemplate {
 extension CPListItem {
     /// Sets a custom FCPListItem object in the userInfo.
     /// - Parameter item: The FCPListItem object to be associated with the CPListItem.
-    func setFCPTemplate(_ item: FCPListItem) {
+    func setFCPObject(_ item: FCPListItem) {
         userInfo = ["FCPObject": item]
     }
 }

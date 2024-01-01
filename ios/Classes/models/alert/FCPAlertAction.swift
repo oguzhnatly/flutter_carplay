@@ -11,24 +11,24 @@ import CarPlay
 /// Wrapper class for CPAlertAction with additional functionality.
 class FCPAlertAction {
     // MARK: Properties
-    
+
     /// The underlying CPAlertAction instance.
     private(set) var _super: CPAlertAction?
-    
+
     /// The unique identifier for the alert action.
     private(set) var elementId: String
-    
+
     /// The title of the alert action.
     private var title: String
-    
+
     /// The style of the alert action.
     private var style: CPAlertAction.Style
-    
+
     /// The type of handler associated with the alert action.
     private var handlerType: FCPAlertActionTypes
-    
+
     // MARK: Initializer
-    
+
     /// Initializes an instance of FCPAlertAction with the provided parameters.
     ///
     /// - Parameters:
@@ -39,14 +39,14 @@ class FCPAlertAction {
             fatalError("Missing required key: _elementId")
         }
         elementId = elementIdValue
-        
+
         guard let titleValue = obj["title"] as? String else {
             fatalError("Missing required key: title")
         }
         title = titleValue
-        
+
         let styleString = obj["style"] as? String ?? ""
-        
+
         switch styleString.lowercased() {
         case "destructive":
             style = .destructive
@@ -55,12 +55,12 @@ class FCPAlertAction {
         default:
             style = .default
         }
-        
+
         handlerType = type
     }
-    
+
     // MARK: Computed Property
-    
+
     /// Returns the underlying CPAlertAction instance configured with the specified properties.
     var get: CPAlertAction {
         let alertAction = CPAlertAction(title: title, style: style, handler: { _ in
