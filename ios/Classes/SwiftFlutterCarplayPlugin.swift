@@ -55,6 +55,11 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         }
     }
 
+    /// The CPTemplate history for CarPlay.
+    public static var cpTemplateHistory: [CPTemplate] {
+        return FlutterCarPlaySceneDelegate.interfaceController?.templates ?? []
+    }
+
     /// Registers the plugin with the Flutter engine.
     ///
     /// This method is called when the Flutter engine initializes the plugin.
@@ -582,7 +587,7 @@ extension SwiftFlutterCarplayPlugin {
 
 // MARK: - Find FCPObjects
 
-extension SwiftFlutterCarplayPlugin {
+private extension SwiftFlutterCarplayPlugin {
     /// Finds a CarPlay search template by element ID and performs an action when found.
     ///
     /// - Parameters:
@@ -590,7 +595,7 @@ extension SwiftFlutterCarplayPlugin {
     ///   - actionWhenFound: The action to perform when the search template is found.
     static func findSearchTemplate(elementId: String, actionWhenFound: (_ searchTemplate: FCPSearchTemplate) -> Void) {
         // Filter the template history to include only FCPSearchTemplate instances.
-        let filteredTemplates = FlutterCarPlaySceneDelegate.interfaceController?.templates.filter { $0 is CPSearchTemplate }
+        let filteredTemplates = SwiftFlutterCarplayPlugin.cpTemplateHistory.filter { $0 is CPSearchTemplate }
 
         if let fcpTemplates = filteredTemplates as? [CPSearchTemplate] {
             let templates = fcpTemplates.compactMap { ($0.userInfo as? [String: Any])?["FCPObject"] as? FCPSearchTemplate }
@@ -610,42 +615,14 @@ extension SwiftFlutterCarplayPlugin {
     ///   - elementId: The element ID of the list template.
     ///   - actionWhenFound: The action to perform when the list template is found.
     static func findListTemplate(elementId: String, actionWhenFound: (_ listTemplate: FCPListTemplate) -> Void) {
-        // Get the runtime type of the root template.
-        if let objcRootTemplateType = String(describing: SwiftFlutterCarplayPlugin.objcRootTemplate).match(#"(.*flutter_carplay\.(.*)\))"#).first?[2] {
-            // Initialize an array to store FCPListTemplate instances.
-            var templates: [FCPListTemplate] = []
+        // Get the array of FCPListTemplate instances.
+        var templates = getFCPListTemplatesFromHistory()
 
-            // Filter the template history to include only FCPListTemplate instances.
-            let filteredTemplates = FlutterCarPlaySceneDelegate.interfaceController?.templates.filter { $0 is CPListTemplate }
-
-            // Populate the templates array if there are filtered templates.
-            if let fcpTemplates = filteredTemplates as? [CPListTemplate] {
-                templates = fcpTemplates.compactMap { ($0.userInfo as? [String: Any])?["FCPObject"] as? FCPListTemplate }
-            }
-
-            // Append the root template if its type is FCPListTemplate.
-            if objcRootTemplateType.elementsEqual(String(describing: FCPListTemplate.self)),
-               let rootListTemplate = SwiftFlutterCarplayPlugin.objcRootTemplate as? FCPListTemplate
-            {
-                templates.append(rootListTemplate)
-            }
-            // Append the templates from FCPTabBarTemplate if the root template is of that type.
-            else if objcRootTemplateType.elementsEqual(String(describing: FCPTabBarTemplate.self)),
-                    let tabBarTemplate = SwiftFlutterCarplayPlugin.objcRootTemplate as? FCPTabBarTemplate
-            {
-                templates.append(contentsOf: tabBarTemplate.getTemplates())
-            }
-            // If no templates are available, return early.
-            else if templates.isEmpty {
-                return
-            }
-
-            // Iterate through the templates to find the one with the matching element ID.
-            for template in templates where template.elementId == elementId {
-                // Perform the specified action when the template is found.
-                actionWhenFound(template)
-                break
-            }
+        // Iterate through the templates to find the one with the matching element ID.
+        for template in templates where template.elementId == elementId {
+            // Perform the specified action when the template is found.
+            actionWhenFound(template)
+            break
         }
     }
 
@@ -655,35 +632,8 @@ extension SwiftFlutterCarplayPlugin {
     ///   - elementId: The element ID of the list item.
     ///   - actionWhenFound: The action to perform when the list item is found.
     static func findItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {
-        // Get the runtime type of the root template.
-        guard let objcRootTemplateType = String(describing: SwiftFlutterCarplayPlugin.objcRootTemplate).match(#"(.*flutter_carplay\.(.*)\))"#).first?[2] else {
-            return
-        }
-
-        // Initialize an array to store FCPListTemplate instances.
-        var templates: [FCPListTemplate] = []
-
-        // Filter the interface controller templates to include only CPListTemplate instances.
-        if let filteredTemplates = FlutterCarPlaySceneDelegate.interfaceController?.templates.filter({ $0 is CPListTemplate }) as? [CPListTemplate] {
-            templates = filteredTemplates.compactMap { ($0.userInfo as? [String: Any])?["FCPObject"] as? FCPListTemplate }
-        }
-
-        // Append the root template if its type is FCPListTemplate.
-        if objcRootTemplateType.elementsEqual(String(describing: FCPListTemplate.self)),
-           let rootListTemplate = SwiftFlutterCarplayPlugin.objcRootTemplate as? FCPListTemplate
-        {
-            templates.append(rootListTemplate)
-        }
-        // Append the templates from FCPTabBarTemplate if the root template is of that type.
-        else if objcRootTemplateType.elementsEqual(String(describing: FCPTabBarTemplate.self)),
-                let tabBarTemplate = SwiftFlutterCarplayPlugin.objcRootTemplate as? FCPTabBarTemplate
-        {
-            templates.append(contentsOf: tabBarTemplate.getTemplates())
-        }
-        // If no templates are available, return early.
-        else if templates.isEmpty {
-            return
-        }
+        // Get the array of FCPListTemplate instances.
+        var templates = getFCPListTemplatesFromHistory()
 
         // Iterate through the templates, sections, and items to find the one with the matching element ID.
         for template in templates {
@@ -695,5 +645,25 @@ extension SwiftFlutterCarplayPlugin {
                 }
             }
         }
+    }
+
+    /// Finds a CarPlay list templates from history.
+    ///
+    /// - Returns:
+    ///   - [FCPListTemplate]: Array of FCPListTemplate instances
+    static func getFCPListTemplatesFromHistory() -> [FCPListTemplate] {
+        // Initialize an array to store FCPListTemplate instances.
+        var templates: [FCPListTemplate] = []
+
+        // Filter the template history to include only FCPListTemplate instances.
+        for template in SwiftFlutterCarplayPlugin.cpTemplateHistory {
+            if let fcpTemplate = (((template as? CPListTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPListTemplate) {
+                templates.append(fcpTemplate)
+            } else if let fcpTemplate = (((template as? CPTabBarTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPTabBarTemplate) {
+                templates.append(contentsOf: fcpTemplate.getTemplates())
+            }
+        }
+
+        return templates
     }
 }

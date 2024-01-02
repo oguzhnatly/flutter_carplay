@@ -21,6 +21,9 @@ class FCPSearchTemplate: NSObject {
     /// A closure that is called when the search text is updated, providing search results.
     private var searchPerformedHandler: (([CPListItem]) -> Void)?
 
+    /// A debounce object for optimizing search events.
+    private let _debounce = Debounce(delay: 0.5)
+
     // MARK: Initialization
 
     /// Initializes a new instance of `FCPSearchTemplate` with the specified parameters.
@@ -53,8 +56,11 @@ extension FCPSearchTemplate: FCPTemplate {}
 
 extension FCPSearchTemplate: CPSearchTemplateDelegate {
     func searchTemplate(_: CPSearchTemplate, updatedSearchText searchText: String, completionHandler: @escaping ([CPListItem]) -> Void) {
-        searchPerformedHandler = completionHandler
-        DispatchQueue.main.async {
+        // Debounce search events.
+        _debounce.debounce { [weak self] in
+            guard let self = self else { return }
+
+            self.searchPerformedHandler = completionHandler
             FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onSearchTextUpdated,
                                              data: ["elementId": self.elementId, "query": searchText])
         }

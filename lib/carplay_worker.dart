@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:easy_debounce/easy_debounce.dart';
-
 import 'constants/private_constants.dart';
 import 'controllers/carplay_controller.dart';
 import 'flutter_carplay.dart';
@@ -64,13 +62,9 @@ class FlutterCarplay {
           }
           break;
         case FCPChannelTypes.onSearchTextUpdated:
-          EasyDebounce.debounce(
-            'searchTextUpdated',
-            const Duration(milliseconds: 500),
-            () => _carPlayController.processFCPSearchTextUpdatedChannel(
-              event['data']['elementId'],
-              event['data']['query'],
-            ),
+          _carPlayController.processFCPSearchTextUpdatedChannel(
+            event['data']['elementId'],
+            event['data']['query'],
           );
           break;
         case FCPChannelTypes.onSearchResultSelected:
