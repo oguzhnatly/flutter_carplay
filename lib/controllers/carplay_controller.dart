@@ -14,10 +14,10 @@ class FlutterCarPlayController {
   static final EventChannel _eventChannel =
       EventChannel(_carplayHelper.makeFCPChannelId(event: '/event'));
 
-  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate] in a List
+  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate], [CPMapTemplate], [CPSearchTemplate] in a List
   static List<dynamic> templateHistory = [];
 
-  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate]
+  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate], [CPMapTemplate]
   static dynamic currentRootTemplate;
 
   /// [CPAlertTemplate], [CPActionSheetTemplate], [CPVoiceControlTemplate]
@@ -161,6 +161,13 @@ class FlutterCarPlayController {
         }
         break;
       }
+    }
+  }
+
+  void processFCPSearchCancelledChannel(String elementId) {
+    final topTemplate = templateHistory.lastOrNull;
+    if (topTemplate is CPSearchTemplate && topTemplate.uniqueId == elementId) {
+      templateHistory.removeLast();
     }
   }
 

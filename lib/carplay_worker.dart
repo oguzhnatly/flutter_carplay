@@ -79,6 +79,11 @@ class FlutterCarplay {
             event['data']['itemElementId'],
           );
           break;
+        case FCPChannelTypes.onSearchCancelled:
+          _carPlayController.processFCPSearchCancelledChannel(
+            event['data']['elementId'],
+          );
+          break;
         case FCPChannelTypes.onFCPListItemSelected:
           _carPlayController
               .processFCPListItemSelectedChannel(event['data']['elementId']);

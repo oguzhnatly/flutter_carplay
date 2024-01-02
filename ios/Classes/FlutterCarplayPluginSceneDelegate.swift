@@ -83,6 +83,18 @@ extension FlutterCarPlaySceneDelegate: CPInterfaceControllerDelegate {
 
     func templateDidDisappear(_ aTemplate: CPTemplate, animated _: Bool) {
         MemoryLogger.shared.appendEvent("Template \(aTemplate.classForCoder) did disappear.")
+
+        // Handle the cancel button event on search template
+        if let topTemplate = FlutterCarPlaySceneDelegate.interfaceController?.topTemplate {
+            if aTemplate is CPSearchTemplate && !(topTemplate is CPSearchTemplate) {
+                if let elementId = (((aTemplate as? CPSearchTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPSearchTemplate)?.elementId {
+                    DispatchQueue.main.async {
+                        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onSearchCancelled,
+                                                         data: ["elementId": elementId])
+                    }
+                }
+            }
+        }
     }
 }
 

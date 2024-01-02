@@ -43,6 +43,9 @@ enum FCPChannelTypes {
     /// Event triggered when a search result is selected in CarPlay.
     static let onSearchResultSelected = "onSearchResultSelected"
 
+    /// Event triggered when the search is cancelled in CarPlay.
+    static let onSearchCancelled = "onSearchCancelled"
+
     /// Event triggered when a list item is selected in CarPlay.
     static let onListItemSelected = "onFCPListItemSelected"
 

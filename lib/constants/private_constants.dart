@@ -7,6 +7,7 @@ enum FCPChannelTypes {
   onSearchTextUpdated,
   onSearchTextUpdatedComplete,
   onSearchResultSelected,
+  onSearchCancelled,
   onFCPListItemSelected,
   onFCPListItemSelectedComplete,
   onFCPAlertActionPressed,
