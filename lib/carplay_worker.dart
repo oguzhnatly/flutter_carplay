@@ -389,6 +389,10 @@ class FlutterCarplay {
   /// Removes all of the templates from the navigation hierarchy except the root template.
   /// If animated is true, CarPlay animates the presentation of the template.
   static Future<bool> popToRoot({bool animated = true}) async {
+    FlutterCarplay.popModal();
+
+    if (FlutterCarPlayController.templateHistory.length <= 1) return false;
+
     FlutterCarPlayController.templateHistory = [
       FlutterCarPlayController.currentRootTemplate,
     ];
@@ -401,6 +405,8 @@ class FlutterCarplay {
   /// Removes a modal template. Since [CPAlertTemplate] and [CPActionSheetTemplate] are both
   /// modals, they can be removed. If animated is true, CarPlay animates the transition between templates.
   static Future<bool> popModal({bool animated = true}) async {
+    if (FlutterCarPlayController.currentPresentTemplate == null) return false;
+
     FlutterCarPlayController.currentPresentTemplate = null;
     return _carPlayController.reactToNativeModule(
       FCPChannelTypes.closePresent,
