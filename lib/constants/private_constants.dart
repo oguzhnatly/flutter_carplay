@@ -4,6 +4,7 @@ enum FCPChannelTypes {
   forceUpdateRootTemplate,
   updateListItem,
   updateListTemplate,
+  updateMapTemplate,
   onSearchTextUpdated,
   onSearchTextUpdatedComplete,
   onSearchResultSelected,

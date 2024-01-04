@@ -42,6 +42,36 @@ class FlutterCarPlayController {
     return value;
   }
 
+  static void updateMapTemplate(
+    String elementId,
+    CPMapTemplate updatedTemplate,
+  ) {
+    _methodChannel
+        .invokeMethod('updateMapTemplate', updatedTemplate.toJson())
+        .then((value) {
+      if (value) {
+        l1:
+        for (var template in templateHistory) {
+          switch (template) {
+            // case final CPTabBarTemplate tabBarTemplate:
+            //   for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
+            //     if (tab.uniqueId == elementId) {
+            //       tabBarTemplate.templates[tabIndex] = updatedTemplate;
+            //       break l1;
+            //     }
+            //   }
+            case final CPMapTemplate mapTemplate:
+              if (mapTemplate.uniqueId == elementId) {
+                template = updatedTemplate;
+                break l1;
+              }
+            default:
+          }
+        }
+      }
+    });
+  }
+
   static void updateListTemplate(
     String elementId,
     CPListTemplate updatedTemplate,

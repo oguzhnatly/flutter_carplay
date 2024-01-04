@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 
+import '../../controllers/carplay_controller.dart';
 import '../../flutter_carplay.dart';
 
 /// A template object that displays map.
@@ -8,9 +9,9 @@ class CPMapTemplate {
   final String _elementId = const Uuid().v4();
 
   String title;
-  final List<CPMapButton> mapButtons;
-  final List<CPBarButton> leadingNavigationBarButtons;
-  final List<CPBarButton> trailingNavigationBarButtons;
+  List<CPMapButton> mapButtons;
+  List<CPBarButton> leadingNavigationBarButtons;
+  List<CPBarButton> trailingNavigationBarButtons;
   bool automaticallyHidesNavigationBar;
   bool hidesButtonsWithNavigationBar;
 
@@ -38,32 +39,32 @@ class CPMapTemplate {
 
   void updateTitle(String value) {
     title = value;
+    FlutterCarPlayController.updateMapTemplate(_elementId, this);
   }
 
   void updateAutomaticallyHidesNavigationBar({required bool value}) {
     automaticallyHidesNavigationBar = value;
+    FlutterCarPlayController.updateMapTemplate(_elementId, this);
   }
 
   void updateHidesButtonsWithNavigationBar({required bool value}) {
     hidesButtonsWithNavigationBar = value;
+    FlutterCarPlayController.updateMapTemplate(_elementId, this);
   }
 
   void updateMapButtons(List<CPMapButton> buttons) {
-    mapButtons
-      ..clear()
-      ..addAll(buttons);
+    mapButtons = buttons;
+    FlutterCarPlayController.updateMapTemplate(_elementId, this);
   }
 
   void updateLeadingNavigationBarButtons(List<CPBarButton> buttons) {
-    leadingNavigationBarButtons
-      ..clear()
-      ..addAll(buttons);
+    leadingNavigationBarButtons = buttons;
+    FlutterCarPlayController.updateMapTemplate(_elementId, this);
   }
 
   void updateTrailingNavigationBarButtons(List<CPBarButton> buttons) {
-    leadingNavigationBarButtons
-      ..clear()
-      ..addAll(buttons);
+    trailingNavigationBarButtons = buttons;
+    FlutterCarPlayController.updateMapTemplate(_elementId, this);
   }
 
   String get uniqueId {

@@ -102,6 +102,51 @@ class FCPMapTemplate: NSObject {
         _super = mapTemplate
         return mapTemplate
     }
+
+    /// Updates the properties of the map template.
+    ///
+    /// - Parameters:
+    ///   - title: The new title text.
+    ///   - automaticallyHidesNavigationBar: A boolean value indicating whether the navigation bar is automatically hidden.
+    ///   - hidesButtonsWithNavigationBar: A boolean value indicating whether buttons are hidden with the navigation bar.
+    ///   - mapButtons: The new array of map buttons.
+    ///   - leadingNavigationBarButtons: The new array of leading navigation bar buttons.
+    ///   - trailingNavigationBarButtons: The new array of trailing navigation bar buttons.
+    public func update(title: String?, automaticallyHidesNavigationBar: Bool?, hidesButtonsWithNavigationBar: Bool?, mapButtons: [FCPMapButton]?, leadingNavigationBarButtons: [FCPBarButton]?, trailingNavigationBarButtons: [FCPBarButton]?) {
+        if let _title = title {
+            self.title = _title
+        }
+
+        if let _hidesButtonsWithNavigationBar = hidesButtonsWithNavigationBar {
+            self.hidesButtonsWithNavigationBar = _hidesButtonsWithNavigationBar
+            _super?.hidesButtonsWithNavigationBar = _hidesButtonsWithNavigationBar
+        }
+
+        if let _automaticallyHidesNavigationBar = automaticallyHidesNavigationBar {
+            self.automaticallyHidesNavigationBar = _automaticallyHidesNavigationBar
+            _super?.automaticallyHidesNavigationBar = _automaticallyHidesNavigationBar
+        }
+        
+        if let _mapButtons = mapButtons {
+            self.mapButtons = _mapButtons
+            _super?.mapButtons = _mapButtons.map { $0.get }
+        }
+
+        if let _leadingNavigationBarButtons = leadingNavigationBarButtons {
+            self.leadingNavigationBarButtons = _leadingNavigationBarButtons
+            _super?.leadingNavigationBarButtons = _leadingNavigationBarButtons.map {
+                $0.get
+            }
+        }
+
+        if let _trailingNavigationBarButtons = trailingNavigationBarButtons {
+            self.trailingNavigationBarButtons = _trailingNavigationBarButtons
+            _super?.trailingNavigationBarButtons = _trailingNavigationBarButtons.map {
+                $0.get
+            }
+        }
+        _super?.setFCPObject(self)
+    }
 }
 
 // MARK: - Extensions

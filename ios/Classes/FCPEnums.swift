@@ -34,6 +34,9 @@ enum FCPChannelTypes {
     /// Event to update the content of a list template in CarPlay.
     static let updateListTemplate = "updateListTemplate"
 
+    /// Event to update the content of a map template in CarPlay.
+    static let updateMapTemplate = "updateMapTemplate"
+
     /// Event triggered when the search text is updated in CarPlay.
     static let onSearchTextUpdated = "onSearchTextUpdated"
 
