@@ -27,6 +27,9 @@ class FCPBarButton {
     /// The style of the bar button.
     private var style: CPBarButtonStyle
 
+    /// The enabled state of the bar button.
+    private var isEnabled: Bool = true
+
     // MARK: Initializer
 
     /// Initializes an instance of FCPBarButton with the provided parameters.
@@ -43,6 +46,8 @@ class FCPBarButton {
         if let imageName = obj["image"] as? String {
             image = UIImage().fromFlutterAsset(name: imageName)
         }
+
+        isEnabled = obj["isEnabled"] as? Bool ?? true
 
         style = (obj["style"] as? String == "none") ? .none : .rounded
     }
@@ -69,6 +74,7 @@ class FCPBarButton {
             })
         }
 
+        barButton?.isEnabled = isEnabled
         barButton?.buttonStyle = style
         _super = barButton
         return barButton!

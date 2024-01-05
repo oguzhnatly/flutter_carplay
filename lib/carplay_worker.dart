@@ -300,14 +300,14 @@ class FlutterCarplay {
   /// The identifier of the [CPVoiceControlTemplate]'s current voice control state.
   ///
   /// If this command is called before a voice control template is presented, a flutter error will occur.
-  static Future<String> getActiveVoiceControlStateIdentifier() async {
+  static Future<String?> getActiveVoiceControlStateIdentifier() async {
     final value = await _carPlayController.methodChannel.invokeMethod(
       CPEnumUtils.stringFromEnum(
         FCPChannelTypes.getActiveVoiceControlStateIdentifier,
       ),
       null,
     );
-    return value as String;
+    return value as String?;
   }
 
   /// Starts recording for the voice recognition.
