@@ -102,23 +102,23 @@ class FCPListItem {
                 complete()
             }
         }
-        if image != nil {
-            listItem.setImage(image!)
+        if let imageValue = image {
+            listItem.setImage(imageValue)
         }
-        if accessoryImage != nil {
-            listItem.setAccessoryImage(accessoryImage!)
+        if let accessoryImageValue = accessoryImage {
+            listItem.setAccessoryImage(accessoryImageValue)
         }
-        if playbackProgress != nil {
-            listItem.playbackProgress = playbackProgress!
+        if let playbackProgressValue = playbackProgress {
+            listItem.playbackProgress = playbackProgressValue
         }
-        if isPlaying != nil {
-            listItem.isPlaying = isPlaying!
+        if let isPlayingValue = isPlaying {
+            listItem.isPlaying = isPlayingValue
         }
-        if playingIndicatorLocation != nil {
-            listItem.playingIndicatorLocation = playingIndicatorLocation!
+        if let playingIndicatorLocationValue = playingIndicatorLocation {
+            listItem.playingIndicatorLocation = playingIndicatorLocationValue
         }
-        if accessoryType != nil {
-            listItem.accessoryType = accessoryType!
+        if let accessoryTypeValue = accessoryType {
+            listItem.accessoryType = accessoryTypeValue
         }
         if #available(iOS 15.0, *) {
             listItem.isEnabled = isEnabled
@@ -131,10 +131,7 @@ class FCPListItem {
 
     /// Stops the onPressed event handler for the list item.
     public func stopHandler() {
-        guard completeHandler != nil else {
-            return
-        }
-        completeHandler!()
+        completeHandler?()
         completeHandler = nil
     }
 
@@ -151,53 +148,54 @@ class FCPListItem {
     ///   - accessoryType: The new accessory type.
     ///   - isEnabled: The new enabled state.
     public func update(text: String?, detailText: String?, image: String?, accessoryImage: String?, playbackProgress: CGFloat?, isPlaying: Bool?, playingIndicatorLocation: String?, accessoryType: String?, isEnabled: Bool?) {
-        if text != nil {
-            _super?.setText(text!)
-            self.text = text!
+        if let textValue = text {
+            _super?.setText(textValue)
+            self.text = textValue
         }
-        if detailText != nil {
-            _super?.setDetailText(detailText)
-            self.detailText = detailText
+        if let detailTextValue = detailText {
+            _super?.setDetailText(detailTextValue)
+            self.detailText = detailTextValue
         }
-        if let image = image {
-            let img = UIImage().fromFlutterAsset(name: image)
+        if let playbackProgressValue = playbackProgress {
+            _super?.playbackProgress = playbackProgressValue
+            self.playbackProgress = playbackProgressValue
+        }
+        if let isPlayingValue = isPlaying {
+            _super?.isPlaying = isPlayingValue
+            self.isPlaying = isPlayingValue
+        }
+        if let playingIndicatorLocationValue = playingIndicatorLocation {
+            setPlayingIndicatorLocation(fromString: playingIndicatorLocationValue)
+            if let location = self.playingIndicatorLocation {
+                _super?.playingIndicatorLocation = location
+            }
+        }
+        if let accessoryTypeValue = accessoryType {
+            setAccessoryType(fromString: accessoryTypeValue)
+            if let type = self.accessoryType {
+                _super?.accessoryType = type
+            }
+        }
+        if let imageValue = image {
+            let img = UIImage().fromFlutterAsset(name: imageValue)
             _super?.setImage(img)
             self.image = img
         } else {
             _super?.setImage(nil)
             self.image = nil
         }
-        if let accessoryImage = accessoryImage {
-            let img = UIImage().fromFlutterAsset(name: accessoryImage)
+
+        if let accessoryImageValue = accessoryImage {
+            let img = UIImage().fromFlutterAsset(name: accessoryImageValue)
             _super?.setAccessoryImage(img)
             self.accessoryImage = img
         } else {
             _super?.setAccessoryImage(nil)
             self.accessoryImage = nil
         }
-        if playbackProgress != nil {
-            _super?.playbackProgress = playbackProgress!
-            self.playbackProgress = playbackProgress
-        }
-        if isPlaying != nil {
-            _super?.isPlaying = isPlaying!
-            self.isPlaying = isPlaying
-        }
-        if #available(iOS 15.0, *), isEnabled != nil {
-            _super?.isEnabled = isEnabled!
-            self.isEnabled = isEnabled!
-        }
-        if playingIndicatorLocation != nil {
-            setPlayingIndicatorLocation(fromString: playingIndicatorLocation)
-            if self.playingIndicatorLocation != nil {
-                _super?.playingIndicatorLocation = self.playingIndicatorLocation!
-            }
-        }
-        if accessoryType != nil {
-            setAccessoryType(fromString: accessoryType)
-            if self.accessoryType != nil {
-                _super?.accessoryType = self.accessoryType!
-            }
+        if #available(iOS 15.0, *), let isEnabledValue = isEnabled {
+            _super?.isEnabled = isEnabledValue
+            self.isEnabled = isEnabledValue
         }
         _super?.setFCPObject(self)
     }

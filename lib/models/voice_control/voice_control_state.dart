@@ -34,16 +34,16 @@ class CPVoiceControlState {
   CPVoiceControlState({
     required this.titleVariants,
     required this.identifier,
-    this.image,
     this.repeats = false,
+    this.image,
   });
 
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'identifier': identifier,
         'titleVariants': titleVariants,
-        'image': image,
         'repeats': repeats,
+        'image': image,
       };
 
   String get uniqueId {

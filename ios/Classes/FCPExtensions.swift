@@ -21,9 +21,11 @@ extension UIImage {
     /// - Returns: A UIImage fetched from the Flutter asset or a system image if not found.
     @available(iOS 14.0, *)
     func fromFlutterAsset(name: String) -> UIImage {
-        let key: String? = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: name)
-        let image: UIImage? = UIImage(imageLiteralResourceName: key!)
-        return image ?? UIImage(systemName: "questionmark")!
+        if let key = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: name) {
+            let image = UIImage(imageLiteralResourceName: key)
+            return image ?? UIImage(systemName: "questionmark") ?? UIImage()
+        }
+        return UIImage()
     }
 
     /// Resizes the current UIImage to the specified size.
@@ -32,9 +34,11 @@ extension UIImage {
     func resizeImageTo(size: CGSize) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
         draw(in: CGRect(origin: CGPoint.zero, size: size))
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()!
-        UIGraphicsEndImageContext()
-        return newImage
+        if let newImage = UIGraphicsGetImageFromCurrentImageContext() {
+            UIGraphicsEndImageContext()
+            return newImage
+        }
+        return nil
     }
 }
 

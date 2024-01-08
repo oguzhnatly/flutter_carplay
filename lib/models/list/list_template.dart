@@ -71,15 +71,15 @@ class CPListTemplate {
   ///
   /// **Consider that some vehicles limit the number of items that [CPListTemplate] displays.**
   CPListTemplate({
-    this.title,
     required this.sections,
+    this.title,
+    this.systemIcon,
+    this.backButton,
     this.showsTabBadge = false,
     this.emptyViewTitleVariants = const [],
     this.emptyViewSubtitleVariants = const [],
     this.leadingNavigationBarButtons = const [],
     this.trailingNavigationBarButtons = const [],
-    this.systemIcon,
-    this.backButton,
   });
 
   Map<String, dynamic> toJson() => {
@@ -97,29 +97,38 @@ class CPListTemplate {
         'backButton': backButton?.toJson(),
       };
 
-  void updateEmptyViewTitleVariants(List<String> variants) {
-    emptyViewTitleVariants = variants;
-    FlutterCarPlayController.updateListTemplate(_elementId, this);
-  }
+  /// Update the properties of the [CPListTemplate]
+  void update({
+    List<CPListSection>? sections,
+    List<String>? emptyViewTitleVariants,
+    List<String>? emptyViewSubtitleVariants,
+    List<CPBarButton>? leadingNavigationBarButtons,
+    List<CPBarButton>? trailingNavigationBarButtons,
+  }) {
+    // update sections
+    if (sections != null) this.sections = sections;
 
-  void updateEmptyViewSubtitleVariants(List<String> variants) {
-    emptyViewSubtitleVariants = variants;
-    FlutterCarPlayController.updateListTemplate(_elementId, this);
-  }
+    // update emptyViewTitleVariants
+    if (emptyViewTitleVariants != null) {
+      this.emptyViewTitleVariants = emptyViewTitleVariants;
+    }
 
-  void updateSections(List<CPListSection> sections) {
-    this.sections = sections;
-    FlutterCarPlayController.updateListTemplate(_elementId, this);
-  }
+    // update emptyViewSubtitleVariants
+    if (emptyViewSubtitleVariants != null) {
+      this.emptyViewSubtitleVariants = emptyViewSubtitleVariants;
+    }
 
-  void updateLeadingNavigationBarButtons(List<CPBarButton> buttons) {
-    leadingNavigationBarButtons = buttons;
-    FlutterCarPlayController.updateListTemplate(_elementId, this);
-  }
+    // update leadingNavigationBarButtons
+    if (leadingNavigationBarButtons != null) {
+      this.leadingNavigationBarButtons = leadingNavigationBarButtons;
+    }
 
-  void updateTrailingNavigationBarButtons(List<CPBarButton> buttons) {
-    trailingNavigationBarButtons = buttons;
-    FlutterCarPlayController.updateListTemplate(_elementId, this);
+    // update trailingNavigationBarButtons
+    if (trailingNavigationBarButtons != null) {
+      this.trailingNavigationBarButtons = trailingNavigationBarButtons;
+    }
+
+    FlutterCarPlayController.updateCPListTemplate(this);
   }
 
   String get uniqueId {

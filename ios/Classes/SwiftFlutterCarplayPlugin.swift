@@ -138,7 +138,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(false)
                 return
             }
-            SwiftFlutterCarplayPlugin.findItem(elementId: args, actionWhenFound: { item in
+            SwiftFlutterCarplayPlugin.findListItem(elementId: args, actionWhenFound: { item in
                 item.stopHandler()
             })
             result(true)
@@ -150,12 +150,11 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-            let searchResults = (args["searchResults"] as! [[String: Any]]).map {
+            let searchResults = (args["searchResults"] as? [[String: Any]] ?? []).map {
                 FCPListItem(obj: $0)
             }
 
             SwiftFlutterCarplayPlugin.findSearchTemplate(elementId: elementId, actionWhenFound: { template in
-                MemoryLogger.shared.appendEvent("searchTemplate found: \(elementId)")
                 template.searchPerformed(searchResults)
             })
             result(true)
@@ -606,7 +605,7 @@ extension SwiftFlutterCarplayPlugin {
     ///   - args: Additional arguments for updating the list item.
     private func updateListItem(elementId: String, args: [String: Any]) {
         // Find the list item based on the provided element ID
-        SwiftFlutterCarplayPlugin.findItem(elementId: elementId) { item in
+        SwiftFlutterCarplayPlugin.findListItem(elementId: elementId) { item in
             // Extract and handle the data for updating the list item
             let text = args["text"] as? String
             let detailText = args["detailText"] as? String
@@ -697,7 +696,7 @@ private extension SwiftFlutterCarplayPlugin {
     /// - Parameters:
     ///   - elementId: The element ID of the list item.
     ///   - actionWhenFound: The action to perform when the list item is found.
-    static func findItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {
+    static func findListItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {
         // Get the array of FCPListTemplate instances.
         var templates = getFCPListTemplatesFromHistory()
 

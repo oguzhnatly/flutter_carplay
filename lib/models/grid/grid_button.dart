@@ -23,10 +23,11 @@ class CPGridButton {
   /// Fired after the user taps the button.
   final VoidCallback onPressed;
 
+  /// Creates [CPGridButton]
   CPGridButton({
     required this.titleVariants,
-    required this.image,
     required this.onPressed,
+    required this.image,
   });
 
   Map<String, dynamic> toJson() => {

@@ -2,7 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../helpers/enum_utils.dart';
-import 'alert_constants.dart';
+
+/// Enum defining different styles of bar buttons in CarPlay.
+enum CPBarButtonStyles {
+  /// The default style for a bar button.
+  none,
+
+  /// The style for a bar button that has rounded corners.
+  rounded,
+}
 
 /// A button object for placement in a navigation bar.
 class CPBarButton {
@@ -25,7 +33,7 @@ class CPBarButton {
   /// Fired when the user taps a bar button.
   final VoidCallback onPressed;
 
-  /// Creates [CPBarButton] with a title, style and handler.
+  /// Creates [CPBarButton]
   CPBarButton({
     required this.onPressed,
     this.style = CPBarButtonStyles.rounded,
@@ -49,6 +57,7 @@ class CPBarButton {
         'style': CPEnumUtils.stringFromEnum(style.toString()),
       };
 
+  /// Creates a copy of this object but with the given fields replaced with new values.
   CPBarButton copyWith({
     String? title,
     String? image,

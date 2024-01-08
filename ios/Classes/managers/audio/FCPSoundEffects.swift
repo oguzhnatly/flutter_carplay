@@ -39,7 +39,7 @@ public final class FCPSoundEffects: NSObject {
         }
 
         audioURL = URL(fileURLWithPath: s)
-        audioPlayer = AVPlayer(url: audioURL!)
+        audioPlayer = AVPlayer(url: audioURL ?? URL(fileURLWithPath: ""))
         audioPlayer?.volume = volume
     }
 

@@ -82,11 +82,6 @@ extension FCPSearchTemplate: CPSearchTemplateDelegate {
     }
 
     func searchPerformed(_ searchResults: [FCPListItem]) {
-        guard searchPerformedHandler != nil else {
-            MemoryLogger.shared.appendEvent("searchPerformedHandler is nil for \(elementId)")
-            return
-        }
-
         let results = searchResults.map {
             let obj = $0.get
             obj.userInfo = ["elementId": $0.elementId]

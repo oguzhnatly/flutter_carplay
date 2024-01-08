@@ -25,10 +25,7 @@ class CPTabBarTemplate {
   ///
   /// [!] You can’t add a tab bar template to an existing navigation hierarchy,
   /// or present one modally.
-  CPTabBarTemplate({
-    this.title,
-    required this.templates,
-  });
+  CPTabBarTemplate({required this.templates, this.title});
 
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,

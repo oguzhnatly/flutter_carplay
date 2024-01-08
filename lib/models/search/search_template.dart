@@ -7,8 +7,10 @@ class CPSearchTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
+  /// An array of search results as [CPListItem]
   List<CPListItem> searchResults = [];
 
+  /// A callback function that CarPlay invokes when the user updates the search text.
   final void Function(String, void Function(List<CPListItem>))
       onSearchTextUpdated;
 

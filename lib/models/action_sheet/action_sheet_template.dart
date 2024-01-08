@@ -16,7 +16,7 @@ class CPActionSheetTemplate {
   /// The list of actions as [CPAlertAction] available on the action sheet.
   final List<CPAlertAction> actions;
 
-  /// Creates [CPActionSheetTemplate] with a title, a message and a list of actions available on the action sheet.
+  /// Creates [CPActionSheetTemplate]
   CPActionSheetTemplate({
     this.title,
     this.message,

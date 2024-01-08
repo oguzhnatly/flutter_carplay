@@ -106,10 +106,10 @@ class FCPPointOfInterest {
         let location = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)))
         var pinImage: UIImage? = nil
 
-        if let image = image {
-            let key = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: image)
-
-            pinImage = UIImage(named: key!)
+        if let image = image,
+           let key = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: image)
+        {
+            pinImage = UIImage(named: key)
             if let pImage = pinImage {
                 if pImage.size.height > FCPPointOfInterest.maxPinImageSize ||
                     pImage.size.width > FCPPointOfInterest.maxPinImageSize

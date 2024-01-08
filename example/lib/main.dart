@@ -1,10 +1,9 @@
-// ignore_for_file: avoid_print
-
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
+// ignore_for_file: avoid_print
 
 void main() {
   runApp(const MaterialApp(home: MyApp()));
@@ -36,12 +35,13 @@ class _MyAppState extends State<MyApp> {
           CPListItem(
             text: 'Item 1',
             detailText: 'Detail Text',
-            onPressed: (complete, self) {
-              self
-                ..updateDetailText('You can change the detail text.. 🚀')
-                ..updateAccessoryType(CPListItemAccessoryTypes.cloud);
+            onPressed: (complete, item) {
+              item.update(
+                detailText: 'You can change the detail text.. 🚀',
+                accessoryType: CPListItemAccessoryTypes.cloud,
+              );
               Future.delayed(const Duration(seconds: 1), () {
-                self.updateDetailText('Customizable Detail Text');
+                item.update(detailText: 'Customizable Detail Text');
                 complete();
               });
             },
@@ -56,10 +56,8 @@ class _MyAppState extends State<MyApp> {
             onPressed: (complete, self) {
               for (var i = 1; i <= 100; i++) {
                 sleep(const Duration(milliseconds: 10));
-                self.updatePlaybackProgress(i / 100);
-                if (i == 100) {
-                  complete();
-                }
+                self.update(playbackProgress: i / 100);
+                if (i == 100) complete();
               }
             },
           ),
@@ -71,13 +69,12 @@ class _MyAppState extends State<MyApp> {
           CPListItem(
             text: 'Item 3',
             detailText: 'Detail Text',
-            onPressed: (complete, self) {
-              self
-                ..updateTexts(
-                  text: 'You can also change the title',
-                  detailText: 'and detail text while loading',
-                )
-                ..updateAccessoryType(CPListItemAccessoryTypes.none);
+            onPressed: (complete, item) {
+              item.update(
+                text: 'You can also change the title',
+                detailText: 'and detail text while loading',
+                accessoryType: CPListItemAccessoryTypes.none,
+              );
               Future.delayed(const Duration(seconds: 1), () {
                 complete();
               });
@@ -403,7 +400,7 @@ class _MyAppState extends State<MyApp> {
                 text: 'Item 1',
                 onPressed: (onCompleted, item) {
                   log('Item 1 clicked');
-                  item.updateIsEnabled(isEnabled: false);
+                  item.update(isEnabled: false);
                   onCompleted();
                 },
               ),
@@ -411,9 +408,7 @@ class _MyAppState extends State<MyApp> {
                 text: 'Item 2',
                 onPressed: (onCompleted, item) {
                   log('Item 2 clicked');
-                  item
-                    ..updateText('ABC')
-                    ..updateDetailText('New ABC');
+                  item.update(text: 'ABC', detailText: 'New ABC');
                   onCompleted();
                 },
               ),

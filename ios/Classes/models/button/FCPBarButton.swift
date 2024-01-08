@@ -56,7 +56,7 @@ class FCPBarButton {
 
     /// Returns the underlying CPBarButton instance configured with the specified properties.
     var get: CPBarButton {
-        var barButton: CPBarButton?
+        var barButton: CPBarButton
 
         if let barTitle = title {
             barButton = CPBarButton(title: barTitle, handler: { _ in
@@ -72,11 +72,13 @@ class FCPBarButton {
                     FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onBarButtonPressed, data: ["elementId": self.elementId])
                 }
             })
+        } else {
+            barButton = CPBarButton(title: "", handler: { _ in })
         }
 
-        barButton?.isEnabled = isEnabled
-        barButton?.buttonStyle = style
+        barButton.isEnabled = isEnabled
+        barButton.buttonStyle = style
         _super = barButton
-        return barButton!
+        return barButton
     }
 }

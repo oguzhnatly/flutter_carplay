@@ -60,63 +60,50 @@ class FlutterCarplay {
           if (_onCarplayConnectionChange != null) {
             _onCarplayConnectionChange?.call(connectionStatus);
           }
-          break;
         case FCPChannelTypes.onSearchTextUpdated:
           _carPlayController.processFCPSearchTextUpdatedChannel(
             event['data']['elementId'],
             event['data']['query'],
           );
-          break;
         case FCPChannelTypes.onSearchResultSelected:
           _carPlayController.processFCPSearchResultSelectedChannel(
             event['data']['elementId'],
             event['data']['itemElementId'],
           );
-          break;
         case FCPChannelTypes.onSearchCancelled:
           _carPlayController.processFCPSearchCancelledChannel(
             event['data']['elementId'],
           );
-          break;
         case FCPChannelTypes.onFCPListItemSelected:
           _carPlayController
               .processFCPListItemSelectedChannel(event['data']['elementId']);
-          break;
         case FCPChannelTypes.onFCPAlertActionPressed:
           _carPlayController
               .processFCPAlertActionPressed(event['data']['elementId']);
-          break;
         case FCPChannelTypes.onPresentStateChanged:
           _carPlayController.processFCPAlertTemplateCompleted(
             completed: event['data']['completed'],
           );
-          break;
         case FCPChannelTypes.onGridButtonPressed:
           _carPlayController
               .processFCPGridButtonPressed(event['data']['elementId']);
-          break;
         case FCPChannelTypes.onBarButtonPressed:
           _carPlayController
               .processFCPBarButtonPressed(event['data']['elementId']);
-          break;
         case FCPChannelTypes.onMapButtonPressed:
           _carPlayController
               .processFCPMapButtonPressed(event['data']['elementId']);
-          break;
         case FCPChannelTypes.onTextButtonPressed:
           _carPlayController
               .processFCPTextButtonPressed(event['data']['elementId']);
-          break;
         case FCPChannelTypes.onVoiceControlTranscriptChanged:
           if (_onSpeechRecognitionTranscriptChange != null) {
             _onSpeechRecognitionTranscriptChange
                 ?.call(event['data']['transcript']);
           }
-          break;
         case FCPChannelTypes.onSpeechCompleted:
           _carPlayController
               .processFCPSpeakerOnComplete(event['data']['elementId']);
-          break;
         default:
           break;
       }
@@ -179,12 +166,12 @@ class FlutterCarplay {
     required dynamic rootTemplate,
     bool animated = true,
   }) {
-    if (rootTemplate.runtimeType == CPMapTemplate ||
-        rootTemplate.runtimeType == CPGridTemplate ||
-        rootTemplate.runtimeType == CPListTemplate ||
-        rootTemplate.runtimeType == CPTabBarTemplate ||
-        rootTemplate.runtimeType == CPInformationTemplate ||
-        rootTemplate.runtimeType == CPPointOfInterestTemplate) {
+    if (rootTemplate is CPMapTemplate ||
+        rootTemplate is CPGridTemplate ||
+        rootTemplate is CPListTemplate ||
+        rootTemplate is CPTabBarTemplate ||
+        rootTemplate is CPInformationTemplate ||
+        rootTemplate is CPPointOfInterestTemplate) {
       _carPlayController.methodChannel
           .invokeMethod('setRootTemplate', <String, dynamic>{
         'animated': animated,
@@ -227,9 +214,7 @@ class FlutterCarplay {
           'rootTemplate': template.toJson(),
           'onPresent': template.onPresent != null,
         }).then((value) {
-      if (value) {
-        FlutterCarPlayController.currentPresentTemplate = template;
-      }
+      if (value) FlutterCarPlayController.currentPresentTemplate = template;
     });
   }
 
@@ -249,9 +234,7 @@ class FlutterCarplay {
           'rootTemplate': template.toJson(),
           'animated': animated,
         }).then((value) {
-      if (value) {
-        FlutterCarPlayController.currentPresentTemplate = template;
-      }
+      if (value) FlutterCarPlayController.currentPresentTemplate = template;
     });
   }
 
@@ -272,9 +255,7 @@ class FlutterCarplay {
         'animated': animated,
       },
     ).then((value) {
-      if (value) {
-        FlutterCarPlayController.currentPresentTemplate = template;
-      }
+      if (value) FlutterCarPlayController.currentPresentTemplate = template;
     });
   }
 
@@ -318,7 +299,7 @@ class FlutterCarplay {
       CPEnumUtils.stringFromEnum(FCPChannelTypes.startVoiceControl),
       null,
     );
-    return value as bool;
+    return value as bool? ?? false;
   }
 
   /// Stops recording for the voice recognition.
@@ -329,7 +310,7 @@ class FlutterCarplay {
       CPEnumUtils.stringFromEnum(FCPChannelTypes.stopVoiceControl),
       null,
     );
-    return value as bool;
+    return value as bool? ?? false;
   }
 
   /// Callback function will be fired when CarPlay recognized and transcripted user's voice each time.
@@ -424,27 +405,27 @@ class FlutterCarplay {
     required dynamic template,
     bool animated = true,
   }) async {
-    if (template.runtimeType == CPMapTemplate ||
-        template.runtimeType == CPGridTemplate ||
-        template.runtimeType == CPListTemplate ||
-        template.runtimeType == CPSearchTemplate ||
-        template.runtimeType == CPInformationTemplate ||
-        template.runtimeType == CPPointOfInterestTemplate) {
+    if (template is CPMapTemplate ||
+        template is CPGridTemplate ||
+        template is CPListTemplate ||
+        template is CPSearchTemplate ||
+        template is CPInformationTemplate ||
+        template is CPPointOfInterestTemplate) {
       final isCompleted = await _carPlayController
           .reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
         'template': template.toJson(),
         'animated': animated,
         'runtimeType': 'F${template.runtimeType}',
       });
-      if (isCompleted) {
-        _carPlayController.addTemplateToHistory(template);
-      }
+      if (isCompleted) _carPlayController.addTemplateToHistory(template);
+
       return isCompleted;
     } else {
       throw TypeError();
     }
   }
 
+  /// Gets the current configuration of the CarPlay.
   static Future<Map<String, dynamic>> getConfig() async {
     final config = await _carPlayController.methodChannel.invokeMethod(
       FCPChannelTypes.getConfig.name,

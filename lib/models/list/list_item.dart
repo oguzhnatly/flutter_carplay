@@ -3,7 +3,27 @@ import 'package:uuid/uuid.dart';
 
 import '../../controllers/carplay_controller.dart';
 import '../../helpers/enum_utils.dart';
-import 'list_constants.dart';
+
+/// Enum defining different locations of playing indicator.
+enum CPListItemPlayingIndicatorLocations {
+  /// The location of playing indicator on the trailing edge.
+  trailing,
+
+  /// The location of playing indicator on the leading edge.
+  leading,
+}
+
+/// Enum defining different accessory types.
+enum CPListItemAccessoryTypes {
+  /// The default accessory type.
+  none,
+
+  /// The accessory type that displays an image of a cloud.
+  cloud,
+
+  /// The accessory type that displays an disclosure indicator.
+  disclosureIndicator,
+}
 
 /// A selectable list item object that appears in a list template.
 class CPListItem {
@@ -75,73 +95,57 @@ class CPListItem {
         'accessoryType': CPEnumUtils.stringFromEnum(accessoryType.toString()),
       };
 
-  /// Updating the list item's primary text.
-  void updateText(String text) {
-    this.text = text;
-    FlutterCarPlayController.updateCPListItem(this);
-  }
+  /// Updates the properties of the [CPListItem]
+  void update({
+    String? text,
+    String? detailText,
+    String? image,
+    double? playbackProgress,
+    CPListItemPlayingIndicatorLocations? playingIndicatorLocation,
+    CPListItemAccessoryTypes? accessoryType,
+    String? accessoryImage,
+    bool? isPlaying,
+    bool? isEnabled,
+  }) {
+    // Updating the list item's primary text.
+    if (text != null) this.text = text;
 
-  /// Updating the list item's secondary text.
-  void updateDetailText(String detailText) {
-    this.detailText = detailText;
-    FlutterCarPlayController.updateCPListItem(this);
-  }
+    // Updating the list item's secondary text.
+    if (detailText != null) this.detailText = detailText;
 
-  /// Updating the list item's both the primary and detail text at the same time.
-  void updateTexts({String? text, String? detailText}) {
-    this.text = text ?? this.text;
-    this.detailText = detailText ?? this.detailText;
-    FlutterCarPlayController.updateCPListItem(this);
-  }
+    // Updating the image which will be displayed on the leading edge of the list item cell.
+    // Image asset path in pubspec.yaml file.
+    // For example: images/flutter_logo.png
+    if (image != null) this.image = image;
 
-  /// Updating the image which will be displayed on the leading edge of the list item cell.
-  /// Image asset path in pubspec.yaml file.
-  /// For example: images/flutter_logo.png
-  void updateImage(String image) {
-    this.image = image;
-    FlutterCarPlayController.updateCPListItem(this);
-  }
+    // Updating the list item's playback status.
+    if (isPlaying != null) this.isPlaying = isPlaying;
 
-  /// Setter for playbackProgress
-  /// When the given value is not between 0.0 and 1.0, throws [RangeError]
-  void updatePlaybackProgress(double playbackProgress) {
-    if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
-      this.playbackProgress = playbackProgress;
-      FlutterCarPlayController.updateCPListItem(this);
-    } else {
-      throw RangeError('playbackProgress must be between 0.0 and 1.0');
+    // Updating the list item's enabled status.
+    if (isEnabled != null) this.isEnabled = isEnabled;
+
+    // Updating the list item's playing indicator location.
+    if (accessoryType != null) this.accessoryType = accessoryType;
+
+    // Updating the list item's accessory image.
+    if (accessoryImage != null) this.accessoryImage = accessoryImage;
+
+    // Updating the list item's playing indicator location.
+    if (playingIndicatorLocation != null) {
+      this.playingIndicatorLocation = playingIndicatorLocation;
     }
-  }
 
-  /// Setter for isPlaying
-  void updateIsPlaying({required bool isPlaying}) {
-    this.isPlaying = isPlaying;
-    FlutterCarPlayController.updateCPListItem(this);
-  }
+    // Updating the list item's playback progress.
+    // When the given value is not between 0.0 and 1.0, throws [RangeError]
+    if (playbackProgress != null) {
+      if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
+        this.playbackProgress = playbackProgress;
+        FlutterCarPlayController.updateCPListItem(this);
+      } else {
+        throw RangeError('playbackProgress must be between 0.0 and 1.0');
+      }
+    }
 
-  /// Setter for isEnabled
-  void updateIsEnabled({required bool isEnabled}) {
-    this.isEnabled = isEnabled;
-    FlutterCarPlayController.updateCPListItem(this);
-  }
-
-  /// Setter for playingIndicatorLocation
-  void updatePlayingIndicatorLocation(
-    CPListItemPlayingIndicatorLocations playingIndicatorLocation,
-  ) {
-    this.playingIndicatorLocation = playingIndicatorLocation;
-    FlutterCarPlayController.updateCPListItem(this);
-  }
-
-  /// Setter for accessoryType
-  void updateAccessoryType(CPListItemAccessoryTypes accessoryType) {
-    this.accessoryType = accessoryType;
-    FlutterCarPlayController.updateCPListItem(this);
-  }
-
-  /// Setter for accessoryImage
-  void updateAccessoryImage(String? accessoryImage) {
-    this.accessoryImage = accessoryImage;
     FlutterCarPlayController.updateCPListItem(this);
   }
 

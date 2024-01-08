@@ -36,8 +36,8 @@ class CPVoiceControlTemplate {
   /// the state by calling the `activateVoiceControlState()` function.
   CPVoiceControlTemplate({
     required this.voiceControlStates,
-    this.onPresent,
     this.locale = const Locale('en', 'US'),
+    this.onPresent,
   });
 
   Map<String, dynamic> toJson() => {

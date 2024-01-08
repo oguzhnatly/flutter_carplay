@@ -3,9 +3,15 @@ import 'package:uuid/uuid.dart';
 
 import '../../helpers/enum_utils.dart';
 
+/// Enum defining different styles of text buttons in CarPlay.
 enum CPTextButtonStyles {
+  /// The default style for a text button.
   normal,
+
+  /// The style for a text button that indicates a cancel action.
   cancel,
+
+  /// The style for a text button that indicates a confirm action.
   confirm,
 }
 
@@ -24,11 +30,11 @@ class CPTextButton {
   /// Fired when the user taps a text button.
   final VoidCallback onPressed;
 
-  /// Creates [CPTextButton] with a title, style and handler.
+  /// Creates [CPTextButton]
   CPTextButton({
     required this.title,
-    this.style = CPTextButtonStyles.normal,
     required this.onPressed,
+    this.style = CPTextButtonStyles.normal,
   });
 
   Map<String, dynamic> toJson() => {

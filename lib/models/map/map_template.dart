@@ -8,11 +8,22 @@ class CPMapTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
+  /// A title will be shown in the navigation bar.
   String title;
+
+  /// The array of map buttons as [CPMapButton] displayed on the template.
   List<CPMapButton> mapButtons;
+
+  /// An array of bar buttons to be displayed on the leading side of the navigation bar.
   List<CPBarButton> leadingNavigationBarButtons;
+
+  /// An array of bar buttons to be displayed on the trailing side of the navigation bar.
   List<CPBarButton> trailingNavigationBarButtons;
+
+  /// Automatically hides the navigation bar when the map template is visible.
   bool automaticallyHidesNavigationBar;
+
+  /// Hides the buttons in the navigation bar when the map template is visible.
   bool hidesButtonsWithNavigationBar;
 
   /// Creates [CPMapTemplate]
@@ -37,34 +48,41 @@ class CPMapTemplate {
         'hidesButtonsWithNavigationBar': hidesButtonsWithNavigationBar,
       };
 
-  void updateTitle(String value) {
-    title = value;
-    FlutterCarPlayController.updateMapTemplate(_elementId, this);
-  }
+  /// Update the properties of the [CPMapTemplate]
+  void update({
+    String? title,
+    List<CPMapButton>? mapButtons,
+    List<CPBarButton>? leadingNavigationBarButtons,
+    List<CPBarButton>? trailingNavigationBarButtons,
+    bool? automaticallyHidesNavigationBar,
+    bool? hidesButtonsWithNavigationBar,
+  }) {
+    // update title
+    if (title != null) this.title = title;
 
-  void updateAutomaticallyHidesNavigationBar({required bool value}) {
-    automaticallyHidesNavigationBar = value;
-    FlutterCarPlayController.updateMapTemplate(_elementId, this);
-  }
+    // update mapButtons
+    if (mapButtons != null) this.mapButtons = mapButtons;
 
-  void updateHidesButtonsWithNavigationBar({required bool value}) {
-    hidesButtonsWithNavigationBar = value;
-    FlutterCarPlayController.updateMapTemplate(_elementId, this);
-  }
+    // update leadingNavigationBarButtons
+    if (leadingNavigationBarButtons != null) {
+      this.leadingNavigationBarButtons = leadingNavigationBarButtons;
+    }
 
-  void updateMapButtons(List<CPMapButton> buttons) {
-    mapButtons = buttons;
-    FlutterCarPlayController.updateMapTemplate(_elementId, this);
-  }
+    // update trailingNavigationBarButtons
+    if (trailingNavigationBarButtons != null) {
+      this.trailingNavigationBarButtons = trailingNavigationBarButtons;
+    }
 
-  void updateLeadingNavigationBarButtons(List<CPBarButton> buttons) {
-    leadingNavigationBarButtons = buttons;
-    FlutterCarPlayController.updateMapTemplate(_elementId, this);
-  }
+    // update automaticallyHidesNavigationBar
+    if (automaticallyHidesNavigationBar != null) {
+      this.automaticallyHidesNavigationBar = automaticallyHidesNavigationBar;
+    }
 
-  void updateTrailingNavigationBarButtons(List<CPBarButton> buttons) {
-    trailingNavigationBarButtons = buttons;
-    FlutterCarPlayController.updateMapTemplate(_elementId, this);
+    // update hidesButtonsWithNavigationBar
+    if (hidesButtonsWithNavigationBar != null) {
+      this.hidesButtonsWithNavigationBar = hidesButtonsWithNavigationBar;
+    }
+    FlutterCarPlayController.updateCPMapTemplate(this);
   }
 
   String get uniqueId {

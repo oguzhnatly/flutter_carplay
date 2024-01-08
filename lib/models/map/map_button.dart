@@ -6,15 +6,22 @@ class CPMapButton {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
+  /// The enabled state of the map button.
   final bool isEnabled;
+
+  /// The hidden state of the map button.
   final bool isHidden;
+
+  /// The image displayed on the map button.
   final String? image;
+
+  /// The image displayed on the focused map button.
   final String? focusedImage;
 
   /// Fired when the user taps a map button.
   final VoidCallback onPressed;
 
-  /// Creates [CPMapButton] with a title, style and handler.
+  /// Creates [CPMapButton]
   CPMapButton({
     required this.onPressed,
     this.isEnabled = true,
@@ -24,11 +31,11 @@ class CPMapButton {
   });
 
   Map<String, dynamic> toJson() => {
+        'focusedImage': focusedImage,
         '_elementId': _elementId,
         'isEnabled': isEnabled,
         'isHidden': isHidden,
         'image': image,
-        'focusedImage': focusedImage,
       };
 
   String get uniqueId {

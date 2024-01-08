@@ -85,9 +85,6 @@ enum FCPChannelTypes {
     /// Event triggered when a map button is pressed in CarPlay.
     static let onMapButtonPressed = "onMapButtonPressed"
 
-    /// Event triggered when a navigation bar button is pressed in CarPlay.
-    static let onNavigationBarButtonPressed = "onNavigationBarButtonPressed"
-
     /// Event triggered when a text button is pressed in CarPlay.
     static let onTextButtonPressed = "onTextButtonPressed"
 

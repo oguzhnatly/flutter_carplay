@@ -26,14 +26,11 @@ class FlutterCarPlayController {
   /// Specific objects that are waiting to receive callback.
   static List<dynamic> callbackObjects = [];
 
-  MethodChannel get methodChannel {
-    return _methodChannel;
-  }
+  MethodChannel get methodChannel => _methodChannel;
 
-  EventChannel get eventChannel {
-    return _eventChannel;
-  }
+  EventChannel get eventChannel => _eventChannel;
 
+  /// Invokes the method channel with the specified [type] and [data]
   Future<bool> reactToNativeModule(FCPChannelTypes type, dynamic data) async {
     final value = await _methodChannel.invokeMethod(
       CPEnumUtils.stringFromEnum(type.toString()),
@@ -42,10 +39,9 @@ class FlutterCarPlayController {
     return value;
   }
 
-  static void updateMapTemplate(
-    String elementId,
-    CPMapTemplate updatedTemplate,
-  ) {
+  /// Updates the [CPMapTemplate]
+  static void updateCPMapTemplate(CPMapTemplate updatedTemplate) {
+    final elementId = updatedTemplate.uniqueId;
     _methodChannel
         .invokeMethod('updateMapTemplate', updatedTemplate.toJson())
         .then((value) {
@@ -72,28 +68,26 @@ class FlutterCarPlayController {
     });
   }
 
-  static void updateListTemplate(
-    String elementId,
-    CPListTemplate updatedTemplate,
-  ) {
+  /// Updates the [CPListTemplate]
+  static void updateCPListTemplate(CPListTemplate updatedTemplate) {
+    final elementId = updatedTemplate.uniqueId;
     _methodChannel
         .invokeMethod('updateListTemplate', updatedTemplate.toJson())
         .then((value) {
       if (value) {
-        l1:
         for (var template in templateHistory) {
           switch (template) {
             case final CPTabBarTemplate tabBarTemplate:
               for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
                 if (tab.uniqueId == elementId) {
                   tabBarTemplate.templates[tabIndex] = updatedTemplate;
-                  break l1;
+                  return;
                 }
               }
             case final CPListTemplate listTemplate:
               if (listTemplate.uniqueId == elementId) {
                 template = updatedTemplate;
-                break l1;
+                return;
               }
             default:
           }
@@ -102,12 +96,12 @@ class FlutterCarPlayController {
     });
   }
 
+  /// Updates the [CPListItem]
   static void updateCPListItem(CPListItem updatedListItem) {
     _methodChannel
         .invokeMethod('updateListItem', updatedListItem.toJson())
         .then((value) {
       if (value) {
-        l1:
         for (final template in templateHistory) {
           switch (template) {
             case final CPTabBarTemplate tabBarTemplate:
@@ -117,7 +111,7 @@ class FlutterCarPlayController {
                     if (item.uniqueId == updatedListItem.uniqueId) {
                       tabBarTemplate.templates[tabIndex].sections[sectionIndex]
                           .items[itemIndex] = updatedListItem;
-                      break l1;
+                      return;
                     }
                   }
                 }
@@ -129,7 +123,7 @@ class FlutterCarPlayController {
                   if (item.uniqueId == updatedListItem.uniqueId) {
                     listTemplate.sections[sectionIndex].items[itemIndex] =
                         updatedListItem;
-                    break l1;
+                    return;
                   }
                 }
               }
@@ -140,6 +134,7 @@ class FlutterCarPlayController {
     });
   }
 
+  /// Adds the pushed [template] to the [templateHistory]
   void addTemplateToHistory(dynamic template) {
     if (template.runtimeType == CPMapTemplate ||
         template.runtimeType == CPListTemplate ||
@@ -154,6 +149,11 @@ class FlutterCarPlayController {
     }
   }
 
+  /// Processes the FCPSearchTextUpdatedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPSearchTemplate]
+  /// - query: The search query
   void processFCPSearchTextUpdatedChannel(String elementId, String query) {
     for (final template in templateHistory) {
       if (template is CPSearchTemplate && template.uniqueId == elementId) {
@@ -170,30 +170,40 @@ class FlutterCarPlayController {
             );
           },
         );
-        break;
+        return;
       }
     }
   }
 
+  /// Processes the FCPSearchResultSelectedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPSearchTemplate]
+  /// - itemElementId: The id of the [CPListItem]
   void processFCPSearchResultSelectedChannel(
     String elementId,
     String itemElementId,
   ) {
     for (final template in templateHistory) {
       if (template is CPSearchTemplate && template.uniqueId == elementId) {
-        final selectedItem = template.searchResults
-            .singleWhereOrNull((element) => element.uniqueId == itemElementId);
+        final selectedItem = template.searchResults.singleWhereOrNull(
+          (result) => result.uniqueId == itemElementId,
+        );
         if (selectedItem != null) {
           selectedItem.onPressed?.call(
             () {},
             selectedItem,
           );
         }
-        break;
+        return;
       }
     }
   }
 
+  /// Processes the FCPSearchCancelledChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPSearchTemplate]
   void processFCPSearchCancelledChannel(String elementId) {
     final topTemplate = templateHistory.lastOrNull;
     if (topTemplate is CPSearchTemplate && topTemplate.uniqueId == elementId) {
@@ -201,9 +211,13 @@ class FlutterCarPlayController {
     }
   }
 
+  /// Processes the FCPListItemSelectedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPListItem]
   void processFCPListItemSelectedChannel(String elementId) {
     final listItem = _carplayHelper.findCPListItem(
-      templates: templateHistory,
+      templateHistory: templateHistory,
       elementId: elementId,
     );
     if (listItem != null) {
@@ -219,18 +233,30 @@ class FlutterCarPlayController {
     }
   }
 
+  /// Processes the FCPAlertActionPressedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPAlertAction]
   void processFCPAlertActionPressed(String elementId) {
     final CPAlertAction selectedAlertAction = currentPresentTemplate!.actions
         .firstWhere((e) => e.uniqueId == elementId);
     selectedAlertAction.onPressed();
   }
 
+  /// Processes the FCPAlertTemplateCompletedChannel
+  ///
+  /// Parameters:
+  /// - completed: Whether the alert was successfully presented
   void processFCPAlertTemplateCompleted({bool completed = false}) {
     if (currentPresentTemplate?.onPresent != null) {
       currentPresentTemplate!.onPresent!(completed);
     }
   }
 
+  /// Processes the FCPGridButtonPressedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPGridButton]
   void processFCPGridButtonPressed(String elementId) {
     CPGridButton? gridButton;
     l1:
@@ -247,6 +273,10 @@ class FlutterCarPlayController {
     if (gridButton != null) gridButton.onPressed();
   }
 
+  /// Processes the FCPBarButtonPressedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPBarButton]
   void processFCPBarButtonPressed(String elementId) {
     l1:
     for (final template in templateHistory) {
@@ -288,21 +318,27 @@ class FlutterCarPlayController {
     }
   }
 
+  /// Processes the FCPMapButtonPressedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPMapButton]
   void processFCPMapButtonPressed(String elementId) {
-    l1:
     for (final template in templateHistory) {
       if (template is CPMapTemplate) {
         for (final button in template.mapButtons) {
           if (button.uniqueId == elementId) {
             button.onPressed();
-            break l1;
+            return;
           }
         }
       }
-      break l1;
     }
   }
 
+  /// Processes the FCPTextButtonPressedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPTextButton]
   void processFCPTextButtonPressed(String elementId) {
     l1:
     for (final template in templateHistory) {
@@ -333,6 +369,10 @@ class FlutterCarPlayController {
     }
   }
 
+  /// Processes the FCPPointOfInterestTemplateCompletedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPPointOfInterestTemplate]
   void processFCPSpeakerOnComplete(String elementId) {
     callbackObjects.removeWhere((e) {
       if (e is CPSpeaker) {

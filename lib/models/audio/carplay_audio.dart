@@ -16,10 +16,7 @@ class CPAudio {
   final double volume;
 
   /// Creates [CPAudio]
-  CPAudio({
-    required this.soundPath,
-    this.volume = 1.0,
-  });
+  CPAudio({required this.soundPath, this.volume = 1.0});
 
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,

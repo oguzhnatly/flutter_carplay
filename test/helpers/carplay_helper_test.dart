@@ -30,14 +30,14 @@ void main() {
 
     test('find CPListItem from dynamic list item and element id', () {
       final item = flutterCarplayHelper.findCPListItem(
-        templates: templates,
+        templateHistory: templates,
         elementId: cpListItem.uniqueId,
       );
 
       expect(item, cpListItem);
 
       final nullableItem = flutterCarplayHelper.findCPListItem(
-        templates: templates,
+        templateHistory: templates,
         elementId: '',
       );
 

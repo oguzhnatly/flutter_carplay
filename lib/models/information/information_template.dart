@@ -2,8 +2,16 @@ import 'package:uuid/uuid.dart';
 
 import '../../helpers/enum_utils.dart';
 import '../button/text_button.dart';
-import 'information_constants.dart';
 import 'information_item.dart';
+
+/// Enum defining different layouts of information templates.
+enum CPInformationTemplateLayout {
+  /// The default layout for an information template.
+  leading,
+
+  /// The layout for an information template that has two columns of information items and text buttons.
+  twoColumn,
+}
 
 /// A template object that displays and manages information items and text buttons.
 class CPInformationTemplate {
@@ -13,13 +21,13 @@ class CPInformationTemplate {
   /// A title will be shown in the navigation bar.
   final String title;
 
+  /// The layout of the information template.
   final CPInformationTemplateLayout layout;
 
   /// The array of actions as [CPTextButton] displayed on the template.
   final List<CPTextButton> actions;
 
   /// The array of information items  as [CPInformationItem] displayed on the template.
-
   final List<CPInformationItem> informationItems;
 
   /// Creates [CPInformationTemplate]

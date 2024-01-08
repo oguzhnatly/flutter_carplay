@@ -8,6 +8,8 @@ class CPPointOfInterestTemplate {
 
   /// A title will be shown in the navigation bar.
   final String title;
+
+  /// The array of point of interest as [CPPointOfInterest] displayed on the template.
   final List<CPPointOfInterest> poi;
 
   /// Creates [CPPointOfInterestTemplate]
