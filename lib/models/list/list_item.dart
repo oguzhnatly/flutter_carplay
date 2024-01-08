@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../controllers/carplay_controller.dart';
-import '../../helpers/enum_utils.dart';
 
 /// Enum defining different locations of playing indicator.
 enum CPListItemPlayingIndicatorLocations {
@@ -90,9 +89,8 @@ class CPListItem {
         'isPlaying': isPlaying,
         'isEnabled': isEnabled,
         'accessoryImage': accessoryImage,
-        'playingIndicatorLocation':
-            CPEnumUtils.stringFromEnum(playingIndicatorLocation.toString()),
-        'accessoryType': CPEnumUtils.stringFromEnum(accessoryType.toString()),
+        'accessoryType': accessoryType?.name,
+        'playingIndicatorLocation': playingIndicatorLocation?.name,
       };
 
   /// Updates the properties of the [CPListItem]

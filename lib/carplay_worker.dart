@@ -27,8 +27,7 @@ class FlutterCarplay {
   late final StreamSubscription<dynamic>? _eventBroadcast;
 
   /// Current CarPlay and mobile app connection status.
-  static String _connectionStatus =
-      CPEnumUtils.stringFromEnum(CPConnectionStatusTypes.unknown.toString());
+  static String _connectionStatus = CPConnectionStatusTypes.unknown.name;
 
   /// A listener function, which will be triggered when CarPlay connection changes
   /// and will be transmitted to the main code, allowing the user to access
@@ -55,8 +54,7 @@ class FlutterCarplay {
             CPConnectionStatusTypes.values,
             event['data']['status'],
           );
-          _connectionStatus =
-              CPEnumUtils.stringFromEnum(connectionStatus.toString());
+          _connectionStatus = connectionStatus.name;
           if (_onCarplayConnectionChange != null) {
             _onCarplayConnectionChange?.call(connectionStatus);
           }
@@ -207,13 +205,12 @@ class FlutterCarplay {
     required CPAlertTemplate template,
     bool animated = true,
   }) {
-    _carPlayController.methodChannel.invokeMethod(
-        CPEnumUtils.stringFromEnum(FCPChannelTypes.setAlert.toString()),
-        <String, dynamic>{
-          'animated': animated,
-          'rootTemplate': template.toJson(),
-          'onPresent': template.onPresent != null,
-        }).then((value) {
+    _carPlayController.methodChannel
+        .invokeMethod(FCPChannelTypes.setAlert.name, <String, dynamic>{
+      'animated': animated,
+      'rootTemplate': template.toJson(),
+      'onPresent': template.onPresent != null,
+    }).then((value) {
       if (value) FlutterCarPlayController.currentPresentTemplate = template;
     });
   }
@@ -228,12 +225,11 @@ class FlutterCarplay {
     required CPActionSheetTemplate template,
     bool animated = true,
   }) {
-    _carPlayController.methodChannel.invokeMethod(
-        CPEnumUtils.stringFromEnum(FCPChannelTypes.setActionSheet.toString()),
-        <String, dynamic>{
-          'rootTemplate': template.toJson(),
-          'animated': animated,
-        }).then((value) {
+    _carPlayController.methodChannel
+        .invokeMethod(FCPChannelTypes.setActionSheet.name, <String, dynamic>{
+      'rootTemplate': template.toJson(),
+      'animated': animated,
+    }).then((value) {
       if (value) FlutterCarPlayController.currentPresentTemplate = template;
     });
   }
@@ -249,7 +245,7 @@ class FlutterCarplay {
     bool animated = true,
   }) {
     _carPlayController.methodChannel.invokeMethod(
-      CPEnumUtils.stringFromEnum(FCPChannelTypes.setVoiceControl.toString()),
+      FCPChannelTypes.setVoiceControl.name,
       <String, dynamic>{
         'rootTemplate': template.toJson(),
         'animated': animated,
@@ -272,7 +268,7 @@ class FlutterCarplay {
     required String identifier,
   }) async {
     final value = await _carPlayController.methodChannel.invokeMethod(
-      CPEnumUtils.stringFromEnum(FCPChannelTypes.activateVoiceControlState),
+      FCPChannelTypes.activateVoiceControlState.name,
       identifier,
     );
     return value;
@@ -283,9 +279,7 @@ class FlutterCarplay {
   /// If this command is called before a voice control template is presented, a flutter error will occur.
   static Future<String?> getActiveVoiceControlStateIdentifier() async {
     final value = await _carPlayController.methodChannel.invokeMethod(
-      CPEnumUtils.stringFromEnum(
-        FCPChannelTypes.getActiveVoiceControlStateIdentifier,
-      ),
+      FCPChannelTypes.getActiveVoiceControlStateIdentifier.name,
       null,
     );
     return value as String?;
@@ -296,7 +290,7 @@ class FlutterCarplay {
   /// If this command is called before a voice control template is presented, a flutter error will occur.
   static Future<bool> startVoiceControl() async {
     final value = await _carPlayController.methodChannel.invokeMethod(
-      CPEnumUtils.stringFromEnum(FCPChannelTypes.startVoiceControl),
+      FCPChannelTypes.startVoiceControl.name,
       null,
     );
     return value as bool? ?? false;
@@ -307,7 +301,7 @@ class FlutterCarplay {
   /// If this command is called before a voice control template is presented, a flutter error will occur.
   static Future<bool> stopVoiceControl() async {
     final value = await _carPlayController.methodChannel.invokeMethod(
-      CPEnumUtils.stringFromEnum(FCPChannelTypes.stopVoiceControl),
+      FCPChannelTypes.stopVoiceControl.name,
       null,
     );
     return value as bool? ?? false;
@@ -333,7 +327,7 @@ class FlutterCarplay {
     }
     _carPlayController.methodChannel
         .invokeMethod(
-      CPEnumUtils.stringFromEnum(FCPChannelTypes.speak.toString()),
+      FCPChannelTypes.speak.name,
       speakerController.toJson(),
     )
         .then((value) {
@@ -347,7 +341,7 @@ class FlutterCarplay {
   /// Plays [CPAudio] data asynchronously.
   static void play(CPAudio audio) {
     _carPlayController.methodChannel.invokeMethod(
-      CPEnumUtils.stringFromEnum(FCPChannelTypes.playAudio.toString()),
+      FCPChannelTypes.playAudio.name,
       audio.toJson(),
     );
   }

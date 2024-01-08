@@ -32,10 +32,7 @@ class FlutterCarPlayController {
 
   /// Invokes the method channel with the specified [type] and [data]
   Future<bool> reactToNativeModule(FCPChannelTypes type, dynamic data) async {
-    final value = await _methodChannel.invokeMethod(
-      CPEnumUtils.stringFromEnum(type.toString()),
-      data,
-    );
+    final value = await _methodChannel.invokeMethod(type.name, data);
     return value;
   }
 
@@ -136,13 +133,13 @@ class FlutterCarPlayController {
 
   /// Adds the pushed [template] to the [templateHistory]
   void addTemplateToHistory(dynamic template) {
-    if (template.runtimeType == CPMapTemplate ||
-        template.runtimeType == CPListTemplate ||
-        template.runtimeType == CPGridTemplate ||
-        template.runtimeType == CPSearchTemplate ||
-        template.runtimeType == CPTabBarTemplate ||
-        template.runtimeType == CPInformationTemplate ||
-        template.runtimeType == CPPointOfInterestTemplate) {
+    if (template is CPMapTemplate ||
+        template is CPListTemplate ||
+        template is CPGridTemplate ||
+        template is CPSearchTemplate ||
+        template is CPTabBarTemplate ||
+        template is CPInformationTemplate ||
+        template is CPPointOfInterestTemplate) {
       templateHistory.add(template);
     } else {
       throw TypeError();
@@ -258,19 +255,16 @@ class FlutterCarPlayController {
   /// Parameters:
   /// - elementId: The id of the [CPGridButton]
   void processFCPGridButtonPressed(String elementId) {
-    CPGridButton? gridButton;
-    l1:
     for (final template in templateHistory) {
       if (template is CPGridTemplate) {
-        for (final b in template.buttons) {
-          if (b.uniqueId == elementId) {
-            gridButton = b;
-            break l1;
+        for (final button in template.buttons) {
+          if (button.uniqueId == elementId) {
+            button.onPressed();
+            return;
           }
         }
       }
     }
-    if (gridButton != null) gridButton.onPressed();
   }
 
   /// Processes the FCPBarButtonPressedChannel

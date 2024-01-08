@@ -739,11 +739,7 @@ class _MyAppState extends State<MyApp> {
               ),
             ],
           ),
-          Center(
-            child: Text(
-              'Carplay Status: ${CPEnumUtils.stringFromEnum(connectionStatus)}',
-            ),
-          ),
+          Center(child: Text('Carplay Status: ${connectionStatus.name}')),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

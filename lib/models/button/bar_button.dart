@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../helpers/enum_utils.dart';
-
 /// Enum defining different styles of bar buttons in CarPlay.
 enum CPBarButtonStyles {
   /// The default style for a bar button.
@@ -54,7 +52,7 @@ class CPBarButton {
         '_elementId': _elementId,
         if (title != null) 'title': title,
         if (image != null) 'image': image,
-        'style': CPEnumUtils.stringFromEnum(style.toString()),
+        'style': style.name,
       };
 
   /// Creates a copy of this object but with the given fields replaced with new values.

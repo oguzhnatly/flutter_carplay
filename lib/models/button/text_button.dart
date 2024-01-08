@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../helpers/enum_utils.dart';
-
 /// Enum defining different styles of text buttons in CarPlay.
 enum CPTextButtonStyles {
   /// The default style for a text button.
@@ -40,7 +38,7 @@ class CPTextButton {
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'title': title,
-        'style': CPEnumUtils.stringFromEnum(style.toString()),
+        'style': style.name,
       };
 
   String get uniqueId {

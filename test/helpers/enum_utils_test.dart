@@ -19,16 +19,5 @@ void main() {
         CPListItemPlayingIndicatorLocations.trailing,
       );
     });
-
-    test('convert dynamic type into string after the `.`', () {
-      final cpAlertActionStylesString =
-          CPEnumUtils.stringFromEnum(CPAlertActionStyles.normal.toString());
-
-      expect(cpAlertActionStylesString, 'normal');
-
-      final fcpChannelTypesString = CPEnumUtils.stringFromEnum('car.setAlert');
-
-      expect(fcpChannelTypesString, 'setAlert');
-    });
   });
 }
