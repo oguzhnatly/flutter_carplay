@@ -126,7 +126,7 @@ class FCPMapTemplate: NSObject {
             self.automaticallyHidesNavigationBar = _automaticallyHidesNavigationBar
             _super?.automaticallyHidesNavigationBar = _automaticallyHidesNavigationBar
         }
-        
+
         if let _mapButtons = mapButtons {
             self.mapButtons = _mapButtons
             _super?.mapButtons = _mapButtons.map { $0.get }
