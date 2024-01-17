@@ -159,12 +159,6 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             })
             result(true)
         case FCPChannelTypes.setAlert:
-            guard objcPresentTemplate == nil else {
-                result(FlutterError(code: "ERROR",
-                                    message: "CarPlay can only present one modal template at a time.",
-                                    details: nil))
-                return
-            }
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
                   let rootTemplateArgs = args["rootTemplate"] as? [String: Any]
@@ -172,6 +166,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(false)
                 return
             }
+
+            if objcPresentTemplate != nil {
+                objcPresentTemplate = nil
+                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in })
+            }
+
             let alertTemplate = FCPAlertTemplate(obj: rootTemplateArgs)
             objcPresentTemplate = alertTemplate
             FlutterCarPlaySceneDelegate
@@ -181,12 +181,6 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                     result(completed)
                 })
         case FCPChannelTypes.setActionSheet:
-            guard objcPresentTemplate == nil else {
-                result(FlutterError(code: "ERROR",
-                                    message: "CarPlay can only present one modal template at a time.",
-                                    details: nil))
-                return
-            }
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
                   let rootTemplateArgs = args["rootTemplate"] as? [String: Any]
@@ -194,6 +188,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(false)
                 return
             }
+
+            if objcPresentTemplate != nil {
+                objcPresentTemplate = nil
+                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in })
+            }
+
             let actionSheetTemplate = FCPActionSheetTemplate(obj: rootTemplateArgs)
             objcPresentTemplate = actionSheetTemplate
             FlutterCarPlaySceneDelegate.presentTemplate(template: actionSheetTemplate.get, animated: animated, completion: { completed, _ in
@@ -237,12 +237,6 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             })
             objcPresentTemplate = nil
         case FCPChannelTypes.setVoiceControl:
-            guard objcPresentTemplate == nil else {
-                result(FlutterError(code: "ERROR",
-                                    message: "CarPlay can only present one modal template at a time.",
-                                    details: nil))
-                return
-            }
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
                   let rootTemplateArgs = args["rootTemplate"] as? [String: Any]
@@ -250,6 +244,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(false)
                 return
             }
+
+            if objcPresentTemplate != nil {
+                objcPresentTemplate = nil
+                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in })
+            }
+
             let voiceControlTemplate = FCPVoiceControlTemplate(obj: rootTemplateArgs)
             objcPresentTemplate = voiceControlTemplate
             FlutterCarPlaySceneDelegate.presentTemplate(template: voiceControlTemplate.get, animated: animated, completion: { completed, _ in
