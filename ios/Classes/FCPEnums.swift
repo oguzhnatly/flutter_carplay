@@ -120,6 +120,15 @@ enum FCPChannelTypes {
 
     /// Event for getting CarPlay configuration information.
     static let getConfig = "getConfig"
+
+    /// Event for showing a banner message in CarPlay.
+    static let showBanner = "showBanner"
+
+    /// Event for hiding the banner message in CarPlay.
+    static let hideBanner = "hideBanner"
+
+    /// Event for showing a toast message in CarPlay.
+    static let showToast = "showToast"
 }
 
 /// Enum defining different types of alert actions in CarPlay.

@@ -72,3 +72,47 @@ extension CPListItem {
         userInfo = ["FCPObject": item]
     }
 }
+
+/// Extension on UIColor to create a UIColor from RGB values.
+extension UIColor {
+    convenience init(red: Int, green: Int, blue: Int, alpha: CGFloat = 1.0) {
+        assert(red >= 0 && red <= 255, "Invalid red component")
+        assert(green >= 0 && green <= 255, "Invalid green component")
+        assert(blue >= 0 && blue <= 255, "Invalid blue component")
+        assert(alpha >= 0 && alpha <= 1.0, "Invalid alpha component")
+
+        self.init(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: alpha)
+    }
+
+    convenience init(rgb: Int) {
+        self.init(
+            red: (rgb >> 16) & 0xFF,
+            green: (rgb >> 8) & 0xFF,
+            blue: rgb & 0xFF
+        )
+    }
+
+    convenience init(argb: Int) {
+        self.init(
+            red: (argb >> 16) & 0xFF,
+            green: (argb >> 8) & 0xFF,
+            blue: argb & 0xFF,
+            alpha: CGFloat((argb >> 24) & 0xFF) / 255.0
+        )
+    }
+}
+
+/// Extension on UILabel to calculate the width of the label text.
+extension UILabel {
+    /// Calculates the size of the label text.
+    class func textSize(font: UIFont, text: String, width: CGFloat = .greatestFiniteMagnitude, height: CGFloat = .greatestFiniteMagnitude) -> CGSize {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: height))
+
+        label.numberOfLines = 0
+        label.font = font
+        label.text = text
+        label.sizeToFit()
+
+        return label.frame.size
+    }
+}

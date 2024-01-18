@@ -101,4 +101,13 @@ enum FCPChannelTypes {
 
   /// Event for getting CarPlay configuration information.
   getConfig,
+
+  /// Event for showing a banner in CarPlay.
+  showBanner,
+
+  /// Event for hiding a banner in CarPlay.
+  hideBanner,
+
+  /// Event for showing a toast in CarPlay.
+  showToast,
 }

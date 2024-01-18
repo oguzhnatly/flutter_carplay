@@ -36,6 +36,28 @@ class FlutterCarPlayController {
     return value;
   }
 
+  /// Displays a banner on [CPMapTemplate]
+  static void showBanner(String elementId, String message, int color) {
+    _methodChannel.invokeMethod('showBanner', {
+      '_elementId': elementId,
+      'message': message,
+      'color': color,
+    });
+  }
+
+  /// Hides the banner on [CPMapTemplate]
+  static void hideBanner(String elementId) {
+    _methodChannel.invokeMethod('hideBanner', {'_elementId': elementId});
+  }
+
+  /// Displays a toast on [CPMapTemplate]
+  static void showToast(String elementId, String message) {
+    _methodChannel.invokeMethod('showToast', {
+      '_elementId': elementId,
+      'message': message,
+    });
+  }
+
   /// Updates the [CPMapTemplate]
   static void updateCPMapTemplate(CPMapTemplate updatedTemplate) {
     final elementId = updatedTemplate.uniqueId;

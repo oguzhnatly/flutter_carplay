@@ -9,6 +9,7 @@ class FCPBannerView: UIView {
     let messageLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
+        label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -36,9 +37,6 @@ class FCPBannerView: UIView {
 
     /// Configures the UI elements and layout for the banner view.
     private func setupUI() {
-        backgroundColor = UIColor.black.withAlphaComponent(0.8)
-        layer.cornerRadius = 10
-
         addSubview(messageLabel)
 
         messageLabel.translatesAutoresizingMaskIntoConstraints = false

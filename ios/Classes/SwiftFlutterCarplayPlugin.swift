@@ -349,6 +349,51 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 "maximumSectionCount": CPListTemplate.maximumSectionCount,
             ]
             result(config)
+        case FCPChannelTypes.showBanner:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String,
+                  let message = args["message"] as? String,
+                  let color = args["color"] as? Int
+            else {
+                result(false)
+                return
+            }
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+                mapTemplate.showBanner(message: message, color: color)
+                return result(true)
+            }
+            result(false)
+        case FCPChannelTypes.hideBanner:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String
+            else {
+                result(false)
+                return
+            }
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+                mapTemplate.hideBanner()
+                return result(true)
+            }
+            result(false)
+        case FCPChannelTypes.showToast:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String,
+                  let message = args["message"] as? String
+            else {
+                result(false)
+                return
+            }
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+                mapTemplate.showToast(message: message)
+                return result(true)
+            }
+            result(false)
         default:
             result(false)
         }

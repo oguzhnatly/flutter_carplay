@@ -9,6 +9,12 @@ class FCPMapViewController: UIViewController, CPMapTemplateDelegate {
     /// The map view used in the controller.
     var mapView: MKMapView?
 
+    /// The banner view used in the controller.
+    var bannerView: FCPBannerView?
+
+    /// The toast view used in the controller.
+    var toastView: FCPToastView?
+
     /// This method is called after the controller's view is loaded into memory.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -117,39 +123,47 @@ extension FCPMapViewController: MKMapViewDelegate {
 }
 
 // Extension for UIViewController utility methods
-extension UIViewController {
-    /// Displays a toast message on the screen for a specified duration.
-    func showToast(message: String, duration: TimeInterval = 2.0) {
-        let toastView = FCPToastView(frame: CGRect(x: (view.bounds.width / 2) - 60, y: view.bounds.height - 100, width: 200, height: 80))
+extension FCPMapViewController {
+    /// Displays a banner message at the top of the screen for a specified duration.
+    func showBanner(message: String, color: Int) {
+        bannerView?.removeFromSuperview()
+        bannerView = FCPBannerView(frame: CGRect(x: 0, y: 44, width: view.bounds.width, height: 32))
 
-        toastView.messageLabel.text = message
+        debugPrint("mapView center: \(mapView!.center)")
+        debugPrint("mapView width: \(mapView!.frame.width)")
+        debugPrint("mapView height: \(mapView!.frame.height)")
 
-        view.addSubview(toastView)
-
-        UIView.animate(withDuration: 0.5, delay: duration, options: .curveEaseOut, animations: {
-            toastView.alpha = 0.0
-        }, completion: { _ in
-            toastView.removeFromSuperview()
-        })
+        if let bannerView = bannerView {
+            bannerView.messageLabel.text = message
+            bannerView.backgroundColor = UIColor(argb: color)
+            view.addSubview(bannerView)
+        }
     }
 
-    /// Displays a banner message at the top of the screen for a specified duration.
-    func showBanner(message: String, duration: TimeInterval = 2.0) {
-        let toastView = FCPBannerView(frame: CGRect(x: 0, y: 40, width: view.bounds.width, height: 80))
-        //        toastView.center = view.center
+    /// Hides the banner message at the top of the screen.
+    func hideBanner() {
+        bannerView?.removeFromSuperview()
+        bannerView = nil
+    }
 
-        debugPrint("mapView center: \(view.center)")
-        debugPrint("mapView width: \(view.frame.width)")
-        debugPrint("mapView height: \(view.frame.height)")
+    /// Displays a toast message on the screen for a specified duration.
+    func showToast(message: String, duration: TimeInterval = 2.0) {
+        toastView?.removeFromSuperview()
 
-        toastView.messageLabel.text = message
+        let textSize = UILabel.textSize(font: UIFont.systemFont(ofSize: 14), text: message, width: view.bounds.width - 80, height: 100)
 
-        view.addSubview(toastView)
+        toastView = FCPToastView(frame: CGRect(x: (view.bounds.width / 2) - (textSize.width / 2), y: view.bounds.height - (textSize.height + 40), width: textSize.width + 24, height: textSize.height + 24))
 
-        UIView.animate(withDuration: 0.5, delay: duration, options: .curveEaseOut, animations: {
-            toastView.alpha = 0.0
-        }, completion: { _ in
-            toastView.removeFromSuperview()
-        })
+        if let toastView = toastView {
+            toastView.messageLabel.text = message
+
+            view.addSubview(toastView)
+
+            UIView.animate(withDuration: 0.5, delay: duration, options: .curveEaseOut, animations: {
+                toastView.alpha = 0.0
+            }, completion: { _ in
+                toastView.removeFromSuperview()
+            })
+        }
     }
 }

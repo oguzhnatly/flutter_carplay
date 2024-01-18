@@ -85,6 +85,21 @@ class CPMapTemplate {
     FlutterCarPlayController.updateCPMapTemplate(this);
   }
 
+  /// Displays a banner on [CPMapTemplate]
+  void showBanner({required String message, required int color}) {
+    FlutterCarPlayController.showBanner(uniqueId, message, color);
+  }
+
+  /// Hides the banner on [CPMapTemplate]
+  void hideBanner() {
+    FlutterCarPlayController.hideBanner(uniqueId);
+  }
+
+  /// Displays a banner on [CPMapTemplate]
+  void showToast({required String message}) {
+    FlutterCarPlayController.showToast(uniqueId, message);
+  }
+
   String get uniqueId {
     return _elementId;
   }

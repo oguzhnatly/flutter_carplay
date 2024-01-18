@@ -9,6 +9,7 @@ class FCPToastView: UIView {
     let messageLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
+        label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .center
         label.numberOfLines = 0
         return label

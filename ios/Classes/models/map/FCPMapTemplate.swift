@@ -151,6 +151,35 @@ class FCPMapTemplate: NSObject {
 
 // MARK: - Extensions
 
+// Extension for UIViewController utility methods
+extension FCPMapTemplate {
+    /// Displays a banner message at the top of the screen.
+    func showBanner(message: String, color: Int) {
+        guard let viewController = viewController as? FCPMapViewController else {
+            return
+        }
+
+        viewController.showBanner(message: message, color: color)
+    }
+
+    /// Hides the banner message at the top of the screen.
+    func hideBanner() {
+        guard let viewController = viewController as? FCPMapViewController else {
+            return
+        }
+        viewController.hideBanner()
+    }
+
+    /// Displays a toast message on the screen for a specified duration.
+    func showToast(message: String, duration: TimeInterval = 2.0) {
+        guard let viewController = viewController as? FCPMapViewController else {
+            return
+        }
+
+        viewController.showToast(message: message, duration: duration)
+    }
+}
+
 @available(iOS 14.0, *)
 extension FCPMapTemplate: FCPRootTemplate {}
 
