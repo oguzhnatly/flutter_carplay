@@ -1,115 +1,196 @@
-import CarPlay
-import Foundation
-import MapKit
+//
+// FCPMapViewController.swift
+// flutter_carplay
+//
+// Created by Oğuzhan Atalay on on 19/01/24.
+// Copyright © 2024. All rights reserved.
+//
+
 import UIKit
+import MapKit
+import CarPlay
 
-/// FCPMapViewController is a class that represents a view controller with a map for CarPlay.
-@available(iOS 14.0, *)
-class FCPMapViewController: UIViewController, CPMapTemplateDelegate {
-    /// The map view used in the controller.
-    var mapView: MKMapView?
-
-    /// The banner view used in the controller.
-    var bannerView: FCPBannerView?
-
-    /// The toast view used in the controller.
-    var toastView: FCPToastView?
-
-    /// This method is called after the controller's view is loaded into memory.
+/// A custom CarPlay map view controller.
+class FCPMapViewController: UIViewController {
+    
+    /// The map view associated with the map view controller.
+    @IBOutlet weak var mapView: MKMapView!
+    
+    /// The banner view associated with the map view controller.
+    @IBOutlet weak var bannerView: FCPBannerView!{
+        didSet {
+            guard let view = bannerView else { return }
+            view.isHidden = true
+        }
+    }
+    
+    /// The toast view associated with the map view controller.
+    @IBOutlet weak var toastView: FCPToastView! {
+        didSet {
+            guard let view = toastView else { return }
+            view.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+            view.layer.cornerRadius = 10
+            view.isHidden = true
+        }
+    }
+    
+    /// The maximum width of the toast view.
+    @IBOutlet weak var toastViewMaxWidth: NSLayoutConstraint!
+    
+    /// The maximum width of the overlay view.
+    @IBOutlet weak var overlayViewMaxWidth: NSLayoutConstraint!
+    
+    /// The overlay view associated with the map view controller.
+    @IBOutlet weak var overlayView: FCPOverlayView! {
+        didSet {
+            guard let view = overlayView else { return }
+            view.backgroundColor = .clear
+            view.clipsToBounds = true
+            view.layer.cornerRadius = 8
+            view.isHidden = true
+        }
+    }
+    
+    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupMapView()
+        
+        // Do any additional setup after loading the view.
+        configureMapView()
+    
+        
     }
-
+    
     /// This method is called when the view's bounds change.
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        //        showToast(message: "This is a toast message")
-        //        showBanner(message: "This is a toast message")
+        
+        /// Set the maximum width of the toast view.
+        toastViewMaxWidth.constant = view.bounds.size.width - 80.0
+        overlayViewMaxWidth.constant = view.bounds.size.width - 80.0
+        
     }
-
-    /// Sets up the map view and its constraints.
-    private func setupMapView() {
-        mapView = MKMapView(frame: view.bounds)
-        mapView?.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(mapView!)
-
-        mapView?.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        mapView?.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        mapView?.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        mapView?.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-
-        configureMapView()
-    }
-
-    /// Configures the settings for the map view.
-    private func configureMapView() {
+    
+    
+    // MARK: - configureMapView
+    
+    func configureMapView() {
         let region = MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 23.0225, longitude: 72.5714),
             span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
         )
-
+        
         mapView?.setRegion(region, animated: true)
         mapView?.showsUserLocation = true
         mapView?.delegate = self // Add this line
         mapView?.setUserTrackingMode(.follow, animated: true)
         mapView?.overrideUserInterfaceStyle = .light
     }
-
-    // Implement CPMapTemplateDelegate methods here
-    // ...
-
-    /// Called when a pan gesture begins on the map.
-    func mapTemplateDidBeginPanGesture(_: CPMapTemplate) {
-        MemoryLogger.shared.appendEvent("🚙🚙🚙🚙🚙 Panning")
-    }
-
-    /// Called when the map is panned in a specific direction.
-    func mapTemplate(_: CPMapTemplate, panWith direction: CPMapTemplate.PanDirection) {
-        MemoryLogger.shared.appendEvent("🚙🚙🚙🚙🚙 Panning: \(direction)")
-    }
-
-    /// Called when a button is pressed on the map template.
-    func mapTemplate(_: CPMapTemplate, buttonPressed button: CPBarButton) {
-        if button.title == "Location" { // Replace with the actual button title
-            calculateAndDisplayRoute()
-        }
-    }
-
+    
     /// Calculates and displays a route on the map.
     func calculateAndDisplayRoute() {
         // Replace these coordinates with the actual destination coordinates
         let sourceLocation = CLLocationCoordinate2D(latitude: 22.9978, longitude: 72.6660)
         let destinationLocation = CLLocationCoordinate2D(latitude: 23.0120, longitude: 72.5108)
-
+        
         let sourcePlacemark = MKPlacemark(coordinate: sourceLocation)
         let destinationPlacemark = MKPlacemark(coordinate: destinationLocation)
-
+        
         let sourceMapItem = MKMapItem(placemark: sourcePlacemark)
         let destinationMapItem = MKMapItem(placemark: destinationPlacemark)
-
+        
         let directionRequest = MKDirections.Request()
         directionRequest.source = sourceMapItem
         directionRequest.destination = destinationMapItem
         directionRequest.transportType = .automobile
-
+        
         let directions = MKDirections(request: directionRequest)
         directions.calculate { response, _ in
             guard let route = response?.routes.first else {
                 MemoryLogger.shared.appendEvent("Route calculation failed.")
                 return
             }
-
-            self.mapView?.removeOverlays(self.mapView?.overlays ?? [])
-            self.mapView?.addOverlay(route.polyline, level: .aboveRoads)
-
+            
+            self.mapView.removeOverlays(self.mapView?.overlays ?? [])
+            self.mapView.addOverlay(route.polyline, level: .aboveRoads)
+            
             let routeRect = route.polyline.boundingMapRect
-            self.mapView?.setRegion(MKCoordinateRegion(routeRect), animated: true)
+            self.mapView.setRegion(MKCoordinateRegion(routeRect), animated: true)
         }
+    }
+    
+}
+
+// Extension for UIViewController utility methods
+// MARK: - Banner & Toast View
+extension FCPMapViewController {
+    /// Displays a banner message at the top of the screen
+    func showBanner(message: String, color: Int) {
+        bannerView.setMessage(message)
+        bannerView.backgroundColor = UIColor(argb: color)
+        bannerView.isHidden = false
+    }
+    
+    /// Hides the banner message at the top of the screen.
+    func hideBanner() {
+        bannerView.isHidden = true
+    }
+    
+    /// Displays a toast message on the screen for a specified duration.
+    func showToast(message: String, duration: TimeInterval = 2.0) {
+        toastView.setMessage(message)
+        toastView.alpha = 1.0
+        toastView.isHidden = false
+
+        UIView.animate(withDuration: 0.5, delay: duration, options: .curveEaseOut, animations: {
+            self.toastView.alpha = 0.0
+        }, completion: { _ in
+            self.toastView.alpha = 1.0
+            self.toastView.isHidden = true
+        })
+        
+    }
+    
+    /// Displays an overlay view on the screen.
+    func showOverlay(primaryTitle: String, secondaryTitle: String, subTitle: String) {
+        overlayView.setPrimaryTitle(primaryTitle)
+        overlayView.setSecondaryTitle(secondaryTitle)
+        overlayView.setSubTitle(subTitle)
+        overlayView.isHidden = false
+    }
+    
+    /// Hides the overlay view on the screen.
+    func hideOverlay() {
+        overlayView.isHidden = true
     }
 }
 
+// MARK: - CPMapTemplateDelegate
+extension FCPMapViewController: CPMapTemplateDelegate {
+    // Implement CPMapTemplateDelegate methods here
+    // ...
+    
+    /// Called when a pan gesture begins on the map.
+    func mapTemplateDidBeginPanGesture(_: CPMapTemplate) {
+        MemoryLogger.shared.appendEvent("🚙🚙🚙🚙🚙 Panning")
+    }
+    
+    /// Called when the map is panned in a specific direction.
+    func mapTemplate(_: CPMapTemplate, panWith direction: CPMapTemplate.PanDirection) {
+        MemoryLogger.shared.appendEvent("🚙🚙🚙🚙🚙 Panning: \(direction)")
+    }
+    
+    /// Called when a button is pressed on the map template.
+    func mapTemplate(_: CPMapTemplate, buttonPressed button: CPBarButton) {
+        if button.title == "Location" { // Replace with the actual button title
+            calculateAndDisplayRoute()
+        }
+    }
+    
+}
+
 // Extension for MKMapViewDelegate methods
+// MARK: - MKMapViewDelegate
 extension FCPMapViewController: MKMapViewDelegate {
     func mapView(_: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let polyline = overlay as? MKPolyline {
@@ -119,51 +200,5 @@ extension FCPMapViewController: MKMapViewDelegate {
             return renderer
         }
         return MKOverlayRenderer(overlay: overlay)
-    }
-}
-
-// Extension for UIViewController utility methods
-extension FCPMapViewController {
-    /// Displays a banner message at the top of the screen for a specified duration.
-    func showBanner(message: String, color: Int) {
-        bannerView?.removeFromSuperview()
-        bannerView = FCPBannerView(frame: CGRect(x: 0, y: 44, width: view.bounds.width, height: 32))
-
-        debugPrint("mapView center: \(mapView!.center)")
-        debugPrint("mapView width: \(mapView!.frame.width)")
-        debugPrint("mapView height: \(mapView!.frame.height)")
-
-        if let bannerView = bannerView {
-            bannerView.messageLabel.text = message
-            bannerView.backgroundColor = UIColor(argb: color)
-            view.addSubview(bannerView)
-        }
-    }
-
-    /// Hides the banner message at the top of the screen.
-    func hideBanner() {
-        bannerView?.removeFromSuperview()
-        bannerView = nil
-    }
-
-    /// Displays a toast message on the screen for a specified duration.
-    func showToast(message: String, duration: TimeInterval = 2.0) {
-        toastView?.removeFromSuperview()
-
-        let textSize = UILabel.textSize(font: UIFont.systemFont(ofSize: 14), text: message, width: view.bounds.width - 80, height: 100)
-
-        toastView = FCPToastView(frame: CGRect(x: (view.bounds.width / 2) - (textSize.width / 2), y: view.bounds.height - (textSize.height + 40), width: textSize.width + 24, height: textSize.height + 24))
-
-        if let toastView = toastView {
-            toastView.messageLabel.text = message
-
-            view.addSubview(toastView)
-
-            UIView.animate(withDuration: 0.5, delay: duration, options: .curveEaseOut, animations: {
-                toastView.alpha = 0.0
-            }, completion: { _ in
-                toastView.removeFromSuperview()
-            })
-        }
     }
 }
