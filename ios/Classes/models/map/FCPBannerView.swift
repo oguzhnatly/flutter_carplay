@@ -9,7 +9,7 @@ class FCPBannerView: UIView {
     @IBOutlet var contentView: UIView! {
         didSet {
             guard let view = contentView else { return }
-            view.backgroundColor = .red
+            view.backgroundColor = .gray
         }
     }
     
@@ -60,5 +60,10 @@ extension FCPBannerView {
     /// Sets the message to display in the banner view.
     func setMessage(_ message: String) {
         messageLabel.text = message
+    }
+    
+    /// Sets the content view background color
+    func setBackgroundColor(_ color: Int) {
+        contentView.backgroundColor = UIColor(argb: color)
     }
 }

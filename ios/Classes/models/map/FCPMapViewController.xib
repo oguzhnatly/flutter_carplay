@@ -63,9 +63,9 @@
                 <constraint firstItem="JeZ-xy-ybs" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="D7n-uX-aMw"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="aC6-5h-aIW" secondAttribute="bottom" constant="16" id="Icy-dM-ner"/>
                 <constraint firstAttribute="trailing" secondItem="Xch-UZ-980" secondAttribute="trailing" id="MCT-iH-By8"/>
-                <constraint firstItem="JeZ-xy-ybs" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="bYR-0G-tXr"/>
+                <constraint firstItem="JeZ-xy-ybs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="bYR-0G-tXr"/>
                 <constraint firstItem="aC6-5h-aIW" firstAttribute="centerX" secondItem="Xch-UZ-980" secondAttribute="centerX" id="h6U-ey-tue"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="JeZ-xy-ybs" secondAttribute="trailing" id="i3i-eF-ngI"/>
+                <constraint firstAttribute="trailing" secondItem="JeZ-xy-ybs" secondAttribute="trailing" id="i3i-eF-ngI"/>
                 <constraint firstItem="Xch-UZ-980" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="mjo-L6-F6n"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="Xch-UZ-980" secondAttribute="bottom" id="sUr-DJ-wBH"/>
             </constraints>
