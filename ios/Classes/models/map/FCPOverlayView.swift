@@ -1,5 +1,5 @@
 //
-// FCPMapOverlayView.swift
+// FCPOverlayView.swift
 // flutter_carplay
 //
 // Created by Oğuzhan Atalay on on 18/01/24.
@@ -16,25 +16,50 @@ class FCPOverlayView: UIView {
             view.backgroundColor = .clear
         }
     }
-    
-    @IBOutlet weak var titleView: UIView!{
+
+    @IBOutlet var titleView: UIView! {
         didSet {
             guard let view = titleView else { return }
             view.backgroundColor = UIColor(rgb: 0x248A3D)
         }
     }
-    @IBOutlet weak var subTitleView: UIView!{
+
+    @IBOutlet var subtitleView: UIView! {
         didSet {
-            guard let view = subTitleView else { return }
+            guard let view = subtitleView else { return }
             view.backgroundColor = UIColor(rgb: 0x248A3D)
         }
     }
-    
-    @IBOutlet weak var primaryTitleLabel: UILabel!
-    @IBOutlet weak var secondaryTitleLabel: UILabel!
-    @IBOutlet weak var deviderView: UIView!
-    @IBOutlet weak var subTitleLabel: UILabel!
-    
+
+    @IBOutlet var deviderView: UIView!
+
+    @IBOutlet var primaryTitleLabel: UILabel! {
+        didSet {
+            guard let label = primaryTitleLabel else { return }
+            label.textColor = .white
+            label.font = UIFont.systemFont(ofSize: 14)
+            label.numberOfLines = 0
+        }
+    }
+
+    @IBOutlet var secondaryTitleLabel: UILabel! {
+        didSet {
+            guard let label = secondaryTitleLabel else { return }
+            label.textColor = .white
+            label.font = UIFont.boldSystemFont(ofSize: 14)
+            label.numberOfLines = 0
+        }
+    }
+
+    @IBOutlet var subtitleLabel: UILabel! {
+        didSet {
+            guard let label = subtitleLabel else { return }
+            label.textColor = .white
+            label.font = UIFont.systemFont(ofSize: 14)
+            label.numberOfLines = 0
+        }
+    }
+
     // MARK: Initializers
 
     /// Initializes a new instance of `FCPOverlayView` with the specified frame.
@@ -54,25 +79,28 @@ class FCPOverlayView: UIView {
     }
 
     // MARK: Private Methods
+
     private func setupUI() {
-                
         Bundle(for: FCPOverlayView.self).loadNibNamed("FCPOverlayView", owner: self, options: nil)
         contentView.fixInView(self)
     }
 }
 
 // MARK: - Public Method
+
 extension FCPOverlayView {
-    
+    /// Sets the primaryTitle to display in the overlay view.
     func setPrimaryTitle(_ text: String) {
         primaryTitleLabel.text = text
     }
-    
+
+    /// Sets the secondaryTitle to display in the overlay view.
     func setSecondaryTitle(_ text: String) {
         secondaryTitleLabel.text = text
     }
-    
-    func setSubTitle(_ text: String) {
-        subTitleLabel.text = text
+
+    /// Sets the subtitle to display in the overlay view.
+    func setSubtitle(_ text: String) {
+        subtitleLabel.text = text
     }
 }

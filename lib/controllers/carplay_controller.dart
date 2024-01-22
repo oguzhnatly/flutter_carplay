@@ -58,6 +58,26 @@ class FlutterCarPlayController {
     });
   }
 
+  /// Displays an overlay card on [CPMapTemplate]
+  static void showOverlay(
+    String elementId,
+    String? primaryTitle,
+    String? secondaryTitle,
+    String? subtitle,
+  ) {
+    _methodChannel.invokeMethod('showOverlay', {
+      '_elementId': elementId,
+      'primaryTitle': primaryTitle,
+      'secondaryTitle': secondaryTitle,
+      'subtitle': subtitle,
+    });
+  }
+
+  /// Hides the overlay card on [CPMapTemplate]
+  static void hideOverlay(String elementId) {
+    _methodChannel.invokeMethod('hideOverlay', {'_elementId': elementId});
+  }
+
   /// Updates the [CPMapTemplate]
   static void updateCPMapTemplate(CPMapTemplate updatedTemplate) {
     final elementId = updatedTemplate.uniqueId;

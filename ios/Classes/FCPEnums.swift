@@ -129,6 +129,12 @@ enum FCPChannelTypes {
 
     /// Event for showing a toast message in CarPlay.
     static let showToast = "showToast"
+
+    /// Event for showing an overlay card in CarPlay.
+    static let showOverlay = "showOverlay"
+
+    /// Event for hiding the overlay card in CarPlay.
+    static let hideOverlay = "hideOverlay"
 }
 
 /// Enum defining different types of alert actions in CarPlay.

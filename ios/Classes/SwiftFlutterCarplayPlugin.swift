@@ -394,6 +394,41 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return result(true)
             }
             result(false)
+        case FCPChannelTypes.showOverlay:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String
+
+            else {
+                result(false)
+                return
+            }
+
+            let primaryTitle = args["primaryTitle"] as? String
+            let secondaryTitle = args["secondaryTitle"] as? String
+            let subtitle = args["subtitle"] as? String
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+                mapTemplate.showOverlay(primaryTitle: primaryTitle, secondaryTitle: secondaryTitle, subtitle: subtitle)
+                return result(true)
+            }
+
+            result(false)
+        case FCPChannelTypes.hideOverlay:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String
+            else {
+                result(false)
+                return
+            }
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+                mapTemplate.hideBanner()
+                return result(true)
+            }
+
+            result(false)
         default:
             result(false)
         }

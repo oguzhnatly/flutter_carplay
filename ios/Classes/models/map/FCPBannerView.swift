@@ -3,8 +3,8 @@ import UIKit
 
 /// A custom UIView subclass representing a banner view with a message label.
 class FCPBannerView: UIView {
-    
     // MARK: Properties
+
     /// The background view of the banner.
     @IBOutlet var contentView: UIView! {
         didSet {
@@ -12,9 +12,9 @@ class FCPBannerView: UIView {
             view.backgroundColor = .gray
         }
     }
-    
+
     /// The label to display the message in the banner.
-    @IBOutlet weak var messageLabel: UILabel! {
+    @IBOutlet var messageLabel: UILabel! {
         didSet {
             guard let label = messageLabel else { return }
             label.textColor = .white
@@ -23,9 +23,9 @@ class FCPBannerView: UIView {
             label.numberOfLines = 0
         }
     }
-    
+
     // MARK: Initializers
-    
+
     /// Initializes a new instance of `FCPBannerView` with the specified frame.
     ///
     /// - Parameter frame: The frame rectangle for the view, measured in points.
@@ -33,7 +33,7 @@ class FCPBannerView: UIView {
         super.init(frame: frame)
         setupUI()
     }
-    
+
     /// Initializes a new instance of `FCPBannerView` from data encoded in a given decoder.
     ///
     /// - Parameter aDecoder: An unarchiver object.
@@ -41,27 +41,24 @@ class FCPBannerView: UIView {
         super.init(coder: aDecoder)
         setupUI()
     }
-    
+
     // MARK: Private Methods
-    
+
     /// Configures the UI elements and layout for the banner view.
     private func setupUI() {
-        
         Bundle(for: FCPBannerView.self).loadNibNamed("FCPBannerView", owner: self, options: nil)
         contentView.fixInView(self)
-        
     }
-    
-    
 }
 
 // MARK: - Public Method
+
 extension FCPBannerView {
     /// Sets the message to display in the banner view.
     func setMessage(_ message: String) {
         messageLabel.text = message
     }
-    
+
     /// Sets the content view background color
     func setBackgroundColor(_ color: Int) {
         contentView.backgroundColor = UIColor(argb: color)

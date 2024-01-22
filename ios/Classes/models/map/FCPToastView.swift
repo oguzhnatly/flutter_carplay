@@ -4,7 +4,7 @@ import UIKit
 /// A custom UIView class for displaying toast messages.
 class FCPToastView: UIView {
     // MARK: Properties
-    
+
     /// The background view of the banner.
     @IBOutlet var contentView: UIView! {
         didSet {
@@ -12,9 +12,9 @@ class FCPToastView: UIView {
             view.backgroundColor = .green
         }
     }
-    
+
     /// The label to display the message in the banner.
-    @IBOutlet weak var messageLabel: UILabel! {
+    @IBOutlet var messageLabel: UILabel! {
         didSet {
             guard let label = messageLabel else { return }
             label.textColor = .white
@@ -23,9 +23,9 @@ class FCPToastView: UIView {
             label.numberOfLines = 0
         }
     }
-    
+
     // MARK: Initialization
-    
+
     /// Initializes a new instance of `FCPToastView` with the specified frame.
     ///
     /// - Parameter frame: The frame rectangle for the view, measured in points.
@@ -33,7 +33,7 @@ class FCPToastView: UIView {
         super.init(frame: frame)
         setupUI()
     }
-    
+
     /// Initializes a new instance of `FCPToastView` from data in a given decoder.
     ///
     /// - Parameter aDecoder: An NSCoder object.
@@ -41,19 +41,18 @@ class FCPToastView: UIView {
         super.init(coder: aDecoder)
         setupUI()
     }
-    
+
     // MARK: Private Methods
-    
+
     /// Sets up the UI components and layout constraints for the toast view.
     private func setupUI() {
-        
         Bundle(for: FCPToastView.self).loadNibNamed("FCPToastView", owner: self, options: nil)
         contentView.fixInView(self)
     }
-    
 }
 
 // MARK: - Public Method
+
 extension FCPToastView {
     /// Sets the message to display in the toast view.
     func setMessage(_ message: String) {

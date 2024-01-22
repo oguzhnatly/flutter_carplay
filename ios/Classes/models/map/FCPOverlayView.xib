@@ -15,8 +15,8 @@
                 <outlet property="deviderView" destination="TAg-0l-S2Q" id="Q0R-95-s24"/>
                 <outlet property="primaryTitleLabel" destination="S34-gh-ISa" id="7xx-Wu-dVQ"/>
                 <outlet property="secondaryTitleLabel" destination="WNS-Fj-zun" id="fd8-hI-QFA"/>
-                <outlet property="subTitleLabel" destination="gAf-qW-3Kt" id="itW-pw-EZj"/>
-                <outlet property="subTitleView" destination="LAJ-IB-YBB" id="gtD-GK-qRU"/>
+                <outlet property="subtitleLabel" destination="gAf-qW-3Kt" id="itW-pw-EZj"/>
+                <outlet property="subtitleView" destination="LAJ-IB-YBB" id="gtD-GK-qRU"/>
                 <outlet property="titleView" destination="ei1-jq-Kp2" id="LFE-AU-NNZ"/>
             </connections>
         </placeholder>

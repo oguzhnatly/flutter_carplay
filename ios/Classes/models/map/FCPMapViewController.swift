@@ -6,18 +6,17 @@
 // Copyright © 2024. All rights reserved.
 //
 
-import UIKit
-import MapKit
 import CarPlay
+import MapKit
+import UIKit
 
 /// A custom CarPlay map view controller.
 class FCPMapViewController: UIViewController {
-
     /// The map view associated with the map view controller.
-    @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet var mapView: MKMapView!
 
     /// The banner view associated with the map view controller.
-    @IBOutlet weak var bannerView: FCPBannerView!{
+    @IBOutlet var bannerView: FCPBannerView! {
         didSet {
             guard let view = bannerView else { return }
             view.isHidden = true
@@ -25,7 +24,7 @@ class FCPMapViewController: UIViewController {
     }
 
     /// The toast view associated with the map view controller.
-    @IBOutlet weak var toastView: FCPToastView! {
+    @IBOutlet var toastView: FCPToastView! {
         didSet {
             guard let view = toastView else { return }
             view.backgroundColor = UIColor.black.withAlphaComponent(0.8)
@@ -35,13 +34,13 @@ class FCPMapViewController: UIViewController {
     }
 
     /// The maximum width of the toast view.
-    @IBOutlet weak var toastViewMaxWidth: NSLayoutConstraint!
+    @IBOutlet var toastViewMaxWidth: NSLayoutConstraint!
 
     /// The maximum width of the overlay view.
-    @IBOutlet weak var overlayViewMaxWidth: NSLayoutConstraint!
+    @IBOutlet var overlayViewMaxWidth: NSLayoutConstraint!
 
     /// The overlay view associated with the map view controller.
-    @IBOutlet weak var overlayView: FCPOverlayView! {
+    @IBOutlet var overlayView: FCPOverlayView! {
         didSet {
             guard let view = overlayView else { return }
             view.backgroundColor = .clear
@@ -52,13 +51,12 @@ class FCPMapViewController: UIViewController {
     }
 
     // MARK: - View Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         configureMapView()
-
-
     }
 
     /// This method is called when the view's bounds change.
@@ -68,9 +66,7 @@ class FCPMapViewController: UIViewController {
         /// Set the maximum width of the toast view.
         toastViewMaxWidth.constant = view.bounds.size.width - 80.0
         overlayViewMaxWidth.constant = view.bounds.size.width - 80.0
-
     }
-
 
     // MARK: - configureMapView
 
@@ -118,11 +114,12 @@ class FCPMapViewController: UIViewController {
             self.mapView.setRegion(MKCoordinateRegion(routeRect), animated: true)
         }
     }
-
 }
 
 // Extension for UIViewController utility methods
+
 // MARK: - Banner & Toast View
+
 extension FCPMapViewController {
     /// Displays a banner message at the top of the screen
     func showBanner(message: String, color: Int) {
@@ -148,24 +145,33 @@ extension FCPMapViewController {
             self.toastView.alpha = 1.0
             self.toastView.isHidden = true
         })
-
     }
 
     /// Displays an overlay view on the screen.
-    func showOverlay(primaryTitle: String, secondaryTitle: String, subTitle: String) {
-        overlayView.setPrimaryTitle(primaryTitle)
-        overlayView.setSecondaryTitle(secondaryTitle)
-        overlayView.setSubTitle(subTitle)
+    func showOverlay(primaryTitle: String?, secondaryTitle: String?, subtitle: String?) {
+        if let primaryTitle = primaryTitle {
+            overlayView.setPrimaryTitle(primaryTitle)
+        }
+        if let secondaryTitle = secondaryTitle {
+            overlayView.setSecondaryTitle(secondaryTitle)
+        }
+        if let subtitle = subtitle {
+            overlayView.setSubtitle(subtitle)
+        }
         overlayView.isHidden = false
     }
 
     /// Hides the overlay view on the screen.
     func hideOverlay() {
+        overlayView.setPrimaryTitle("00:00:00")
+        overlayView.setSecondaryTitle("--")
+        overlayView.setSubtitle("--")
         overlayView.isHidden = true
     }
 }
 
 // MARK: - CPMapTemplateDelegate
+
 extension FCPMapViewController: CPMapTemplateDelegate {
     // Implement CPMapTemplateDelegate methods here
     // ...
@@ -186,11 +192,12 @@ extension FCPMapViewController: CPMapTemplateDelegate {
             calculateAndDisplayRoute()
         }
     }
-
 }
 
 // Extension for MKMapViewDelegate methods
+
 // MARK: - MKMapViewDelegate
+
 extension FCPMapViewController: MKMapViewDelegate {
     func mapView(_: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let polyline = overlay as? MKPolyline {

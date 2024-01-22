@@ -15,7 +15,7 @@ extension UIImage {
         let imageData = try Data(contentsOf: url)
         self.init(data: imageData)
     }
-    
+
     /// Fetches a UIImage from a Flutter asset using the asset name.
     /// - Parameter name: The name of the Flutter asset.
     /// - Returns: A UIImage fetched from the Flutter asset or a system image if not found.
@@ -27,7 +27,7 @@ extension UIImage {
         }
         return UIImage(systemName: "questionmark") ?? UIImage()
     }
-    
+
     /// Resizes the current UIImage to the specified size.
     /// - Parameter size: The target size for the resized image.
     /// - Returns: The resized UIImage or nil if resizing fails.
@@ -80,10 +80,10 @@ extension UIColor {
         assert(green >= 0 && green <= 255, "Invalid green component")
         assert(blue >= 0 && blue <= 255, "Invalid blue component")
         assert(alpha >= 0 && alpha <= 1.0, "Invalid alpha component")
-        
+
         self.init(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: alpha)
     }
-    
+
     convenience init(rgb: Int) {
         self.init(
             red: (rgb >> 16) & 0xFF,
@@ -91,7 +91,7 @@ extension UIColor {
             blue: rgb & 0xFF
         )
     }
-    
+
     convenience init(argb: Int) {
         self.init(
             red: (argb >> 16) & 0xFF,
@@ -104,10 +104,10 @@ extension UIColor {
 
 /// Extension on UIView to fix a view in a container view.
 extension UIView {
-    func fixInView(_ container: UIView) -> Void{
-        self.translatesAutoresizingMaskIntoConstraints = false;
-        self.frame = container.frame;
-        container.addSubview(self);
+    func fixInView(_ container: UIView) {
+        translatesAutoresizingMaskIntoConstraints = false
+        frame = container.frame
+        container.addSubview(self)
         NSLayoutConstraint(item: self, attribute: .leading, relatedBy: .equal, toItem: container, attribute: .leading, multiplier: 1.0, constant: 0).isActive = true
         NSLayoutConstraint(item: self, attribute: .trailing, relatedBy: .equal, toItem: container, attribute: .trailing, multiplier: 1.0, constant: 0).isActive = true
         NSLayoutConstraint(item: self, attribute: .top, relatedBy: .equal, toItem: container, attribute: .top, multiplier: 1.0, constant: 0).isActive = true

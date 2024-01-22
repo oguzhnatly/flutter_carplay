@@ -110,4 +110,10 @@ enum FCPChannelTypes {
 
   /// Event for showing a toast in CarPlay.
   showToast,
+
+  /// Event for showing an overlay in CarPlay.
+  showOverlay,
+
+  /// Event for hiding an overlay in CarPlay.
+  hideOverlay,
 }

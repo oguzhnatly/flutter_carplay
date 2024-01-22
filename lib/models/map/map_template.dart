@@ -100,6 +100,25 @@ class CPMapTemplate {
     FlutterCarPlayController.showToast(uniqueId, message);
   }
 
+  /// Displays an overlay card on [CPMapTemplate]
+  void showOverlay({
+    String? primaryTitle,
+    String? secondaryTitle,
+    String? subtitle,
+  }) {
+    FlutterCarPlayController.showOverlay(
+      uniqueId,
+      primaryTitle,
+      secondaryTitle,
+      subtitle,
+    );
+  }
+
+  /// Hides the overlay on [CPMapTemplate]
+  void hideOverlay() {
+    FlutterCarPlayController.hideOverlay(uniqueId);
+  }
+
   String get uniqueId {
     return _elementId;
   }
