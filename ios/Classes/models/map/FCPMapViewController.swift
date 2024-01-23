@@ -64,8 +64,8 @@ class FCPMapViewController: UIViewController {
         super.viewDidLayoutSubviews()
 
         /// Set the maximum width of the toast view.
-        toastViewMaxWidth.constant = view.bounds.size.width - 80.0
-        overlayViewMaxWidth.constant = view.bounds.size.width - 80.0
+        // toastViewMaxWidth.constant = view.bounds.size.width * 0.6
+        // overlayViewMaxWidth.constant = view.bounds.size.width * 0.6
     }
 
     // MARK: - configureMapView
@@ -135,6 +135,8 @@ extension FCPMapViewController {
 
     /// Displays a toast message on the screen for a specified duration.
     func showToast(message: String, duration: TimeInterval = 2.0) {
+        toastViewMaxWidth.constant = view.bounds.size.width * 0.65
+
         toastView.setMessage(message)
         toastView.alpha = 1.0
         toastView.isHidden = false
@@ -149,6 +151,8 @@ extension FCPMapViewController {
 
     /// Displays an overlay view on the screen.
     func showOverlay(primaryTitle: String?, secondaryTitle: String?, subtitle: String?) {
+        overlayViewMaxWidth.constant = view.bounds.size.width * 0.65
+
         if let primaryTitle = primaryTitle {
             overlayView.setPrimaryTitle(primaryTitle)
         }

@@ -382,7 +382,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         case FCPChannelTypes.showToast:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,
-                  let message = args["message"] as? String
+                  let message = args["message"] as? String,
+                  let duration = args["duration"] as? Double
             else {
                 result(false)
                 return
@@ -390,7 +391,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             // Find the map template based on the provided element ID
             SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-                mapTemplate.showToast(message: message)
+                mapTemplate.showToast(message: message, duration: TimeInterval(duration))
                 return result(true)
             }
             result(false)
@@ -412,7 +413,6 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 mapTemplate.showOverlay(primaryTitle: primaryTitle, secondaryTitle: secondaryTitle, subtitle: subtitle)
                 return result(true)
             }
-
             result(false)
         case FCPChannelTypes.hideOverlay:
             guard let args = call.arguments as? [String: Any],
@@ -424,10 +424,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             // Find the map template based on the provided element ID
             SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-                mapTemplate.hideBanner()
+                mapTemplate.hideOverlay()
                 return result(true)
             }
-
             result(false)
         default:
             result(false)

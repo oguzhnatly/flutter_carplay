@@ -96,8 +96,11 @@ class CPMapTemplate {
   }
 
   /// Displays a banner on [CPMapTemplate]
-  void showToast({required String message}) {
-    FlutterCarPlayController.showToast(uniqueId, message);
+  void showToast({
+    required String message,
+    Duration duration = const Duration(seconds: 2),
+  }) {
+    FlutterCarPlayController.showToast(uniqueId, message, duration);
   }
 
   /// Displays an overlay card on [CPMapTemplate]

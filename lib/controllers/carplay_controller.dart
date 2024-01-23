@@ -51,10 +51,11 @@ class FlutterCarPlayController {
   }
 
   /// Displays a toast on [CPMapTemplate]
-  static void showToast(String elementId, String message) {
+  static void showToast(String elementId, String message, Duration duration) {
     _methodChannel.invokeMethod('showToast', {
       '_elementId': elementId,
       'message': message,
+      'duration': duration.inSeconds.toDouble(),
     });
   }
 
