@@ -9,7 +9,7 @@ class FCPToastView: UIView {
     @IBOutlet var contentView: UIView! {
         didSet {
             guard let view = contentView else { return }
-            view.backgroundColor = .green
+            view.backgroundColor = .clear
         }
     }
 
