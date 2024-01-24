@@ -37,7 +37,7 @@ class FCPOverlayView: UIView {
         didSet {
             guard let label = primaryTitleLabel else { return }
             label.textColor = .white
-            label.font = UIFont.systemFont(ofSize: 14)
+            label.font = UIFont.systemFont(ofSize: 12)
             label.numberOfLines = 0
         }
     }
@@ -46,7 +46,7 @@ class FCPOverlayView: UIView {
         didSet {
             guard let label = secondaryTitleLabel else { return }
             label.textColor = .white
-            label.font = UIFont.boldSystemFont(ofSize: 14)
+            label.font = UIFont.boldSystemFont(ofSize: 12)
             label.numberOfLines = 0
         }
     }
@@ -55,7 +55,7 @@ class FCPOverlayView: UIView {
         didSet {
             guard let label = subtitleLabel else { return }
             label.textColor = .white
-            label.font = UIFont.systemFont(ofSize: 14)
+            label.font = UIFont.systemFont(ofSize: 12)
             label.numberOfLines = 0
         }
     }
