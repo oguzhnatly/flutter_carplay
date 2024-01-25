@@ -30,11 +30,11 @@
                     <rect key="frame" x="0.0" y="0.0" width="393" height="818"/>
                     <standardMapConfiguration key="preferredConfiguration"/>
                 </mapView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JeZ-xy-ybs" customClass="FCPBannerView" customModule="flutter_carplay" customModuleProvider="target">
+                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JeZ-xy-ybs" customClass="FCPBannerView" customModule="flutter_carplay" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="59" width="393" height="32"/>
                     <color key="backgroundColor" systemColor="systemYellowColor"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="32" id="2Uv-ll-Lub"/>
+                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="32" id="2Uv-ll-Lub"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZsG-Z3-iyS" customClass="FCPOverlayView" customModule="flutter_carplay" customModuleProvider="target">

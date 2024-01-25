@@ -1,5 +1,7 @@
 import 'package:uuid/uuid.dart';
 
+import '../../controllers/carplay_controller.dart';
+import '../button/bar_button.dart';
 import '../button/text_button.dart';
 import 'information_item.dart';
 
@@ -24,10 +26,19 @@ class CPInformationTemplate {
   final CPInformationTemplateLayout layout;
 
   /// The array of actions as [CPTextButton] displayed on the template.
-  final List<CPTextButton> actions;
+  List<CPTextButton> actions;
 
   /// The array of information items  as [CPInformationItem] displayed on the template.
-  final List<CPInformationItem> informationItems;
+  List<CPInformationItem> informationItems;
+
+  /// Back button object.
+  final CPBarButton? backButton;
+
+  /// An array of bar buttons to be displayed on the leading side of the navigation bar.
+  List<CPBarButton> leadingNavigationBarButtons;
+
+  /// An array of bar buttons to be displayed on the trailing side of the navigation bar.
+  List<CPBarButton> trailingNavigationBarButtons;
 
   /// Creates [CPInformationTemplate]
   CPInformationTemplate({
@@ -35,15 +46,49 @@ class CPInformationTemplate {
     required this.layout,
     required this.actions,
     required this.informationItems,
+    this.leadingNavigationBarButtons = const [],
+    this.trailingNavigationBarButtons = const [],
+    this.backButton,
   });
 
   Map<String, dynamic> toJson() => {
         'title': title,
         'layout': layout.name,
         '_elementId': _elementId,
+        'backButton': backButton?.toJson(),
         'actions': actions.map((e) => e.toJson()).toList(),
         'informationItems': informationItems.map((e) => e.toJson()).toList(),
+        'leadingNavigationBarButtons':
+            leadingNavigationBarButtons.map((e) => e.toJson()).toList(),
+        'trailingNavigationBarButtons':
+            trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
       };
+
+  /// Update the properties of the [CPInformationTemplate]
+  void update({
+    List<CPTextButton>? actions,
+    List<CPInformationItem>? items,
+    List<CPBarButton>? leadingNavigationBarButtons,
+    List<CPBarButton>? trailingNavigationBarButtons,
+  }) {
+    // update items
+    if (items != null) informationItems = items;
+
+    // update actions
+    if (actions != null) this.actions = actions;
+
+    // update leadingNavigationBarButtons
+    if (leadingNavigationBarButtons != null) {
+      this.leadingNavigationBarButtons = leadingNavigationBarButtons;
+    }
+
+    // update trailingNavigationBarButtons
+    if (trailingNavigationBarButtons != null) {
+      this.trailingNavigationBarButtons = trailingNavigationBarButtons;
+    }
+
+    FlutterCarPlayController.updateCPInformationTemplate(this);
+  }
 
   String get uniqueId {
     return _elementId;

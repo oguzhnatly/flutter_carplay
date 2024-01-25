@@ -89,6 +89,13 @@ extension FlutterCarPlaySceneDelegate: CPInterfaceControllerDelegate {
                                                          data: ["elementId": elementId])
                     }
                 }
+            } else if aTemplate is CPInformationTemplate, !(topTemplate is CPInformationTemplate) {
+                if let elementId = (((aTemplate as? CPInformationTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPInformationTemplate)?.elementId {
+                    DispatchQueue.main.async {
+                        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onInformationTemplatePopped,
+                                                         data: ["elementId": elementId])
+                    }
+                }
             }
         }
     }

@@ -38,7 +38,7 @@ class FlutterCarPlayController {
 
   /// Displays a banner on [CPMapTemplate]
   static void showBanner(String elementId, String message, int color) {
-    _methodChannel.invokeMethod('showBanner', {
+    _methodChannel.invokeMethod(FCPChannelTypes.showBanner.name, {
       '_elementId': elementId,
       'message': message,
       'color': color,
@@ -47,12 +47,15 @@ class FlutterCarPlayController {
 
   /// Hides the banner on [CPMapTemplate]
   static void hideBanner(String elementId) {
-    _methodChannel.invokeMethod('hideBanner', {'_elementId': elementId});
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.hideBanner.name,
+      {'_elementId': elementId},
+    );
   }
 
   /// Displays a toast on [CPMapTemplate]
   static void showToast(String elementId, String message, Duration duration) {
-    _methodChannel.invokeMethod('showToast', {
+    _methodChannel.invokeMethod(FCPChannelTypes.showToast.name, {
       '_elementId': elementId,
       'message': message,
       'duration': duration.inSeconds.toDouble(),
@@ -66,7 +69,7 @@ class FlutterCarPlayController {
     String? secondaryTitle,
     String? subtitle,
   ) {
-    _methodChannel.invokeMethod('showOverlay', {
+    _methodChannel.invokeMethod(FCPChannelTypes.showOverlay.name, {
       '_elementId': elementId,
       'primaryTitle': primaryTitle,
       'secondaryTitle': secondaryTitle,
@@ -76,30 +79,68 @@ class FlutterCarPlayController {
 
   /// Hides the overlay card on [CPMapTemplate]
   static void hideOverlay(String elementId) {
-    _methodChannel.invokeMethod('hideOverlay', {'_elementId': elementId});
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.hideOverlay.name,
+      {'_elementId': elementId},
+    );
   }
 
-  /// Updates the [CPMapTemplate]
-  static void updateCPMapTemplate(CPMapTemplate updatedTemplate) {
+  /// Updates the [CPInformationTemplate]
+  static void updateCPInformationTemplate(
+    CPInformationTemplate updatedTemplate,
+  ) {
     final elementId = updatedTemplate.uniqueId;
     _methodChannel
-        .invokeMethod('updateMapTemplate', updatedTemplate.toJson())
+        .invokeMethod(
+      FCPChannelTypes.updateInformationTemplate.name,
+      updatedTemplate.toJson(),
+    )
         .then((value) {
       if (value) {
-        l1:
         for (var template in templateHistory) {
           switch (template) {
             // case final CPTabBarTemplate tabBarTemplate:
             //   for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
             //     if (tab.uniqueId == elementId) {
             //       tabBarTemplate.templates[tabIndex] = updatedTemplate;
-            //       break l1;
+            //       return;
+            //     }
+            //   }
+            case final CPInformationTemplate informationTemplate:
+              if (informationTemplate.uniqueId == elementId) {
+                template = updatedTemplate;
+                return;
+              }
+            default:
+          }
+        }
+      }
+    });
+  }
+
+  /// Updates the [CPMapTemplate]
+  static void updateCPMapTemplate(CPMapTemplate updatedTemplate) {
+    final elementId = updatedTemplate.uniqueId;
+    _methodChannel
+        .invokeMethod(
+      FCPChannelTypes.updateMapTemplate.name,
+      updatedTemplate.toJson(),
+    )
+        .then((value) {
+      if (value) {
+        for (var template in templateHistory) {
+          switch (template) {
+            // case final CPTabBarTemplate tabBarTemplate:
+            //   for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
+            //     if (tab.uniqueId == elementId) {
+            //       tabBarTemplate.templates[tabIndex] = updatedTemplate;
+            //       return;
             //     }
             //   }
             case final CPMapTemplate mapTemplate:
               if (mapTemplate.uniqueId == elementId) {
                 template = updatedTemplate;
-                break l1;
+                return;
               }
             default:
           }
@@ -112,7 +153,10 @@ class FlutterCarPlayController {
   static void updateCPListTemplate(CPListTemplate updatedTemplate) {
     final elementId = updatedTemplate.uniqueId;
     _methodChannel
-        .invokeMethod('updateListTemplate', updatedTemplate.toJson())
+        .invokeMethod(
+      FCPChannelTypes.updateListTemplate.name,
+      updatedTemplate.toJson(),
+    )
         .then((value) {
       if (value) {
         for (var template in templateHistory) {
@@ -139,7 +183,10 @@ class FlutterCarPlayController {
   /// Updates the [CPListItem]
   static void updateCPListItem(CPListItem updatedListItem) {
     _methodChannel
-        .invokeMethod('updateListItem', updatedListItem.toJson())
+        .invokeMethod(
+      FCPChannelTypes.updateListItem.name,
+      updatedListItem.toJson(),
+    )
         .then((value) {
       if (value) {
         for (final template in templateHistory) {
@@ -251,6 +298,18 @@ class FlutterCarPlayController {
     }
   }
 
+  /// Processes the FCPInformationTemplatePoppedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPInformationTemplate]
+  void processFCPInformationTemplatePoppedChannel(String elementId) {
+    final topTemplate = templateHistory.lastOrNull;
+    if (topTemplate is CPInformationTemplate &&
+        topTemplate.uniqueId == elementId) {
+      templateHistory.removeLast();
+    }
+  }
+
   /// Processes the FCPListItemSelectedChannel
   ///
   /// Parameters:
@@ -300,11 +359,12 @@ class FlutterCarPlayController {
   void processFCPGridButtonPressed(String elementId) {
     for (final template in templateHistory) {
       if (template is CPGridTemplate) {
-        for (final button in template.buttons) {
-          if (button.uniqueId == elementId) {
-            button.onPressed();
-            return;
-          }
+        final button = template.buttons.singleWhereOrNull(
+          (e) => e.uniqueId == elementId,
+        );
+        if (button != null) {
+          button.onPressed();
+          return;
         }
       }
     }
@@ -315,41 +375,51 @@ class FlutterCarPlayController {
   /// Parameters:
   /// - elementId: The id of the [CPBarButton]
   void processFCPBarButtonPressed(String elementId) {
-    l1:
     for (final template in templateHistory) {
       if (template is CPListTemplate) {
         final backButton = template.backButton;
         if (backButton != null && backButton.uniqueId == elementId) {
           backButton.onPressed();
-          break l1;
+          return;
         }
-        for (final button in template.trailingNavigationBarButtons) {
-          if (button.uniqueId == elementId) {
-            button.onPressed();
-            break l1;
-          }
+
+        final button = template.leadingNavigationBarButtons.singleWhereOrNull(
+              (e) => e.uniqueId == elementId,
+            ) ??
+            template.trailingNavigationBarButtons.singleWhereOrNull(
+              (e) => e.uniqueId == elementId,
+            );
+        if (button != null) {
+          button.onPressed();
+          return;
         }
-        for (final button in template.leadingNavigationBarButtons) {
-          if (button.uniqueId == elementId) {
-            button.onPressed();
-            break l1;
-          }
+      } else if (template is CPInformationTemplate) {
+        final backButton = template.backButton;
+        if (backButton != null && backButton.uniqueId == elementId) {
+          backButton.onPressed();
+          return;
         }
-      } else {
-        l2:
-        if (template is CPMapTemplate) {
-          for (final button in template.trailingNavigationBarButtons) {
-            if (button.uniqueId == elementId) {
-              button.onPressed();
-              break l2;
-            }
-          }
-          for (final button in template.leadingNavigationBarButtons) {
-            if (button.uniqueId == elementId) {
-              button.onPressed();
-              break l2;
-            }
-          }
+
+        final button = template.leadingNavigationBarButtons.singleWhereOrNull(
+              (e) => e.uniqueId == elementId,
+            ) ??
+            template.trailingNavigationBarButtons.singleWhereOrNull(
+              (e) => e.uniqueId == elementId,
+            );
+        if (button != null) {
+          button.onPressed();
+          return;
+        }
+      } else if (template is CPMapTemplate) {
+        final button = template.leadingNavigationBarButtons.singleWhereOrNull(
+              (e) => e.uniqueId == elementId,
+            ) ??
+            template.trailingNavigationBarButtons.singleWhereOrNull(
+              (e) => e.uniqueId == elementId,
+            );
+        if (button != null) {
+          button.onPressed();
+          return;
         }
       }
     }
@@ -362,11 +432,12 @@ class FlutterCarPlayController {
   void processFCPMapButtonPressed(String elementId) {
     for (final template in templateHistory) {
       if (template is CPMapTemplate) {
-        for (final button in template.mapButtons) {
-          if (button.uniqueId == elementId) {
-            button.onPressed();
-            return;
-          }
+        final button = template.mapButtons.singleWhereOrNull(
+          (e) => e.uniqueId == elementId,
+        );
+        if (button != null) {
+          button.onPressed();
+          return;
         }
       }
     }

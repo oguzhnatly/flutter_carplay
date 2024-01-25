@@ -103,6 +103,16 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             FlutterCarPlaySceneDelegate.forceUpdateRootTemplate(completion: { completed, _ in
                 result(completed)
             })
+        case FCPChannelTypes.updateInformationTemplate:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String
+            else {
+                result(false)
+                return
+            }
+
+            updateInformationTemplate(elementId: elementId, args: args)
+            result(true)
         case FCPChannelTypes.updateMapTemplate:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -607,6 +617,42 @@ extension SwiftFlutterCarplayPlugin {
 // MARK: - Update FCPObjects
 
 extension SwiftFlutterCarplayPlugin {
+    /// Updates a CarPlay information template identified by its element ID with new data.
+    ///
+    /// - Parameters:
+    ///   - elementId: The unique identifier of the information template to be updated.
+    ///   - args: Additional arguments for updating the information template.
+    private func updateInformationTemplate(elementId: String, args: [String: Any]) {
+        // Find the information template based on the provided element ID
+        SwiftFlutterCarplayPlugin.findInformationTemplate(elementId: elementId) { infoTemplate in
+            // Map dictionary representations to FCPInformationItem instances for items
+            let items = (args["informationItems"] as? [[String: Any]])?.map {
+                FCPInformationItem(obj: $0)
+            }
+
+            // Map dictionary representations to FCPTextButton instances for actions
+            let actions = (args["actions"] as? [[String: Any]])?.map {
+                FCPTextButton(obj: $0)
+            }
+
+            // Map dictionary representations to FCPBarButton instances for navigation bar buttons
+            let leadingNavigationBarButtons = (args["leadingNavigationBarButtons"] as? [[String: Any]])?.map {
+                FCPBarButton(obj: $0)
+            }
+
+            let trailingNavigationBarButtons = (args["trailingNavigationBarButtons"] as? [[String: Any]])?.map {
+                FCPBarButton(obj: $0)
+            }
+
+            infoTemplate.update(
+                items: items,
+                actions: actions,
+                leadingNavigationBarButtons: leadingNavigationBarButtons,
+                trailingNavigationBarButtons: trailingNavigationBarButtons
+            )
+        }
+    }
+
     /// Updates a CarPlay map template identified by its element ID with new data.
     ///
     /// - Parameters:
@@ -620,7 +666,7 @@ extension SwiftFlutterCarplayPlugin {
             let hidesButtonsWithNavigationBar = args["hidesButtonsWithNavigationBar"] as? Bool
             let automaticallyHidesNavigationBar = args["automaticallyHidesNavigationBar"] as? Bool
 
-            // Map dictionary representations to FCPMapButton instances for navigation bar buttons
+            // Map dictionary representations to FCPMapButton instances for map buttons
             let mapButtons = (args["mapButtons"] as? [[String: Any]])?.map {
                 FCPMapButton(obj: $0)
             }
@@ -736,13 +782,30 @@ private extension SwiftFlutterCarplayPlugin {
         // If no templates are available or found, return early.
     }
 
+    /// Finds a CarPlay information template by element ID and performs an action when found.
+    ///
+    /// - Parameters:
+    ///   - elementId: The element ID of the information template.
+    ///   - actionWhenFound: The action to perform when the information template is found.
+    static func findInformationTemplate(elementId: String, actionWhenFound: (_ template: FCPInformationTemplate) -> Void) {
+        // Get the array of FCPInformationTemplate instances.
+        let templates = getFCPInformationTemplatesFromHistory()
+
+        // Iterate through the templates to find the one with the matching element ID.
+        for template in templates where template.elementId == elementId {
+            // Perform the specified action when the template is found.
+            actionWhenFound(template)
+            break
+        }
+    }
+
     /// Finds a CarPlay map template by element ID and performs an action when found.
     ///
     /// - Parameters:
-    ///   - elementId: The element ID of the template.
-    ///   - actionWhenFound: The action to perform when the template is found.
+    ///   - elementId: The element ID of the map template.
+    ///   - actionWhenFound: The action to perform when the map template is found.
     static func findMapTemplate(elementId: String, actionWhenFound: (_ template: FCPMapTemplate) -> Void) {
-        // Get the array of FCPBaseTemplate instances.
+        // Get the array of FCPMapTemplate instances.
         let templates = getFCPMapTemplatesFromHistory()
 
         // Iterate through the templates to find the one with the matching element ID.
@@ -789,6 +852,24 @@ private extension SwiftFlutterCarplayPlugin {
                 }
             }
         }
+    }
+
+    /// Finds a CarPlay information template from history.
+    ///
+    /// - Returns:
+    ///   - [FCPInformationTemplate]: Array of FCPInformationTemplate instances
+    static func getFCPInformationTemplatesFromHistory() -> [FCPInformationTemplate] {
+        // Initialize an array to store FCPInformationTemplate instances.
+        var templates: [FCPInformationTemplate] = []
+
+        // Filter the template history to include only FCPInformationTemplate instances.
+        for template in SwiftFlutterCarplayPlugin.cpTemplateHistory {
+            if let fcpTemplate = (((template as? CPInformationTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPInformationTemplate) {
+                templates.append(fcpTemplate)
+            }
+        }
+
+        return templates
     }
 
     /// Finds a CarPlay map template from history.
