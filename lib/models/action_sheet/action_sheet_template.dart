@@ -1,9 +1,10 @@
 import 'package:uuid/uuid.dart';
 
 import '../alert/alert_action.dart';
+import '../present_template.dart';
 
 /// A template object that displays a modal action sheet.
-class CPActionSheetTemplate {
+class CPActionSheetTemplate extends CPPresentTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -18,9 +19,10 @@ class CPActionSheetTemplate {
 
   /// Creates [CPActionSheetTemplate]
   CPActionSheetTemplate({
+    required this.actions,
+    super.isDismissible,
     this.title,
     this.message,
-    required this.actions,
   });
 
   Map<String, dynamic> toJson() => {

@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
+import '../present_template.dart';
 import 'alert_action.dart';
 
 /// A template object that displays a modal alert.
-class CPAlertTemplate {
+class CPAlertTemplate extends CPPresentTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -29,6 +30,7 @@ class CPAlertTemplate {
   CPAlertTemplate({
     required this.titleVariants,
     required this.actions,
+    super.isDismissible,
     this.onPresent,
   });
 

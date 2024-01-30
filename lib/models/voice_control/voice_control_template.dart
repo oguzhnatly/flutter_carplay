@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
+import '../present_template.dart';
 import 'voice_control_state.dart';
 
 /// A voice control template with a list of voice control states [CPVoiceControlState].
-class CPVoiceControlTemplate {
+class CPVoiceControlTemplate extends CPPresentTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -36,6 +37,7 @@ class CPVoiceControlTemplate {
   /// the state by calling the `activateVoiceControlState()` function.
   CPVoiceControlTemplate({
     required this.voiceControlStates,
+    super.isDismissible,
     this.locale = const Locale('en', 'US'),
     this.onPresent,
   });
