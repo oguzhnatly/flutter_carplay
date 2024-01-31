@@ -355,14 +355,16 @@ class FlutterCarplay {
   /// - If animated is true, CarPlay animates the transition between templates.
   /// - count represents how many times this function will occur.
   static Future<bool> pop({bool animated = true, int count = 1}) async {
-    FlutterCarPlayController.templateHistory.removeLast();
-    return _carPlayController.reactToNativeModule(
+    final isSuccess = await _carPlayController.reactToNativeModule(
       FCPChannelTypes.popTemplate,
       <String, dynamic>{
         'count': count,
         'animated': animated,
       },
     );
+
+    if (isSuccess) FlutterCarPlayController.templateHistory.removeLast();
+    return isSuccess;
   }
 
   /// Removes all of the templates from the navigation hierarchy except the root template.
@@ -372,13 +374,18 @@ class FlutterCarplay {
 
     if (FlutterCarPlayController.templateHistory.length <= 1) return false;
 
-    FlutterCarPlayController.templateHistory = [
-      FlutterCarPlayController.currentRootTemplate,
-    ];
-    return _carPlayController.reactToNativeModule(
+    final isSuccess = await _carPlayController.reactToNativeModule(
       FCPChannelTypes.popToRootTemplate,
       animated,
     );
+
+    if (isSuccess) {
+      FlutterCarPlayController.templateHistory = [
+        FlutterCarPlayController.currentRootTemplate,
+      ];
+    }
+
+    return isSuccess;
   }
 
   /// Removes a modal template. Since [CPAlertTemplate] and [CPActionSheetTemplate] are both
@@ -398,11 +405,13 @@ class FlutterCarplay {
       return false;
     }
 
-    FlutterCarPlayController.currentPresentTemplate = null;
-    return _carPlayController.reactToNativeModule(
+    final isSuccess = await _carPlayController.reactToNativeModule(
       FCPChannelTypes.closePresent,
       animated,
     );
+
+    if (isSuccess) FlutterCarPlayController.currentPresentTemplate = null;
+    return isSuccess;
   }
 
   /// Adds a template to the navigation hierarchy and displays it.
@@ -421,15 +430,15 @@ class FlutterCarplay {
         template is CPSearchTemplate ||
         template is CPInformationTemplate ||
         template is CPPointOfInterestTemplate) {
-      final isCompleted = await _carPlayController
+      final isSuccess = await _carPlayController
           .reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
         'template': template.toJson(),
         'animated': animated,
         'runtimeType': 'F${template.runtimeType}',
       });
-      if (isCompleted) _carPlayController.addTemplateToHistory(template);
+      if (isSuccess) _carPlayController.addTemplateToHistory(template);
 
-      return isCompleted;
+      return isSuccess;
     } else {
       throw TypeError();
     }

@@ -550,6 +550,7 @@ extension SwiftFlutterCarplayPlugin {
         SwiftFlutterCarplayPlugin.rootTemplate = cpRootTemplate
         FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(cpRootTemplate, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
         SwiftFlutterCarplayPlugin.objcRootTemplate = rootTemplate
+        SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FlutterCarPlaySceneDelegate.fcpConnectionStatus)
         let animated = args["animated"] as? Bool ?? false
         SwiftFlutterCarplayPlugin.animated = animated
         result(true)
