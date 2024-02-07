@@ -205,18 +205,18 @@ class FlutterCarplay {
   /// - If animated is true, CarPlay animates the presentation of the template.
   ///
   /// [!] CarPlay can only present one modal template at a time.
-  static void showAlert({
+  static Future<void> showAlert({
     required CPAlertTemplate template,
     bool animated = true,
-  }) {
-    _carPlayController.methodChannel
+  }) async {
+    final isSuccess = await _carPlayController.methodChannel
         .invokeMethod(FCPChannelTypes.setAlert.name, <String, dynamic>{
       'animated': animated,
       'rootTemplate': template.toJson(),
       'onPresent': template.onPresent != null,
-    }).then((value) {
-      if (value) FlutterCarPlayController.currentPresentTemplate = template;
     });
+
+    if (isSuccess) FlutterCarPlayController.currentPresentTemplate = template;
   }
 
   /// It will present [CPActionSheetTemplate] modally.
@@ -225,17 +225,17 @@ class FlutterCarplay {
   /// - If animated is true, CarPlay animates the presentation of the template.
   ///
   /// [!] CarPlay can only present one modal template at a time.
-  static void showActionSheet({
+  static Future<void> showActionSheet({
     required CPActionSheetTemplate template,
     bool animated = true,
-  }) {
-    _carPlayController.methodChannel
+  }) async {
+    final isSuccess = await _carPlayController.methodChannel
         .invokeMethod(FCPChannelTypes.setActionSheet.name, <String, dynamic>{
       'rootTemplate': template.toJson(),
       'animated': animated,
-    }).then((value) {
-      if (value) FlutterCarPlayController.currentPresentTemplate = template;
     });
+
+    if (isSuccess) FlutterCarPlayController.currentPresentTemplate = template;
   }
 
   /// It will present [CPVoiceControlTemplate] modally.
@@ -244,19 +244,19 @@ class FlutterCarplay {
   /// - If animated is true, CarPlay animates the presentation of the template.
   ///
   /// [!] CarPlay can only present one modal template at a time.
-  static void showVoiceControl({
+  static Future<void> showVoiceControl({
     required CPVoiceControlTemplate template,
     bool animated = true,
-  }) {
-    _carPlayController.methodChannel.invokeMethod(
+  }) async {
+    final isSuccess = await _carPlayController.methodChannel.invokeMethod(
       FCPChannelTypes.setVoiceControl.name,
       <String, dynamic>{
         'rootTemplate': template.toJson(),
         'animated': animated,
       },
-    ).then((value) {
-      if (value) FlutterCarPlayController.currentPresentTemplate = template;
-    });
+    );
+
+    if (isSuccess) FlutterCarPlayController.currentPresentTemplate = template;
   }
 
   /// Changes the [CPVoiceControlTemplate]'s state to the one matching the specified

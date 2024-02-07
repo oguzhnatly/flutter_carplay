@@ -179,17 +179,22 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             if objcPresentTemplate != nil {
                 objcPresentTemplate = nil
-                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in })
-            }
-
-            let alertTemplate = FCPAlertTemplate(obj: rootTemplateArgs)
-            objcPresentTemplate = alertTemplate
-            FlutterCarPlaySceneDelegate
-                .presentTemplate(template: alertTemplate.get, animated: animated, completion: { completed, _ in
-                    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
-                                                     data: ["completed": completed])
-                    result(completed)
+                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
+                    showAlertTemplate()
                 })
+            } else {
+                showAlertTemplate()
+            }
+            func showAlertTemplate() {
+                let alertTemplate = FCPAlertTemplate(obj: rootTemplateArgs)
+                objcPresentTemplate = alertTemplate
+                FlutterCarPlaySceneDelegate
+                    .presentTemplate(template: alertTemplate.get, animated: animated, completion: { completed, _ in
+                        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
+                                                         data: ["completed": completed])
+                        result(completed)
+                    })
+            }
         case FCPChannelTypes.setActionSheet:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
@@ -201,14 +206,21 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             if objcPresentTemplate != nil {
                 objcPresentTemplate = nil
-                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in })
+                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
+                    showActionSheet()
+                })
+            } else {
+                showActionSheet()
             }
 
-            let actionSheetTemplate = FCPActionSheetTemplate(obj: rootTemplateArgs)
-            objcPresentTemplate = actionSheetTemplate
-            FlutterCarPlaySceneDelegate.presentTemplate(template: actionSheetTemplate.get, animated: animated, completion: { completed, _ in
-                result(completed)
-            })
+            func showActionSheet() {
+                let actionSheetTemplate = FCPActionSheetTemplate(obj: rootTemplateArgs)
+                objcPresentTemplate = actionSheetTemplate
+                FlutterCarPlaySceneDelegate.presentTemplate(template: actionSheetTemplate.get, animated: animated, completion: { completed, _ in
+                    result(completed)
+                })
+            }
+
         case FCPChannelTypes.popTemplate:
             guard let args = call.arguments as? [String: Any],
                   let count = args["count"] as? Int,
@@ -257,16 +269,22 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             if objcPresentTemplate != nil {
                 objcPresentTemplate = nil
-                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in })
+                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
+                    showVoiceTemplate()
+                })
+            } else {
+                showVoiceTemplate()
             }
 
-            let voiceControlTemplate = FCPVoiceControlTemplate(obj: rootTemplateArgs)
-            objcPresentTemplate = voiceControlTemplate
-            FlutterCarPlaySceneDelegate.presentTemplate(template: voiceControlTemplate.get, animated: animated, completion: { completed, _ in
-                FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
-                                                 data: ["completed": completed])
-                result(completed)
-            })
+            func showVoiceTemplate() {
+                let voiceControlTemplate = FCPVoiceControlTemplate(obj: rootTemplateArgs)
+                objcPresentTemplate = voiceControlTemplate
+                FlutterCarPlaySceneDelegate.presentTemplate(template: voiceControlTemplate.get, animated: animated, completion: { completed, _ in
+                    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
+                                                     data: ["completed": completed])
+                    result(completed)
+                })
+            }
         case FCPChannelTypes.activateVoiceControlState:
             guard objcPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
