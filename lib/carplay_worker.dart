@@ -363,14 +363,23 @@ class FlutterCarplay {
       },
     );
 
-    if (isSuccess) FlutterCarPlayController.templateHistory.removeLast();
+    if (isSuccess) {
+      final templateHistory = FlutterCarPlayController.templateHistory;
+      for (final _ in Iterable<int>.generate(count)) {
+        if (templateHistory.isNotEmpty) {
+          templateHistory.removeLast();
+        } else {
+          break;
+        }
+      }
+    }
     return isSuccess;
   }
 
   /// Removes all of the templates from the navigation hierarchy except the root template.
   /// If animated is true, CarPlay animates the presentation of the template.
   static Future<bool> popToRoot({bool animated = true}) async {
-    FlutterCarplay.popModal(forcePop: true);
+    await FlutterCarplay.popModal(forcePop: true);
 
     if (FlutterCarPlayController.templateHistory.length <= 1) return false;
 
