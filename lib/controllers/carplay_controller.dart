@@ -310,6 +310,22 @@ class FlutterCarPlayController {
     }
   }
 
+  /// Processes the FCPVoiceControlTemplatePoppedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPVoiceControlTemplate]
+  Future<void> proessFCPVoiceControlTemplatePoppedChannel(
+    String elementId,
+  ) async {
+    final topTemplate = FlutterCarPlayController.currentPresentTemplate;
+    if (topTemplate is CPVoiceControlTemplate &&
+        topTemplate.uniqueId == elementId) {
+      await FlutterCarplay.stopVoiceControl();
+      FlutterCarplay.removeListenerOnSpeechRecognitionTranscriptChange();
+      FlutterCarPlayController.currentPresentTemplate = null;
+    }
+  }
+
   /// Processes the FCPListItemSelectedChannel
   ///
   /// Parameters:

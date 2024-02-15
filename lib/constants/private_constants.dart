@@ -96,6 +96,9 @@ enum FCPChannelTypes {
   /// Event triggered when the voice control transcript changes in CarPlay.
   onVoiceControlTranscriptChanged,
 
+  // Event triggered when the voice control template is popped in CarPlay.
+  onVoiceControlTemplatePopped,
+
   /// Event for speaking text in CarPlay.
   speak,
 

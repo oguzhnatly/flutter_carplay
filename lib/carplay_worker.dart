@@ -103,6 +103,10 @@ class FlutterCarplay {
             _onSpeechRecognitionTranscriptChange
                 ?.call(event['data']['transcript']);
           }
+        case FCPChannelTypes.onVoiceControlTemplatePopped:
+          _carPlayController.proessFCPVoiceControlTemplatePoppedChannel(
+            event['data']['elementId'],
+          );
         case FCPChannelTypes.onSpeechCompleted:
           _carPlayController
               .processFCPSpeakerOnComplete(event['data']['elementId']);

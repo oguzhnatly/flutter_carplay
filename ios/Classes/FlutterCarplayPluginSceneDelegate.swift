@@ -101,6 +101,13 @@ extension FlutterCarPlaySceneDelegate: CPInterfaceControllerDelegate {
                                                          data: ["elementId": elementId])
                     }
                 }
+            } else if aTemplate is CPVoiceControlTemplate, !(topTemplate is CPVoiceControlTemplate) {
+                if let elementId = (((aTemplate as? CPVoiceControlTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPVoiceControlTemplate)?.elementId {
+                    DispatchQueue.main.async {
+                        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onVoiceControlTemplatePopped,
+                                                         data: ["elementId": elementId])
+                    }
+                }
             }
         }
     }
