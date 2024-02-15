@@ -533,8 +533,9 @@ class _MyAppState extends State<MyApp> {
         voiceControlStates: [
           CPVoiceControlState(
             titleVariants: ['Example Voice Control'],
-            image: 'images/voice_recognition_animated_image.gif',
+            image: 'images/ios_9.gif',
             identifier: 'test',
+            repeats: true,
           ),
         ],
       ),
