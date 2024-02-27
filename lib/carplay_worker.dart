@@ -39,6 +39,12 @@ class FlutterCarplay {
   /// recognition transcript.
   static Function(String transcript)? _onSpeechRecognitionTranscriptChange;
 
+  /// A listener function that will be triggered on cancel of voice control.
+  static Function()? _onCancelVoiceControl;
+
+  /// A listener function that will be triggered on pop of information template.
+  static Function()? _onInformationTemplatePopped;
+
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
     _eventBroadcast = _carPlayController.eventChannel
@@ -73,6 +79,9 @@ class FlutterCarplay {
             event['data']['elementId'],
           );
         case FCPChannelTypes.onInformationTemplatePopped:
+          if (_onInformationTemplatePopped != null) {
+            _onInformationTemplatePopped?.call();
+          }
           _carPlayController.processFCPInformationTemplatePoppedChannel(
             event['data']['elementId'],
           );
@@ -104,6 +113,9 @@ class FlutterCarplay {
                 ?.call(event['data']['transcript']);
           }
         case FCPChannelTypes.onVoiceControlTemplatePopped:
+          if (_onCancelVoiceControl != null) {
+            _onCancelVoiceControl?.call();
+          }
           _carPlayController.proessFCPVoiceControlTemplatePoppedChannel(
             event['data']['elementId'],
           );
@@ -328,6 +340,32 @@ class FlutterCarplay {
     _onSpeechRecognitionTranscriptChange = null;
   }
 
+  /// Callback function will be fired when user cancels voice control.
+  static void addListenerOnCancelVoiceControl({
+    Function()? onCancelVoiceControl,
+  }) {
+    _onCancelVoiceControl = onCancelVoiceControl;
+  }
+
+  /// Removes the callback function that has been set before in order to listen
+  /// on user cancels voice control.
+  static void removeListenerOnCancelVoiceControl() {
+    _onCancelVoiceControl = null;
+  }
+
+  /// Callback function will be fired when user pops information template.
+  static void addListenerOnInformationTemplatePopped({
+    Function()? onInformationTemplatePopped,
+  }) {
+    _onInformationTemplatePopped = onInformationTemplatePopped;
+  }
+
+  /// Removes the callback function that has been set before in order to listen
+  /// on user pops information template.
+  static void removeListenerOnInformationTemplatePopped() {
+    _onInformationTemplatePopped = null;
+  }
+
   /// Adds the specified [CPSpeaker] utterance to the queue of the speech synthesizer in CarPlay.
   static void speak(CPSpeaker speakerController) {
     if (speakerController.onCompleted != null) {
@@ -412,9 +450,7 @@ class FlutterCarplay {
     if (cpTemplate == null) return false;
 
     // Ignore pop when [forcePop] and [isDismissible] both are false
-    if (!forcePop &&
-        cpTemplate is CPPresentTemplate &&
-        !cpTemplate.isDismissible) {
+    if (!forcePop && !cpTemplate.isDismissible) {
       return false;
     }
 

@@ -38,6 +38,7 @@ class CPVoiceControlTemplate extends CPPresentTemplate {
   CPVoiceControlTemplate({
     required this.voiceControlStates,
     super.isDismissible,
+    super.routeName,
     this.locale = const Locale('en', 'US'),
     this.onPresent,
   });

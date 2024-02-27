@@ -21,7 +21,7 @@ class FlutterCarPlayController {
   static dynamic currentRootTemplate;
 
   /// [CPAlertTemplate], [CPActionSheetTemplate], [CPVoiceControlTemplate]
-  static dynamic currentPresentTemplate;
+  static CPPresentTemplate? currentPresentTemplate;
 
   /// Specific objects that are waiting to receive callback.
   static List<dynamic> callbackObjects = [];
@@ -353,9 +353,18 @@ class FlutterCarPlayController {
   /// Parameters:
   /// - elementId: The id of the [CPAlertAction]
   void processFCPAlertActionPressed(String elementId) {
-    final CPAlertAction selectedAlertAction = currentPresentTemplate!.actions
-        .firstWhere((e) => e.uniqueId == elementId);
-    selectedAlertAction.onPressed();
+    if (currentPresentTemplate is! CPActionSheetTemplate &&
+        currentPresentTemplate is! CPAlertTemplate) return;
+
+    final selectedAlertAction = switch (currentPresentTemplate) {
+      final CPAlertTemplate template =>
+        template.actions.singleWhereOrNull((e) => e.uniqueId == elementId),
+      final CPActionSheetTemplate template =>
+        template.actions.singleWhereOrNull((e) => e.uniqueId == elementId),
+      _ => null,
+    };
+
+    selectedAlertAction?.onPressed();
   }
 
   /// Processes the FCPAlertTemplateCompletedChannel
@@ -363,9 +372,8 @@ class FlutterCarPlayController {
   /// Parameters:
   /// - completed: Whether the alert was successfully presented
   void processFCPAlertTemplateCompleted({bool completed = false}) {
-    if (currentPresentTemplate?.onPresent != null) {
-      currentPresentTemplate!.onPresent!(completed);
-    }
+    if (currentPresentTemplate is! CPAlertTemplate) return;
+    (currentPresentTemplate as CPAlertTemplate).onPresent?.call(completed);
   }
 
   /// Processes the FCPGridButtonPressedChannel

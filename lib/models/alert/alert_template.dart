@@ -31,6 +31,7 @@ class CPAlertTemplate extends CPPresentTemplate {
     required this.titleVariants,
     required this.actions,
     super.isDismissible,
+    super.routeName,
     this.onPresent,
   });
 

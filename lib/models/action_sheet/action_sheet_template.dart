@@ -21,8 +21,9 @@ class CPActionSheetTemplate extends CPPresentTemplate {
   CPActionSheetTemplate({
     required this.actions,
     super.isDismissible,
-    this.title,
+    super.routeName,
     this.message,
+    this.title,
   });
 
   Map<String, dynamic> toJson() => {
