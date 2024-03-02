@@ -125,4 +125,10 @@ enum FCPChannelTypes {
 
   /// Event for hiding an overlay in CarPlay.
   hideOverlay,
+
+  /// Event for showing a trip preview in CarPlay.
+  showTripPreviews,
+
+  /// Event for hiding a trip preview in CarPlay.
+  hideTripPreviews,
 }

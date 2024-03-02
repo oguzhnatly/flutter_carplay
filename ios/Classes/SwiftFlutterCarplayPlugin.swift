@@ -377,6 +377,43 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 "maximumSectionCount": CPListTemplate.maximumSectionCount,
             ]
             result(config)
+        case FCPChannelTypes.showTripPreviews:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String,
+                  let trips = args["trips"] as? [[String: Any]]
+            else {
+                result(false)
+                return
+            }
+
+            let selectedTrip = args["selectedTrip"] as? [String: Any]
+            let textConfiguration = args["textConfiguration"] as? [String: Any]
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+
+                let fcpTrips = trips.map { FCPTrip(obj: $0) }
+                let fcpSelectedTrip = selectedTrip == nil ? nil : FCPTrip(obj: selectedTrip!)
+                let fcpTextConfiguration = textConfiguration == nil ? nil : FCPTripPreviewTextConfiguration(obj: textConfiguration!)
+                mapTemplate.showTripPreviews(trips: fcpTrips, selectedTrip: fcpSelectedTrip, textConfiguration: fcpTextConfiguration)
+                return result(true)
+            }
+
+            result(false)
+
+        case FCPChannelTypes.hideTripPreviews:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String
+            else {
+                result(false)
+                return
+            }
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+                mapTemplate.hideTripPreviews()
+                return result(true)
+            }
+            result(false)
         case FCPChannelTypes.showBanner:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,

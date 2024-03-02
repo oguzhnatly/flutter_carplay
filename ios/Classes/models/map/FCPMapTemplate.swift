@@ -200,6 +200,29 @@ extension FCPMapTemplate {
     }
 }
 
+// MARK: - Trip
+
+extension FCPMapTemplate {
+    /// Show trip previews
+    func showTripPreviews(trips: [FCPTrip], selectedTrip: FCPTrip?, textConfiguration: FCPTripPreviewTextConfiguration?) {
+        let cpTrips = trips.map { $0.get }
+        _super?.showTripPreviews(cpTrips, selectedTrip: selectedTrip?.get,
+                                 textConfiguration: textConfiguration?.get)
+
+        let estimates = CPTravelEstimates(distanceRemaining: NSMeasurement(doubleValue: 4500, unit: UnitLength.meters) as Measurement<UnitLength>,
+                                          timeRemaining: 360)
+
+        if let cpTrip = cpTrips.first {
+            _super?.updateEstimates(estimates, for: cpTrip)
+        }
+    }
+
+    /// Hide trip previews
+    func hideTripPreviews() {
+        _super?.hideTripPreviews()
+    }
+}
+
 @available(iOS 14.0, *)
 extension FCPMapTemplate: FCPRootTemplate {}
 

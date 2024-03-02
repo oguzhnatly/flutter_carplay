@@ -114,7 +114,7 @@ enum FCPChannelTypes {
 
     /// Event triggered when the voice control transcript changes in CarPlay.
     static let onVoiceControlTranscriptChanged = "onVoiceControlTranscriptChanged"
-    
+
     /// Event triggered when an voice control template is popped in CarPlay.
     static let onVoiceControlTemplatePopped = "onVoiceControlTemplatePopped"
 
@@ -144,6 +144,12 @@ enum FCPChannelTypes {
 
     /// Event for hiding the overlay card in CarPlay.
     static let hideOverlay = "hideOverlay"
+
+    /// Event for showing a trip preview in CarPlay.
+    static let showTripPreviews = "showTripPreviews"
+
+    /// Event for showing a trip preview in CarPlay.
+    static let hideTripPreviews = "hideTripPreviews"
 }
 
 /// Enum defining different types of alert actions in CarPlay.

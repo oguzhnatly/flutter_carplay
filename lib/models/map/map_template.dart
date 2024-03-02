@@ -85,6 +85,25 @@ class CPMapTemplate {
     FlutterCarPlayController.updateCPMapTemplate(this);
   }
 
+  /// Displays a trip preview on [CPMapTemplate]
+  void showTripPreviews({
+    List<CPTrip> trips = const [],
+    CPTrip? selectedTrip,
+    CPTripPreviewTextConfiguration? textConfiguration,
+  }) {
+    FlutterCarPlayController.showTripPreviews(
+      uniqueId,
+      trips,
+      selectedTrip,
+      textConfiguration,
+    );
+  }
+
+  /// Hides the trip preview on [CPMapTemplate]
+  void hideTripPreviews() {
+    FlutterCarPlayController.hideTripPreviews(uniqueId);
+  }
+
   /// Displays a banner on [CPMapTemplate]
   void showBanner({required String message, required int color}) {
     FlutterCarPlayController.showBanner(uniqueId, message, color);

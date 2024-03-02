@@ -79,9 +79,7 @@ class FlutterCarplay {
             event['data']['elementId'],
           );
         case FCPChannelTypes.onInformationTemplatePopped:
-          if (_onInformationTemplatePopped != null) {
-            _onInformationTemplatePopped?.call();
-          }
+          _onInformationTemplatePopped?.call();
           _carPlayController.processFCPInformationTemplatePoppedChannel(
             event['data']['elementId'],
           );
@@ -108,14 +106,10 @@ class FlutterCarplay {
           _carPlayController
               .processFCPTextButtonPressed(event['data']['elementId']);
         case FCPChannelTypes.onVoiceControlTranscriptChanged:
-          if (_onSpeechRecognitionTranscriptChange != null) {
-            _onSpeechRecognitionTranscriptChange
-                ?.call(event['data']['transcript']);
-          }
+          _onSpeechRecognitionTranscriptChange
+              ?.call(event['data']['transcript']);
         case FCPChannelTypes.onVoiceControlTemplatePopped:
-          if (_onCancelVoiceControl != null) {
-            _onCancelVoiceControl?.call();
-          }
+          _onCancelVoiceControl?.call();
           _carPlayController.proessFCPVoiceControlTemplatePoppedChannel(
             event['data']['elementId'],
           );
