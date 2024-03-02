@@ -17,19 +17,15 @@ class FCPTrip {
 	private(set) var routeChoices: [FCPRouteChoice]
 
 	init(obj: [String: Any]) {
-		guard let elementIdValue = obj["_elementId"] as? String else {
-			fatalError("Missing required key: _elementId")
+		guard let elementIdValue = obj["_elementId"] as? String,
+		      let originValue = obj["origin"] as? [String: Any],
+		      let destinationValue = obj["destination"] as? [String: Any]
+		else {
+			fatalError("Missing required key")
 		}
 		elementId = elementIdValue
-
-		if let _origin = obj["origin"] as? [String: Any] {
-			origin = FMKMapItem(obj: _origin)
-		}
-
-		if let _destination = obj["destination"] as? [String: Any] {
-			destination = FMKMapItem(obj: _destination)
-		}
-
+		origin = FMKMapItem(obj: originValue)
+		destination = FMKMapItem(obj: destinationValue)
 		routeChoices = (obj["routeChoices"] as? [[String: Any]] ?? []).map {
 			FCPRouteChoice(obj: $0)
 		}
