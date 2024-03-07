@@ -18,6 +18,9 @@ class CPMapButton {
   /// The image displayed on the focused map button.
   final String? focusedImage;
 
+  /// Tint color of the button.
+  final int? tintColor;
+
   /// Fired when the user taps a map button.
   final VoidCallback onPressed;
 
@@ -27,6 +30,7 @@ class CPMapButton {
     this.isEnabled = true,
     this.isHidden = false,
     this.focusedImage,
+    this.tintColor,
     this.image,
   });
 
@@ -34,6 +38,7 @@ class CPMapButton {
         'focusedImage': focusedImage,
         '_elementId': _elementId,
         'isEnabled': isEnabled,
+        'tintColor': tintColor,
         'isHidden': isHidden,
         'image': image,
       };
