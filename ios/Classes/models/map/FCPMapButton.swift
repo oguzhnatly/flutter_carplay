@@ -39,13 +39,11 @@ class FCPMapButton {
         isEnabled = obj["isEnabled"] as? Bool ?? true
         isHidden = obj["isHidden"] as? Bool ?? false
 
-        if let image = obj["image"] as? String {
-            if let tintColor = obj["tintColor"] as? Int {
-                let color = UIColor(argb: tintColor)
-                self.image = UIImage().fromFlutterAsset(name: image).withColor(color)
-            } else {
-                self.image = UIImage().fromFlutterAsset(name: image)
-            }
+        image = UIImage.dynamicImage(lightImage: obj["image"] as? String,
+                                     darkImage: obj["darkImage"] as? String)
+
+        if let tintColor = obj["tintColor"] as? Int {
+            image = image?.withColor(UIColor(argb: tintColor))
         }
 
         if let focusedImage = obj["focusedImage"] as? String {
@@ -65,6 +63,7 @@ class FCPMapButton {
         mapButton.isEnabled = isEnabled
         mapButton.focusedImage = focusedImage
         mapButton.image = image
+
         _super = mapButton
         return mapButton
     }
