@@ -242,6 +242,54 @@ extension UIImage {
 
         return animation
     }
+
+    /// Apply color tint to image.
+    /// - Parameter color: The color to apply
+    /// - Returns: The tinted image
+    func withColor(_ color: UIColor) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+
+        let drawRect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+
+        color.setFill()
+        UIRectFill(drawRect)
+
+        draw(in: drawRect, blendMode: .destinationIn, alpha: 1)
+
+        let tintedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return tintedImage!
+    }
+
+    /// Creates a dynamic image that supports displaying a different image asset when dark mode is active.
+    private static func dynamicImageWith(
+        light makeLight: @autoclosure () -> UIImage,
+        dark makeDark: @autoclosure () -> UIImage
+    ) -> UIImage {
+        let image = UITraitCollection(userInterfaceStyle: .light).makeImage(makeLight())
+
+        image.imageAsset?.register(makeDark(), with: UITraitCollection(userInterfaceStyle: .dark))
+        return image
+    }
+
+    /// Get dynamic theme image
+    /// - Parameter lightImage: The image name for light mode
+    /// - Parameter darkImage: The image name for dark mode
+    /// - Returns: The image
+    static func dynamicImage(lightImage: String?, darkImage: String?) -> UIImage? {
+        if let lightImage = lightImage,
+           let darkImage = darkImage
+        {
+            return UIImage.dynamicImageWith(light: UIImage().fromFlutterAsset(name: lightImage),
+                                            dark: UIImage().fromFlutterAsset(name: darkImage))
+        } else if let lightImage = lightImage {
+            return UIImage().fromFlutterAsset(name: lightImage)
+        } else if let darkImage = darkImage {
+            return UIImage().fromFlutterAsset(name: darkImage)
+        }
+
+        return nil
+    }
 }
 
 /// Extension on String providing a method to match a regular expression.
@@ -314,5 +362,17 @@ extension UIView {
         NSLayoutConstraint(item: self, attribute: .trailing, relatedBy: .equal, toItem: container, attribute: .trailing, multiplier: 1.0, constant: 0).isActive = true
         NSLayoutConstraint(item: self, attribute: .top, relatedBy: .equal, toItem: container, attribute: .top, multiplier: 1.0, constant: 0).isActive = true
         NSLayoutConstraint(item: self, attribute: .bottom, relatedBy: .equal, toItem: container, attribute: .bottom, multiplier: 1.0, constant: 0).isActive = true
+    }
+}
+
+/// Extension on UITraitCollection to create an image with traits from the receiver.
+extension UITraitCollection {
+    /// Creates the provided image with traits from the receiver.
+    func makeImage(_ makeImage: @autoclosure () -> UIImage) -> UIImage {
+        var image: UIImage!
+        performAsCurrent {
+            image = makeImage()
+        }
+        return image
     }
 }

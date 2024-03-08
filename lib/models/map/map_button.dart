@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -15,6 +17,12 @@ class CPMapButton {
   /// The image displayed on the map button.
   final String? image;
 
+  /// The dark image displayed on the map button.
+  final String? darkImage;
+
+  /// The tintColor of the map button.
+  final int? tintColor;
+
   /// The image displayed on the focused map button.
   final String? focusedImage;
 
@@ -27,6 +35,8 @@ class CPMapButton {
     this.isEnabled = true,
     this.isHidden = false,
     this.focusedImage,
+    this.tintColor,
+    this.darkImage,
     this.image,
   });
 
@@ -34,6 +44,8 @@ class CPMapButton {
         'focusedImage': focusedImage,
         '_elementId': _elementId,
         'isEnabled': isEnabled,
+        'darkImage': darkImage,
+        'tintColor': tintColor,
         'isHidden': isHidden,
         'image': image,
       };

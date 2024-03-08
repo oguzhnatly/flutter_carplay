@@ -791,19 +791,23 @@ extension SwiftFlutterCarplayPlugin {
             let text = args["text"] as? String
             let detailText = args["detailText"] as? String
             let image = args["image"] as? String
+            let darkImage = args["darkImage"] as? String
             let playbackProgress = args["playbackProgress"] as? CGFloat
             let isPlaying = args["isPlaying"] as? Bool
             let isEnabled = args["isEnabled"] as? Bool
             let playingIndicatorLocation = args["playingIndicatorLocation"] as? String
             let accessoryType = args["accessoryType"] as? String
             let accessoryImage = args["accessoryImage"] as? String
+            let accessoryDarkImage = args["accessoryDarkImage"] as? String
 
             // Update the list item with the extracted data
             item.update(
                 text: text,
                 detailText: detailText,
                 image: image,
+                darkImage: darkImage,
                 accessoryImage: accessoryImage,
+                accessoryDarkImage: accessoryDarkImage,
                 playbackProgress: playbackProgress,
                 isPlaying: isPlaying,
                 playingIndicatorLocation: playingIndicatorLocation,

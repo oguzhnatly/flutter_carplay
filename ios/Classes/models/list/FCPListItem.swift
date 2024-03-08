@@ -68,17 +68,15 @@ class FCPListItem {
         detailText = obj["detailText"] as? String
         isOnPressListenerActive = obj["onPressed"] as? Bool ?? false
 
-        if let img = obj["image"] as? String {
-            image = UIImage().fromFlutterAsset(name: img)
-        }
+        image = UIImage.dynamicImage(lightImage: obj["image"] as? String,
+                                     darkImage: obj["darkImage"] as? String)
 
         playbackProgress = obj["playbackProgress"] as? CGFloat
         isPlaying = obj["isPlaying"] as? Bool ?? false
         isEnabled = obj["isEnabled"] as? Bool ?? true
 
-        if let accImage = obj["accessoryImage"] as? String {
-            accessoryImage = UIImage().fromFlutterAsset(name: accImage)
-        }
+        accessoryImage = UIImage.dynamicImage(lightImage: obj["accessoryImage"] as? String,
+                                              darkImage: obj["accessoryDarkImage"] as? String)
 
         setPlayingIndicatorLocation(fromString: obj["playingIndicatorLocation"] as? String)
         setAccessoryType(fromString: obj["accessoryType"] as? String)
@@ -141,13 +139,15 @@ class FCPListItem {
     ///   - text: The new primary text.
     ///   - detailText: The new secondary text.
     ///   - image: The new image.
+    ///   - darkImage: The new dark image.
     ///   - accessoryImage: The new accessory image.
+    ///   - accessoryDarkImage: The new accessory dark image.
     ///   - playbackProgress: The new playback progress.
     ///   - isPlaying: The new playing state.
     ///   - playingIndicatorLocation: The new playing indicator location.
     ///   - accessoryType: The new accessory type.
     ///   - isEnabled: The new enabled state.
-    public func update(text: String?, detailText: String?, image: String?, accessoryImage: String?, playbackProgress: CGFloat?, isPlaying: Bool?, playingIndicatorLocation: String?, accessoryType: String?, isEnabled: Bool?) {
+    public func update(text: String?, detailText: String?, image: String?, darkImage: String?, accessoryImage: String?, accessoryDarkImage: String?, playbackProgress: CGFloat?, isPlaying: Bool?, playingIndicatorLocation: String?, accessoryType: String?, isEnabled: Bool?) {
         if let textValue = text {
             _super?.setText(textValue)
             self.text = textValue
@@ -176,23 +176,17 @@ class FCPListItem {
                 _super?.accessoryType = type
             }
         }
-        if let imageValue = image {
-            let img = UIImage().fromFlutterAsset(name: imageValue)
-            _super?.setImage(img)
-            self.image = img
-        } else {
-            _super?.setImage(nil)
-            self.image = nil
-        }
 
-        if let accessoryImageValue = accessoryImage {
-            let img = UIImage().fromFlutterAsset(name: accessoryImageValue)
-            _super?.setAccessoryImage(img)
-            self.accessoryImage = img
-        } else {
-            _super?.setAccessoryImage(nil)
-            self.accessoryImage = nil
-        }
+        let themeImage = UIImage.dynamicImage(lightImage: image,
+                                              darkImage: darkImage)
+        _super?.setImage(themeImage)
+        self.image = themeImage
+
+        let themeAccessoryImage = UIImage.dynamicImage(lightImage: accessoryImage,
+                                                       darkImage: accessoryDarkImage)
+        _super?.setAccessoryImage(themeAccessoryImage)
+        self.accessoryImage = themeAccessoryImage
+
         if #available(iOS 15.0, *), let isEnabledValue = isEnabled {
             _super?.isEnabled = isEnabledValue
             self.isEnabled = isEnabledValue

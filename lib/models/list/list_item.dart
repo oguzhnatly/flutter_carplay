@@ -39,9 +39,10 @@ class CPListItem {
   final Function(VoidCallback complete, CPListItem item)? onPressed;
 
   /// Displays an image on the leading edge of the list item cell.
-  /// Image asset path in pubspec.yaml file.
-  /// For example: images/flutter_logo.png
   String? image;
+
+  /// Displays an dark image on the leading edge of the list item cell.
+  String? darkImage;
 
   /// Playback progress status for the content that the list item represents.
   double? playbackProgress;
@@ -61,6 +62,9 @@ class CPListItem {
   /// An accessory image that the list item displays in its trailing region.
   String? accessoryImage;
 
+  /// An accessory dark image that the list item displays in its trailing region.
+  String? accessoryDarkImage;
+
   /// Creates [CPListItem] that manages the content of a single row in a [CPListTemplate].
   /// CarPlay manages the layout of a list item and may adjust its layout to allow for
   /// the display of auxiliary content, such as, an accessory or a Now Playing indicator.
@@ -77,6 +81,8 @@ class CPListItem {
     this.accessoryType,
     this.accessoryImage,
     this.isEnabled = true,
+    this.darkImage,
+    this.accessoryDarkImage,
   });
 
   Map<String, dynamic> toJson() => {
@@ -91,6 +97,8 @@ class CPListItem {
         'accessoryImage': accessoryImage,
         'accessoryType': accessoryType?.name,
         'playingIndicatorLocation': playingIndicatorLocation?.name,
+        'darkImage': darkImage,
+        'accessoryDarkImage': accessoryDarkImage,
       };
 
   /// Updates the properties of the [CPListItem]
@@ -104,6 +112,8 @@ class CPListItem {
     String? accessoryImage,
     bool? isPlaying,
     bool? isEnabled,
+    String? darkImage,
+    String? accessoryDarkImage,
   }) {
     // Updating the list item's primary text.
     if (text != null) this.text = text;
@@ -116,6 +126,9 @@ class CPListItem {
     // For example: images/flutter_logo.png
     if (image != null) this.image = image;
 
+    // Updating the list item's dark image.
+    if (darkImage != null) this.darkImage = darkImage;
+
     // Updating the list item's playback status.
     if (isPlaying != null) this.isPlaying = isPlaying;
 
@@ -127,6 +140,11 @@ class CPListItem {
 
     // Updating the list item's accessory image.
     if (accessoryImage != null) this.accessoryImage = accessoryImage;
+
+    // Updating the list item's dark accessory image.
+    if (accessoryDarkImage != null) {
+      this.accessoryDarkImage = accessoryDarkImage;
+    }
 
     // Updating the list item's playing indicator location.
     if (playingIndicatorLocation != null) {
