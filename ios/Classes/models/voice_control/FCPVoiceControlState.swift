@@ -25,7 +25,7 @@ class FCPVoiceControlState {
     private var titleVariants: [String]
 
     /// The name of the image associated with the voice control state.
-    private var image: String?
+    private var image: UIImage?
 
     /// A boolean value indicating whether the voice control state repeats.
     private var repeats: Bool
@@ -46,8 +46,11 @@ class FCPVoiceControlState {
         self.elementId = elementId
         self.identifier = identifier
         self.titleVariants = titleVariants
-        image = obj["image"] as? String
+
         repeats = obj["repeats"] as? Bool ?? false
+        if let imageValue = obj["image"] as? String {
+            image = UIImage().fromFlutterAsset(name: imageValue)
+        }
     }
 
     // MARK: Methods
@@ -58,7 +61,7 @@ class FCPVoiceControlState {
     var get: CPVoiceControlState {
         let voiceControlState = CPVoiceControlState(identifier: identifier,
                                                     titleVariants: titleVariants,
-                                                    image: image != nil ? UIImage().fromFlutterAsset(name: image!) : nil,
+                                                    image: image,
                                                     repeats: repeats)
         _super = voiceControlState
         return voiceControlState
