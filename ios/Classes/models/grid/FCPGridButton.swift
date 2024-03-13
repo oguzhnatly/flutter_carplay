@@ -22,7 +22,7 @@ class FCPGridButton {
     private var titleVariants: [String]
 
     /// The image associated with the grid button.
-    private var image: String
+    private var image: UIImage
 
     // MARK: Initializer
 
@@ -39,7 +39,7 @@ class FCPGridButton {
 
         elementId = elementIdValue
         titleVariants = titleVariantsValue
-        image = imageValue
+        image = UIImage.dynamicImage(lightImage: imageValue) ?? UIImage()
     }
 
     // MARK: Computed Property
@@ -47,7 +47,7 @@ class FCPGridButton {
     /// Returns the underlying CPGridButton instance configured with the specified properties.
     var get: CPGridButton {
         let gridButton = CPGridButton(titleVariants: titleVariants,
-                                      image: UIImage().fromFlutterAsset(name: image),
+                                      image: image,
                                       handler: { _ in
                                           DispatchQueue.main.async {
                                               // Dispatch an event when the grid button is pressed.

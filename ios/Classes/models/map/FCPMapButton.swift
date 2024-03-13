@@ -47,7 +47,7 @@ class FCPMapButton {
         }
 
         if let focusedImage = obj["focusedImage"] as? String {
-            self.focusedImage = UIImage().fromFlutterAsset(name: focusedImage)
+            self.focusedImage = UIImage.dynamicImage(lightImage: focusedImage)
         }
     }
 

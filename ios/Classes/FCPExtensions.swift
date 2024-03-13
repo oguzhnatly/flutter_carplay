@@ -38,6 +38,7 @@ extension UIImage {
               let path = Bundle.main.path(forResource: key, ofType: nil),
               let image = UIImage(contentsOfFile: path)
         else {
+            MemoryLogger.shared.appendEvent("image \"\(name)\" not found")
             return UIImage(systemName: "questionmark") ?? UIImage()
         }
 
@@ -67,7 +68,7 @@ extension UIImage {
     /// - Returns: An animated UIImage
     public class func gifImageWithData(_ data: Data) -> UIImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
-            print("image doesn't exist")
+            MemoryLogger.shared.appendEvent("image doesn't exist")
             return nil
         }
 
@@ -80,11 +81,11 @@ extension UIImage {
     public class func gifImageWithURL(_ gifUrl: String) -> UIImage? {
         guard let bundleURL = URL(string: gifUrl)
         else {
-            print("image named \"\(gifUrl)\" doesn't exist")
+            MemoryLogger.shared.appendEvent("image named \"\(gifUrl)\" doesn't exist")
             return nil
         }
         guard let imageData = try? Data(contentsOf: bundleURL) else {
-            print("image named \"\(gifUrl)\" into NSData")
+            MemoryLogger.shared.appendEvent("SwiftGif: Cannot turn image named \"\(gifUrl)\" into NSData")
             return nil
         }
 
@@ -98,11 +99,11 @@ extension UIImage {
         guard let bundleURL = Bundle.main
             .url(forResource: name, withExtension: "gif")
         else {
-            print("SwiftGif: This image named \"\(name)\" does not exist")
+            MemoryLogger.shared.appendEvent("SwiftGif: This image named \"\(name)\" does not exist")
             return nil
         }
         guard let imageData = try? Data(contentsOf: bundleURL) else {
-            print("SwiftGif: Cannot turn image named \"\(name)\" into NSData")
+            MemoryLogger.shared.appendEvent("SwiftGif: Cannot turn image named \"\(name)\" into NSData")
             return nil
         }
 
@@ -264,31 +265,84 @@ extension UIImage {
     /// Creates a dynamic image that supports displaying a different image asset when dark mode is active.
     private static func dynamicImageWith(
         light makeLight: @autoclosure () -> UIImage,
-        dark makeDark: @autoclosure () -> UIImage
+        light2x makeLight2x: @autoclosure () -> UIImage? = nil,
+        light3x makeLight3x: @autoclosure () -> UIImage? = nil,
+        dark makeDark: @autoclosure () -> UIImage,
+        dark2x makeDark2x: @autoclosure () -> UIImage? = nil,
+        dark3x makeDark3x: @autoclosure () -> UIImage? = nil
     ) -> UIImage {
+        // Register light mode image with light trait
         let image = UITraitCollection(userInterfaceStyle: .light).makeImage(makeLight())
 
+        // Register dark mode image with dark trait
         image.imageAsset?.register(makeDark(), with: UITraitCollection(userInterfaceStyle: .dark))
+
+        // Register @2x and @3x images for light mode if provided
+        if let light2xImage = makeLight2x() {
+            image.imageAsset?.register(light2xImage, with: UITraitCollection(traitsFrom: [
+                UITraitCollection(userInterfaceStyle: .light),
+                UITraitCollection(displayScale: 2),
+            ]))
+        }
+
+        if let light3xImage = makeLight3x() {
+            image.imageAsset?.register(light3xImage, with: UITraitCollection(traitsFrom: [
+                UITraitCollection(userInterfaceStyle: .light),
+                UITraitCollection(displayScale: 3),
+            ]))
+        }
+
+        // Register @2x and @3x images for dark mode if provided
+        if let dark2xImage = makeDark2x() {
+            image.imageAsset?.register(dark2xImage, with: UITraitCollection(traitsFrom: [
+                UITraitCollection(userInterfaceStyle: .dark),
+                UITraitCollection(displayScale: 2),
+            ]))
+        }
+
+        if let dark3xImage = makeDark3x() {
+            image.imageAsset?.register(dark3xImage, with: UITraitCollection(traitsFrom: [
+                UITraitCollection(userInterfaceStyle: .dark),
+                UITraitCollection(displayScale: 3),
+            ]))
+        }
+
         return image
     }
 
     /// Get dynamic theme image
     /// - Parameter lightImage: The image name for light mode
     /// - Parameter darkImage: The image name for dark mode
-    /// - Returns: The image
-    static func dynamicImage(lightImage: String?, darkImage: String?) -> UIImage? {
+    /// - Returns: The UIImage
+    static func dynamicImage(lightImage: String? = nil, darkImage: String? = nil) -> UIImage? {
         if let lightImage = lightImage,
            let darkImage = darkImage
         {
-            return UIImage.dynamicImageWith(light: UIImage().fromFlutterAsset(name: lightImage),
-                                            dark: UIImage().fromFlutterAsset(name: darkImage))
+            return UIImage.dynamicImageWith(
+                light: UIImage().fromFlutterAsset(name: lightImage),
+                light2x: UIImage().fromFlutterAsset(name: lightImage.replacingLastOccurrenceOfString(".png", with: "@2x.png")),
+                light3x: UIImage().fromFlutterAsset(name: lightImage.replacingLastOccurrenceOfString(".png", with: "@3x.png")),
+                dark: UIImage().fromFlutterAsset(name: darkImage),
+                dark2x: UIImage().fromFlutterAsset(name: darkImage.replacingLastOccurrenceOfString(".png", with: "@2x.png")),
+                dark3x: UIImage().fromFlutterAsset(name: darkImage.replacingLastOccurrenceOfString(".png", with: "@3x.png"))
+            )
         } else if let lightImage = lightImage {
-            return UIImage().fromFlutterAsset(name: lightImage)
+            return UIImage.dynamicImageWith(
+                light: UIImage().fromFlutterAsset(name: lightImage),
+                light2x: UIImage().fromFlutterAsset(name: lightImage.replacingLastOccurrenceOfString(".png", with: "@2x.png")),
+                light3x: UIImage().fromFlutterAsset(name: lightImage.replacingLastOccurrenceOfString(".png", with: "@3x.png")),
+                dark: UIImage()
+            )
         } else if let darkImage = darkImage {
-            return UIImage().fromFlutterAsset(name: darkImage)
+            return UIImage.dynamicImageWith(
+                light: UIImage(),
+                dark: UIImage().fromFlutterAsset(name: darkImage),
+                dark2x: UIImage().fromFlutterAsset(name: darkImage.replacingLastOccurrenceOfString(".png", with: "@2x.png")),
+                dark3x: UIImage().fromFlutterAsset(name: darkImage.replacingLastOccurrenceOfString(".png", with: "@3x.png"))
+            )
         }
 
-        return nil
+        return UIImage(systemName: "questionmark") ?? UIImage()
     }
 }
 
@@ -302,6 +356,28 @@ extension String {
         return (try? NSRegularExpression(pattern: regex, options: []))?.matches(in: self, options: [], range: NSMakeRange(0, nsString.length)).map { match in
             (0 ..< match.numberOfRanges).map { match.range(at: $0).location == NSNotFound ? "" : nsString.substring(with: match.range(at: $0)) }
         } ?? []
+    }
+
+    /// Replaces the last occurrence of the matched substring in a string with another string.
+    func replacingLastOccurrenceOfString(_ searchString: String,
+                                         with replacementString: String,
+                                         caseInsensitive: Bool = true) -> String
+    {
+        let options: String.CompareOptions
+        if caseInsensitive {
+            options = [.backwards, .caseInsensitive]
+        } else {
+            options = [.backwards]
+        }
+
+        if let range = range(of: searchString,
+                             options: options,
+                             range: nil,
+                             locale: nil)
+        {
+            return replacingCharacters(in: range, with: replacementString)
+        }
+        return self
     }
 }
 
