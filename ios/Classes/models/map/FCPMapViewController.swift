@@ -7,13 +7,15 @@
 //
 
 import CarPlay
+import here_sdk
+import heresdk
 import MapKit
 import UIKit
 
 /// A custom CarPlay map view controller.
-class FCPMapViewController: UIViewController {
+class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// The map view associated with the map view controller.
-    @IBOutlet var mapView: MKMapView!
+    @IBOutlet var mapView: MapView!
 
     /// The banner view associated with the map view controller.
     @IBOutlet var bannerView: FCPBannerView! {
@@ -50,75 +52,120 @@ class FCPMapViewController: UIViewController {
         }
     }
 
+    /// The app associated with the map view controller.
+    private var mapApp: MapApp!
+
+    /// Create a CLLocationManager and assign a delegate
+    let locationManager = CLLocationManager()
+
+    /// The map marker associated with the map view controller.
+    var mapMarker: MapMarker?
+
     // MARK: - View Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        configureMapView()
-    }
 
-    /// This method is called when the view's bounds change.
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
+        locationManager.delegate = self
 
-        /// Set the maximum width of the toast view.
-        // toastViewMaxWidth.constant = view.bounds.size.width * 0.6
-        // overlayViewMaxWidth.constant = view.bounds.size.width * 0.6
+        // Request a user’s location once
+        locationManager.requestLocation()
+        locationManager.startUpdatingLocation()
+
+        // Load the map scene using a map scheme to render the map with.
+        mapView.mapScene.loadScene(mapScheme: MapScheme.normalDay, completion: onLoadScene)
     }
 
     // MARK: - configureMapView
 
-    func configureMapView() {
-        let region = MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 23.0225, longitude: 72.5714),
-            span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
-        )
+    // Completion handler when loading a map scene.
+    private func onLoadScene(mapError: MapError?) {
+        guard mapError == nil else {
+            print("Error: Map scene not loaded, \(String(describing: mapError))")
+            return
+        }
 
-        mapView?.setRegion(region, animated: true)
-        mapView?.showsUserLocation = true
-        mapView?.delegate = self // Add this line
-        mapView?.setUserTrackingMode(.follow, animated: true)
-        mapView?.overrideUserInterfaceStyle = .light
+        mapApp = MapApp(viewController: self, mapView: mapView!, messageTextView: UITextView())
+
+        // Configure the map.
+        let camera = mapView.camera
+        let distanceInMeters = MapMeasure(kind: .distance, value: 1000 * 10)
+        camera.lookAt(point: GeoCoordinates(latitude: 52.518043, longitude: 13.405991), zoom: distanceInMeters)
+
+//        mapApp.addRouteSimulatedLocationButtonClicked()
     }
 
-    /// Calculates and displays a route on the map.
-    func calculateAndDisplayRoute() {
-        // Replace these coordinates with the actual destination coordinates
-        let sourceLocation = CLLocationCoordinate2D(latitude: 22.9978, longitude: 72.6660)
-        let destinationLocation = CLLocationCoordinate2D(latitude: 23.0120, longitude: 72.5108)
+    func locationManager(
+        _: CLLocationManager,
+        didUpdateLocations locations: [CLLocation]
+    ) {
+        if let location = locations.first {
+            let latitude = location.coordinate.latitude
+            let longitude = location.coordinate.longitude
+            // Handle location update
+            return;
+            let geoCoordinates = GeoCoordinates(latitude: latitude, longitude: longitude)
 
-        let sourcePlacemark = MKPlacemark(coordinate: sourceLocation)
-        let destinationPlacemark = MKPlacemark(coordinate: destinationLocation)
+            if mapMarker == nil {
+                let camera = mapView.camera
+                let distanceInMeters = MapMeasure(kind: .distance, value: 800 * 10)
+                camera.lookAt(point: geoCoordinates, zoom: distanceInMeters)
 
-        let sourceMapItem = MKMapItem(placemark: sourcePlacemark)
-        let destinationMapItem = MKMapItem(placemark: destinationPlacemark)
+                let locationMarkerSize = Int32(30 * mapView.pixelScale)
+                let anchor = Anchor2D(horizontal: 0.5, vertical: 1)
+                //                let mapImage = try! MapImage(named: "position", width: locationMarkerSize, height: locationMarkerSize)
+                let mapImage = try! MapImage(from: UIImage(named: "position")!)!
 
-        let directionRequest = MKDirections.Request()
-        directionRequest.source = sourceMapItem
-        directionRequest.destination = destinationMapItem
-        directionRequest.transportType = .automobile
-
-        let directions = MKDirections(request: directionRequest)
-        directions.calculate { response, _ in
-            guard let route = response?.routes.first else {
-                MemoryLogger.shared.appendEvent("Route calculation failed.")
-                return
+                mapMarker = MapMarker(at: geoCoordinates, image: mapImage, anchor: anchor)
+                mapView.mapScene.addMapMarker(mapMarker!)
+            } else {
+                mapMarker?.coordinates = geoCoordinates
+                mapView.camera.lookAt(point: geoCoordinates)
             }
-
-            self.mapView.removeOverlays(self.mapView?.overlays ?? [])
-            self.mapView.addOverlay(route.polyline, level: .aboveRoads)
-
-            let routeRect = route.polyline.boundingMapRect
-            self.mapView.setRegion(MKCoordinateRegion(routeRect), animated: true)
         }
     }
+
+    func locationManager(_: CLLocationManager, didFailWithError error: Error) {
+        print("didFailWithError \(error)")
+    }
+//
+//
+//    func beginNavigation() {
+//
+//      let geoCode1 = GeoCoordinates(latitude: 52.518043, longitude: 13.405991)
+//        let geoCode2 = GeoCoordinates(latitude: 52.235555, longitude: 13.41213)
+//
+//        let wayPointDepart = Waypoint(coordinates: geoCode1)
+//        let wayPointDestination = Waypoint(coordinates: geoCode2)
+//
+//        let routingEngine = try! RoutingEngine();
+//        routingEngine.calculateRoute(with: [wayPointDepart, wayPointDestination], carOptions: CarOptions(routeOptions: RouteOptions()), completion: {error,routes in
+//            debugPrint(routes ?? "");
+//
+//            if let route = routes?.first {
+//                let lineColor = UIColor(red: 0, green: 0.56, blue: 0.54, alpha: 0.63)
+//                let widthInPixels = 20.0
+//
+//                let routeMapPolyline = MapPolyline(geometry: route.geometry, representation: try! MapPolyline.SolidRepresentation(
+//                    lineWidth: try! MapMeasureDependentRenderSize(
+//                        sizeUnit: RenderSize.Unit.pixels,
+//                        size: widthInPixels),
+//                    color: lineColor,
+//                    capShape: LineCap.round))
+//
+//                self.mapView.mapScene.addMapPolyline(routeMapPolyline)
+//                self.mapView.camera.lookAt(point: geoCode1)
+//
+//                let simulator = try! LocationSimulator(route: route, options: LocationSimulatorOptions())
+//                simulator.start()
+//            }
+//        })
+//    }
 }
 
-// Extension for UIViewController utility methods
-
-// MARK: - Banner & Toast View
+// MARK: - Banner & Toast Views
 
 extension FCPMapViewController {
     /// Displays a banner message at the top of the screen
@@ -179,45 +226,5 @@ extension FCPMapViewController {
         overlayView.setSecondaryTitle("--")
         overlayView.setSubtitle("--")
         overlayView.isHidden = true
-    }
-}
-
-// MARK: - CPMapTemplateDelegate
-
-extension FCPMapViewController: CPMapTemplateDelegate {
-    // Implement CPMapTemplateDelegate methods here
-    // ...
-
-    /// Called when a pan gesture begins on the map.
-    func mapTemplateDidBeginPanGesture(_: CPMapTemplate) {
-        MemoryLogger.shared.appendEvent("🚙🚙🚙🚙🚙 Panning")
-    }
-
-    /// Called when the map is panned in a specific direction.
-    func mapTemplate(_: CPMapTemplate, panWith direction: CPMapTemplate.PanDirection) {
-        MemoryLogger.shared.appendEvent("🚙🚙🚙🚙🚙 Panning: \(direction)")
-    }
-
-    /// Called when a button is pressed on the map template.
-    func mapTemplate(_: CPMapTemplate, buttonPressed button: CPBarButton) {
-        if button.title == "Location" { // Replace with the actual button title
-            calculateAndDisplayRoute()
-        }
-    }
-}
-
-// Extension for MKMapViewDelegate methods
-
-// MARK: - MKMapViewDelegate
-
-extension FCPMapViewController: MKMapViewDelegate {
-    func mapView(_: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        if let polyline = overlay as? MKPolyline {
-            let renderer = MKPolylineRenderer(polyline: polyline)
-            renderer.strokeColor = UIColor.blue
-            renderer.lineWidth = 5
-            return renderer
-        }
-        return MKOverlayRenderer(overlay: overlay)
     }
 }
