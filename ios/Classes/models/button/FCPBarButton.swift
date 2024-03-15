@@ -44,7 +44,7 @@ class FCPBarButton {
         title = obj["title"] as? String
 
         if let imageName = obj["image"] as? String {
-            image = UIImage.dynamicImage(lightImage: imageName, darkImage: imageName)
+            image = UIImage.dynamicImage(lightImage: imageName)
         }
 
         isEnabled = obj["isEnabled"] as? Bool ?? true
