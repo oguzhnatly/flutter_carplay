@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
+        <capability name="Map view configurations" minToolsVersion="14.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -12,7 +13,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FCPMapViewController" customModule="flutter_carplay" customModuleProvider="target">
             <connections>
                 <outlet property="bannerView" destination="JeZ-xy-ybs" id="VrW-E2-Q6s"/>
-                <outlet property="mapView" destination="1zI-Mi-mW7" id="dkp-jz-0sT"/>
+                <outlet property="mapView" destination="Xch-UZ-980" id="KuO-BT-5o9"/>
                 <outlet property="overlayView" destination="ZsG-Z3-iyS" id="2Yi-4P-cwT"/>
                 <outlet property="overlayViewMaxWidth" destination="WPK-Dp-ini" id="acR-Fw-rb0"/>
                 <outlet property="toastView" destination="aC6-5h-aIW" id="auY-Oc-rfl"/>
@@ -25,10 +26,10 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1zI-Mi-mW7" customClass="MapView" customModule="heresdk">
+                <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xch-UZ-980">
                     <rect key="frame" x="0.0" y="0.0" width="393" height="818"/>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                </view>
+                    <standardMapConfiguration key="preferredConfiguration"/>
+                </mapView>
                 <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JeZ-xy-ybs" customClass="FCPBannerView" customModule="flutter_carplay" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="59" width="393" height="32"/>
                     <color key="backgroundColor" systemColor="systemYellowColor"/>
@@ -56,16 +57,17 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="1zI-Mi-mW7" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="52v-7s-DE8"/>
                 <constraint firstItem="ZsG-Z3-iyS" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="12" id="7TV-eJ-S4d"/>
+                <constraint firstItem="Xch-UZ-980" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="9Lg-8F-z7t"/>
                 <constraint firstItem="ZsG-Z3-iyS" firstAttribute="top" secondItem="JeZ-xy-ybs" secondAttribute="bottom" constant="12" id="9Np-mb-hOh"/>
                 <constraint firstItem="JeZ-xy-ybs" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="D7n-uX-aMw"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="aC6-5h-aIW" secondAttribute="bottom" constant="16" id="Icy-dM-ner"/>
-                <constraint firstItem="1zI-Mi-mW7" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="TlL-ub-ZR8"/>
+                <constraint firstAttribute="trailing" secondItem="Xch-UZ-980" secondAttribute="trailing" id="MCT-iH-By8"/>
                 <constraint firstItem="JeZ-xy-ybs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="bYR-0G-tXr"/>
+                <constraint firstItem="aC6-5h-aIW" firstAttribute="centerX" secondItem="Xch-UZ-980" secondAttribute="centerX" id="h6U-ey-tue"/>
                 <constraint firstAttribute="trailing" secondItem="JeZ-xy-ybs" secondAttribute="trailing" id="i3i-eF-ngI"/>
-                <constraint firstItem="1zI-Mi-mW7" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="nch-re-yKE"/>
-                <constraint firstItem="1zI-Mi-mW7" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="vue-Wy-EbK"/>
+                <constraint firstItem="Xch-UZ-980" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="mjo-L6-F6n"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="Xch-UZ-980" secondAttribute="bottom" id="sUr-DJ-wBH"/>
             </constraints>
             <point key="canvasLocation" x="16.030534351145036" y="20.422535211267608"/>
         </view>
