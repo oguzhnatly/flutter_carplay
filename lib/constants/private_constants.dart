@@ -131,4 +131,10 @@ enum FCPChannelTypes {
 
   /// Event for hiding a trip preview in CarPlay.
   hideTripPreviews,
+
+  /// Event for starting a navigation in CarPlay.
+  startNavigation,
+
+  /// Event for stopping a navigation in CarPlay.
+  stopNavigation,
 }

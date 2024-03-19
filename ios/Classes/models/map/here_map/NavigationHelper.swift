@@ -25,8 +25,7 @@ import UIKit
 // By default, tracking mode is enabled. When navigation is stopped, tracking mode is enabled again.
 // The preferred device language determines the language for voice notifications used for TTS.
 // (Make sure to set language + region in device settings.)
-class NavigationExample : DynamicRoutingDelegate {
-
+class NavigationHelper: DynamicRoutingDelegate {
     private let visualNavigator: VisualNavigator
     private let dynamicRoutingEngine: DynamicRoutingEngine
     private let herePositioningProvider: HEREPositioningProvider
@@ -60,11 +59,12 @@ class NavigationExample : DynamicRoutingDelegate {
         routePrefetcher = RoutePrefetcher(SDKNativeEngine.sharedInstance!)
 
         // An engine to find better routes during guidance.
-        dynamicRoutingEngine = NavigationExample.createDynamicRoutingEngine()
+        dynamicRoutingEngine = NavigationHelper.createDynamicRoutingEngine()
 
         // A class to handle various kinds of guidance events.
         navigationEventHandler = NavigationEventHandler(
-            visualNavigator, dynamicRoutingEngine, messageTextView)
+            visualNavigator, dynamicRoutingEngine, messageTextView
+        )
     }
 
     func startLocationProvider() {
@@ -112,9 +112,10 @@ class NavigationExample : DynamicRoutingDelegate {
 
     // Conform to the DynamicRoutingDelegate.
     // Notifies on traffic-optimized routes that are considered better than the current route.
-    func onBetterRouteFound(newRoute: Route,
+    func onBetterRouteFound(newRoute _: Route,
                             etaDifferenceInSeconds: Int32,
-                            distanceDifferenceInMeters: Int32) {
+                            distanceDifferenceInMeters: Int32)
+    {
         print("DynamicRoutingEngine: Calculated a new route.")
         print("DynamicRoutingEngine: etaDifferenceInSeconds: \(etaDifferenceInSeconds).")
         print("DynamicRoutingEngine: distanceDifferenceInMeters: \(distanceDifferenceInMeters).")
@@ -129,9 +130,12 @@ class NavigationExample : DynamicRoutingDelegate {
     }
 
     func startNavigation(route: Route,
-                                isSimulated: Bool) {
+                         isSimulated: Bool)
+    {
         let startGeoCoordinates = route.geometry.vertices[0]
         prefetchMapData(currentGeoCoordinates: startGeoCoordinates)
+
+        print("Starting navigation. \(startGeoCoordinates.latitude), \(startGeoCoordinates.longitude).")
 
         // Switches to navigation mode when no route was set before, otherwise navigation mode is kept.
         visualNavigator.route = route

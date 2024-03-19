@@ -22,12 +22,12 @@ import heresdk
 
 // A reference implementation using HERE Positioning to get notified on location updates
 // from various location sources available from a device and HERE services.
-class HEREPositioningProvider : NSObject,
-                                // Needed to check device capabilities.
-                                CLLocationManagerDelegate,
-                                // Optionally needed to listen for status changes.
-                                LocationStatusDelegate {
-
+class HEREPositioningProvider: NSObject,
+    // Needed to check device capabilities.
+    CLLocationManagerDelegate,
+    // Optionally needed to listen for status changes.
+    LocationStatusDelegate
+{
     // We need to check if the device is authorized to use location capabilities like GPS sensors.
     // Results are handled in the CLLocationManagerDelegate below.
     private let locationManager = CLLocationManager()
@@ -58,20 +58,19 @@ class HEREPositioningProvider : NSObject,
 
     // Conforms to the CLLocationManagerDelegate protocol.
     // Handles the result of the native authorization request.
-    func locationManager(_ manager: CLLocationManager,
-                         didChangeAuthorization status: CLAuthorizationStatus) {
+    func locationManager(_: CLLocationManager,
+                         didChangeAuthorization status: CLAuthorizationStatus)
+    {
         switch status {
-            case .restricted, .denied, .notDetermined:
-                print("Native location services denied or disabled by user in device settings.")
-                break
-            case .authorizedWhenInUse, .authorizedAlways:
-                if let locationUpdateDelegate = locationUpdateDelegate, isLocating {
-                    startLocating(locationDelegate: locationUpdateDelegate, accuracy: accuracy)
-                }
-                print("Native location services authorized by user.")
-                break
-            default:
-                fatalError("Unknown location authorization status.")
+        case .restricted, .denied, .notDetermined:
+            print("Native location services denied or disabled by user in device settings.")
+        case .authorizedWhenInUse, .authorizedAlways:
+            if let locationUpdateDelegate = locationUpdateDelegate, isLocating {
+                startLocating(locationDelegate: locationUpdateDelegate, accuracy: accuracy)
+            }
+            print("Native location services authorized by user.")
+        default:
+            fatalError("Unknown location authorization status.")
         }
     }
 
@@ -80,7 +79,7 @@ class HEREPositioningProvider : NSObject,
         if locationEngine.isStarted {
             return
         }
-
+        print("Start locating with accuracy: \(accuracy)")
         isLocating = true
         locationUpdateDelegate = locationDelegate
         self.accuracy = accuracy
@@ -100,7 +99,7 @@ class HEREPositioningProvider : NSObject,
         if !locationEngine.isStarted {
             return
         }
-
+        print("Stop locating.")
         // Remove delegates and stop location engine.
         locationEngine.removeLocationDelegate(locationDelegate: locationUpdateDelegate!)
         locationEngine.removeLocationStatusDelegate(locationStatusDelegate: self)

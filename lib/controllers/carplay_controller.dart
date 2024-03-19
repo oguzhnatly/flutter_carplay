@@ -100,6 +100,30 @@ class FlutterCarPlayController {
     );
   }
 
+  /// Starts a navigation.
+  static void startNavigation(
+    String elementId,
+    double destinationLat,
+    double destinationLong,
+  ) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.startNavigation.name,
+      {
+        '_elementId': elementId,
+        'destinationLat': destinationLat,
+        'destinationLong': destinationLong,
+      },
+    );
+  }
+
+  /// Stops a navigation.
+  static void stopNavigation(String elementId) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.stopNavigation.name,
+      {'_elementId': elementId},
+    );
+  }
+
   /// Hides the overlay card on [CPMapTemplate]
   static void hideOverlay(String elementId) {
     _methodChannel.invokeMethod(

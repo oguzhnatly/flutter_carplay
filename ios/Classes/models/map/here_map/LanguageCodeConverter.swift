@@ -22,11 +22,9 @@ import heresdk
 
 // Converts from HERE SDK's LanguageCode to Locale and vice versa.
 // Both language and country must be set, if available.
-class LanguageCodeConverter {
-
+enum LanguageCodeConverter {
     // Language is always set, region may not be set.
     private static let languageCodeMap = [
-
         /// English (United States)
         LanguageCode.enUs: Locale(identifier: "en-US"),
 
@@ -355,7 +353,8 @@ class LanguageCodeConverter {
         LanguageCode.woLatn: Locale(identifier: "wo-LATN"),
 
         /// Yoruba - Latin
-        LanguageCode.yoLatn: Locale(identifier: "yo-LATN")]
+        LanguageCode.yoLatn: Locale(identifier: "yo-LATN"),
+    ]
 
     public static func getLocale(languageCode: LanguageCode) -> Locale {
         guard let index = languageCodeMap.index(forKey: languageCode) else {

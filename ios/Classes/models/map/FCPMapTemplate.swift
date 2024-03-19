@@ -6,6 +6,7 @@
 //
 
 import CarPlay
+import heresdk
 import MapKit
 
 /// A custom CarPlay map template with additional customization options.
@@ -39,6 +40,9 @@ class FCPMapTemplate: NSObject {
 
     /// A boolean value indicating whether buttons are hidden with the navigation bar.
     private var hidesButtonsWithNavigationBar: Bool = false
+
+    /// Navigation session used to manage the upcomingManeuvers and  arrival estimation details
+    var navSession: CPNavigationSession?
 
     // MARK: Initializer
 
@@ -98,7 +102,7 @@ class FCPMapTemplate: NSObject {
         mapTemplate.trailingNavigationBarButtons = tBButtons
         mapTemplate.automaticallyHidesNavigationBar = automaticallyHidesNavigationBar
         mapTemplate.hidesButtonsWithNavigationBar = hidesButtonsWithNavigationBar
-        mapTemplate.mapDelegate = viewController as? CPMapTemplateDelegate
+        mapTemplate.mapDelegate = self
 
         _super = mapTemplate
         return mapTemplate
@@ -217,9 +221,40 @@ extension FCPMapTemplate {
         }
     }
 
-    /// Hide trip previews
+    /// Hide trip previews.
     func hideTripPreviews() {
         _super?.hideTripPreviews()
+    }
+
+    /// Begin navigation.
+    func startNavigation(destination: Waypoint) {
+        guard let viewController = viewController as? FCPMapViewController else {
+            return
+        }
+        viewController.startNavigation(destination: destination)
+    }
+
+    /// Stop navigation.
+    func stopNavigation() {
+        guard let viewController = viewController as? FCPMapViewController else {
+            return
+        }
+
+        viewController.stopNavigation()
+    }
+}
+
+// MARK: - CPMapTemplateDelegate
+
+extension FCPMapTemplate: CPMapTemplateDelegate {
+    func mapTemplate(_ mapTemplate: CPMapTemplate, startedTrip trip: CPTrip, using _: CPRouteChoice) {
+        mapTemplate.hideTripPreviews()
+        navSession = mapTemplate.startNavigationSession(for: trip)
+        guard let viewController = viewController as? FCPMapViewController else {
+            return
+        }
+
+        viewController.startNavigation(destination: Waypoint(coordinates: GeoCoordinates(latitude: 0.0, longitude: 0.0)))
     }
 }
 

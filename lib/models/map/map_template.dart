@@ -141,6 +141,23 @@ class CPMapTemplate {
     FlutterCarPlayController.hideOverlay(uniqueId);
   }
 
+  /// Starts a navigation.
+  void startNavigation({
+    required double destinationLat,
+    required double destinationLong,
+  }) {
+    FlutterCarPlayController.startNavigation(
+      uniqueId,
+      destinationLat,
+      destinationLong,
+    );
+  }
+
+  /// Stops a navigation.
+  void stopNavigation() {
+    FlutterCarPlayController.stopNavigation(uniqueId);
+  }
+
   String get uniqueId {
     return _elementId;
   }

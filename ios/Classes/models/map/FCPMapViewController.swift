@@ -53,10 +53,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     }
 
     /// The app associated with the map view controller.
-    private var mapApp: MapApp!
-
-    /// Create a CLLocationManager and assign a delegate
-    let locationManager = CLLocationManager()
+    private var mapController: MapController!
 
     /// The map marker associated with the map view controller.
     var mapMarker: MapMarker?
@@ -67,12 +64,6 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-
-        locationManager.delegate = self
-
-        // Request a user’s location once
-        locationManager.requestLocation()
-        locationManager.startUpdatingLocation()
 
         // Load the map scene using a map scheme to render the map with.
         mapView.mapScene.loadScene(mapScheme: MapScheme.normalDay, completion: onLoadScene)
@@ -87,82 +78,13 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             return
         }
 
-        mapApp = MapApp(viewController: self, mapView: mapView!, messageTextView: UITextView())
+        mapController = MapController(viewController: self, mapView: mapView!, messageTextView: UITextView())
 
         // Configure the map.
         let camera = mapView.camera
         let distanceInMeters = MapMeasure(kind: .distance, value: 1000 * 10)
         camera.lookAt(point: GeoCoordinates(latitude: 52.518043, longitude: 13.405991), zoom: distanceInMeters)
-
-//        mapApp.addRouteSimulatedLocationButtonClicked()
     }
-
-    func locationManager(
-        _: CLLocationManager,
-        didUpdateLocations locations: [CLLocation]
-    ) {
-        if let location = locations.first {
-            let latitude = location.coordinate.latitude
-            let longitude = location.coordinate.longitude
-            // Handle location update
-            return;
-            let geoCoordinates = GeoCoordinates(latitude: latitude, longitude: longitude)
-
-            if mapMarker == nil {
-                let camera = mapView.camera
-                let distanceInMeters = MapMeasure(kind: .distance, value: 800 * 10)
-                camera.lookAt(point: geoCoordinates, zoom: distanceInMeters)
-
-                let locationMarkerSize = Int32(30 * mapView.pixelScale)
-                let anchor = Anchor2D(horizontal: 0.5, vertical: 1)
-                //                let mapImage = try! MapImage(named: "position", width: locationMarkerSize, height: locationMarkerSize)
-                let mapImage = try! MapImage(from: UIImage(named: "position")!)!
-
-                mapMarker = MapMarker(at: geoCoordinates, image: mapImage, anchor: anchor)
-                mapView.mapScene.addMapMarker(mapMarker!)
-            } else {
-                mapMarker?.coordinates = geoCoordinates
-                mapView.camera.lookAt(point: geoCoordinates)
-            }
-        }
-    }
-
-    func locationManager(_: CLLocationManager, didFailWithError error: Error) {
-        print("didFailWithError \(error)")
-    }
-//
-//
-//    func beginNavigation() {
-//
-//      let geoCode1 = GeoCoordinates(latitude: 52.518043, longitude: 13.405991)
-//        let geoCode2 = GeoCoordinates(latitude: 52.235555, longitude: 13.41213)
-//
-//        let wayPointDepart = Waypoint(coordinates: geoCode1)
-//        let wayPointDestination = Waypoint(coordinates: geoCode2)
-//
-//        let routingEngine = try! RoutingEngine();
-//        routingEngine.calculateRoute(with: [wayPointDepart, wayPointDestination], carOptions: CarOptions(routeOptions: RouteOptions()), completion: {error,routes in
-//            debugPrint(routes ?? "");
-//
-//            if let route = routes?.first {
-//                let lineColor = UIColor(red: 0, green: 0.56, blue: 0.54, alpha: 0.63)
-//                let widthInPixels = 20.0
-//
-//                let routeMapPolyline = MapPolyline(geometry: route.geometry, representation: try! MapPolyline.SolidRepresentation(
-//                    lineWidth: try! MapMeasureDependentRenderSize(
-//                        sizeUnit: RenderSize.Unit.pixels,
-//                        size: widthInPixels),
-//                    color: lineColor,
-//                    capShape: LineCap.round))
-//
-//                self.mapView.mapScene.addMapPolyline(routeMapPolyline)
-//                self.mapView.camera.lookAt(point: geoCode1)
-//
-//                let simulator = try! LocationSimulator(route: route, options: LocationSimulatorOptions())
-//                simulator.start()
-//            }
-//        })
-//    }
 }
 
 // MARK: - Banner & Toast Views
@@ -206,7 +128,8 @@ extension FCPMapViewController {
 
     /// Displays an overlay view on the screen.
     func showOverlay(primaryTitle: String?, secondaryTitle: String?, subtitle: String?) {
-        overlayViewMaxWidth.constant = view.bounds.size.width * 0.65
+        return
+            overlayViewMaxWidth.constant = view.bounds.size.width * 0.65
 
         if let primaryTitle = primaryTitle {
             overlayView.setPrimaryTitle(primaryTitle)
@@ -226,5 +149,20 @@ extension FCPMapViewController {
         overlayView.setSecondaryTitle("--")
         overlayView.setSubtitle("--")
         overlayView.isHidden = true
+    }
+}
+
+// MARK: - Map Helper functions
+
+extension FCPMapViewController {
+    // Step 1. Calculate route
+    func startNavigation(destination: Waypoint) {
+        mapController.setDestinationWaypoint(destination)
+
+        mapController.addRouteSimulatedLocationButtonClicked()
+    }
+
+    func stopNavigation() {
+        mapController.clearMapButtonClicked()
     }
 }

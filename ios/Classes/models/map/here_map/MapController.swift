@@ -17,9 +17,9 @@
  * License-Filename: LICENSE
  */
 
+import CarPlay
 import heresdk
 import UIKit
-import CarPlay
 
 enum ConstantsEnum {
     static let DEFAULT_MAP_CENTER = GeoCoordinates(latitude: 52.520798, longitude: 13.409408)
@@ -28,14 +28,11 @@ enum ConstantsEnum {
 
 // An app that allows to calculate a route and start navigation, using either platform positioning or
 // simulated locations.
-var navSession: CPNavigationSession?
-
-class MapApp: LongPressDelegate {
-
+class MapController: LongPressDelegate {
     private let viewController: UIViewController
     private let mapView: MapView
     private let routeCalculator: RouteCalculator
-    private let navigationExample: NavigationExample
+    private let navigationHelper: NavigationHelper
     private var mapMarkers = [MapMarker]()
     private var mapPolylineList = [MapPolyline]()
     private var startingWaypoint: Waypoint?
@@ -54,12 +51,17 @@ class MapApp: LongPressDelegate {
 
         routeCalculator = RouteCalculator()
 
-        navigationExample = NavigationExample(mapView: mapView,
-                                              messageTextView: messageTextView)
-        navigationExample.startLocationProvider()
+        navigationHelper = NavigationHelper(mapView: mapView,
+                                            messageTextView: messageTextView)
+        navigationHelper.startLocationProvider()
 
         setLongPressGestureHandler()
         showMessage("Long press to set a destination or use a random one.")
+    }
+
+    // Set destination waypoint for route calculation.
+    func setDestinationWaypoint(_ destination: Waypoint) {
+        destinationWaypoint = destination
     }
 
     // Calculate a route and start navigation using a location simulator.
@@ -82,11 +84,11 @@ class MapApp: LongPressDelegate {
     }
 
     func enableCameraTracking() {
-        navigationExample.startCameraTracking()
+        navigationHelper.startCameraTracking()
     }
 
     func disableCameraTracking() {
-        navigationExample.stopCameraTracking()
+        navigationHelper.stopCameraTracking()
     }
 
     private func calculateRoute(isSimulated: Bool) {
@@ -98,23 +100,24 @@ class MapApp: LongPressDelegate {
 
         // Calculates a car route.
         routeCalculator.calculateRoute(start: startingWaypoint!,
-                                       destination: destinationWaypoint!) { (routingError, routes) in
-           if let error = routingError {
-               self.showDialog(title: "Error while calculating a route:", message: "\(error)")
-               return
-           }
+                                       destination: destinationWaypoint!)
+        { routingError, routes in
+            if let error = routingError {
+                self.showDialog(title: "Error while calculating a route:", message: "\(error)")
+                return
+            }
 
-           // When routingError is nil, routes is guaranteed to contain at least one route.
-           let route = routes!.first
-           self.showRouteOnMap(route: route!)
-           self.showRouteDetails(route: route!, isSimulated: isSimulated)
-       }
+            // When routingError is nil, routes is guaranteed to contain at least one route.
+            let route = routes!.first
+            self.showRouteOnMap(route: route!)
+            self.showRouteDetails(route: route!, isSimulated: isSimulated)
+        }
     }
 
     private func determineRouteWaypoints(isSimulated: Bool) -> Bool {
         // When using real GPS locations, we always start from the current location of user.
         if !isSimulated {
-            guard let location = navigationExample.getLastKnownLocation() else {
+            guard let location = navigationHelper.getLastKnownLocation() else {
                 showDialog(title: "Error", message: "No location found.")
                 return false
             }
@@ -127,11 +130,16 @@ class MapApp: LongPressDelegate {
             mapView.camera.lookAt(point: location.coordinates)
         }
 
-        if (startingWaypoint == nil) {
-            startingWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())
+        if startingWaypoint == nil {
+            guard let location = navigationHelper.getLastKnownLocation() else {
+                showDialog(title: "Error", message: "No location found.")
+                return false
+            }
+
+            startingWaypoint = Waypoint(coordinates: location.coordinates)
         }
 
-        if (destinationWaypoint == nil) {
+        if destinationWaypoint == nil {
             destinationWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())
         }
 
@@ -142,12 +150,12 @@ class MapApp: LongPressDelegate {
         let estimatedTravelTimeInSeconds = route.duration
         let lengthInMeters = route.lengthInMeters
 
-        let routeDetails = "Travel Time: " + formatTime(sec: estimatedTravelTimeInSeconds)
-                         + ", Length: " + formatLength(meters: lengthInMeters)
+//        let routeDetails = "Travel Time: " + formatTime(sec: estimatedTravelTimeInSeconds)
+//                         + ", Length: " + formatLength(meters: lengthInMeters)
 
-        self.navigationExample.startNavigation(route: route, isSimulated: isSimulated)
+        navigationHelper.startNavigation(route: route, isSimulated: isSimulated)
 
-        //showStartNavigationDialog(title: "Route Details",
+        // showStartNavigationDialog(title: "Route Details",
 //                                  message: routeDetails,
 //                                  route: route,
 //                                  isSimulated: isSimulated)
@@ -173,16 +181,18 @@ class MapApp: LongPressDelegate {
         let widthInPixels = 20.0
         let polylineColor = UIColor(red: 0, green: 0.56, blue: 0.54, alpha: 0.63)
         do {
-            let routeMapPolyline =  try MapPolyline(geometry: routeGeoPolyline,
-                                                    representation: MapPolyline.SolidRepresentation(
-                                                        lineWidth: MapMeasureDependentRenderSize(
-                                                            sizeUnit: RenderSize.Unit.pixels,
-                                                            size: widthInPixels),
-                                                        color: polylineColor,
-                                                        capShape: LineCap.round))
+            let routeMapPolyline = try MapPolyline(geometry: routeGeoPolyline,
+                                                   representation: MapPolyline.SolidRepresentation(
+                                                       lineWidth: MapMeasureDependentRenderSize(
+                                                           sizeUnit: RenderSize.Unit.pixels,
+                                                           size: widthInPixels
+                                                       ),
+                                                       color: polylineColor,
+                                                       capShape: LineCap.round
+                                                   ))
             mapView.mapScene.addMapPolyline(routeMapPolyline)
             mapPolylineList.append(routeMapPolyline)
-        } catch let error {
+        } catch {
             fatalError("Failed to render MapPolyline. Cause: \(error)")
         }
     }
@@ -191,7 +201,7 @@ class MapApp: LongPressDelegate {
         clearWaypointMapMarker()
         clearRoute()
 
-        navigationExample.stopNavigation()
+        navigationHelper.stopNavigation()
     }
 
     private func clearWaypointMapMarker() {
@@ -220,8 +230,8 @@ class MapApp: LongPressDelegate {
         }
 
         if state == GestureState.begin {
-            if (isLongpressDestination) {
-                destinationWaypoint = Waypoint(coordinates: geoCoordinates);
+            if isLongpressDestination {
+                destinationWaypoint = Waypoint(coordinates: geoCoordinates)
                 addCircleMapMarker(geoCoordinates: destinationWaypoint!.coordinates, imageName: "green_dot.png")
                 showMessage("New long press destination set.")
             } else {
@@ -229,7 +239,7 @@ class MapApp: LongPressDelegate {
                 addCircleMapMarker(geoCoordinates: startingWaypoint!.coordinates, imageName: "green_dot.png")
                 showMessage("New long press starting point set.")
             }
-            isLongpressDestination = !isLongpressDestination;
+            isLongpressDestination = !isLongpressDestination
         }
     }
 
@@ -254,8 +264,9 @@ class MapApp: LongPressDelegate {
     private func addCircleMapMarker(geoCoordinates: GeoCoordinates, imageName: String) {
         guard
             let image = UIImage(named: imageName),
-            let imageData = image.pngData() else {
-                return
+            let imageData = image.pngData()
+        else {
+            return
         }
 
         let mapImage = MapImage(pixelData: imageData,
@@ -269,18 +280,19 @@ class MapApp: LongPressDelegate {
     private func showStartNavigationDialog(title: String,
                                            message: String,
                                            route: Route,
-                                           isSimulated: Bool) {
+                                           isSimulated: Bool)
+    {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let buttonText = isSimulated ? "Start navigation (simulated)" : "Start navigation (device location)"
-        alertController.addAction(UIAlertAction(title: buttonText, style: .default, handler: { (alertAction) -> Void in
-            self.navigationExample.startNavigation(route: route, isSimulated: isSimulated)
+        alertController.addAction(UIAlertAction(title: buttonText, style: .default, handler: { _ in
+            self.navigationHelper.startNavigation(route: route, isSimulated: isSimulated)
         }))
         alertController.addAction(UIAlertAction(title: "Cancel", style: .default))
         viewController.present(alertController, animated: true)
     }
 
     private func showDialog(title: String, message: String) {
-        debugPrint("\(title) => \(message)");
+        debugPrint("\(title) => \(message)")
 //        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 //        alertController.addAction(UIAlertAction(title: "OK", style: .default))
 //        viewController.present(alertController, animated: true)

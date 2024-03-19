@@ -150,6 +150,12 @@ enum FCPChannelTypes {
 
     /// Event for showing a trip preview in CarPlay.
     static let hideTripPreviews = "hideTripPreviews"
+
+    /// Event for start navigation.
+    static let startNavigation = "startNavigation"
+
+    /// Event for stop navigation.
+    static let stopNavigation = "stopNavigation"
 }
 
 /// Enum defining different types of alert actions in CarPlay.

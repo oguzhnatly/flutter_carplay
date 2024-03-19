@@ -56,7 +56,7 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="1zI-Mi-mW7" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="52v-7s-DE8"/>
+                <constraint firstItem="1zI-Mi-mW7" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="52v-7s-DE8"/>
                 <constraint firstItem="ZsG-Z3-iyS" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="12" id="7TV-eJ-S4d"/>
                 <constraint firstItem="ZsG-Z3-iyS" firstAttribute="top" secondItem="JeZ-xy-ybs" secondAttribute="bottom" constant="12" id="9Np-mb-hOh"/>
                 <constraint firstItem="JeZ-xy-ybs" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="D7n-uX-aMw"/>

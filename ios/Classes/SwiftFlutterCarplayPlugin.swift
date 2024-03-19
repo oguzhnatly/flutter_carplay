@@ -7,6 +7,7 @@
 
 import CarPlay
 import Flutter
+import heresdk
 
 /// A Swift Flutter plugin for CarPlay integration.
 ///
@@ -21,7 +22,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     private(set) static var registrar: FlutterPluginRegistrar?
 
     /// The root template to be displayed on CarPlay.
-    private static var objcRootTemplate: FCPRootTemplate?
+    private static var _fcpRootTemplate: FCPRootTemplate?
 
     /// The root view controller for CarPlay.
     private static var _rootViewController: UIViewController?
@@ -33,7 +34,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     public static var animated: Bool = false
 
     /// The present template object for CarPlay modals.
-    private var objcPresentTemplate: FCPPresentTemplate?
+    private var fcpPresentTemplate: FCPPresentTemplate?
 
     /// The root template to be displayed on CarPlay.
     public static var rootTemplate: CPTemplate? {
@@ -42,6 +43,16 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         }
         set(template) {
             _rootTemplate = template
+        }
+    }
+
+    /// The root template to be displayed on CarPlay.
+    static var fcpRootTemplate: FCPRootTemplate? {
+        get {
+            return _fcpRootTemplate
+        }
+        set(template) {
+            _fcpRootTemplate = template
         }
     }
 
@@ -177,8 +188,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-            if objcPresentTemplate != nil {
-                objcPresentTemplate = nil
+            if fcpPresentTemplate != nil {
+                fcpPresentTemplate = nil
                 FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
                     showAlertTemplate()
                 })
@@ -187,7 +198,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
             func showAlertTemplate() {
                 let alertTemplate = FCPAlertTemplate(obj: rootTemplateArgs)
-                objcPresentTemplate = alertTemplate
+                fcpPresentTemplate = alertTemplate
                 FlutterCarPlaySceneDelegate
                     .presentTemplate(template: alertTemplate.get, animated: animated, completion: { completed, _ in
                         FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
@@ -204,8 +215,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-            if objcPresentTemplate != nil {
-                objcPresentTemplate = nil
+            if fcpPresentTemplate != nil {
+                fcpPresentTemplate = nil
                 FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
                     showActionSheet()
                 })
@@ -215,7 +226,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             func showActionSheet() {
                 let actionSheetTemplate = FCPActionSheetTemplate(obj: rootTemplateArgs)
-                objcPresentTemplate = actionSheetTemplate
+                fcpPresentTemplate = actionSheetTemplate
                 FlutterCarPlaySceneDelegate.presentTemplate(template: actionSheetTemplate.get, animated: animated, completion: { completed, _ in
                     result(completed)
                 })
@@ -242,7 +253,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { completed, _ in
                 result(completed)
             })
-            objcPresentTemplate = nil
+            fcpPresentTemplate = nil
         case FCPChannelTypes.pushTemplate:
             guard let args = call.arguments as? [String: Any] else {
                 result(false)
@@ -257,7 +268,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             FlutterCarPlaySceneDelegate.popToRootTemplate(animated: animated, completion: { completed, _ in
                 result(completed)
             })
-            objcPresentTemplate = nil
+            fcpPresentTemplate = nil
         case FCPChannelTypes.setVoiceControl:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
@@ -267,8 +278,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-            if objcPresentTemplate != nil {
-                objcPresentTemplate = nil
+            if fcpPresentTemplate != nil {
+                fcpPresentTemplate = nil
                 FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
                     showVoiceTemplate()
                 })
@@ -278,7 +289,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             func showVoiceTemplate() {
                 let voiceControlTemplate = FCPVoiceControlTemplate(obj: rootTemplateArgs)
-                objcPresentTemplate = voiceControlTemplate
+                fcpPresentTemplate = voiceControlTemplate
                 FlutterCarPlaySceneDelegate.presentTemplate(template: voiceControlTemplate.get, animated: animated, completion: { completed, _ in
                     FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
                                                      data: ["completed": completed])
@@ -286,7 +297,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 })
             }
         case FCPChannelTypes.activateVoiceControlState:
-            guard objcPresentTemplate != nil else {
+            guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
                                     message: "To activate a voice control state, a voice control template must be presented to CarPlay Screen at first.",
                                     details: nil))
@@ -297,47 +308,47 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-            if let voiceControlTemplate = objcPresentTemplate as? FCPVoiceControlTemplate {
+            if let voiceControlTemplate = fcpPresentTemplate as? FCPVoiceControlTemplate {
                 voiceControlTemplate.activateVoiceControlState(identifier: args)
                 result(true)
             } else {
                 result(false)
             }
         case FCPChannelTypes.getActiveVoiceControlStateIdentifier:
-            guard objcPresentTemplate != nil else {
+            guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
                                     message: "To get the active voice control state identifier, a voice control template must be presented to CarPlay Screen at first.",
                                     details: nil))
                 return
             }
 
-            if let voiceControlTemplate = objcPresentTemplate as? FCPVoiceControlTemplate {
+            if let voiceControlTemplate = fcpPresentTemplate as? FCPVoiceControlTemplate {
                 let identifier = voiceControlTemplate.getActiveVoiceControlStateIdentifier()
                 result(identifier)
             } else {
                 result(nil)
             }
         case FCPChannelTypes.startVoiceControl:
-            guard objcPresentTemplate != nil else {
+            guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
                                     message: "To start the voice control, a voice control template must be presented to CarPlay Screen at first.",
                                     details: nil))
                 return
             }
-            if let voiceControlTemplate = objcPresentTemplate as? FCPVoiceControlTemplate {
+            if let voiceControlTemplate = fcpPresentTemplate as? FCPVoiceControlTemplate {
                 voiceControlTemplate.start()
                 result(true)
             } else {
                 result(false)
             }
         case FCPChannelTypes.stopVoiceControl:
-            guard objcPresentTemplate != nil else {
+            guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
                                     message: "To stop the voice control, a voice control template must be presented to CarPlay Screen at first.",
                                     details: nil))
                 return
             }
-            if let voiceControlTemplate = objcPresentTemplate as? FCPVoiceControlTemplate {
+            if let voiceControlTemplate = fcpPresentTemplate as? FCPVoiceControlTemplate {
                 voiceControlTemplate.stop()
                 result(true)
             } else {
@@ -493,6 +504,42 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return result(true)
             }
             result(false)
+
+        case FCPChannelTypes.startNavigation:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String,
+                  let destinationLat = args["destinationLat"] as? Double,
+                  let destinationLong = args["destinationLong"] as? Double
+            else {
+                result(false)
+                return
+            }
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+
+                let destination = Waypoint(coordinates: GeoCoordinates(latitude: destinationLat,
+                                                                       longitude: destinationLong))
+
+                mapTemplate.startNavigation(destination: destination)
+                return result(true)
+            }
+            result(false)
+
+        case FCPChannelTypes.stopNavigation:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String
+            else {
+                result(false)
+                return
+            }
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+                mapTemplate.stopNavigation()
+                return result(true)
+            }
+            result(false)
         default:
             result(false)
         }
@@ -604,7 +651,7 @@ extension SwiftFlutterCarplayPlugin {
         // If an FCPRootTemplate is successfully extracted, set it as the root template
         SwiftFlutterCarplayPlugin.rootTemplate = cpRootTemplate
         FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(cpRootTemplate, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
-        SwiftFlutterCarplayPlugin.objcRootTemplate = rootTemplate
+        SwiftFlutterCarplayPlugin.fcpRootTemplate = rootTemplate
         SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FlutterCarPlaySceneDelegate.fcpConnectionStatus)
         let animated = args["animated"] as? Bool ?? false
         SwiftFlutterCarplayPlugin.animated = animated

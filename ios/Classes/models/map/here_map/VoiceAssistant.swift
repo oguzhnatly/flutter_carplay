@@ -17,13 +17,12 @@
  * License-Filename: LICENSE
  */
 
-import heresdk
 import AVFoundation
 import Foundation
+import heresdk
 
 // A simple TTS engine that uses Apple's AVSpeechSynthesizer to speak texts.
 class VoiceAssistant {
-
     private let avSpeechSynthesizer = AVSpeechSynthesizer()
     private var locale = Locale(identifier: "en-US")
 

@@ -23,7 +23,6 @@ import heresdk
 // A class that provides simulated location updates along a given route.
 // The frequency of the provided updates can be set via LocationSimulatorOptions.
 class HEREPositioningSimulator {
-
     private var locationSimulator: LocationSimulator?
 
     func startLocating(locationDelegate: LocationDelegate, route: Route) {
@@ -44,12 +43,13 @@ class HEREPositioningSimulator {
 
     // Provides fake GPS signals based on the route geometry.
     private func createLocationSimulator(locationDelegate: LocationDelegate,
-                                         route: Route) -> LocationSimulator {
+                                         route: Route) -> LocationSimulator
+    {
         let notificationIntervalInSeconds: TimeInterval = 0.5
         let locationSimulatorOptions = LocationSimulatorOptions(speedFactor: 2,
                                                                 notificationInterval: notificationIntervalInSeconds)
         let locationSimulator: LocationSimulator
-        
+
         do {
             try locationSimulator = LocationSimulator(route: route,
                                                       options: locationSimulatorOptions)
