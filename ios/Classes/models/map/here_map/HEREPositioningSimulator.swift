@@ -31,7 +31,7 @@ class HEREPositioningSimulator {
         }
 
         locationSimulator = createLocationSimulator(locationDelegate: locationDelegate, route: route)
-        locationSimulator!.start()
+        locationSimulator?.start()
     }
 
     func stopLocating() {
@@ -58,7 +58,7 @@ class HEREPositioningSimulator {
         }
 
         locationSimulator.delegate = locationDelegate
-        locationSimulator.start()
+        // locationSimulator.start()
 
         return locationSimulator
     }

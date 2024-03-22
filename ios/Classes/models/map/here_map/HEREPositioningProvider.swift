@@ -26,7 +26,9 @@ class HEREPositioningProvider: NSObject,
     // Needed to check device capabilities.
     CLLocationManagerDelegate,
     // Optionally needed to listen for status changes.
-    LocationStatusDelegate
+    LocationStatusDelegate,
+    // Conforms to the LocationDelegate protocol.
+    LocationDelegate
 {
     // We need to check if the device is authorized to use location capabilities like GPS sensors.
     // Results are handled in the CLLocationManagerDelegate below.
@@ -35,6 +37,10 @@ class HEREPositioningProvider: NSObject,
     private var locationUpdateDelegate: LocationDelegate?
     private var accuracy = LocationAccuracy.bestAvailable
     private var isLocating = false
+    private var locationEngineStatus: LocationEngineStatus?
+    var isLocationEngineStarted: Bool {
+        return locationEngineStatus == .engineStarted || locationEngineStatus == .alreadyStarted
+    }
 
     override init() {
         do {
@@ -76,7 +82,7 @@ class HEREPositioningProvider: NSObject,
 
     // Does nothing when engine is already running.
     func startLocating(locationDelegate: LocationDelegate, accuracy: LocationAccuracy) {
-        if locationEngine.isStarted {
+        if isLocationEngineStarted {
             return
         }
         print("Start locating with accuracy: \(accuracy)")
@@ -89,14 +95,16 @@ class HEREPositioningProvider: NSObject,
         locationEngine.addLocationStatusDelegate(locationStatusDelegate: self)
 
         // Without native permissins granted by user, the LocationEngine cannot be started.
-        if locationEngine.start(locationAccuracy: .bestAvailable) == .missingPermissions {
+        let status = locationEngine.start(locationAccuracy: .bestAvailable)
+        print("Location engine status:==> \(status)")
+        if status == .missingPermissions {
             authorizeNativeLocationServices()
         }
     }
 
     // Does nothing when engine is already stopped.
     func stopLocating() {
-        if !locationEngine.isStarted {
+        if !isLocationEngineStarted {
             return
         }
         print("Stop locating.")
@@ -110,6 +118,7 @@ class HEREPositioningProvider: NSObject,
     // Conforms to the LocationStatusDelegate protocol.
     func onStatusChanged(locationEngineStatus: LocationEngineStatus) {
         print("Location engine status changed: \(locationEngineStatus)")
+        self.locationEngineStatus = locationEngineStatus
     }
 
     // Conforms to the LocationStatusDelegate protocol.
@@ -117,5 +126,9 @@ class HEREPositioningProvider: NSObject,
         for feature in features {
             print("Location feature not available: '%s'", String(describing: feature))
         }
+    }
+
+    func onLocationUpdated(_ location: heresdk.Location) {
+        print("Location updated: \(location.coordinates)")
     }
 }
