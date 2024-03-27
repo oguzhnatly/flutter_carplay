@@ -156,6 +156,12 @@ enum FCPChannelTypes {
 
     /// Event for stop navigation.
     static let stopNavigation = "stopNavigation"
+
+    /// Event for render initial marker on map
+    static let renderInitialMarkerOnMap = "renderInitialMarkerOnMap"
+
+    /// Event for destination address updated on map
+    static let destinationAddressUpdatedOnMap = "destinationAddressUpdatedOnMap"
 }
 
 /// Enum defining different types of alert actions in CarPlay.

@@ -34,12 +34,18 @@ class MapController: LongPressDelegate {
     private let routeCalculator: RouteCalculator
     private let navigationHelper: NavigationHelper
     private var mapMarkers = [MapMarker]()
+    private var mapPolygons = [MapPolygon]()
     private var mapPolylineList = [MapPolyline]()
     private var startingWaypoint: Waypoint?
     private var destinationWaypoint: Waypoint?
     private var isLongpressDestination = false
     private var messageTextView: UITextView
 
+    /// Initialize the MapController
+    /// - Parameters:
+    ///   - viewController: ViewController that holds the MapController
+    ///   - mapView: MapView that renders the map
+    ///   - messageTextView: TextView that displays log messages
     init(viewController: UIViewController, mapView: MapView, messageTextView: UITextView) {
         self.viewController = viewController
         self.mapView = mapView
@@ -59,38 +65,88 @@ class MapController: LongPressDelegate {
         showMessage("Long press to set a destination or use a random one.")
     }
 
-    // Set destination waypoint for route calculation.
+    /// Set destination waypoint for route calculation.
     func setDestinationWaypoint(_ destination: Waypoint) {
         destinationWaypoint = destination
     }
 
-    // Calculate a route and start navigation using a location simulator.
-    // Start is map center and destination location is set random within viewport,
-    // unless a destination is set via long press.
+    /// Calculate a route and start navigation using a location simulator.
+    /// Start is map center and destination location is set random within viewport,
+    /// unless a destination is set via long press.
     func addRouteSimulatedLocationButtonClicked() {
         calculateRoute(isSimulated: true)
     }
 
-    // Calculate a route and start navigation using locations from device.
-    // Start is current location and destination is set random within viewport,
-    // unless a destination is set via long press.
+    /// Calculate a route and start navigation using locations from device.
+    /// Start is current location and destination is set random within viewport,
+    /// unless a destination is set via long press.
     func addRouteDeviceLocationButtonClicked() {
         calculateRoute(isSimulated: false)
     }
 
+    /// Clears the map and resets the route and navigation.
     func clearMapButtonClicked() {
         clearMap()
         isLongpressDestination = false
     }
 
+    /// Enable or disable camera tracking
     func enableCameraTracking() {
         navigationHelper.startCameraTracking()
     }
 
+    /// Enable or disable camera tracking
     func disableCameraTracking() {
         navigationHelper.stopCameraTracking()
     }
 
+    /// Add a marker on the map.
+    /// - Parameters:
+    ///   - coordinates: The coordinates of the marker
+    ///   - markerImage: The image of the marker
+    func addMapMarker(coordinates: GeoCoordinates, markerImage: UIImage, markerSize: CGSize, metadata: heresdk.Metadata?) {
+        let marker = mapMarkers.first(where: {
+            $0.metadata?.getString(key: "marker") == metadata?.getString(key: "marker")
+        })
+
+        if let existingMarker = marker {
+            existingMarker.coordinates = coordinates
+        } else {
+            guard let imageData = markerImage.pngData() else { return }
+
+            
+            let mapImage = MapImage(imageData: imageData,
+                                    imageFormat: ImageFormat.png, width: UInt32(markerSize.width), height: UInt32(markerSize.height))
+            let mapMarker = MapMarker(at: coordinates,
+                                      image: mapImage)
+            mapMarker.metadata = metadata
+            mapView.mapScene.addMapMarker(mapMarker)
+            mapMarkers.append(mapMarker)
+        }
+    }
+
+    /// Add a polygon on the map.
+    /// - Parameters:
+    ///   - coordinate: The coordinates of the polygon
+    ///   - accuracy: The accuracy of the polygon
+    ///   - metadata: The metadata of the polygon
+    func addMapPolygon(coordinate: GeoCoordinates, accuracy: Double, metadata: heresdk.Metadata?) {
+        let polygon = mapPolygons.first(where: {
+            $0.metadata?.getString(key: "polygon") == metadata?.getString(key: "polygon")
+        })
+
+        if let existingpolygon = polygon {
+            existingpolygon.geometry = GeoPolygon(geoCircle: GeoCircle(center: coordinate, radiusInMeters: accuracy))
+        } else {
+            let mapPolygon = MapPolygon(geometry: GeoPolygon(geoCircle: GeoCircle(center: coordinate, radiusInMeters: accuracy)), color: UIColor(argb: 0x550B_C7C2))
+            mapPolygon.metadata = metadata
+            mapView.mapScene.addMapPolygon(mapPolygon)
+            mapPolygons.append(mapPolygon)
+        }
+    }
+
+    /// Calculates a route and start navigation.
+    /// - Parameter isSimulated: Whether to use simulated locations.
     private func calculateRoute(isSimulated: Bool) {
         clearMap()
 
@@ -114,6 +170,9 @@ class MapController: LongPressDelegate {
         }
     }
 
+    /// Determines the starting and destination waypoints for the route calculation.
+    /// - Parameter isSimulated: Whether to use simulated locations.
+    /// - Returns: True if waypoints are determined, false if not.
     private func determineRouteWaypoints(isSimulated: Bool) -> Bool {
         // When using real GPS locations, we always start from the current location of user.
         if !isSimulated {
@@ -146,6 +205,10 @@ class MapController: LongPressDelegate {
         return true
     }
 
+    /// Shows the route details on the screen.
+    /// - Parameters:
+    ///   - route: The route.
+    ///   - isSimulated: Whether to use simulated locations.
     private func showRouteDetails(route: Route, isSimulated: Bool) {
         let estimatedTravelTimeInSeconds = route.duration
         let lengthInMeters = route.lengthInMeters
@@ -161,6 +224,9 @@ class MapController: LongPressDelegate {
 //                                  isSimulated: isSimulated)
     }
 
+    /// Format time in minutes and seconds
+    /// - Parameter sec: Time in seconds
+    /// - Returns: Time in minutes and seconds
     private func formatTime(sec: Double) -> String {
         let hours: Double = sec / 3600
         let minutes: Double = sec.truncatingRemainder(dividingBy: 3600) / 60
@@ -168,6 +234,9 @@ class MapController: LongPressDelegate {
         return "\(Int32(hours)):\(Int32(minutes))"
     }
 
+    /// Format length in kilometers and meters
+    /// - Parameter meters: Length in meters
+    /// - Returns: Length in kilometers and meters
     private func formatLength(meters: Int32) -> String {
         let kilometers: Int32 = meters / 1000
         let remainingMeters: Int32 = meters % 1000
@@ -175,6 +244,8 @@ class MapController: LongPressDelegate {
         return "\(kilometers).\(remainingMeters) km"
     }
 
+    /// Show route on the map
+    /// - Parameter route: Route
     private func showRouteOnMap(route: Route) {
         // Show route as polyline.
         let routeGeoPolyline = route.geometry
@@ -197,6 +268,7 @@ class MapController: LongPressDelegate {
         }
     }
 
+    /// Clear the map
     func clearMap() {
         clearWaypointMapMarker()
         clearRoute()
@@ -204,6 +276,7 @@ class MapController: LongPressDelegate {
         navigationHelper.stopNavigation()
     }
 
+    /// Clear the map markers
     private func clearWaypointMapMarker() {
         for mapMarker in mapMarkers {
             mapView.mapScene.removeMapMarker(mapMarker)
@@ -211,6 +284,7 @@ class MapController: LongPressDelegate {
         mapMarkers.removeAll()
     }
 
+    /// Clear the route
     private func clearRoute() {
         for mapPolyline in mapPolylineList {
             mapView.mapScene.removeMapPolyline(mapPolyline)
@@ -218,11 +292,15 @@ class MapController: LongPressDelegate {
         mapPolylineList.removeAll()
     }
 
+    /// Set the long press gesture handler
     private func setLongPressGestureHandler() {
         mapView.gestures.longPressDelegate = self
     }
 
-    // Conform to LongPressDelegate protocol.
+    /// Conform to LongPressDelegate protocol .
+    /// - Parameters:
+    ///   - state: The state of the gesture.
+    ///   - origin: The point where the gesture began.
     func onLongPress(state: GestureState, origin: Point2D) {
         guard let geoCoordinates = mapView.viewToGeoCoordinates(viewCoordinates: origin) else {
             print("Warning: Long press coordinate is not on map view.")
@@ -243,6 +321,8 @@ class MapController: LongPressDelegate {
         }
     }
 
+    /// Create a random geo coordinates
+    /// - Returns: Random geo coordinates
     private func createRandomGeoCoordinatesAroundMapCenter() -> GeoCoordinates {
         let centerGeoCoordinates = getMapViewCenter()
         let lat = centerGeoCoordinates.latitude
@@ -253,14 +333,25 @@ class MapController: LongPressDelegate {
                                                    max: lon + 0.02))
     }
 
+    /// Get random number
+    /// - Parameters:
+    ///   - min: Minimum number
+    ///   - max: Maximum number
+    /// - Returns: Random number
     private func getRandom(min: Double, max: Double) -> Double {
         return Double.random(in: min ... max)
     }
 
+    /// Get the map view center
+    /// - Returns: Map view center
     private func getMapViewCenter() -> GeoCoordinates {
         return mapView.camera.state.targetCoordinates
     }
 
+    /// Add a circle map marker
+    /// - Parameters:
+    ///   - geoCoordinates: Geo coordinates
+    ///   - imageName: Image name
     private func addCircleMapMarker(geoCoordinates: GeoCoordinates, imageName: String) {
         guard
             let image = UIImage(named: imageName),
@@ -277,6 +368,12 @@ class MapController: LongPressDelegate {
         mapMarkers.append(mapMarker)
     }
 
+    /// Show dialog with navigation options
+    /// - Parameters:
+    ///   - title: Title of the dialog
+    ///   - message: Message of the dialog
+    ///   - route: Route to be started
+    ///   - isSimulated: Whether to use simulated locations
     private func showStartNavigationDialog(title: String,
                                            message: String,
                                            route: Route,
@@ -291,6 +388,10 @@ class MapController: LongPressDelegate {
         viewController.present(alertController, animated: true)
     }
 
+    /// Show dialog with title and message
+    /// - Parameters:
+    ///   - title: Title of the dialog
+    ///   - message: Message of the dialog
     private func showDialog(title: String, message: String) {
         debugPrint("\(title) => \(message)")
 //        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -298,7 +399,8 @@ class MapController: LongPressDelegate {
 //        viewController.present(alertController, animated: true)
     }
 
-    // A permanent view to show log content.
+    /// A permanent view to show log content.
+    /// - Parameter message: Log message to show in the view.
     private func showMessage(_ message: String) {
         messageTextView.text = message
         messageTextView.textColor = .white

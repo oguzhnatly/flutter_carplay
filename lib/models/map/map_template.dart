@@ -1,3 +1,4 @@
+import 'package:here_sdk/core.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../controllers/carplay_controller.dart';
@@ -142,20 +143,40 @@ class CPMapTemplate {
   }
 
   /// Starts a navigation.
-  void startNavigation({
-    required double destinationLat,
-    required double destinationLong,
-  }) {
+  void startNavigation({required CPTrip trip}) {
     FlutterCarPlayController.startNavigation(
       uniqueId,
-      destinationLat,
-      destinationLong,
+      trip,
     );
   }
 
   /// Stops a navigation.
   void stopNavigation() {
     FlutterCarPlayController.stopNavigation(uniqueId);
+  }
+
+  /// Render the initial marker on the Map
+  void renderInitialMarker({
+    required GeoCoordinates coordinates,
+    double accuracy = 0.0,
+  }) {
+    FlutterCarPlayController.renderInitialMarkerOnMap(
+      uniqueId,
+      coordinates,
+      accuracy,
+    );
+  }
+
+  /// Updates the destination address marker on the Map
+  void destinationAddressUpdated({
+    required GeoCoordinates coordinates,
+    double accuracy = 0.0,
+  }) {
+    FlutterCarPlayController.destinationAddressUpdatedOnMap(
+      uniqueId,
+      coordinates,
+      accuracy,
+    );
   }
 
   String get uniqueId {

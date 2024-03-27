@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
+import 'package:here_sdk/core.dart';
 
 import '../constants/private_constants.dart';
 import '../flutter_carplay.dart';
@@ -103,15 +104,13 @@ class FlutterCarPlayController {
   /// Starts a navigation.
   static void startNavigation(
     String elementId,
-    double destinationLat,
-    double destinationLong,
+    CPTrip trip,
   ) {
     _methodChannel.invokeMethod(
       FCPChannelTypes.startNavigation.name,
       {
         '_elementId': elementId,
-        'destinationLat': destinationLat,
-        'destinationLong': destinationLong,
+        'trip': trip.toJson(),
       },
     );
   }
@@ -122,6 +121,35 @@ class FlutterCarPlayController {
       FCPChannelTypes.stopNavigation.name,
       {'_elementId': elementId},
     );
+  }
+
+  /// Renders the initial marker on the [CPMapTemplate]
+  static void renderInitialMarkerOnMap(
+    String elementId,
+    GeoCoordinates coordinate,
+    double accuracy,
+  ) {
+    _methodChannel.invokeMethod(FCPChannelTypes.renderInitialMarkerOnMap.name, {
+      '_elementId': elementId,
+      'latitude': coordinate.latitude,
+      'longitude': coordinate.longitude,
+      'accuracy': accuracy,
+    });
+  }
+
+  /// Updates the destination address on the [CPMapTemplate]
+  static void destinationAddressUpdatedOnMap(
+    String elementId,
+    GeoCoordinates coordinate,
+    double accuracy,
+  ) {
+    _methodChannel
+        .invokeMethod(FCPChannelTypes.destinationAddressUpdatedOnMap.name, {
+      '_elementId': elementId,
+      'latitude': coordinate.latitude,
+      'longitude': coordinate.longitude,
+      'accuracy': accuracy,
+    });
   }
 
   /// Hides the overlay card on [CPMapTemplate]

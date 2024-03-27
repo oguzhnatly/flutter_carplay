@@ -437,7 +437,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             // Find the map template based on the provided element ID
             SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-                mapTemplate.showBanner(message: message, color: color)
+                mapTemplate.fcpMapViewController?.showBanner(message: message, color: color)
                 return result(true)
             }
             result(false)
@@ -451,7 +451,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             // Find the map template based on the provided element ID
             SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-                mapTemplate.hideBanner()
+                mapTemplate.fcpMapViewController?.hideBanner()
                 return result(true)
             }
             result(false)
@@ -467,7 +467,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             // Find the map template based on the provided element ID
             SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-                mapTemplate.showToast(message: message, duration: TimeInterval(duration))
+                mapTemplate.fcpMapViewController?.showToast(message: message, duration: TimeInterval(duration))
                 return result(true)
             }
             result(false)
@@ -486,7 +486,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             // Find the map template based on the provided element ID
             SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-                mapTemplate.showOverlay(primaryTitle: primaryTitle, secondaryTitle: secondaryTitle, subtitle: subtitle)
+                mapTemplate.fcpMapViewController?.showOverlay(primaryTitle: primaryTitle, secondaryTitle: secondaryTitle, subtitle: subtitle)
                 return result(true)
             }
             result(false)
@@ -500,7 +500,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             // Find the map template based on the provided element ID
             SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-                mapTemplate.hideOverlay()
+                mapTemplate.fcpMapViewController?.hideOverlay()
                 return result(true)
             }
             result(false)
@@ -508,8 +508,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         case FCPChannelTypes.startNavigation:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,
-                  let destinationLat = args["destinationLat"] as? Double,
-                  let destinationLong = args["destinationLong"] as? Double
+                  let trip = args["trip"] as? [String: Any]
             else {
                 result(false)
                 return
@@ -517,11 +516,8 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             // Find the map template based on the provided element ID
             SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-
-                let destination = Waypoint(coordinates: GeoCoordinates(latitude: destinationLat,
-                                                                       longitude: destinationLong))
-
-                mapTemplate.startNavigation(destination: destination)
+                let cpTrip = FCPTrip(obj: trip).get
+                mapTemplate.startNavigation(trip: cpTrip)
                 return result(true)
             }
             result(false)
@@ -536,9 +532,51 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             // Find the map template based on the provided element ID
             SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-                mapTemplate.stopNavigation()
+                mapTemplate.fcpMapViewController?.stopNavigation()
                 return result(true)
             }
+            result(false)
+
+        case FCPChannelTypes.renderInitialMarkerOnMap:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String,
+                  let latitude = args["latitude"] as? Double,
+                  let longitude = args["longitude"] as? Double,
+                  let accuracy = args["accuracy"] as? Double
+            else {
+                result(false)
+                return
+            }
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+
+                mapTemplate.fcpMapViewController?.showInitialMarkerOnMap(coordinates: GeoCoordinates(latitude: latitude, longitude: longitude), accuracy: accuracy)
+
+                return result(true)
+            }
+
+            result(false)
+
+        case FCPChannelTypes.destinationAddressUpdatedOnMap:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String,
+                  let latitude = args["latitude"] as? Double,
+                  let longitude = args["longitude"] as? Double,
+                  let accuracy = args["accuracy"] as? Double
+            else {
+                result(false)
+                return
+            }
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+
+                mapTemplate.fcpMapViewController?.destinationAddressUpdatedOnMap(coordinates: GeoCoordinates(latitude: latitude, longitude: longitude), accuracy: accuracy)
+
+                return result(true)
+            }
+
             result(false)
         default:
             result(false)

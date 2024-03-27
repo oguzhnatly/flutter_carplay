@@ -31,7 +31,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
     SpeedLimitDelegate,
     RouteProgressDelegate,
     RouteDeviationDelegate,
-    ManeuverNotificationDelegate,
+    EventTextDelegate,
     TollStopWarningDelegate,
     ManeuverViewLaneAssistanceDelegate,
     JunctionViewLaneAssistanceDelegate,
@@ -63,7 +63,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
         visualNavigator.navigableLocationDelegate = self
         visualNavigator.routeDeviationDelegate = self
         visualNavigator.routeProgressDelegate = self
-        visualNavigator.maneuverNotificationDelegate = self
+        visualNavigator.eventTextDelegate = self
         visualNavigator.destinationReachedDelegate = self
         visualNavigator.milestoneStatusDelegate = self
         visualNavigator.speedWarningDelegate = self
@@ -324,11 +324,10 @@ class NavigationEventHandler: NavigableLocationDelegate,
         // sense to await around 3 events before deciding on possible actions.
     }
 
-    // Conform to ManeuverNotificationDelegate.
+    // Conform to EventTextDelegate.
     // Notifies on voice maneuver messages.
-    func onManeuverNotification(_: String) {
-        // TODO: - Add voice message
-//        voiceAssistant.speak(message: text)
+    func onEventTextUpdated(_ eventText: heresdk.EventText) {
+        voiceAssistant.speak(message: eventText.text)
     }
 
     // Conform to TollStopWarningDelegate.

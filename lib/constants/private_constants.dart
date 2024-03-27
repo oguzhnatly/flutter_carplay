@@ -137,4 +137,10 @@ enum FCPChannelTypes {
 
   /// Event for stopping a navigation in CarPlay.
   stopNavigation,
+
+  /// Event for rendering an initial marker on the map in CarPlay.
+  renderInitialMarkerOnMap,
+
+  /// Event for updating the destination address on the map in CarPlay.
+  destinationAddressUpdatedOnMap,
 }

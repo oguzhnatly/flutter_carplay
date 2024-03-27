@@ -155,13 +155,48 @@ extension FCPMapViewController {
 // MARK: - Map Helper functions
 
 extension FCPMapViewController {
-    // Step 1. Calculate route
-    func startNavigation(destination: Waypoint) {
-        mapController.setDestinationWaypoint(destination)
+    /// Adds a initial marker on the map.
+    /// - Parameters:
+    ///   - coordinates: The coordinates of the marker
+    ///   - accuracy: The accuracy of the marker
+    func showInitialMarkerOnMap(coordinates: GeoCoordinates, accuracy: Double) {
+        let metadata = heresdk.Metadata()
+        metadata.setString(key: "marker", value: "initial_marker")
+        metadata.setString(key: "polygon", value: "initial_marker")
+
+        let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/position.png")
+
+        let markerSize = 30 * mapView.pixelScale;
+        mapController.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
+        mapController.addMapPolygon(coordinate: coordinates, accuracy: accuracy, metadata: metadata)
+        
+        mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
+    }
+
+    /// Adds a destination marker on the map.
+    /// - Parameters:
+    ///   - coordinates: The coordinates of the marker
+    ///   - accuracy: The accuracy of the marker
+    func destinationAddressUpdatedOnMap(coordinates: GeoCoordinates, accuracy _: Double) {
+        let metadata = heresdk.Metadata()
+        metadata.setString(key: "marker", value: "destination_marker")
+
+        let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/map_marker_wp.png")
+        
+        let markerSize = 60 * mapView.pixelScale;
+        mapController.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
+    }
+
+    /// Starts the navigation
+    /// - Parameter destination: The destination waypoint
+    func startNavigation(trip: CPTrip) {
+        let wayPoint = Waypoint(coordinates: GeoCoordinates(latitude: trip.destination.placemark.coordinate.latitude, longitude: trip.destination.placemark.coordinate.longitude))
+        mapController.setDestinationWaypoint(wayPoint)
 
         mapController.addRouteSimulatedLocationButtonClicked()
     }
 
+    /// Stops the navigation
     func stopNavigation() {
         mapController.clearMapButtonClicked()
     }

@@ -44,6 +44,11 @@ class FCPMapTemplate: NSObject {
     /// Navigation session used to manage the upcomingManeuvers and  arrival estimation details
     var navSession: CPNavigationSession?
 
+    /// Get the `FCPMapViewController` associated with the map template.
+    var fcpMapViewController: FCPMapViewController? {
+        return viewController as? FCPMapViewController
+    }
+
     // MARK: Initializer
 
     /// Initializes a new instance of `FCPMapTemplate` with the specified configuration.
@@ -154,56 +159,6 @@ class FCPMapTemplate: NSObject {
     }
 }
 
-// MARK: - Extensions
-
-// Extension for UIViewController utility methods
-extension FCPMapTemplate {
-    /// Displays a banner message at the top of the screen.
-    func showBanner(message: String, color: Int) {
-        guard let viewController = viewController as? FCPMapViewController else {
-            return
-        }
-
-        viewController.showBanner(message: message, color: color)
-    }
-
-    /// Hides the banner message at the top of the screen.
-    func hideBanner() {
-        guard let viewController = viewController as? FCPMapViewController else {
-            return
-        }
-
-        viewController.hideBanner()
-    }
-
-    /// Displays a toast message on the screen for a specified duration.
-    func showToast(message: String, duration: TimeInterval = 2.0) {
-        guard let viewController = viewController as? FCPMapViewController else {
-            return
-        }
-
-        viewController.showToast(message: message, duration: duration)
-    }
-
-    /// Displays an overlay card on the screen.
-    func showOverlay(primaryTitle: String?, secondaryTitle: String?, subtitle: String?) {
-        guard let viewController = viewController as? FCPMapViewController else {
-            return
-        }
-
-        viewController.showOverlay(primaryTitle: primaryTitle, secondaryTitle: secondaryTitle, subtitle: subtitle)
-    }
-
-    /// Hides the overlay card on the screen.
-    func hideOverlay() {
-        guard let viewController = viewController as? FCPMapViewController else {
-            return
-        }
-
-        viewController.hideOverlay()
-    }
-}
-
 // MARK: - Trip
 
 extension FCPMapTemplate {
@@ -226,35 +181,24 @@ extension FCPMapTemplate {
         _super?.hideTripPreviews()
     }
 
-    /// Begin navigation.
-    func startNavigation(destination: Waypoint) {
-        guard let viewController = viewController as? FCPMapViewController else {
-            return
-        }
-        viewController.startNavigation(destination: destination)
-    }
-
-    /// Stop navigation.
-    func stopNavigation() {
-        guard let viewController = viewController as? FCPMapViewController else {
-            return
+    /// Starts the navigation
+    /// - Parameter trip: The trip to start navigation
+    func startNavigation(trip: CPTrip) {
+        if navSession != nil {
+            navSession?.cancelTrip()
         }
 
-        viewController.stopNavigation()
+        hideTripPreviews()
+        navSession = _super?.startNavigationSession(for: trip)
+        fcpMapViewController?.startNavigation(trip: trip)
     }
 }
 
 // MARK: - CPMapTemplateDelegate
 
 extension FCPMapTemplate: CPMapTemplateDelegate {
-    func mapTemplate(_ mapTemplate: CPMapTemplate, startedTrip trip: CPTrip, using _: CPRouteChoice) {
-        mapTemplate.hideTripPreviews()
-        navSession = mapTemplate.startNavigationSession(for: trip)
-        guard let viewController = viewController as? FCPMapViewController else {
-            return
-        }
-
-        viewController.startNavigation(destination: Waypoint(coordinates: GeoCoordinates(latitude: 0.0, longitude: 0.0)))
+    func mapTemplate(_: CPMapTemplate, startedTrip trip: CPTrip, using _: CPRouteChoice) {
+        startNavigation(trip: trip)
     }
 }
 
