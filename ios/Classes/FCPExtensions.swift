@@ -342,7 +342,7 @@ extension UIImage {
             )
         }
 
-        return UIImage(systemName: "questionmark") ?? UIImage()
+        return nil
     }
 }
 

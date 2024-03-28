@@ -1,5 +1,4 @@
 import Flutter
-import heresdk
 import os
 import UIKit
 
@@ -14,20 +13,8 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
         flutterEngine.run()
         GeneratedPluginRegistrant.register(with: flutterEngine)
         Logger.statistics.log("Flutter plugin ran from AppDelegate")
-        initializeHERESDK()
-        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-    }
 
-    private func initializeHERESDK() {
-        // Set your credentials for the HERE SDK.
-        let accessKeyID = "<#accessKeyID#>"
-        let accessKeySecret = "<#accessKeySecret#>"
-        let options = SDKOptions(accessKeyId: accessKeyID, accessKeySecret: accessKeySecret)
-        do {
-            try SDKNativeEngine.makeSharedInstance(options: options)
-        } catch let engineInstantiationError {
-            fatalError("Failed to initialize the HERE SDK. Cause: \(engineInstantiationError)")
-        }
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 }
 
