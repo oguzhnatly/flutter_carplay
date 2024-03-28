@@ -80,10 +80,8 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
         mapController = MapController(viewController: self, mapView: mapView!, messageTextView: UITextView())
 
-        // Configure the map.
-        let camera = mapView.camera
-        let distanceInMeters = MapMeasure(kind: .distance, value: 1000 * 10)
-        camera.lookAt(point: GeoCoordinates(latitude: 52.518043, longitude: 13.405991), zoom: distanceInMeters)
+        mapView.camera.principalPoint = Point2D(x: view.bounds.width/2.0, y: view.bounds.height/2.0)
+        
     }
 }
 
@@ -183,7 +181,7 @@ extension FCPMapViewController {
 
         let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/map_marker_wp.png")
         
-        let markerSize = 60 * mapView.pixelScale;
+        let markerSize = 49 * mapView.pixelScale;
         mapController.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
     }
 

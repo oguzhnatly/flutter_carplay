@@ -39,11 +39,18 @@ class FlutterCarplay {
   /// recognition transcript.
   static Function(String transcript)? _onSpeechRecognitionTranscriptChange;
 
-  /// A listener function that will be triggered on cancel of voice control.
+  /// A listener function that will be triggered when the voice control is cancelled.
   static Function()? _onCancelVoiceControl;
 
-  /// A listener function that will be triggered on pop of information template.
+  /// A listener function that will be triggered when an information template is popped.
   static Function()? _onInformationTemplatePopped;
+
+  /// A listener function that will be triggered when maneuver action text is requested.
+  static Function(
+    String action,
+    String roadName,
+    String nextRoadName,
+  )? _onManeuverActionTextRequested;
 
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
@@ -61,9 +68,7 @@ class FlutterCarplay {
             event['data']['status'],
           );
           _connectionStatus = connectionStatus.name;
-          if (_onCarplayConnectionChange != null) {
-            _onCarplayConnectionChange?.call(connectionStatus);
-          }
+          _onCarplayConnectionChange?.call(connectionStatus);
         case FCPChannelTypes.onSearchTextUpdated:
           _carPlayController.processFCPSearchTextUpdatedChannel(
             event['data']['elementId'],
@@ -116,6 +121,13 @@ class FlutterCarplay {
         case FCPChannelTypes.onSpeechCompleted:
           _carPlayController
               .processFCPSpeakerOnComplete(event['data']['elementId']);
+        case FCPChannelTypes.onManeuverActionTextRequested:
+          final data = event['data'];
+          _onManeuverActionTextRequested?.call(
+            data['action'],
+            data['roadName'],
+            data['nextRoadName'],
+          );
         default:
           break;
       }
@@ -358,6 +370,23 @@ class FlutterCarplay {
   /// on user pops information template.
   static void removeListenerOnInformationTemplatePopped() {
     _onInformationTemplatePopped = null;
+  }
+
+  /// Callback function will be fired when maneuver action text is requested.
+  static void addListenerOnManeuverActionTextRequested({
+    Function(
+      String action,
+      String roadName,
+      String nextRoadName,
+    )? onManeuverActionTextRequested,
+  }) {
+    _onManeuverActionTextRequested = onManeuverActionTextRequested;
+  }
+
+  /// Removes the callback function that has been set before in order to listen
+  /// on maneuver action text requests.
+  static void removeListenerOnManeuverActionTextRequested() {
+    _onManeuverActionTextRequested = null;
   }
 
   /// Adds the specified [CPSpeaker] utterance to the queue of the speech synthesizer in CarPlay.

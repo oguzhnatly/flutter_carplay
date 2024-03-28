@@ -532,10 +532,22 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             // Find the map template based on the provided element ID
             SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-                mapTemplate.fcpMapViewController?.stopNavigation()
+                mapTemplate.stopNavigation()
                 return result(true)
             }
             result(false)
+
+        case FCPChannelTypes.onManeuverActionTextRequestComplete:
+            guard let args = call.arguments as? [String: Any],
+                  let text = args["actionText"] as? String
+            else {
+                result(false)
+                return
+            }
+
+            maneuverActionHandler?(text)
+
+            result(true)
 
         case FCPChannelTypes.renderInitialMarkerOnMap:
             guard let args = call.arguments as? [String: Any],

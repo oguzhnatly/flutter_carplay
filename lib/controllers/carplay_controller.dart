@@ -123,6 +123,14 @@ class FlutterCarPlayController {
     );
   }
 
+  /// Sends back the action text for the next maneuver.
+  static void onManeuverActionTextRequestComplete(String actionText) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.onManeuverActionTextRequestComplete.name,
+      {'actionText': actionText},
+    );
+  }
+
   /// Renders the initial marker on the [CPMapTemplate]
   static void renderInitialMarkerOnMap(
     String elementId,

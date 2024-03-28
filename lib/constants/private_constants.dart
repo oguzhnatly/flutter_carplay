@@ -143,4 +143,10 @@ enum FCPChannelTypes {
 
   /// Event for updating the destination address on the map in CarPlay.
   destinationAddressUpdatedOnMap,
+
+  /// Event for requesting a maneuver action text in CarPlay.
+  onManeuverActionTextRequested,
+
+  /// Event triggered when the maneuver action text request is complete in CarPlay.
+  onManeuverActionTextRequestComplete,
 }

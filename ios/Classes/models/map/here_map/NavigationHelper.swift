@@ -33,9 +33,11 @@ class NavigationHelper: DynamicRoutingDelegate {
     private let routePrefetcher: RoutePrefetcher
     private let navigationEventHandler: NavigationEventHandler
     private let messageTextView: UITextView
+    private let mapView: MapView
 
     init(mapView: MapView, messageTextView: UITextView) {
         self.messageTextView = messageTextView
+        self.mapView = mapView
 
         do {
             // Without a route set, this starts tracking mode.
@@ -45,9 +47,9 @@ class NavigationHelper: DynamicRoutingDelegate {
         }
 
         // By default, enable auto-zoom during guidance.
-        visualNavigator.cameraBehavior = DynamicCameraBehavior()
-
-        visualNavigator.startRendering(mapView: mapView)
+//        visualNavigator.cameraBehavior = DynamicCameraBehavior()
+//
+//        visualNavigator.startRendering(mapView: mapView)
 
         // A class to receive real location events.
         herePositioningProvider = HEREPositioningProvider()
@@ -132,6 +134,11 @@ class NavigationHelper: DynamicRoutingDelegate {
     func startNavigation(route: Route,
                          isSimulated: Bool)
     {
+        // By default, enable auto-zoom during guidance.
+        visualNavigator.cameraBehavior = DynamicCameraBehavior()
+
+        visualNavigator.startRendering(mapView: mapView)
+        
         let startGeoCoordinates = route.geometry.vertices[0]
         prefetchMapData(currentGeoCoordinates: startGeoCoordinates)
 
@@ -169,6 +176,7 @@ class NavigationHelper: DynamicRoutingDelegate {
         routePrefetcher.stopPrefetchAroundRoute()
         visualNavigator.route = nil
         enableDevicePositioning()
+        visualNavigator.stopRendering()
         showMessage("Tracking device's location.")
     }
 

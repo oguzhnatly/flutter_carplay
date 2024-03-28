@@ -20,7 +20,7 @@ class CPTrip {
   CPTrip({
     required this.origin,
     required this.destination,
-    required this.routeChoices,
+    this.routeChoices = const [],
   });
 
   Map<String, dynamic> toJson() => {

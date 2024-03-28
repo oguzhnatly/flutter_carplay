@@ -17,6 +17,8 @@
  * License-Filename: LICENSE
  */
 
+var maneuverActionHandler: ((String) -> Void)?
+
 import AVFoundation
 import CarPlay
 import heresdk
@@ -90,6 +92,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
     func onRouteProgressUpdated(_ routeProgress: RouteProgress) {
         // [SectionProgress] is guaranteed to be non-empty.
         let distanceToDestination = routeProgress.sectionProgress.last!.remainingDistanceInMeters
+        let timeToDestination = routeProgress.sectionProgress.last!.remainingDuration
         print("Distance to destination in meters: \(distanceToDestination)")
         let trafficDelayAhead = routeProgress.sectionProgress.last!.trafficDelay
         print("Traffic delay ahead in seconds: \(trafficDelayAhead)")
@@ -109,31 +112,46 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
         let action = nextManeuver.action
         let roadName = getRoadName(maneuver: nextManeuver)
-        let logMessage = "'\(String(describing: action))' on \(roadName) in \(nextManeuverProgress.remainingDistanceInMeters) meters."
+//        let logMessage = "'\(String(describing: action))' on \(roadName) in \(nextManeuverProgress.remainingDistanceInMeters) meters."
 
+        let mapTemplate = SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate
         let navSession = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navSession
+
+        let estimates = CPTravelEstimates(distanceRemaining: Measurement(value: Double(distanceToDestination), unit: UnitLength.meters), timeRemaining: timeToDestination)
+
         if previousManeuverIndex != nextManeuverIndex {
             // Log only new maneuvers and ignore changes in distance.
-            showMessage("New maneuver: " + logMessage)
+//            showMessage("New maneuver: " + logMessage)
 
-            let cpManeuver = CPManeuver()
-            let estimates = CPTravelEstimates(distanceRemaining: Measurement(value: Double(nextManeuverProgress.remainingDistanceInMeters), unit: UnitLength.meters), timeRemaining: nextManeuver.duration)
+            
+
 //            cpManeuver.initialTravelEstimates = estimates
-            cpManeuver.instructionVariants = [roadName, logMessage]
+            maneuverActionHandler = {actionText in
+                let cpManeuver = CPManeuver()
+                cpManeuver.instructionVariants = [actionText]
 
-            navSession?.upcomingManeuvers = [cpManeuver]
-            if let trip = navSession?.trip {
-                // TODO: Handle the update template
-//                carPlayMapTemplate.updateEstimates(estimates, for: trip)
+                navSession?.upcomingManeuvers = [cpManeuver]
+                if let trip = navSession?.trip {
+                    // TODO: Handle the update template
+                    mapTemplate?.updateEstimates(estimates, for: trip)
+                }
             }
+//            DispatchQueue.main.async {
+                FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
+                                                 data: [
+                                                     "action": String(describing: action),
+                                                     "roadName": roadName ?? "",
+                                                     "nextRoadName": nextManeuver.nextRoadTexts.names.defaultValue() ?? "",
+                                                 ])
+//            }
 
         } else {
             // A maneuver update contains a different distance to reach the next maneuver.
-            showMessage("Maneuver update: " + logMessage)
-            let estimates = CPTravelEstimates(distanceRemaining: Measurement(value: Double(nextManeuverProgress.remainingDistanceInMeters), unit: UnitLength.meters), timeRemaining: nextManeuver.duration)
+//            showMessage("Maneuver update: " + logMessage)
+
             if let trip = navSession?.trip {
                 // TODO: Handle the update template
-//                carPlayMapTemplate.updateEstimates(estimates, for: trip)
+                mapTemplate?.updateEstimates(estimates, for: trip)
             }
         }
 
@@ -149,7 +167,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
-    func getRoadName(maneuver: Maneuver) -> String {
+    func getRoadName(maneuver: Maneuver) -> String? {
         let currentRoadTexts = maneuver.roadTexts
         let nextRoadTexts = maneuver.nextRoadTexts
 
@@ -172,7 +190,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
 
         // Nil happens only in rare cases, when also the fallback above is nil.
-        return roadName ?? "unnamed road"
+        return roadName
     }
 
     // Conform to DestinationReachedDelegate.
