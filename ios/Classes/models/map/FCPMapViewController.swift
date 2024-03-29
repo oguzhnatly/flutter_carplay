@@ -53,7 +53,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     }
 
     /// The app associated with the map view controller.
-    private var mapController: MapController!
+    private var mapController: MapController?
 
     /// The map marker associated with the map view controller.
     var mapMarker: MapMarker?
@@ -68,6 +68,20 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         // Load the map scene using a map scheme to render the map with.
         mapView.mapScene.loadScene(mapScheme: MapScheme.normalDay, completion: onLoadScene)
     }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        let scale = FlutterCarPlaySceneDelegate.carWindow?.screen.scale ?? 1.0
+        let topSafeArea = view.safeAreaInsets.top * scale
+        let leftSafeArea = view.safeAreaInsets.left * scale
+        let rightSafeArea = view.safeAreaInsets.right * scale
+        let width = view.bounds.width * scale
+        let height = view.bounds.height * scale
+        let bannerHeight = bannerView.bounds.height
+        
+        mapView.camera.principalPoint = Point2D(x: leftSafeArea + (width - leftSafeArea - rightSafeArea)/2.0, y: topSafeArea + bannerHeight + (height - topSafeArea - bannerHeight)/2.0)
+    }
 
     // MARK: - configureMapView
 
@@ -80,7 +94,6 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
         mapController = MapController(viewController: self, mapView: mapView!, messageTextView: UITextView())
 
-        mapView.camera.principalPoint = Point2D(x: view.bounds.width/2.0, y: view.bounds.height/2.0)
         
     }
 }
@@ -165,8 +178,8 @@ extension FCPMapViewController {
         let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/position.png")
 
         let markerSize = 30 * mapView.pixelScale;
-        mapController.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
-        mapController.addMapPolygon(coordinate: coordinates, accuracy: accuracy, metadata: metadata)
+        mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
+        mapController?.addMapPolygon(coordinate: coordinates, accuracy: accuracy, metadata: metadata)
         
         mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
     }
@@ -182,20 +195,32 @@ extension FCPMapViewController {
         let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/map_marker_wp.png")
         
         let markerSize = 49 * mapView.pixelScale;
-        mapController.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
+        mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
+        
+//        let safearea = FlutterCarPlaySceneDelegate.carWindow?.safeAreaInsets ?? UIEdgeInsets.zero
+//        
+//        print("safeArea: \(String(describing: FlutterCarPlaySceneDelegate.carWindow?.safeAreaInsets))")
+//        print("safeArea from view: \(String(describing: view.safeAreaInsets))")
+        let width = view.bounds.width
+        let height = view.bounds.height
+        let bannerHeight = bannerView.bounds.height
+//        
+//        mapView.camera.principalPoint = Point2D(x: width/2.0, y: height/2.0)
+        
+        mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
     }
 
     /// Starts the navigation
     /// - Parameter destination: The destination waypoint
     func startNavigation(trip: CPTrip) {
         let wayPoint = Waypoint(coordinates: GeoCoordinates(latitude: trip.destination.placemark.coordinate.latitude, longitude: trip.destination.placemark.coordinate.longitude))
-        mapController.setDestinationWaypoint(wayPoint)
+        mapController?.setDestinationWaypoint(wayPoint)
 
-        mapController.addRouteSimulatedLocationButtonClicked()
+        mapController?.addRouteSimulatedLocationButtonClicked()
     }
 
     /// Stops the navigation
     func stopNavigation() {
-        mapController.clearMapButtonClicked()
+        mapController?.clearMapButtonClicked()
     }
 }

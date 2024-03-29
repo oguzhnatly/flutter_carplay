@@ -132,7 +132,6 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
                 navSession?.upcomingManeuvers = [cpManeuver]
                 if let trip = navSession?.trip {
-                    // TODO: Handle the update template
                     mapTemplate?.updateEstimates(estimates, for: trip)
                 }
             }
