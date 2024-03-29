@@ -114,7 +114,6 @@ class MapController: LongPressDelegate {
         } else {
             guard let imageData = markerImage.pngData() else { return }
 
-
             let mapImage = MapImage(imageData: imageData,
                                     imageFormat: ImageFormat.png, width: UInt32(markerSize.width), height: UInt32(markerSize.height))
             let mapMarker = MapMarker(at: coordinates,
@@ -273,7 +272,6 @@ class MapController: LongPressDelegate {
         clearWaypointMapMarkers()
         clearMapPolygons()
         clearRoute()
-
 
         navigationHelper.stopNavigation()
     }

@@ -149,4 +149,16 @@ enum FCPChannelTypes {
 
   /// Event triggered when the maneuver action text request is complete in CarPlay.
   onManeuverActionTextRequestComplete,
+
+  /// Event for toggling a voice instruction in CarPlay.
+  toggleVoiceInstructions,
+
+  /// Event for toggling satellite view in CarPlay.
+  toggleSatelliteView,
+
+  /// Event for toggling traffic view in CarPlay.
+  toggleTrafficView,
+
+  /// Event for recentering the map view in CarPlay.
+  recenterMapView,
 }

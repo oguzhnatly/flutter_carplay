@@ -51,6 +51,8 @@ class VoiceAssistant {
         return false
     }
 
+    /// Speaks the given message.
+    /// - Parameter message:
     func speak(message: String) {
         print("Voice message: \(message)")
 
@@ -66,5 +68,12 @@ class VoiceAssistant {
         }
 
         avSpeechSynthesizer.speak(voiceMessage)
+    }
+
+    /// Stops the speech immediately.
+    func stop() {
+        if avSpeechSynthesizer.isSpeaking {
+            avSpeechSynthesizer.stopSpeaking(at: .immediate)
+        }
     }
 }

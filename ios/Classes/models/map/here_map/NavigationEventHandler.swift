@@ -17,8 +17,6 @@
  * License-Filename: LICENSE
  */
 
-var maneuverActionHandler: ((String) -> Void)?
-
 import AVFoundation
 import CarPlay
 import heresdk
@@ -51,6 +49,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
     private var previousManeuverIndex: Int32 = -1
     private let messageTextView: UITextView
 
+    private var isVoiceInstructionsMuted = false
+
     init(_ visualNavigator: VisualNavigator,
          _ dynamicRoutingEngine: DynamicRoutingEngine,
          _ messageTextView: UITextView)
@@ -61,6 +61,13 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
         // A helper class for TTS.
         voiceAssistant = VoiceAssistant()
+
+        toggleVoiceInstructionsHandler = { [weak self] isMuted in
+            guard let self = self else { return }
+
+            self.isVoiceInstructionsMuted = isMuted
+            if isMuted { voiceAssistant.stop() }
+        }
 
         visualNavigator.navigableLocationDelegate = self
         visualNavigator.routeDeviationDelegate = self
@@ -123,10 +130,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
             // Log only new maneuvers and ignore changes in distance.
 //            showMessage("New maneuver: " + logMessage)
 
-            
-
 //            cpManeuver.initialTravelEstimates = estimates
-            maneuverActionHandler = {actionText in
+            maneuverActionTextHandler = { actionText in
                 let cpManeuver = CPManeuver()
                 cpManeuver.instructionVariants = [actionText]
 
@@ -136,12 +141,12 @@ class NavigationEventHandler: NavigableLocationDelegate,
                 }
             }
 //            DispatchQueue.main.async {
-                FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
-                                                 data: [
-                                                     "action": String(describing: action),
-                                                     "roadName": roadName ?? "",
-                                                     "nextRoadName": nextManeuver.nextRoadTexts.names.defaultValue() ?? "",
-                                                 ])
+            FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
+                                             data: [
+                                                 "action": String(describing: action),
+                                                 "roadName": roadName ?? "",
+                                                 "nextRoadName": nextManeuver.nextRoadTexts.names.defaultValue() ?? "",
+                                             ])
 //            }
 
         } else {
@@ -149,7 +154,6 @@ class NavigationEventHandler: NavigableLocationDelegate,
 //            showMessage("Maneuver update: " + logMessage)
 
             if let trip = navSession?.trip {
-                // TODO: Handle the update template
                 mapTemplate?.updateEstimates(estimates, for: trip)
             }
         }
@@ -344,7 +348,14 @@ class NavigationEventHandler: NavigableLocationDelegate,
     // Conform to EventTextDelegate.
     // Notifies on voice maneuver messages.
     func onEventTextUpdated(_ eventText: heresdk.EventText) {
-        voiceAssistant.speak(message: eventText.text)
+        if !isVoiceInstructionsMuted {
+            voiceAssistant.speak(message: eventText.text)
+        }
+    }
+
+    /// Stops the voice assistant.
+    func stopVoiceAssistant() {
+        voiceAssistant.stop()
     }
 
     // Conform to TollStopWarningDelegate.

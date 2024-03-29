@@ -545,7 +545,55 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-            maneuverActionHandler?(text)
+            maneuverActionTextHandler?(text)
+
+            result(true)
+
+        case FCPChannelTypes.toggleVoiceInstructions:
+            guard let args = call.arguments as? [String: Any],
+                  let isMuted = args["isMuted"] as? Bool
+            else {
+                result(false)
+                return
+            }
+
+            toggleVoiceInstructionsHandler?(isMuted)
+
+            result(true)
+
+        case FCPChannelTypes.toggleSatelliteView:
+            guard let args = call.arguments as? [String: Any],
+                  let showSatelliteView = args["showSatelliteView"] as? Bool
+            else {
+                result(false)
+                return
+            }
+
+            toggleSatelliteViewHandler?(showSatelliteView)
+
+            result(true)
+
+        case FCPChannelTypes.toggleTrafficView:
+            guard let args = call.arguments as? [String: Any],
+                  let showTrafficView = args["showTrafficView"] as? Bool
+            else {
+                result(false)
+                return
+            }
+
+            toggleTrafficViewHandler?(showTrafficView)
+
+            result(true)
+
+        case FCPChannelTypes.recenterMapView:
+            guard let args = call.arguments as? [String: Any]
+            else {
+                result(false)
+                return
+            }
+
+            // TODO:
+            recenterMapViewHandler?()
 
             result(true)
 

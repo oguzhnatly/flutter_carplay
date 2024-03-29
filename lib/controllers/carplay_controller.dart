@@ -131,6 +131,37 @@ class FlutterCarPlayController {
     );
   }
 
+  /// Mutes or un-mutes voice instructions.
+  static void toggleVoiceInstructions({bool isMuted = false}) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.toggleVoiceInstructions.name,
+      {'isMuted': isMuted},
+    );
+  }
+
+  /// Toggles the satellite view on the [CPMapTemplate].
+  static void toggleSatelliteView({bool showSatelliteView = false}) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.toggleSatelliteView.name,
+      {'showSatelliteView': showSatelliteView},
+    );
+  }
+
+  /// Toggles the traffic view on the [CPMapTemplate].
+  static void toggleTrafficView({bool showTrafficView = false}) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.toggleTrafficView.name,
+      {'showTrafficView': showTrafficView},
+    );
+  }
+
+  /// Re-centers the map view on the [CPMapTemplate].
+  static void recenterMapView() {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.recenterMapView.name,
+    );
+  }
+
   /// Renders the initial marker on the [CPMapTemplate]
   static void renderInitialMarkerOnMap(
     String elementId,

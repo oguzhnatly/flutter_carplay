@@ -138,7 +138,7 @@ class NavigationHelper: DynamicRoutingDelegate {
         visualNavigator.cameraBehavior = DynamicCameraBehavior()
 
         visualNavigator.startRendering(mapView: mapView)
-        
+
         let startGeoCoordinates = route.geometry.vertices[0]
         prefetchMapData(currentGeoCoordinates: startGeoCoordinates)
 
@@ -177,6 +177,7 @@ class NavigationHelper: DynamicRoutingDelegate {
         visualNavigator.route = nil
         enableDevicePositioning()
         visualNavigator.stopRendering()
+        navigationEventHandler.stopVoiceAssistant()
         showMessage("Tracking device's location.")
     }
 

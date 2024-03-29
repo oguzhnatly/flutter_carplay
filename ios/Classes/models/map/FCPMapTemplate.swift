@@ -168,8 +168,8 @@ extension FCPMapTemplate {
         _super?.showTripPreviews(cpTrips, selectedTrip: selectedTrip?.get,
                                  textConfiguration: textConfiguration?.get)
 
-        let estimates = CPTravelEstimates(distanceRemaining: NSMeasurement(doubleValue: 4500, unit: UnitLength.meters) as Measurement<UnitLength>,
-                                          timeRemaining: 360)
+//        let estimates = CPTravelEstimates(distanceRemaining: NSMeasurement(doubleValue: 4500, unit: UnitLength.meters) as Measurement<UnitLength>,
+//                                          timeRemaining: 360)
 
 //        if let cpTrip = cpTrips.first {
 //            _super?.updateEstimates(estimates, for: cpTrip)
@@ -185,7 +185,8 @@ extension FCPMapTemplate {
     /// - Parameter trip: The trip to start navigation
     func startNavigation(trip: CPTrip) {
         if navSession != nil {
-            navSession?.cancelTrip()
+            navSession?.finishTrip()
+            navSession = nil
         }
 
         hideTripPreviews()

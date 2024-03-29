@@ -67,20 +67,40 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
         // Load the map scene using a map scheme to render the map with.
         mapView.mapScene.loadScene(mapScheme: MapScheme.normalDay, completion: onLoadScene)
+
+        toggleSatelliteViewHandler = { [weak self] showSatelliteView in
+            guard let self = self else { return }
+            self.mapView.mapScene.loadScene(mapScheme: showSatelliteView ? .satellite : .normalDay, completion: onLoadScene)
+        }
+
+        toggleTrafficViewHandler = { [weak self] showTrafficView in
+            guard let self = self else { return }
+
+            if showTrafficView {
+                self.mapView.mapScene.enableFeatures([
+                    MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow,
+                    MapFeatures.trafficIncidents: MapFeatureModes.trafficIncidentsAll,
+                ])
+            } else {
+                self.mapView.mapScene.disableFeatures(
+                    [MapFeatures.trafficFlow, MapFeatures.trafficIncidents]
+                )
+            }
+        }
     }
-    
+
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
-        
+
         let scale = FlutterCarPlaySceneDelegate.carWindow?.screen.scale ?? 1.0
         let topSafeArea = view.safeAreaInsets.top * scale
         let leftSafeArea = view.safeAreaInsets.left * scale
         let rightSafeArea = view.safeAreaInsets.right * scale
         let width = view.bounds.width * scale
         let height = view.bounds.height * scale
-        let bannerHeight = bannerView.bounds.height
-        
-        mapView.camera.principalPoint = Point2D(x: leftSafeArea + (width - leftSafeArea - rightSafeArea)/2.0, y: topSafeArea + bannerHeight + (height - topSafeArea - bannerHeight)/2.0)
+        let bannerHeight = bannerView.isHidden ? 0.0 : bannerView.bounds.height
+
+        mapView.camera.principalPoint = Point2D(x: leftSafeArea + (width - leftSafeArea - rightSafeArea) / 2.0, y: topSafeArea + bannerHeight + (height - topSafeArea - bannerHeight) / 2.0)
     }
 
     // MARK: - configureMapView
@@ -92,9 +112,9 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             return
         }
 
-        mapController = MapController(viewController: self, mapView: mapView!, messageTextView: UITextView())
-
-        
+        if mapController == nil {
+            mapController = MapController(viewController: self, mapView: mapView!, messageTextView: UITextView())
+        }
     }
 }
 
@@ -139,8 +159,7 @@ extension FCPMapViewController {
 
     /// Displays an overlay view on the screen.
     func showOverlay(primaryTitle: String?, secondaryTitle: String?, subtitle: String?) {
-        return
-            overlayViewMaxWidth.constant = view.bounds.size.width * 0.65
+        overlayViewMaxWidth.constant = view.bounds.size.width * 0.65
 
         if let primaryTitle = primaryTitle {
             overlayView.setPrimaryTitle(primaryTitle)
@@ -177,10 +196,10 @@ extension FCPMapViewController {
 
         let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/position.png")
 
-        let markerSize = 30 * mapView.pixelScale;
+        let markerSize = 30 * mapView.pixelScale
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
         mapController?.addMapPolygon(coordinate: coordinates, accuracy: accuracy, metadata: metadata)
-        
+
         mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
     }
 
@@ -193,20 +212,10 @@ extension FCPMapViewController {
         metadata.setString(key: "marker", value: "destination_marker")
 
         let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/map_marker_wp.png")
-        
-        let markerSize = 49 * mapView.pixelScale;
+
+        let markerSize = 49 * mapView.pixelScale
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
-        
-//        let safearea = FlutterCarPlaySceneDelegate.carWindow?.safeAreaInsets ?? UIEdgeInsets.zero
-//        
-//        print("safeArea: \(String(describing: FlutterCarPlaySceneDelegate.carWindow?.safeAreaInsets))")
-//        print("safeArea from view: \(String(describing: view.safeAreaInsets))")
-        let width = view.bounds.width
-        let height = view.bounds.height
-        let bannerHeight = bannerView.bounds.height
-//        
-//        mapView.camera.principalPoint = Point2D(x: width/2.0, y: height/2.0)
-        
+
         mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
     }
 
