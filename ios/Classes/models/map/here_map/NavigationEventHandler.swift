@@ -94,71 +94,125 @@ class NavigationEventHandler: NavigableLocationDelegate,
         setupSchoolZoneWarnings()
     }
 
-    // Conform to RouteProgressDelegate.
-    // Notifies on the progress along the route including maneuver instructions.
+    /// Conform to RouteProgressDelegate.
+    /// Notifies on the progress along the route including maneuver instructions.
     func onRouteProgressUpdated(_ routeProgress: RouteProgress) {
         // [SectionProgress] is guaranteed to be non-empty.
-        let distanceToDestination = routeProgress.sectionProgress.last!.remainingDistanceInMeters
-        let timeToDestination = routeProgress.sectionProgress.last!.remainingDuration
+        let distanceToDestination = routeProgress.sectionProgress.last?.remainingDistanceInMeters ?? Int32(0)
         print("Distance to destination in meters: \(distanceToDestination)")
-        let trafficDelayAhead = routeProgress.sectionProgress.last!.trafficDelay
+
+        let timeToDestination = routeProgress.sectionProgress.last?.remainingDuration ?? TimeInterval()
+        print("Duration to destination: \(timeToDestination)")
+
+        let trafficDelayAhead = routeProgress.sectionProgress.last?.trafficDelay ?? TimeInterval()
         print("Traffic delay ahead in seconds: \(trafficDelayAhead)")
 
         // Contains the progress for the next maneuver ahead and the next-next maneuvers, if any.
         let nextManeuverList = routeProgress.maneuverProgress
-        guard let nextManeuverProgress = nextManeuverList.first else {
-            print("No next maneuver available.")
+        guard let currentManeuverProgress = nextManeuverList.first else {
+            print("No current maneuver available.")
             return
         }
 
-        let nextManeuverIndex = nextManeuverProgress.maneuverIndex
-        guard let nextManeuver = visualNavigator.getManeuver(index: nextManeuverIndex) else {
+        let currentManeuverIndex = currentManeuverProgress.maneuverIndex
+        guard let currentManeuver = visualNavigator.getManeuver(index: currentManeuverIndex) else {
             // Should never happen as we retrieved the next maneuver progress above.
             return
         }
 
-        let action = nextManeuver.action
-        let roadName = getRoadName(maneuver: nextManeuver)
-//        let logMessage = "'\(String(describing: action))' on \(roadName) in \(nextManeuverProgress.remainingDistanceInMeters) meters."
+        let action = String(describing: currentManeuver.action)
+        let roadName = getRoadName(maneuver: currentManeuver) ?? ""
+        let nextRoadName = currentManeuver.nextRoadTexts.names.defaultValue() ?? ""
 
         let mapTemplate = SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate
         let navSession = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navSession
 
-        let estimates = CPTravelEstimates(distanceRemaining: Measurement(value: Double(distanceToDestination), unit: UnitLength.meters), timeRemaining: timeToDestination)
+        let estimates = CPTravelEstimates(distanceRemaining: getMeasurement(distanceInMeters: currentManeuverProgress.remainingDistanceInMeters), timeRemaining: currentManeuverProgress.remainingDuration)
 
-        if previousManeuverIndex != nextManeuverIndex {
+        let destinationEstimates = CPTravelEstimates(distanceRemaining: getMeasurement(distanceInMeters: distanceToDestination), timeRemaining: timeToDestination)
+
+        // Check if the current maneuver has changed
+        if previousManeuverIndex != currentManeuverIndex {
             // Log only new maneuvers and ignore changes in distance.
-//            showMessage("New maneuver: " + logMessage)
 
-//            cpManeuver.initialTravelEstimates = estimates
-            maneuverActionTextHandler = { actionText in
+            maneuverActionTextHandler = { [weak self] actionText in
+                guard self != nil else { return }
                 let cpManeuver = CPManeuver()
                 cpManeuver.instructionVariants = [actionText]
+                cpManeuver.initialTravelEstimates = estimates
+
+                let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/dark/\(action).png",
+                                                       darkImage: "assets/icons/car_play/maneuvers/light/\(action).png")
+                cpManeuver.symbolImage = symbolImage
 
                 navSession?.upcomingManeuvers = [cpManeuver]
+
                 if let trip = navSession?.trip {
-                    mapTemplate?.updateEstimates(estimates, for: trip)
+                    mapTemplate?.updateEstimates(destinationEstimates, for: trip)
                 }
             }
-//            DispatchQueue.main.async {
+
             FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
                                              data: [
-                                                 "action": String(describing: action),
-                                                 "roadName": roadName ?? "",
-                                                 "nextRoadName": nextManeuver.nextRoadTexts.names.defaultValue() ?? "",
+                                                 "action": action,
+                                                 "roadName": roadName,
+                                                 "nextRoadName": nextRoadName,
                                              ])
-//            }
 
         } else {
             // A maneuver update contains a different distance to reach the next maneuver.
-//            showMessage("Maneuver update: " + logMessage)
+
+            if let cpManeuver = navSession?.upcomingManeuvers.first as? CPManeuver {
+                navSession?.updateEstimates(estimates, for: cpManeuver)
+            }
 
             if let trip = navSession?.trip {
-                mapTemplate?.updateEstimates(estimates, for: trip)
+                mapTemplate?.updateEstimates(destinationEstimates, for: trip)
             }
         }
 
-        previousManeuverIndex = nextManeuverIndex
+        // Check if the next maneuver is available and the distance is less than 500m.
+        if nextManeuverList.count > 1, currentManeuverProgress.remainingDistanceInMeters < Int32(500) {
+            let nextManeuverProgress = nextManeuverList[1]
+
+            let nextManeuverIndex = nextManeuverProgress.maneuverIndex
+            guard let nextManeuver = visualNavigator.getManeuver(index: nextManeuverIndex) else {
+                // Should never happen as we retrieved the next maneuver progress above.
+                return
+            }
+
+            let action = String(describing: nextManeuver.action)
+            let roadName = getRoadName(maneuver: nextManeuver) ?? ""
+            let nextRoadName = nextManeuver.nextRoadTexts.names.defaultValue() ?? ""
+
+            maneuverActionTextHandler = { [weak self] actionText in
+                guard self != nil else { return }
+
+                let cpManeuver = CPManeuver()
+                cpManeuver.instructionVariants = [actionText]
+
+                let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/dark/\(action).png",
+                                                       darkImage: "assets/icons/car_play/maneuvers/light/\(action).png")
+                cpManeuver.symbolImage = symbolImage
+
+                if var upcomingManeuvers = navSession?.upcomingManeuvers,
+                   upcomingManeuvers.count < 2
+                {
+                    upcomingManeuvers.append(cpManeuver)
+                    navSession?.upcomingManeuvers = upcomingManeuvers
+                }
+            }
+
+            FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
+                                             data: [
+                                                 "action": action,
+                                                 "roadName": roadName,
+                                                 "nextRoadName": nextRoadName,
+                                             ])
+        }
+
+        // Update the previous maneuver index.
+        previousManeuverIndex = currentManeuverIndex
 
         if let lastMapMatchedLocation = lastMapMatchedLocation {
             // Update the route based on the current location of the driver.
@@ -170,6 +224,9 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
+    /// Returns the road name for the specified maneuver.
+    /// - Parameter maneuver: The maneuver to get the road name for.
+    /// - Returns: The road name for the specified maneuver.
     func getRoadName(maneuver: Maneuver) -> String? {
         let currentRoadTexts = maneuver.roadTexts
         let nextRoadTexts = maneuver.nextRoadTexts
@@ -196,8 +253,19 @@ class NavigationEventHandler: NavigableLocationDelegate,
         return roadName
     }
 
-    // Conform to DestinationReachedDelegate.
-    // Notifies when the destination of the route is reached.
+    /// Get measurement from distance in meters.
+    /// - Parameter distanceInMeters: The distance in meters.
+    /// - Returns: The measurement in the appropriate unit.
+    func getMeasurement(distanceInMeters: Int32) -> Measurement<UnitLength> {
+        let measurement = Measurement(value: Double(distanceInMeters), unit: UnitLength.meters)
+        if distanceInMeters > Int32(1000) {
+            return measurement.converted(to: .kilometers)
+        }
+        return measurement
+    }
+
+    /// Conform to DestinationReachedDelegate.
+    /// Notifies when the destination of the route is reached.
     func onDestinationReached() {
         showMessage("Destination reached.")
         // Guidance has stopped. Now consider to, for example,
@@ -206,8 +274,10 @@ class NavigationEventHandler: NavigableLocationDelegate,
         // If the DynamicRoutingEngine was started before, consider to stop it now.
     }
 
-    // Conform to MilestoneStatusDelegate.
-    // Notifies when a waypoint on the route is reached or missed.
+    /// Conform to MilestoneStatusDelegate.
+    /// Notifies when a waypoint on the route is reached or missed.
+    /// - Parameter milestone: The current milestone.
+    /// - Parameter status: The current milestone status.
     func onMilestoneStatusUpdated(milestone: Milestone, status: MilestoneStatus) {
         if milestone.waypointIndex != nil && status == MilestoneStatus.reached {
             print("A user-defined waypoint was reached, index of waypoint: \(String(describing: milestone.waypointIndex))")
@@ -224,8 +294,9 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
-    // Conform to SpeedWarningDelegate.
-    // Notifies when the current speed limit is exceeded.
+    /// Conform to SpeedWarningDelegate.
+    /// Notifies when the current speed limit is exceeded.
+    /// - Parameter status: The current speed limit status.
     func onSpeedWarningStatusChanged(_ status: SpeedWarningStatus) {
         if status == SpeedWarningStatus.speedLimitExceeded {
             // Driver is faster than current speed limit (plus an optional offset).
@@ -239,8 +310,9 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
-    // Conform to SpeedLimitDelegate.
-    // Notifies on the current speed limit valid on the current road.
+    /// Conform to SpeedLimitDelegate.
+    /// Notifies on the current speed limit valid on the current road.
+    /// - Parameter speedLimit: The current speed limit valid on the current road.
     func onSpeedLimitUpdated(_ speedLimit: SpeedLimit) {
         let speedLimit = getCurrentSpeedLimit(speedLimit)
 
@@ -253,6 +325,9 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
+    /// Conform to SpeedLimitDelegate.
+    /// - Parameter speedLimit: The current speed limit valid on the current road.
+    /// - Returns: The current speed limit in meters per second.
     private func getCurrentSpeedLimit(_ speedLimit: SpeedLimit) -> Double? {
         // Note that all values can be nil if no data is available.
 
@@ -286,6 +361,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
     // Conform to NavigableLocationDelegate.
     // Notifies on the current map-matched location and other useful information while driving or walking.
+    // - Parameter navigableLocation: The current map-matched location.
     func onNavigableLocationUpdated(_ navigableLocation: NavigableLocation) {
         guard navigableLocation.mapMatchedLocation != nil else {
             print("The currentNavigableLocation could not be map-matched. Are you off-road?")
@@ -301,6 +377,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
     // Conform to RouteDeviationDelegate.
     // Notifies on a possible deviation from the route.
+    // - Parameter routeDeviation: The possible deviation from the route.
     func onRouteDeviation(_ routeDeviation: RouteDeviation) {
         guard let route = visualNavigator.route else {
             // May happen in rare cases when route was set to nil inbetween.
@@ -358,9 +435,15 @@ class NavigationEventHandler: NavigableLocationDelegate,
         voiceAssistant.stop()
     }
 
+    /// Reset the previous maneuver index.
+    func resetPreviousManeuverIndex() {
+        previousManeuverIndex = Int32(-1)
+    }
+
     // Conform to TollStopWarningDelegate.
     // Notifies on upcoming toll stops. Uses the same notification
     // thresholds as other warners and provides events with or without a route to follow.
+    // - Parameter tollStop: The upcoming toll stop.
     func onTollStopWarning(_ tollStop: TollStop) {
         let lanes = tollStop.lanes
 
@@ -386,6 +469,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
     // Conform to the ManeuverViewLaneAssistanceDelegate.
     // Notifies which lane(s) lead to the next (next) maneuvers.
+    // - Parameter laneAssistance: The lane(s) that lead to the next maneuver.
     func onLaneAssistanceUpdated(_ laneAssistance: ManeuverViewLaneAssistance) {
         // This lane list is guaranteed to be non-empty.
         let lanes = laneAssistance.lanesForNextManeuver
@@ -400,7 +484,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
     }
 
     // Conform to the JunctionViewLaneAssistanceDelegate.
-    // Notfies which lane(s) allow to follow the route.
+    // Notifies which lane(s) allow to follow the route.
     func onLaneAssistanceUpdated(_ laneAssistance: JunctionViewLaneAssistance) {
         let lanes = laneAssistance.lanesForNextJunction
         if lanes.isEmpty {

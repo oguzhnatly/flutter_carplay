@@ -178,6 +178,7 @@ class NavigationHelper: DynamicRoutingDelegate {
         enableDevicePositioning()
         visualNavigator.stopRendering()
         navigationEventHandler.stopVoiceAssistant()
+        navigationEventHandler.resetPreviousManeuverIndex()
         showMessage("Tracking device's location.")
     }
 
