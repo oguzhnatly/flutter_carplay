@@ -141,8 +141,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
                 cpManeuver.instructionVariants = [actionText]
                 cpManeuver.initialTravelEstimates = estimates
 
-                let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/dark/\(action).png",
-                                                       darkImage: "assets/icons/car_play/maneuvers/light/\(action).png")
+                let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/light/\(action).png",
+                                                       darkImage: "assets/icons/car_play/maneuvers/dark/\(action).png")
                 cpManeuver.symbolImage = symbolImage
 
                 navSession?.upcomingManeuvers = [cpManeuver]
@@ -188,11 +188,14 @@ class NavigationEventHandler: NavigableLocationDelegate,
             maneuverActionTextHandler = { [weak self] actionText in
                 guard self != nil else { return }
 
-                let cpManeuver = CPManeuver()
-                cpManeuver.instructionVariants = [actionText]
+                let maneuverTextArr = nextManeuver.text.components(separatedBy: " ")
+                let formattedManeuverText = maneuverTextArr.count > 3 ? Array(maneuverTextArr.prefix(3)).joined(separator: " ").appending("...") : nextManeuver.text
 
-                let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/dark/\(action).png",
-                                                       darkImage: "assets/icons/car_play/maneuvers/light/\(action).png")
+                let cpManeuver = CPManeuver()
+                cpManeuver.instructionVariants = [actionText, nextManeuver.text, formattedManeuverText]
+
+                let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/light/\(action).png",
+                                                       darkImage: "assets/icons/car_play/maneuvers/dark/\(action).png")
                 cpManeuver.symbolImage = symbolImage
 
                 if var upcomingManeuvers = navSession?.upcomingManeuvers,

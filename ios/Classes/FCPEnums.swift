@@ -180,6 +180,12 @@ enum FCPChannelTypes {
 
     /// Event for recentering the map view in CarPlay.
     static let recenterMapView = "recenterMapView"
+
+    /// Event for starting navigation from CarPlay.
+    static let onNavigationStartedFromCarPlay = "onNavigationStartedFromCarPlay"
+
+    /// Event for failed navigation from CarPlay.
+    static let onNavigationFailedFromCarPlay = "onNavigationFailedFromCarPlay"
 }
 
 /// Enum defining different types of alert actions in CarPlay.

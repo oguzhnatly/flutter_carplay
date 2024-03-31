@@ -167,13 +167,6 @@ extension FCPMapTemplate {
         let cpTrips = trips.map { $0.get }
         _super?.showTripPreviews(cpTrips, selectedTrip: selectedTrip?.get,
                                  textConfiguration: textConfiguration?.get)
-
-//        let estimates = CPTravelEstimates(distanceRemaining: NSMeasurement(doubleValue: 4500, unit: UnitLength.meters) as Measurement<UnitLength>,
-//                                          timeRemaining: 360)
-
-//        if let cpTrip = cpTrips.first {
-//            _super?.updateEstimates(estimates, for: cpTrip)
-//        }
     }
 
     /// Hide trip previews.
@@ -207,7 +200,12 @@ extension FCPMapTemplate {
 
 extension FCPMapTemplate: CPMapTemplateDelegate {
     func mapTemplate(_: CPMapTemplate, startedTrip trip: CPTrip, using _: CPRouteChoice) {
-        startNavigation(trip: trip)
+        let originCoordinate = trip.origin.placemark.coordinate
+        let destinationCoordinate = trip.destination.placemark.coordinate
+
+        DispatchQueue.main.async {
+            FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onNavigationStartedFromCarPlay, data: ["sourceLatitude": originCoordinate.latitude, "sourceLongitude": originCoordinate.longitude, "destinationLatitude": destinationCoordinate.latitude, "destinationLongitude": destinationCoordinate.longitude])
+        }
     }
 }
 

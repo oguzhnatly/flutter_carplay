@@ -34,6 +34,7 @@ class NavigationHelper: DynamicRoutingDelegate {
     private let navigationEventHandler: NavigationEventHandler
     private let messageTextView: UITextView
     private let mapView: MapView
+    private var visualNavigatorCameraPoint: Anchor2D?
 
     init(mapView: MapView, messageTextView: UITextView) {
         self.messageTextView = messageTextView
@@ -136,7 +137,9 @@ class NavigationHelper: DynamicRoutingDelegate {
     {
         // By default, enable auto-zoom during guidance.
         visualNavigator.cameraBehavior = DynamicCameraBehavior()
-
+        if let normalizedPrincipalPoint = visualNavigatorCameraPoint {
+            visualNavigator.cameraBehavior?.normalizedPrincipalPoint = normalizedPrincipalPoint
+        }
         visualNavigator.startRendering(mapView: mapView)
 
         let startGeoCoordinates = route.geometry.vertices[0]
@@ -205,6 +208,12 @@ class NavigationHelper: DynamicRoutingDelegate {
 
     func getLastKnownLocation() -> Location? {
         return herePositioningProvider.getLastKnownLocation()
+    }
+    
+    /// Set the normalized principal point of the VisualNavigator camera.
+    func setVisualNavigatorCameraPoint(normalizedPrincipalPoint: heresdk.Anchor2D) {
+        visualNavigatorCameraPoint = normalizedPrincipalPoint
+        visualNavigator.cameraBehavior?.normalizedPrincipalPoint = normalizedPrincipalPoint
     }
 
     // A permanent view to show log content.

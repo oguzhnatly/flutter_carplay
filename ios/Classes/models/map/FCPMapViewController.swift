@@ -100,7 +100,11 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         let height = view.bounds.height * scale
         let bannerHeight = bannerView.isHidden ? 0.0 : bannerView.bounds.height
 
-        mapView.camera.principalPoint = Point2D(x: leftSafeArea + (width - leftSafeArea - rightSafeArea) / 2.0, y: topSafeArea + bannerHeight + (height - topSafeArea - bannerHeight) / 2.0)
+        let cameraPrincipalPoint = Point2D(x: leftSafeArea + (width - leftSafeArea - rightSafeArea) / 2.0, y: topSafeArea + bannerHeight + (height - topSafeArea - bannerHeight) / 2.0)
+        mapView.camera.principalPoint = cameraPrincipalPoint
+
+        let anchore2D = Anchor2D(horizontal: cameraPrincipalPoint.x / width, vertical: 0.75)
+        mapController?.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: anchore2D)
     }
 
     // MARK: - configureMapView
@@ -200,7 +204,7 @@ extension FCPMapViewController {
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
         mapController?.addMapPolygon(coordinate: coordinates, accuracy: accuracy, metadata: metadata)
 
-        mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
+//        mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
     }
 
     /// Adds a destination marker on the map.
@@ -216,7 +220,7 @@ extension FCPMapViewController {
         let markerSize = 49 * mapView.pixelScale
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
 
-        mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
+//        mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
     }
 
     /// Starts the navigation

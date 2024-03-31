@@ -52,6 +52,19 @@ class FlutterCarplay {
     String nextRoadName,
   )? _onManeuverActionTextRequested;
 
+  /// A listener function that will be triggered when
+  /// navigation is started from CarPlay.
+  static Function(
+    double sourceLatitude,
+    double sourceLongitude,
+    double destinationLatitude,
+    double destinationLongitude,
+  )? _onNavigationStartedFromCarPlay;
+
+  /// A listener function that will be triggered when
+  /// navigation is failed from CarPlay.
+  static Function(String message)? _onNavigationFailedFromCarPlay;
+
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
     _eventBroadcast = _carPlayController.eventChannel
@@ -128,6 +141,16 @@ class FlutterCarplay {
             data['roadName'],
             data['nextRoadName'],
           );
+        case FCPChannelTypes.onNavigationStartedFromCarPlay:
+          final data = event['data'];
+          _onNavigationStartedFromCarPlay?.call(
+            data['sourceLatitude'],
+            data['sourceLongitude'],
+            data['destinationLatitude'],
+            data['destinationLongitude'],
+          );
+        case FCPChannelTypes.onNavigationFailedFromCarPlay:
+          _onNavigationFailedFromCarPlay?.call(event['data']['message']);
         default:
           break;
       }
@@ -387,6 +410,37 @@ class FlutterCarplay {
   /// on maneuver action text requests.
   static void removeListenerOnManeuverActionTextRequested() {
     _onManeuverActionTextRequested = null;
+  }
+
+  /// Callback function will be fired when navigation started from CarPlay.
+  static void addListenerOnNavigationStartedFromCarPlay({
+    Function(
+      double sourceLatitude,
+      double sourceLongitude,
+      double destinationLatitude,
+      double destinationLongitude,
+    )? onNavigationStartedFromCarPlay,
+  }) {
+    _onNavigationStartedFromCarPlay = onNavigationStartedFromCarPlay;
+  }
+
+  /// Removes the callback function that has been set before in order to listen
+  /// on navigation started from CarPlay.
+  static void removeListenerOnNavigationStartedFromCarPlay() {
+    _onNavigationStartedFromCarPlay = null;
+  }
+
+  /// Callback function will be fired when navigation failed from CarPlay.
+  static void addListenerOnNavigationFailedFromCarPlay({
+    Function(String message)? onNavigationFailedFromCarPlay,
+  }) {
+    _onNavigationFailedFromCarPlay = onNavigationFailedFromCarPlay;
+  }
+
+  /// Removes the callback function that has been set before in order to listen
+  /// on navigation failed from CarPlay.
+  static void removeListenerOnNavigationFailedFromCarPlay() {
+    _onNavigationFailedFromCarPlay = null;
   }
 
   /// Adds the specified [CPSpeaker] utterance to the queue of the speech synthesizer in CarPlay.

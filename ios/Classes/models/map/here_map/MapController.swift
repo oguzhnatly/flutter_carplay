@@ -69,6 +69,11 @@ class MapController: LongPressDelegate {
     func setDestinationWaypoint(_ destination: Waypoint) {
         destinationWaypoint = destination
     }
+    
+    /// Set the normalized principal point of the VisualNavigator camera.
+    func setVisualNavigatorCameraPoint(normalizedPrincipalPoint: heresdk.Anchor2D) {
+        navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: normalizedPrincipalPoint)
+    }
 
     /// Calculate a route and start navigation using a location simulator.
     /// Start is map center and destination location is set random within viewport,
@@ -158,9 +163,10 @@ class MapController: LongPressDelegate {
                                        destination: destinationWaypoint!)
         { routingError, routes in
             if let error = routingError {
-                self.showDialog(title: "Error while calculating a route:", message: "\(error)")
+                self.onNavigationFailed(title: "Error while calculating a route:", message: "\(error)")
                 return
             }
+            
 
             // When routingError is nil, routes is guaranteed to contain at least one route.
             let route = routes!.first
@@ -176,7 +182,7 @@ class MapController: LongPressDelegate {
         // When using real GPS locations, we always start from the current location of user.
         if !isSimulated {
             guard let location = navigationHelper.getLastKnownLocation() else {
-                showDialog(title: "Error", message: "No location found.")
+                onNavigationFailed(title: "Error", message: "No location found.")
                 return false
             }
 
@@ -190,7 +196,7 @@ class MapController: LongPressDelegate {
 
         if startingWaypoint == nil {
             guard let location = navigationHelper.getLastKnownLocation() else {
-                showDialog(title: "Error", message: "No location found.")
+                onNavigationFailed(title: "Error", message: "No location found.")
                 return false
             }
 
@@ -400,8 +406,13 @@ class MapController: LongPressDelegate {
     /// - Parameters:
     ///   - title: Title of the dialog
     ///   - message: Message of the dialog
-    private func showDialog(title: String, message: String) {
+    private func onNavigationFailed(title: String, message: String) {
         debugPrint("\(title) => \(message)")
+        
+        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onNavigationFailedFromCarPlay,
+                                         data: [
+                                             "message": message
+                                         ])
 //        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 //        alertController.addAction(UIAlertAction(title: "OK", style: .default))
 //        viewController.present(alertController, animated: true)
