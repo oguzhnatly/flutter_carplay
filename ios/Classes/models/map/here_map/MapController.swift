@@ -195,12 +195,12 @@ class MapController: LongPressDelegate {
         }
 
         if startingWaypoint == nil {
-            guard let location = navigationHelper.getLastKnownLocation() else {
-                onNavigationFailed(title: "Error", message: "No location found.")
-                return false
-            }
-
-            startingWaypoint = Waypoint(coordinates: location.coordinates)
+//            guard let location = navigationHelper.getLastKnownLocation() else {
+//                onNavigationFailed(title: "Error", message: "No location found.")
+//                return false
+//            }
+            
+            startingWaypoint = Waypoint(coordinates: GeoCoordinates(latitude: -33.868820, longitude: 151.209290))
         }
 
         if destinationWaypoint == nil {
