@@ -511,9 +511,11 @@ class FlutterCarplay {
     );
 
     if (isSuccess) {
-      FlutterCarPlayController.templateHistory = [
-        FlutterCarPlayController.currentRootTemplate,
-      ];
+      if (FlutterCarPlayController.currentRootTemplate != null) {
+        FlutterCarPlayController.templateHistory = [
+          FlutterCarPlayController.currentRootTemplate,
+        ];
+      }
     }
 
     return isSuccess;
