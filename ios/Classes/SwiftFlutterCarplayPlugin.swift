@@ -539,13 +539,14 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
         case FCPChannelTypes.onManeuverActionTextRequestComplete:
             guard let args = call.arguments as? [String: Any],
-                  let text = args["actionText"] as? String
+                  let text = args["actionText"] as? String,
+                  let isPrimary = args["isPrimary"] as? Bool
             else {
                 result(false)
                 return
             }
 
-            maneuverActionTextHandler?(text)
+            isPrimary ? primaryManeuverActionTextHandler?(text) : secondaryManeuverActionTextHandler?(text)
 
             result(true)
 

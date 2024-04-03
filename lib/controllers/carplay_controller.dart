@@ -124,10 +124,16 @@ class FlutterCarPlayController {
   }
 
   /// Sends back the action text for the next maneuver.
-  static void onManeuverActionTextRequestComplete(String actionText) {
+  static void onManeuverActionTextRequestComplete(
+    String actionText, {
+    bool isPrimary = false,
+  }) {
     _methodChannel.invokeMethod(
       FCPChannelTypes.onManeuverActionTextRequestComplete.name,
-      {'actionText': actionText},
+      {
+        'actionText': actionText,
+        'isPrimary': isPrimary,
+      },
     );
   }
 

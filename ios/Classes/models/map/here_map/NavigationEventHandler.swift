@@ -135,8 +135,10 @@ class NavigationEventHandler: NavigableLocationDelegate,
         if previousManeuverIndex != currentManeuverIndex {
             // Log only new maneuvers and ignore changes in distance.
 
-            maneuverActionTextHandler = { [weak self] actionText in
+            primaryManeuverActionTextHandler = { [weak self] actionText in
                 guard self != nil else { return }
+
+                print("Primary maneuver: \(actionText)")
                 let cpManeuver = CPManeuver()
                 cpManeuver.instructionVariants = [actionText]
                 cpManeuver.initialTravelEstimates = estimates
@@ -157,6 +159,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
                                                  "action": action,
                                                  "roadName": roadName,
                                                  "nextRoadName": nextRoadName,
+                                                 "isPrimary": true,
                                              ])
 
         } else {
@@ -185,8 +188,9 @@ class NavigationEventHandler: NavigableLocationDelegate,
             let roadName = getRoadName(maneuver: nextManeuver) ?? ""
             let nextRoadName = nextManeuver.nextRoadTexts.names.defaultValue() ?? ""
 
-            maneuverActionTextHandler = { [weak self] actionText in
+            secondaryManeuverActionTextHandler = { [weak self] actionText in
                 guard self != nil else { return }
+                print("Secondary maneuver: \(actionText)")
 
                 let maneuverTextArr = nextManeuver.text.components(separatedBy: " ")
                 let formattedManeuverText = maneuverTextArr.count > 3 ? Array(maneuverTextArr.prefix(3)).joined(separator: " ").appending("...") : nextManeuver.text
@@ -211,6 +215,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
                                                  "action": action,
                                                  "roadName": roadName,
                                                  "nextRoadName": nextRoadName,
+                                                 "isPrimary": false,
                                              ])
         }
 

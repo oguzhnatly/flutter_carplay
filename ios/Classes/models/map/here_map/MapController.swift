@@ -69,7 +69,7 @@ class MapController: LongPressDelegate {
     func setDestinationWaypoint(_ destination: Waypoint) {
         destinationWaypoint = destination
     }
-    
+
     /// Set the normalized principal point of the VisualNavigator camera.
     func setVisualNavigatorCameraPoint(normalizedPrincipalPoint: heresdk.Anchor2D) {
         navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: normalizedPrincipalPoint)
@@ -78,14 +78,14 @@ class MapController: LongPressDelegate {
     /// Calculate a route and start navigation using a location simulator.
     /// Start is map center and destination location is set random within viewport,
     /// unless a destination is set via long press.
-    func addRouteSimulatedLocationButtonClicked() {
+    func addRouteSimulatedLocation() {
         calculateRoute(isSimulated: true)
     }
 
     /// Calculate a route and start navigation using locations from device.
     /// Start is current location and destination is set random within viewport,
     /// unless a destination is set via long press.
-    func addRouteDeviceLocationButtonClicked() {
+    func addRouteDeviceLocation() {
         calculateRoute(isSimulated: false)
     }
 
@@ -166,7 +166,6 @@ class MapController: LongPressDelegate {
                 self.onNavigationFailed(title: "Error while calculating a route:", message: "\(error)")
                 return
             }
-            
 
             // When routingError is nil, routes is guaranteed to contain at least one route.
             let route = routes!.first
@@ -180,33 +179,24 @@ class MapController: LongPressDelegate {
     /// - Returns: True if waypoints are determined, false if not.
     private func determineRouteWaypoints(isSimulated: Bool) -> Bool {
         // When using real GPS locations, we always start from the current location of user.
-        if !isSimulated {
-            guard let location = navigationHelper.getLastKnownLocation() else {
-                onNavigationFailed(title: "Error", message: "No location found.")
-                return false
+        guard let location = navigationHelper.getLastKnownLocation() else {
+            onNavigationFailed(title: "Error", message: "No location found.")
+            return false
+        }
+        print("Last known location: \(location.coordinates)")
+
+        startingWaypoint = Waypoint(coordinates: location.coordinates)
+
+        // If a driver is moving, the bearing value can help to improve the route calculation.
+        startingWaypoint?.headingInDegrees = location.bearingInDegrees
+
+        mapView.camera.lookAt(point: location.coordinates)
+
+        if isSimulated {
+            if destinationWaypoint == nil {
+                destinationWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())
             }
-
-            startingWaypoint = Waypoint(coordinates: location.coordinates)
-
-            // If a driver is moving, the bearing value can help to improve the route calculation.
-            startingWaypoint?.headingInDegrees = location.bearingInDegrees
-
-            mapView.camera.lookAt(point: location.coordinates)
         }
-
-        if startingWaypoint == nil {
-//            guard let location = navigationHelper.getLastKnownLocation() else {
-//                onNavigationFailed(title: "Error", message: "No location found.")
-//                return false
-//            }
-            
-            startingWaypoint = Waypoint(coordinates: GeoCoordinates(latitude: -33.868820, longitude: 151.209290))
-        }
-
-        if destinationWaypoint == nil {
-            destinationWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())
-        }
-
         return true
     }
 
@@ -408,10 +398,10 @@ class MapController: LongPressDelegate {
     ///   - message: Message of the dialog
     private func onNavigationFailed(title: String, message: String) {
         debugPrint("\(title) => \(message)")
-        
+
         FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onNavigationFailedFromCarPlay,
                                          data: [
-                                             "message": message
+                                             "message": message,
                                          ])
 //        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 //        alertController.addAction(UIAlertAction(title: "OK", style: .default))

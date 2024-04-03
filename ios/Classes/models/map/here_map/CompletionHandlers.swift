@@ -5,8 +5,11 @@
 //  Created by Bhavik Dodia on 29/03/24.
 //
 
-/// Completion handler for maneuver actions.
-var maneuverActionTextHandler: ((String) -> Void)?
+/// Completion handler for primary maneuver actions.
+var primaryManeuverActionTextHandler: ((String) -> Void)?
+
+/// Completion handler for secondary maneuver actions.
+var secondaryManeuverActionTextHandler: ((String) -> Void)?
 
 /// Completion handler for toggle voice instructions.
 var toggleVoiceInstructionsHandler: ((Bool) -> Void)?

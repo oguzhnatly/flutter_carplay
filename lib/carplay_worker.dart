@@ -49,8 +49,9 @@ class FlutterCarplay {
   static Function(
     String action,
     String roadName,
-    String nextRoadName,
-  )? _onManeuverActionTextRequested;
+    String nextRoadName, {
+    bool isPrimary,
+  })? _onManeuverActionTextRequested;
 
   /// A listener function that will be triggered when
   /// navigation is started from CarPlay.
@@ -140,6 +141,7 @@ class FlutterCarplay {
             data['action'],
             data['roadName'],
             data['nextRoadName'],
+            isPrimary: data['isPrimary'],
           );
         case FCPChannelTypes.onNavigationStartedFromCarPlay:
           final data = event['data'];
@@ -400,8 +402,9 @@ class FlutterCarplay {
     Function(
       String action,
       String roadName,
-      String nextRoadName,
-    )? onManeuverActionTextRequested,
+      String nextRoadName, {
+      bool isPrimary,
+    })? onManeuverActionTextRequested,
   }) {
     _onManeuverActionTextRequested = onManeuverActionTextRequested;
   }

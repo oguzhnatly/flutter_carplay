@@ -209,7 +209,7 @@ class NavigationHelper: DynamicRoutingDelegate {
     func getLastKnownLocation() -> Location? {
         return herePositioningProvider.getLastKnownLocation()
     }
-    
+
     /// Set the normalized principal point of the VisualNavigator camera.
     func setVisualNavigatorCameraPoint(normalizedPrincipalPoint: heresdk.Anchor2D) {
         visualNavigatorCameraPoint = normalizedPrincipalPoint
