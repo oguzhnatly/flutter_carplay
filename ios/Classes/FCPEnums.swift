@@ -157,11 +157,8 @@ enum FCPChannelTypes {
     /// Event for stop navigation.
     static let stopNavigation = "stopNavigation"
 
-    /// Event for render initial marker on map.
-    static let renderInitialMarkerOnMap = "renderInitialMarkerOnMap"
-
-    /// Event for destination address updated on map.
-    static let destinationAddressUpdatedOnMap = "destinationAddressUpdatedOnMap"
+    /// Event for updating the map coordinates in CarPlay.
+    static let updateMapCoordinates = "updateMapCoordinates"
 
     /// Event for requesting a maneuver action text in CarPlay.
     static let onManeuverActionTextRequested = "onManeuverActionTextRequested"

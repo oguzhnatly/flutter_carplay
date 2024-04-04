@@ -162,38 +162,26 @@ class FlutterCarPlayController {
   }
 
   /// Re-centers the map view on the [CPMapTemplate].
-  static void recenterMapView() {
+  static void recenterMapView(String recenterMapPosition) {
     _methodChannel.invokeMethod(
       FCPChannelTypes.recenterMapView.name,
+      {'recenterMapPosition': recenterMapPosition},
     );
   }
 
-  /// Renders the initial marker on the [CPMapTemplate]
-  static void renderInitialMarkerOnMap(
-    String elementId,
-    GeoCoordinates coordinate,
-    double accuracy,
+  /// Updates the map coordinates on the [CPMapTemplate].
+  static void updateMapCoordinates(
+    GeoCoordinates? stationAddressCoordinates,
+    GeoCoordinates? incidentAddressCoordinates,
+    GeoCoordinates? destinationAddressCoordinates,
   ) {
-    _methodChannel.invokeMethod(FCPChannelTypes.renderInitialMarkerOnMap.name, {
-      '_elementId': elementId,
-      'latitude': coordinate.latitude,
-      'longitude': coordinate.longitude,
-      'accuracy': accuracy,
-    });
-  }
-
-  /// Updates the destination address on the [CPMapTemplate]
-  static void destinationAddressUpdatedOnMap(
-    String elementId,
-    GeoCoordinates coordinate,
-    double accuracy,
-  ) {
-    _methodChannel
-        .invokeMethod(FCPChannelTypes.destinationAddressUpdatedOnMap.name, {
-      '_elementId': elementId,
-      'latitude': coordinate.latitude,
-      'longitude': coordinate.longitude,
-      'accuracy': accuracy,
+    _methodChannel.invokeMethod(FCPChannelTypes.updateMapCoordinates.name, {
+      'stationAddressLatitude': stationAddressCoordinates?.latitude,
+      'stationAddressLongitude': stationAddressCoordinates?.longitude,
+      'incidentAddressLatitude': incidentAddressCoordinates?.latitude,
+      'incidentAddressLongitude': incidentAddressCoordinates?.longitude,
+      'destinationAddressLatitude': destinationAddressCoordinates?.latitude,
+      'destinationAddressLongitude': destinationAddressCoordinates?.longitude,
     });
   }
 

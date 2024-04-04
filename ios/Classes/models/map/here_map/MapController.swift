@@ -177,7 +177,7 @@ class MapController: LongPressDelegate {
     /// Determines the starting and destination waypoints for the route calculation.
     /// - Parameter isSimulated: Whether to use simulated locations.
     /// - Returns: True if waypoints are determined, false if not.
-    private func determineRouteWaypoints(isSimulated: Bool) -> Bool {
+    private func determineRouteWaypoints(isSimulated _: Bool) -> Bool {
         // When using real GPS locations, we always start from the current location of user.
         guard let location = navigationHelper.getLastKnownLocation() else {
             onNavigationFailed(title: "Error", message: "No location found.")
@@ -192,10 +192,17 @@ class MapController: LongPressDelegate {
 
         mapView.camera.lookAt(point: location.coordinates)
 
-        if isSimulated {
-            if destinationWaypoint == nil {
-                destinationWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())
-            }
+        if startingWaypoint == nil {
+//            guard let location = navigationHelper.getLastKnownLocation() else {
+//                onNavigationFailed(title: "Error", message: "No location found.")
+//                return false
+//            }
+
+            startingWaypoint = Waypoint(coordinates: GeoCoordinates(latitude: -33.868820, longitude: 151.209290))
+        }
+
+        if destinationWaypoint == nil {
+            destinationWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())
         }
         return true
     }
@@ -350,6 +357,27 @@ class MapController: LongPressDelegate {
     /// - Returns: Map view center
     private func getMapViewCenter() -> GeoCoordinates {
         return mapView.camera.state.targetCoordinates
+    }
+
+    /// Get the last known location
+    /// - Returns: Last known location
+    func getLastKnownLocation() -> Location? {
+        return navigationHelper.getLastKnownLocation()
+    }
+
+    /// Get the marker coordinates
+    /// - Parameter metadataKey: Metadata key
+    /// - Returns: Marker coordinates
+    func getMarkerCoordinates(metadataKey: String) -> GeoCoordinates? {
+        let marker = mapMarkers.first(where: {
+            $0.metadata?.getString(key: "marker") == metadataKey
+        })
+
+        if let existingMarker = marker {
+            return existingMarker.coordinates
+        }
+
+        return nil
     }
 
     /// Add a circle map marker

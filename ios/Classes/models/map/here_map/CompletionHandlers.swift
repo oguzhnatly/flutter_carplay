@@ -5,6 +5,8 @@
 //  Created by Bhavik Dodia on 29/03/24.
 //
 
+import heresdk
+
 /// Completion handler for primary maneuver actions.
 var primaryManeuverActionTextHandler: ((String) -> Void)?
 
@@ -21,4 +23,22 @@ var toggleSatelliteViewHandler: ((Bool) -> Void)?
 var toggleTrafficViewHandler: ((Bool) -> Void)?
 
 /// Completion handler for recenter map view.
-var recenterMapViewHandler: (() -> Void)?
+var recenterMapViewHandler: ((String) -> Void)?
+
+/// Completion handler for update map coordinates.
+var updateMapCoordinatesHandler: ((MapCoordinates) -> Void)?
+
+class MapCoordinates {
+	let stationAddressCoordinates: GeoCoordinates?
+	let incidentAddressCoordinates: GeoCoordinates?
+	let destinationAddressCoordinates: GeoCoordinates?
+
+	init(stationAddressCoordinates: GeoCoordinates?,
+	     incidentAddressCoordinates: GeoCoordinates?,
+	     destinationAddressCoordinates: GeoCoordinates?)
+	{
+		self.stationAddressCoordinates = stationAddressCoordinates
+		self.incidentAddressCoordinates = incidentAddressCoordinates
+		self.destinationAddressCoordinates = destinationAddressCoordinates
+	}
+}

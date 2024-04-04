@@ -587,58 +587,53 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             result(true)
 
         case FCPChannelTypes.recenterMapView:
+            guard let args = call.arguments as? [String: Any],
+                  let recenterMapPosition = args["recenterMapPosition"] as? String
+            else {
+                result(false)
+                return
+            }
+
+            recenterMapViewHandler?(recenterMapPosition)
+
+            result(true)
+
+        case FCPChannelTypes.updateMapCoordinates:
             guard let args = call.arguments as? [String: Any]
             else {
                 result(false)
                 return
             }
 
-            // TODO:
-            recenterMapViewHandler?()
+            var stationAddressCoordinates: GeoCoordinates?
+            var incidentAddressCoordinates: GeoCoordinates?
+            var destinationAddressCoordinates: GeoCoordinates?
 
-            result(true)
-
-        case FCPChannelTypes.renderInitialMarkerOnMap:
-            guard let args = call.arguments as? [String: Any],
-                  let elementId = args["_elementId"] as? String,
-                  let latitude = args["latitude"] as? Double,
-                  let longitude = args["longitude"] as? Double,
-                  let accuracy = args["accuracy"] as? Double
-            else {
-                result(false)
-                return
+            if
+                let stationAddressLatitude = args["stationAddressLatitude"] as? Double,
+                let stationAddressLongitude = args["stationAddressLongitude"] as? Double
+            {
+                stationAddressCoordinates = GeoCoordinates(latitude: stationAddressLatitude, longitude: stationAddressLongitude)
             }
 
-            // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-
-                mapTemplate.fcpMapViewController?.showInitialMarkerOnMap(coordinates: GeoCoordinates(latitude: latitude, longitude: longitude), accuracy: accuracy)
-
-                return result(true)
+            if let incidentAddressLatitude = args["incidentAddressLatitude"] as? Double,
+               let incidentAddressLongitude = args["incidentAddressLongitude"] as? Double
+            {
+                incidentAddressCoordinates = GeoCoordinates(latitude: incidentAddressLatitude, longitude: incidentAddressLongitude)
             }
+
+            if let destinationAddressLatitude = args["destinationAddressLatitude"] as? Double,
+               let destinationAddressLongitude = args["destinationAddressLongitude"] as? Double
+            {
+                destinationAddressCoordinates = GeoCoordinates(latitude: destinationAddressLatitude, longitude: destinationAddressLongitude)
+            }
+
+            let mapCoordinates = MapCoordinates(stationAddressCoordinates: stationAddressCoordinates, incidentAddressCoordinates: incidentAddressCoordinates, destinationAddressCoordinates: destinationAddressCoordinates)
+
+            updateMapCoordinatesHandler?(mapCoordinates)
 
             result(false)
 
-        case FCPChannelTypes.destinationAddressUpdatedOnMap:
-            guard let args = call.arguments as? [String: Any],
-                  let elementId = args["_elementId"] as? String,
-                  let latitude = args["latitude"] as? Double,
-                  let longitude = args["longitude"] as? Double,
-                  let accuracy = args["accuracy"] as? Double
-            else {
-                result(false)
-                return
-            }
-
-            // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
-
-                mapTemplate.fcpMapViewController?.destinationAddressUpdatedOnMap(coordinates: GeoCoordinates(latitude: latitude, longitude: longitude), accuracy: accuracy)
-
-                return result(true)
-            }
-
-            result(false)
         default:
             result(false)
         }

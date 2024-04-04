@@ -58,6 +58,8 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// The map marker associated with the map view controller.
     var mapMarker: MapMarker?
 
+    var markerSize: Double { 30 * mapView.pixelScale }
+
     // MARK: - View Lifecycle
 
     override func viewDidLoad() {
@@ -119,7 +121,127 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         if mapController == nil {
             mapController = MapController(viewController: self, mapView: mapView!, messageTextView: UITextView())
         }
+
+        updateMapCoordinatesHandler = { [weak self] mapCoordinates in
+            guard let self = self else { return }
+            print("mapCoordinates: \(mapCoordinates)")
+
+            if let lastKnownLocation = mapController?.getLastKnownLocation {
+                self.renderInitialMarker(coordinates: lastKnownLocation.coordinates, accuracy: lastKnownLocation.horizontalAccuracy)
+            } else if let stationCoordinates = mapCoordinates.stationAddressCoordinates {
+                self.renderInitialMarker(coordinates: stationCoordinates, accuracy: 0.0)
+            }
+
+            if let incidentAddressCoordinates = mapCoordinates.incidentAddressCoordinates {
+                self.renderIncidentAddressMarker(coordinates: incidentAddressCoordinates)
+            }
+
+            if let destinationAddressCoordinates = mapCoordinates.destinationAddressCoordinates {
+                self.renderDestinationAddressMarker(coordinates: destinationAddressCoordinates)
+            }
+        }
+
+        recenterMapViewHandler = { [weak self] recenterMapPosition in
+            guard let self = self else { return }
+            print("recenterMapPosition: \(recenterMapPosition)")
+
+//            if state.mapNavigationState.isNavigationInProgress {
+//                _enableTracking(true)
+//            } else {
+            let initialMarkerCoordinates = mapController?.getMarkerCoordinates(metadataKey: "initial_marker")
+            let incidentAddressCoordinates = mapController?.getMarkerCoordinates(metadataKey: "incident_address_marker")
+            let destinationAddressCoordinates = mapController?.getMarkerCoordinates(metadataKey: "destination_address_marker")
+
+            switch recenterMapPosition {
+            case "initialMarker":
+                if initialMarkerCoordinates != nil {
+//                        flyToCoordinates(initialMarkerCoordinates)
+                }
+
+            case "addressMarker":
+
+                if incidentAddressCoordinates != nil, destinationAddressCoordinates != nil {
+                    if let geoBox = GeoBox.containing(geoCoordinates: [
+                        incidentAddressCoordinates!,
+                        destinationAddressCoordinates!,
+                    ]) {
+                        let scale = FlutterCarPlaySceneDelegate.carWindow?.screen.scale ?? 1.0
+                        let topSafeArea = view.safeAreaInsets.top * scale
+                        let leftSafeArea = view.safeAreaInsets.left * scale
+                        let rightSafeArea = view.safeAreaInsets.right * scale
+                        let width = view.bounds.width * scale
+                        let height = view.bounds.height * scale
+                        let mapRect =
+                            Size2D(width: width, height: height)
+                        mapView?.camera
+                            .lookAtAreaWithGeoOrientationAndViewRectangle(
+                                geoBox,
+                                GeoOrientationUpdate(0, 0),
+                                Rectangle2D(
+                                    origin: Point2D(
+                                        x: markerSize,
+                                        y: markerSize
+                                    ),
+//                                        *
+//                                            _hereMapController!.pixelScale,
+                                    size: Size2D(
+                                        width: width - markerSize * 2,
+                                        height: height - markerSize * 2
+                                    )
+//                                        *
+//                                            _hereMapController!.pixelScale,
+                                )
+                            )
+                    }
+                } else if incidentAddressCoordinates != nil {
+                    flyToCoordinates(incidentAddressCoordinates)
+                }
+
+            case "bothMarkers":
+
+                if initialMarkerCoordinates != nil,
+                   incidentAddressCoordinates != nil
+                {
+                    if let geoBox = GeoBox.containing(geoCoordinates: [
+                        initialMarkerCoordinates,
+                        incidentAddressCoordinates,
+                        if destinationAddressCoordinates != nil {
+                            destinationAddressCoordinates
+                        },
+                    ]) {
+                        let scale = FlutterCarPlaySceneDelegate.carWindow?.screen.scale ?? 1.0
+                        let topSafeArea = view.safeAreaInsets.top * scale
+                        let leftSafeArea = view.safeAreaInsets.left * scale
+                        let rightSafeArea = view.safeAreaInsets.right * scale
+                        let width = view.bounds.width * scale
+                        let height = view.bounds.height * scale
+                        let mapRect =
+                            Size2D(width: width, height: height)
+                        mapView?.camera
+                            .lookAtAreaWithGeoOrientationAndViewRectangle(
+                                geoBox,
+                                GeoOrientationUpdate(0, 0),
+                                Rectangle2D(
+                                    origin: Point2D(
+                                        x: markerSize,
+                                        y: markerSize
+                                    ),
+//                                        *
+//                                            _hereMapController!.pixelScale,
+                                    size: Size2D(
+                                        width: width - markerSize * 2,
+                                        height: height - markerSize * 2
+                                    )
+//                                        *
+//                                            _hereMapController!.pixelScale,
+                                )
+                            )
+                    }
+                }
+            }
+        }
     }
+//    }
 }
 
 // MARK: - Banner & Toast Views
@@ -193,34 +315,50 @@ extension FCPMapViewController {
     /// - Parameters:
     ///   - coordinates: The coordinates of the marker
     ///   - accuracy: The accuracy of the marker
-    func showInitialMarkerOnMap(coordinates: GeoCoordinates, accuracy: Double) {
+    func renderInitialMarker(coordinates: GeoCoordinates, accuracy: Double) {
         let metadata = heresdk.Metadata()
         metadata.setString(key: "marker", value: "initial_marker")
         metadata.setString(key: "polygon", value: "initial_marker")
 
         let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/position.png")
 
-        let markerSize = 30 * mapView.pixelScale
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
         mapController?.addMapPolygon(coordinate: coordinates, accuracy: accuracy, metadata: metadata)
+    }
 
-        mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
+    func renderIncidentAddressMarker(coordinates: GeoCoordinates) {
+        let metadata = heresdk.Metadata()
+        metadata.setString(key: "marker", value: "incident_address_marker")
+
+        let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/map_marker_big.png")
+
+        let markerSize = 49 * mapView.pixelScale
+        mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
     }
 
     /// Adds a destination marker on the map.
     /// - Parameters:
     ///   - coordinates: The coordinates of the marker
     ///   - accuracy: The accuracy of the marker
-    func destinationAddressUpdatedOnMap(coordinates: GeoCoordinates, accuracy _: Double) {
+    func renderDestinationAddressMarker(coordinates: GeoCoordinates) {
         let metadata = heresdk.Metadata()
-        metadata.setString(key: "marker", value: "destination_marker")
+        metadata.setString(key: "marker", value: "destination_address_marker")
 
         let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/map_marker_wp.png")
 
         let markerSize = 49 * mapView.pixelScale
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
+    }
 
-        mapView.camera.lookAt(point: coordinates, zoom: MapMeasure(kind: .distance, value: 8000.0))
+    func flyToCoordinates(coordinates: GeoCoordinates) {
+        let animation = MapCameraAnimationFactory.flyToWithOrientationAndZoom(
+            GeoCoordinatesUpdate.fromGeoCoordinates(coordinates),
+            GeoOrientationUpdate(0, 0),
+            MapMeasure(MapMeasureKind.distance, initDistanceToEarth),
+            0.2,
+            const Duration(milliseconds: 1000)
+        )
+        mapView?.camera.startAnimation(animation)
     }
 
     /// Starts the navigation
