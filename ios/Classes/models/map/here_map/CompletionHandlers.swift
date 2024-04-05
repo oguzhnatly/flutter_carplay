@@ -29,16 +29,16 @@ var recenterMapViewHandler: ((String) -> Void)?
 var updateMapCoordinatesHandler: ((MapCoordinates) -> Void)?
 
 class MapCoordinates {
-	let stationAddressCoordinates: GeoCoordinates?
-	let incidentAddressCoordinates: GeoCoordinates?
-	let destinationAddressCoordinates: GeoCoordinates?
+    let stationAddressCoordinates: GeoCoordinates?
+    let incidentAddressCoordinates: GeoCoordinates?
+    let destinationAddressCoordinates: GeoCoordinates?
 
-	init(stationAddressCoordinates: GeoCoordinates?,
-	     incidentAddressCoordinates: GeoCoordinates?,
-	     destinationAddressCoordinates: GeoCoordinates?)
-	{
-		self.stationAddressCoordinates = stationAddressCoordinates
-		self.incidentAddressCoordinates = incidentAddressCoordinates
-		self.destinationAddressCoordinates = destinationAddressCoordinates
-	}
+    init(stationAddressCoordinates: GeoCoordinates?,
+         incidentAddressCoordinates: GeoCoordinates?,
+         destinationAddressCoordinates: GeoCoordinates?)
+    {
+        self.stationAddressCoordinates = stationAddressCoordinates
+        self.incidentAddressCoordinates = incidentAddressCoordinates
+        self.destinationAddressCoordinates = destinationAddressCoordinates
+    }
 }

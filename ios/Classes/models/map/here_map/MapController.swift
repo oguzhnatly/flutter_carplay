@@ -105,6 +105,10 @@ class MapController: LongPressDelegate {
         navigationHelper.stopCameraTracking()
     }
 
+    func getIsNavigationInProgress() -> Bool {
+        return navigationHelper.getIsNavigationInProgress()
+    }
+
     /// Add a marker on the map.
     /// - Parameters:
     ///   - coordinates: The coordinates of the marker
@@ -192,17 +196,10 @@ class MapController: LongPressDelegate {
 
         mapView.camera.lookAt(point: location.coordinates)
 
-        if startingWaypoint == nil {
-//            guard let location = navigationHelper.getLastKnownLocation() else {
-//                onNavigationFailed(title: "Error", message: "No location found.")
-//                return false
-//            }
-
-            startingWaypoint = Waypoint(coordinates: GeoCoordinates(latitude: -33.868820, longitude: 151.209290))
-        }
-
-        if destinationWaypoint == nil {
-            destinationWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())
+        if isSimulated {
+            if destinationWaypoint == nil {
+                destinationWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())
+            }
         }
         return true
     }
@@ -366,11 +363,11 @@ class MapController: LongPressDelegate {
     }
 
     /// Get the marker coordinates
-    /// - Parameter metadataKey: Metadata key
+    /// - Parameter markerType: Map Marker type
     /// - Returns: Marker coordinates
-    func getMarkerCoordinates(metadataKey: String) -> GeoCoordinates? {
+    func getMarkerCoordinates(markerType: MapMarkerType) -> GeoCoordinates? {
         let marker = mapMarkers.first(where: {
-            $0.metadata?.getString(key: "marker") == metadataKey
+            $0.metadata?.getString(key: "marker") == markerType.rawValue
         })
 
         if let existingMarker = marker {
@@ -378,6 +375,32 @@ class MapController: LongPressDelegate {
         }
 
         return nil
+    }
+
+    /// Remove a marker
+    /// - Parameter markerType: Map Marker type
+    func removeMarker(markerType: MapMarkerType) {
+        let marker = mapMarkers.first(where: {
+            $0.metadata?.getString(key: "marker") == markerType.rawValue
+        })
+
+        if let existingMarker = marker {
+            mapView.mapScene.removeMapMarker(existingMarker)
+            mapMarkers.removeAll(where: { $0.metadata?.getString(key: "marker") == markerType.rawValue })
+        }
+    }
+
+    /// Remove a polygon
+    /// - Parameter markerType: Map Marker type
+    func removePolygon(markerType: MapMarkerType) {
+        let polygon = mapPolygons.first(where: {
+            $0.metadata?.getString(key: "polygon") == markerType.rawValue
+        })
+
+        if let existingPolygon = polygon {
+            mapView.mapScene.removeMapPolygon(existingPolygon)
+            mapPolygons.removeAll(where: { $0.metadata?.getString(key: "polygon") == markerType.rawValue })
+        }
     }
 
     /// Add a circle map marker

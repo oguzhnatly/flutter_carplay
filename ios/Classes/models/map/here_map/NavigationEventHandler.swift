@@ -310,7 +310,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
             // Driver is faster than current speed limit (plus an optional offset).
             // Play a notification sound to alert the driver.
             // Note that this may not include temporary special speed limits, see SpeedLimitDelegate.
-            AudioServicesPlaySystemSound(SystemSoundID(1016))
+//            AudioServicesPlaySystemSound(SystemSoundID(1016))
         }
 
         if status == SpeedWarningStatus.speedLimitRestored {

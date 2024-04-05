@@ -35,6 +35,7 @@ class NavigationHelper: DynamicRoutingDelegate {
     private let messageTextView: UITextView
     private let mapView: MapView
     private var visualNavigatorCameraPoint: Anchor2D?
+    private var isNavigationInProgress = false
 
     init(mapView: MapView, messageTextView: UITextView) {
         self.messageTextView = messageTextView
@@ -135,6 +136,11 @@ class NavigationHelper: DynamicRoutingDelegate {
     func startNavigation(route: Route,
                          isSimulated: Bool)
     {
+        if isNavigationInProgress {
+            return
+        }
+        isNavigationInProgress = true
+
         // By default, enable auto-zoom during guidance.
         visualNavigator.cameraBehavior = DynamicCameraBehavior()
         if let normalizedPrincipalPoint = visualNavigatorCameraPoint {
@@ -175,6 +181,11 @@ class NavigationHelper: DynamicRoutingDelegate {
         // Switches to tracking mode when a route was set before, otherwise tracking mode is kept.
         // Without a route the navigator will only notify on the current map-matched location
         // including info such as speed and current street name.
+        if !isNavigationInProgress {
+            return
+        }
+        isNavigationInProgress = false
+
         dynamicRoutingEngine.stop()
         routePrefetcher.stopPrefetchAroundRoute()
         visualNavigator.route = nil
@@ -204,6 +215,10 @@ class NavigationHelper: DynamicRoutingDelegate {
 
     func stopCameraTracking() {
         visualNavigator.cameraBehavior = nil
+    }
+
+    func getIsNavigationInProgress() -> Bool {
+        return isNavigationInProgress
     }
 
     func getLastKnownLocation() -> Location? {
