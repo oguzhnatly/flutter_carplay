@@ -181,7 +181,7 @@ class MapController: LongPressDelegate {
     /// Determines the starting and destination waypoints for the route calculation.
     /// - Parameter isSimulated: Whether to use simulated locations.
     /// - Returns: True if waypoints are determined, false if not.
-    private func determineRouteWaypoints(isSimulated _: Bool) -> Bool {
+    private func determineRouteWaypoints(isSimulated: Bool) -> Bool {
         // When using real GPS locations, we always start from the current location of user.
         guard let location = navigationHelper.getLastKnownLocation() else {
             onNavigationFailed(title: "Error", message: "No location found.")
