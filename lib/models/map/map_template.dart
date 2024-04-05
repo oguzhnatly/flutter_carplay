@@ -154,6 +154,19 @@ class CPMapTemplate {
     FlutterCarPlayController.stopNavigation(uniqueId);
   }
 
+  /// Show panning interface on the [CPMapTemplate]
+  void showPanningInterface({bool animated = true}) {
+    FlutterCarPlayController.showPanningInterface(uniqueId, animated: animated);
+  }
+
+  /// Dismiss panning interface on the [CPMapTemplate]
+  void dismissPanningInterface({bool animated = true}) {
+    FlutterCarPlayController.dismissPanningInterface(
+      uniqueId,
+      animated: animated,
+    );
+  }
+
   String get uniqueId {
     return _elementId;
   }

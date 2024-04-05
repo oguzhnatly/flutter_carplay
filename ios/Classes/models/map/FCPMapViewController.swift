@@ -109,7 +109,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         mapView.camera.principalPoint = cameraPrincipalPoint
 
         let anchor2D = Anchor2D(horizontal: cameraPrincipalPoint.x / width, vertical: 0.75)
-        mapController?.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: anchor2D)
+        mapController?.navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: anchor2D)
 
         if let recenterPosition = recenterMapPosition {
             recenterMapViewHandler?(recenterPosition)
@@ -129,10 +129,12 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             mapController = MapController(viewController: self, mapView: mapView!, messageTextView: UITextView())
         }
 
+        mapView.isMultipleTouchEnabled = true
+
         updateMapCoordinatesHandler = { [weak self] mapCoordinates in
             guard let self = self else { return }
 
-            if let location = mapController?.getLastKnownLocation() {
+            if let location = mapController?.lastKnownLocation {
                 self.renderInitialMarker(coordinates: location.coordinates, accuracy: location.horizontalAccuracyInMeters ?? 0.0)
             } else if let stationCoordinates = mapCoordinates.stationAddressCoordinates {
                 self.renderInitialMarker(coordinates: stationCoordinates, accuracy: 0.0)
@@ -159,8 +161,8 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
             self.recenterMapPosition = recenterMapPosition
 
-            if mapController?.getIsNavigationInProgress() ?? false {
-                mapController?.enableCameraTracking()
+            if mapController?.navigationHelper.isNavigationInProgress ?? false {
+                mapController?.navigationHelper.startCameraTracking()
             } else {
                 let initialMarkerCoordinates = mapController?.getMarkerCoordinates(markerType: .INITIAL)
                 let incidentAddressCoordinates = mapController?.getMarkerCoordinates(markerType: .INCIDENT_ADDRESS)
@@ -337,10 +339,10 @@ extension FCPMapViewController {
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerPinSize, height: markerPinSize), metadata: metadata)
     }
 
-    func flyToCoordinates(coordinates: GeoCoordinates) {
+    func flyToCoordinates(coordinates: GeoCoordinates, bowFactor: Double = 0.2) {
         print("principlePoint at fly to: \(mapView.camera.principalPoint)")
 
-        let animation = MapCameraAnimationFactory.flyTo(target: GeoCoordinatesUpdate(coordinates), orientation: GeoOrientationUpdate(bearing: 0.0, tilt: 0.0), zoom: MapMeasure(kind: .distance, value: 8000), bowFactor: 0.2, duration: TimeInterval(1))
+        let animation = MapCameraAnimationFactory.flyTo(target: GeoCoordinatesUpdate(coordinates), orientation: GeoOrientationUpdate(bearing: 0.0, tilt: 0.0), zoom: MapMeasure(kind: .distance, value: ConstantsEnum.DEFAULT_DISTANCE_IN_METERS), bowFactor: bowFactor, duration: TimeInterval(1))
 
         mapView.camera.startAnimation(animation)
     }
@@ -357,5 +359,27 @@ extension FCPMapViewController {
     /// Stops the navigation
     func stopNavigation() {
         mapController?.clearMapButtonClicked()
+    }
+
+    func panInDirection(_ direction: CPMapTemplate.PanDirection) {
+        MemoryLogger.shared.appendEvent("Panning to \(direction).")
+
+        var offset = mapView.camera.principalPoint
+        switch direction {
+        case .down:
+            offset.y += mapView.bounds.size.height / 2.0
+        case .up:
+            offset.y -= mapView.bounds.size.height / 2.0
+        case .left:
+            offset.x -= mapView.bounds.size.width / 2.0
+        case .right:
+            offset.x += mapView.bounds.size.width / 2.0
+        default:
+            break
+        }
+
+        if let coordinates = mapView.viewToGeoCoordinates(viewCoordinates: offset) {
+            flyToCoordinates(coordinates: coordinates, bowFactor: 0.0)
+        }
     }
 }

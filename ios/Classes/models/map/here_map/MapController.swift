@@ -32,7 +32,6 @@ class MapController: LongPressDelegate {
     private let viewController: UIViewController
     private let mapView: MapView
     private let routeCalculator: RouteCalculator
-    private let navigationHelper: NavigationHelper
     private var mapMarkers = [MapMarker]()
     private var mapPolygons = [MapPolygon]()
     private var mapPolylineList = [MapPolyline]()
@@ -40,6 +39,12 @@ class MapController: LongPressDelegate {
     private var destinationWaypoint: Waypoint?
     private var isLongpressDestination = false
     private var messageTextView: UITextView
+
+    let navigationHelper: NavigationHelper
+
+    var lastKnownLocation: Location? {
+        return navigationHelper.lastKnownLocation
+    }
 
     /// Initialize the MapController
     /// - Parameters:
@@ -71,9 +76,9 @@ class MapController: LongPressDelegate {
     }
 
     /// Set the normalized principal point of the VisualNavigator camera.
-    func setVisualNavigatorCameraPoint(normalizedPrincipalPoint: heresdk.Anchor2D) {
-        navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: normalizedPrincipalPoint)
-    }
+//    func setVisualNavigatorCameraPoint(normalizedPrincipalPoint: heresdk.Anchor2D) {
+//        navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: normalizedPrincipalPoint)
+//    }
 
     /// Calculate a route and start navigation using a location simulator.
     /// Start is map center and destination location is set random within viewport,
@@ -93,20 +98,6 @@ class MapController: LongPressDelegate {
     func clearMapButtonClicked() {
         clearMap()
         isLongpressDestination = false
-    }
-
-    /// Enable or disable camera tracking
-    func enableCameraTracking() {
-        navigationHelper.startCameraTracking()
-    }
-
-    /// Enable or disable camera tracking
-    func disableCameraTracking() {
-        navigationHelper.stopCameraTracking()
-    }
-
-    func getIsNavigationInProgress() -> Bool {
-        return navigationHelper.getIsNavigationInProgress()
     }
 
     /// Add a marker on the map.
@@ -173,8 +164,9 @@ class MapController: LongPressDelegate {
 
             // When routingError is nil, routes is guaranteed to contain at least one route.
             let route = routes!.first
-            self.showRouteOnMap(route: route!)
-            self.showRouteDetails(route: route!, isSimulated: isSimulated)
+//            self.showRouteOnMap(route: route!)
+//            self.showRouteDetails(route: route!, isSimulated: isSimulated)
+            self.navigationHelper.startNavigation(route: route!, isSimulated: isSimulated)
         }
     }
 
@@ -183,7 +175,7 @@ class MapController: LongPressDelegate {
     /// - Returns: True if waypoints are determined, false if not.
     private func determineRouteWaypoints(isSimulated: Bool) -> Bool {
         // When using real GPS locations, we always start from the current location of user.
-        guard let location = navigationHelper.getLastKnownLocation() else {
+        guard let location = lastKnownLocation else {
             onNavigationFailed(title: "Error", message: "No location found.")
             return false
         }
@@ -354,12 +346,6 @@ class MapController: LongPressDelegate {
     /// - Returns: Map view center
     private func getMapViewCenter() -> GeoCoordinates {
         return mapView.camera.state.targetCoordinates
-    }
-
-    /// Get the last known location
-    /// - Returns: Last known location
-    func getLastKnownLocation() -> Location? {
-        return navigationHelper.getLastKnownLocation()
     }
 
     /// Get the marker coordinates

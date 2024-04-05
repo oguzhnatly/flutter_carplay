@@ -34,8 +34,13 @@ class NavigationHelper: DynamicRoutingDelegate {
     private let navigationEventHandler: NavigationEventHandler
     private let messageTextView: UITextView
     private let mapView: MapView
-    private var visualNavigatorCameraPoint: Anchor2D?
-    private var isNavigationInProgress = false
+
+    var visualNavigatorCameraPoint: Anchor2D?
+    var isNavigationInProgress = false
+
+    var lastKnownLocation: Location? {
+        return herePositioningProvider.getLastKnownLocation()
+    }
 
     init(mapView: MapView, messageTextView: UITextView) {
         self.messageTextView = messageTextView
@@ -114,8 +119,8 @@ class NavigationHelper: DynamicRoutingDelegate {
         }
     }
 
-    // Conform to the DynamicRoutingDelegate.
-    // Notifies on traffic-optimized routes that are considered better than the current route.
+    /// Conform to the DynamicRoutingDelegate.
+    /// Notifies on traffic-optimized routes that are considered better than the current route.
     func onBetterRouteFound(newRoute _: Route,
                             etaDifferenceInSeconds: Int32,
                             distanceDifferenceInMeters: Int32)
@@ -128,11 +133,16 @@ class NavigationHelper: DynamicRoutingDelegate {
         // on above criteria.
     }
 
-    // Conform to the DynamicRoutingDelegate.
+    /// Conform to the DynamicRoutingDelegate.
+    /// - Parameter routingError: The error that occurred.
     func onRoutingError(routingError: RoutingError) {
         print("Error while dynamically searching for a better route: \(routingError).")
     }
 
+    /// Starts navigation.
+    /// - Parameters:
+    ///   - route: The route to be used for navigation.
+    ///   - isSimulated: Whether to use simulated locations.
     func startNavigation(route: Route,
                          isSimulated: Bool)
     {
@@ -167,6 +177,8 @@ class NavigationHelper: DynamicRoutingDelegate {
         startDynamicSearchForBetterRoutes(route)
     }
 
+    /// Starts the dynamic search for better routes.
+    /// - Parameter route: The route to search for better routes.
     private func startDynamicSearchForBetterRoutes(_ route: Route) {
         do {
             // Note that the engine will be internally stopped, if it was started before.
@@ -177,6 +189,7 @@ class NavigationHelper: DynamicRoutingDelegate {
         }
     }
 
+    /// Stop navigation.
     func stopNavigation() {
         // Switches to tracking mode when a route was set before, otherwise tracking mode is kept.
         // Without a route the navigator will only notify on the current map-matched location
@@ -196,42 +209,44 @@ class NavigationHelper: DynamicRoutingDelegate {
         showMessage("Tracking device's location.")
     }
 
-    // Provides location updates based on the given route.
+    /// Provides location updates based on the given route.
     func enableRoutePlayback(route: Route) {
         herePositioningProvider.stopLocating()
         herePositioningSimulator.startLocating(locationDelegate: visualNavigator, route: route)
     }
 
-    // Provides location updates based on the device's GPS sensor.
+    /// Provides location updates based on the device's GPS sensor.
     func enableDevicePositioning() {
         herePositioningSimulator.stopLocating()
         herePositioningProvider.startLocating(locationDelegate: visualNavigator,
                                               accuracy: .navigation)
     }
 
+    /// Start the camera tracking
+    /// Set the normalized principal point of the VisualNavigator camera.
     func startCameraTracking() {
-        visualNavigator.cameraBehavior = DynamicCameraBehavior()
+        if visualNavigator.cameraBehavior == nil {
+            visualNavigator.cameraBehavior = DynamicCameraBehavior()
+        }
+        if let normalizedPrincipalPoint = visualNavigatorCameraPoint {
+            visualNavigator.cameraBehavior?.normalizedPrincipalPoint = normalizedPrincipalPoint
+        }
     }
 
+    /// Stop the camera tracking
     func stopCameraTracking() {
         visualNavigator.cameraBehavior = nil
     }
 
-    func getIsNavigationInProgress() -> Bool {
-        return isNavigationInProgress
-    }
-
-    func getLastKnownLocation() -> Location? {
-        return herePositioningProvider.getLastKnownLocation()
-    }
-
     /// Set the normalized principal point of the VisualNavigator camera.
+    /// - Parameter normalizedPrincipalPoint: The normalized principal point to set.
     func setVisualNavigatorCameraPoint(normalizedPrincipalPoint: heresdk.Anchor2D) {
         visualNavigatorCameraPoint = normalizedPrincipalPoint
         visualNavigator.cameraBehavior?.normalizedPrincipalPoint = normalizedPrincipalPoint
     }
 
-    // A permanent view to show log content.
+    /// A permanent view to show log content.
+    /// - Parameter message: Log message to show in the view.
     private func showMessage(_ message: String) {
         messageTextView.text = message
         messageTextView.textColor = .white

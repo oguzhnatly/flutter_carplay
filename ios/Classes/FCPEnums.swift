@@ -151,6 +151,12 @@ enum FCPChannelTypes {
     /// Event for showing a trip preview in CarPlay.
     static let hideTripPreviews = "hideTripPreviews"
 
+    /// Event for showing the panning interface in CarPlay.
+    static let showPanningInterface = "showPanningInterface"
+
+    /// Event for dismissing the panning interface in CarPlay.
+    static let dismissPanningInterface = "dismissPanningInterface"
+
     /// Event for start navigation.
     static let startNavigation = "startNavigation"
 
@@ -183,6 +189,12 @@ enum FCPChannelTypes {
 
     /// Event for failed navigation from CarPlay.
     static let onNavigationFailedFromCarPlay = "onNavigationFailedFromCarPlay"
+
+    /// Event for zooming in the map view in CarPlay.
+    static let zoomInMapView = "zoomInMapView"
+
+    /// Event for zooming out the map view in CarPlay.
+    static let zoomOutMapView = "zoomOutMapView"
 }
 
 /// Enum defining different types of alert actions in CarPlay.

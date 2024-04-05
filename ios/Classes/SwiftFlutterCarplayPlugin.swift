@@ -505,6 +505,38 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
             result(false)
 
+        case FCPChannelTypes.showPanningInterface:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String,
+                  let animated = args["animated"] as? Bool
+            else {
+                result(false)
+                return
+            }
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+                mapTemplate.showPanningInterface(animated: animated)
+                return result(true)
+            }
+            result(false)
+
+        case FCPChannelTypes.dismissPanningInterface:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String,
+                  let animated = args["animated"] as? Bool
+            else {
+                result(false)
+                return
+            }
+
+            // Find the map template based on the provided element ID
+            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+                mapTemplate.dismissPanningInterface(animated: animated)
+                return result(true)
+            }
+            result(false)
+
         case FCPChannelTypes.startNavigation:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,

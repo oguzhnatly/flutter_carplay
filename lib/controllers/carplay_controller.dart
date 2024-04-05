@@ -101,6 +101,29 @@ class FlutterCarPlayController {
     );
   }
 
+  /// Show panning interface on the [CPMapTemplate]
+  static void showPanningInterface(String elementId, {bool animated = true}) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.showPanningInterface.name,
+      {
+        '_elementId': elementId,
+        'animated': animated,
+      },
+    );
+  }
+
+  /// Dismiss panning interface on the [CPMapTemplate]
+  static void dismissPanningInterface(String elementId,
+      {bool animated = true}) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.dismissPanningInterface.name,
+      {
+        '_elementId': elementId,
+        'animated': animated,
+      },
+    );
+  }
+
   /// Starts a navigation.
   static void startNavigation(
     String elementId,

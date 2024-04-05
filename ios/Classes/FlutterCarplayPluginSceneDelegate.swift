@@ -42,11 +42,11 @@ extension FlutterCarPlaySceneDelegate: CPTemplateApplicationSceneDelegate {
     /// Called when the template application scene connects to an interface controller and window.
     func templateApplicationScene(_: CPTemplateApplicationScene, didConnect interfaceController: CPInterfaceController, to window: CPWindow) {
         MemoryLogger.shared.appendEvent("Connected to CarPlay.")
-
         FlutterCarPlaySceneDelegate.carWindow = window
+        FlutterCarPlaySceneDelegate.carWindow?.isUserInteractionEnabled = true
+        FlutterCarPlaySceneDelegate.carWindow?.isMultipleTouchEnabled = true
         FlutterCarPlaySceneDelegate.interfaceController = interfaceController
         FlutterCarPlaySceneDelegate.interfaceController?.delegate = self
-
         if let rootViewController = SwiftFlutterCarplayPlugin.rootViewController {
             window.rootViewController = rootViewController
         }

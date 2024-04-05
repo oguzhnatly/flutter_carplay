@@ -194,6 +194,14 @@ extension FCPMapTemplate {
 
         fcpMapViewController?.stopNavigation()
     }
+
+    func showPanningInterface(animated: Bool) {
+        _super?.showPanningInterface(animated: animated)
+    }
+
+    func dismissPanningInterface(animated: Bool) {
+        _super?.dismissPanningInterface(animated: animated)
+    }
 }
 
 // MARK: - CPMapTemplateDelegate
@@ -206,6 +214,18 @@ extension FCPMapTemplate: CPMapTemplateDelegate {
         DispatchQueue.main.async {
             FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onNavigationStartedFromCarPlay, data: ["sourceLatitude": originCoordinate.latitude, "sourceLongitude": originCoordinate.longitude, "destinationLatitude": destinationCoordinate.latitude, "destinationLongitude": destinationCoordinate.longitude])
         }
+    }
+
+    /// Called when the panning interface is shown
+    /// - Parameter _:  The map template
+    func mapTemplateDidShowPanningInterface(_: CPMapTemplate) {}
+
+    /// Called when the panning interface is dismissed
+    /// - Parameter _: The map template
+    func mapTemplateDidDismissPanningInterface(_: CPMapTemplate) {}
+
+    func mapTemplate(_: CPMapTemplate, panWith direction: CPMapTemplate.PanDirection) {
+        fcpMapViewController?.panInDirection(direction)
     }
 }
 

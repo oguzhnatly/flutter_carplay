@@ -132,6 +132,12 @@ enum FCPChannelTypes {
   /// Event for hiding a trip preview in CarPlay.
   hideTripPreviews,
 
+  /// Event for showing the panning interface in CarPlay.
+  showPanningInterface,
+
+  /// Event for dismissing the panning interface in CarPlay.
+  dismissPanningInterface,
+
   /// Event for starting a navigation in CarPlay.
   startNavigation,
 
@@ -164,4 +170,10 @@ enum FCPChannelTypes {
 
   /// Event for failed the navigation from CarPlay.
   onNavigationFailedFromCarPlay,
+
+  /// Event for zooming in the map view in CarPlay.
+  zoomInMapView,
+
+  /// Event for zooming out the map view in CarPlay.
+  zoomOutMapView,
 }
