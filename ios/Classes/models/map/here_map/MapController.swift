@@ -185,7 +185,7 @@ class MapController: LongPressDelegate {
         }
         print("Last known location: \(location.coordinates)")
 
-        startingWaypoint = Waypoint(coordinates: GeoCoordinates(latitude: -36.07478, longitude: 146.908629))
+        startingWaypoint = Waypoint(coordinates: location.coordinates)
 
         // If a driver is moving, the bearing value can help to improve the route calculation.
         startingWaypoint?.headingInDegrees = location.bearingInDegrees
