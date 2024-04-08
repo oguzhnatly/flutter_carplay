@@ -51,6 +51,17 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
     private var isVoiceInstructionsMuted = false
 
+    private var isReroutingInProgress = false
+    private var deviationEventCount = 0
+
+    var mapTemplate: CPMapTemplate? {
+        return SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate
+    }
+
+    var navigationSession: CPNavigationSession? {
+        return (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
+    }
+
     init(_ visualNavigator: VisualNavigator,
          _ dynamicRoutingEngine: DynamicRoutingEngine,
          _ messageTextView: UITextView)
@@ -120,58 +131,20 @@ class NavigationEventHandler: NavigableLocationDelegate,
             return
         }
 
-        let action = String(describing: currentManeuver.action)
-        let roadName = getRoadName(maneuver: currentManeuver) ?? ""
-        let nextRoadName = currentManeuver.nextRoadTexts.names.defaultValue() ?? ""
+        let initialTravelEstimates = CPTravelEstimates(distanceRemaining: getMeasurement(distanceInMeters: currentManeuverProgress.remainingDistanceInMeters), timeRemaining: currentManeuverProgress.remainingDuration)
 
-        let mapTemplate = SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate
-        let navSession = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navSession
-
-        let estimates = CPTravelEstimates(distanceRemaining: getMeasurement(distanceInMeters: currentManeuverProgress.remainingDistanceInMeters), timeRemaining: currentManeuverProgress.remainingDuration)
-
-        let destinationEstimates = CPTravelEstimates(distanceRemaining: getMeasurement(distanceInMeters: distanceToDestination), timeRemaining: timeToDestination)
+        let travelEstimates = CPTravelEstimates(distanceRemaining: getMeasurement(distanceInMeters: distanceToDestination), timeRemaining: timeToDestination)
 
         // Check if the current maneuver has changed
         if previousManeuverIndex != currentManeuverIndex {
             // Log only new maneuvers and ignore changes in distance.
 
-            primaryManeuverActionTextHandler = { [weak self] actionText in
-                guard self != nil else { return }
-
-                print("Primary maneuver: \(actionText)")
-                let cpManeuver = CPManeuver()
-                cpManeuver.instructionVariants = [actionText]
-                cpManeuver.initialTravelEstimates = estimates
-
-                let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/light/\(action).png",
-                                                       darkImage: "assets/icons/car_play/maneuvers/dark/\(action).png")
-                cpManeuver.symbolImage = symbolImage
-
-                navSession?.upcomingManeuvers = [cpManeuver]
-
-                if let trip = navSession?.trip {
-                    mapTemplate?.updateEstimates(destinationEstimates, for: trip)
-                }
-            }
-
-            FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
-                                             data: [
-                                                 "action": action,
-                                                 "roadName": roadName,
-                                                 "nextRoadName": nextRoadName,
-                                                 "isPrimary": true,
-                                             ])
+            showPrimaryManeuver(maneuver: currentManeuver, initialTravelEstimates: initialTravelEstimates, travelEstimates: travelEstimates)
 
         } else {
             // A maneuver update contains a different distance to reach the next maneuver.
 
-            if let cpManeuver = navSession?.upcomingManeuvers.first as? CPManeuver {
-                navSession?.updateEstimates(estimates, for: cpManeuver)
-            }
-
-            if let trip = navSession?.trip {
-                mapTemplate?.updateEstimates(destinationEstimates, for: trip)
-            }
+            updateEstimates(initialTravelEstimates: initialTravelEstimates, travelEstimates: travelEstimates)
         }
 
         // Check if the next maneuver is available and the distance is less than 500m.
@@ -184,39 +157,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
                 return
             }
 
-            let action = String(describing: nextManeuver.action)
-            let roadName = getRoadName(maneuver: nextManeuver) ?? ""
-            let nextRoadName = nextManeuver.nextRoadTexts.names.defaultValue() ?? ""
-
-            secondaryManeuverActionTextHandler = { [weak self] actionText in
-                guard self != nil else { return }
-                print("Secondary maneuver: \(actionText)")
-
-                let maneuverTextArr = nextManeuver.text.components(separatedBy: " ")
-                let formattedManeuverText = maneuverTextArr.count > 3 ? Array(maneuverTextArr.prefix(3)).joined(separator: " ").appending("...") : nextManeuver.text
-
-                let cpManeuver = CPManeuver()
-                cpManeuver.instructionVariants = [actionText, nextManeuver.text, formattedManeuverText]
-
-                let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/light/\(action).png",
-                                                       darkImage: "assets/icons/car_play/maneuvers/dark/\(action).png")
-                cpManeuver.symbolImage = symbolImage
-
-                if var upcomingManeuvers = navSession?.upcomingManeuvers,
-                   upcomingManeuvers.count < 2
-                {
-                    upcomingManeuvers.append(cpManeuver)
-                    navSession?.upcomingManeuvers = upcomingManeuvers
-                }
-            }
-
-            FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
-                                             data: [
-                                                 "action": action,
-                                                 "roadName": roadName,
-                                                 "nextRoadName": nextRoadName,
-                                                 "isPrimary": false,
-                                             ])
+            showSecondaryManeuver(maneuver: nextManeuver)
         }
 
         // Update the previous maneuver index.
@@ -229,6 +170,96 @@ class NavigationEventHandler: NavigableLocationDelegate,
                 mapMatchedLocation: lastMapMatchedLocation,
                 sectionIndex: routeProgress.sectionIndex
             )
+        }
+    }
+
+    /// Show primary maneuver
+    /// - Parameters:
+    ///   - maneuver: maneuver
+    ///   - initialTravelEstimates: initial travel estimates
+    ///   - travelEstimates: travel estimates
+    func showPrimaryManeuver(maneuver: Maneuver, initialTravelEstimates: CPTravelEstimates, travelEstimates: CPTravelEstimates) {
+        let action = String(describing: maneuver.action)
+        let roadName = getRoadName(maneuver: maneuver) ?? ""
+        let nextRoadName = maneuver.nextRoadTexts.names.defaultValue() ?? ""
+
+        primaryManeuverActionTextHandler = { [weak self] actionText in
+            guard let self = self else { return }
+
+            print("Primary maneuver: \(actionText)")
+            let cpManeuver = CPManeuver()
+            cpManeuver.instructionVariants = [actionText]
+            cpManeuver.initialTravelEstimates = initialTravelEstimates
+
+            let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/light/\(action).png",
+                                                   darkImage: "assets/icons/car_play/maneuvers/dark/\(action).png")
+            cpManeuver.symbolImage = symbolImage
+
+            self.navigationSession?.upcomingManeuvers = [cpManeuver]
+
+            if let trip = self.navigationSession?.trip {
+                mapTemplate?.updateEstimates(travelEstimates, for: trip)
+            }
+        }
+
+        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
+                                         data: [
+                                             "action": action,
+                                             "roadName": roadName,
+                                             "nextRoadName": nextRoadName,
+                                             "isPrimary": true,
+                                         ])
+    }
+
+    /// Show secondary maneuver
+    /// - Parameter maneuver: maneuver
+    func showSecondaryManeuver(maneuver: Maneuver) {
+        let action = String(describing: maneuver.action)
+        let roadName = getRoadName(maneuver: maneuver) ?? ""
+        let nextRoadName = maneuver.nextRoadTexts.names.defaultValue() ?? ""
+
+        secondaryManeuverActionTextHandler = { [weak self] actionText in
+            guard let self = self else { return }
+            print("Secondary maneuver: \(actionText)")
+
+            let maneuverTextArr = maneuver.text.components(separatedBy: " ")
+            let formattedManeuverText = maneuverTextArr.count > 3 ? Array(maneuverTextArr.prefix(3)).joined(separator: " ").appending("...") : maneuver.text
+
+            let cpManeuver = CPManeuver()
+            cpManeuver.instructionVariants = [actionText, maneuver.text, formattedManeuverText]
+
+            let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/light/\(action).png",
+                                                   darkImage: "assets/icons/car_play/maneuvers/dark/\(action).png")
+            cpManeuver.symbolImage = symbolImage
+
+            if var upcomingManeuvers = self.navigationSession?.upcomingManeuvers,
+               upcomingManeuvers.count < 2
+            {
+                upcomingManeuvers.append(cpManeuver)
+                self.navigationSession?.upcomingManeuvers = upcomingManeuvers
+            }
+        }
+
+        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
+                                         data: [
+                                             "action": action,
+                                             "roadName": roadName,
+                                             "nextRoadName": nextRoadName,
+                                             "isPrimary": false,
+                                         ])
+    }
+
+    /// Update estimates
+    /// - Parameters:
+    ///   - initialTravelEstimates: initial travel estimates
+    ///   - travelEstimates: travel estimates
+    func updateEstimates(initialTravelEstimates: CPTravelEstimates, travelEstimates: CPTravelEstimates) {
+        if let cpManeuver = navigationSession?.upcomingManeuvers.first as? CPManeuver {
+            navigationSession?.updateEstimates(initialTravelEstimates, for: cpManeuver)
+        }
+
+        if let trip = navigationSession?.trip {
+            mapTemplate?.updateEstimates(travelEstimates, for: trip)
         }
     }
 
@@ -387,13 +418,15 @@ class NavigationEventHandler: NavigableLocationDelegate,
     // Notifies on a possible deviation from the route.
     // - Parameter routeDeviation: The possible deviation from the route.
     func onRouteDeviation(_ routeDeviation: RouteDeviation) {
+        print("onRouteDeviation: \(routeDeviation)")
         guard let route = visualNavigator.route else {
             // May happen in rare cases when route was set to nil inbetween.
             return
         }
 
         // Get current geographic coordinates.
-        var currentGeoCoordinates = routeDeviation.currentLocation.originalLocation.coordinates
+        let originalLocation = routeDeviation.currentLocation.originalLocation
+        var currentGeoCoordinates = originalLocation.coordinates
         if let currentMapMatchedLocation = routeDeviation.currentLocation.mapMatchedLocation {
             currentGeoCoordinates = currentMapMatchedLocation.coordinates
         }
@@ -418,6 +451,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
         let distanceInMeters = currentGeoCoordinates.distance(to: lastGeoCoordinatesOnRoute)
         print("RouteDeviation in meters is \(distanceInMeters)")
 
+        let startingWaypoint = Waypoint(coordinates: originalLocation.coordinates, headingInDegrees: originalLocation.bearingInDegrees)
+
         // Now, an application needs to decide if the user has deviated far enough and
         // what should happen next: For example, you can notify the user or simply try to
         // calculate a new route. When you calculate a new route, you can, for example,
@@ -428,6 +463,20 @@ class NavigationEventHandler: NavigableLocationDelegate,
         // complete.
         // The deviation event is sent any time an off-route location is detected: It may make
         // sense to await around 3 events before deciding on possible actions.
+
+        deviationEventCount += 1
+        if distanceInMeters >=
+            ConstantsEnum.ROUTE_DEVIATION_DISTANCE &&
+            deviationEventCount >= 3 &&
+            !isReroutingInProgress
+        {
+            isReroutingInProgress = true
+
+            reroutingHandler?(startingWaypoint, {
+                self.deviationEventCount = 0
+                self.isReroutingInProgress = false
+            })
+        }
     }
 
     // Conform to EventTextDelegate.

@@ -42,7 +42,7 @@ class FCPMapTemplate: NSObject {
     private var hidesButtonsWithNavigationBar: Bool = false
 
     /// Navigation session used to manage the upcomingManeuvers and  arrival estimation details
-    var navSession: CPNavigationSession?
+    var navigationSession: CPNavigationSession?
 
     /// Get the `FCPMapViewController` associated with the map template.
     var fcpMapViewController: FCPMapViewController? {
@@ -177,20 +177,20 @@ extension FCPMapTemplate {
     /// Starts the navigation
     /// - Parameter trip: The trip to start navigation
     func startNavigation(trip: CPTrip) {
-        if navSession != nil {
-            navSession?.finishTrip()
-            navSession = nil
+        if navigationSession != nil {
+            navigationSession?.finishTrip()
+            navigationSession = nil
         }
 
         hideTripPreviews()
-        navSession = _super?.startNavigationSession(for: trip)
+        navigationSession = _super?.startNavigationSession(for: trip)
         fcpMapViewController?.startNavigation(trip: trip)
     }
 
     /// Stops the navigation
     func stopNavigation() {
-        navSession?.finishTrip()
-        navSession = nil
+        navigationSession?.finishTrip()
+        navigationSession = nil
 
         fcpMapViewController?.stopNavigation()
     }

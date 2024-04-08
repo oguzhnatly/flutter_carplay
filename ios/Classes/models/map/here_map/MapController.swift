@@ -24,6 +24,7 @@ import UIKit
 enum ConstantsEnum {
     static let DEFAULT_MAP_CENTER = GeoCoordinates(latitude: 52.520798, longitude: 13.409408)
     static let DEFAULT_DISTANCE_IN_METERS: Double = 1000 * 2
+    static let ROUTE_DEVIATION_DISTANCE = 20.0 // In Meters
 }
 
 // An app that allows to calculate a route and start navigation, using either platform positioning or
@@ -66,8 +67,36 @@ class MapController: LongPressDelegate {
                                             messageTextView: messageTextView)
         navigationHelper.startLocationProvider()
 
+        // Toggle offline mode to change the RouteCalculator instance
         toggleOfflineModeHandler = { [weak self] isOffline in
             self?.routeCalculator = RouteCalculator(isOfflineMode: isOffline)
+        }
+
+        // Re-Routing callback to find new route
+        reroutingHandler = { [weak self] startWayPoint, completion in
+            guard let self = self else { return }
+
+            let navigationSession = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
+            navigationSession?.pauseTrip(for: .rerouting, description: "")
+
+            self.startingWaypoint = startWayPoint
+
+            // Calculates a car route.
+            self.routeCalculator.calculateRoute(start: self.startingWaypoint!,
+                                                destination: self.destinationWaypoint!)
+            { routingError, routes in
+                if let error = routingError {
+                    self.onNavigationFailed(title: "Error while calculating a reroute:", message: "\(error)")
+                    completion()
+                    return
+                }
+
+                // When routingError is nil, routes is guaranteed to contain at least one route.
+                let route = routes!.first
+                self.showRouteDetails(route: route!)
+                self.navigationHelper.onNewRoute(route: route!)
+                completion()
+            }
         }
 
         setLongPressGestureHandler()
@@ -169,7 +198,7 @@ class MapController: LongPressDelegate {
             // When routingError is nil, routes is guaranteed to contain at least one route.
             let route = routes!.first
 //            self.showRouteOnMap(route: route!)
-//            self.showRouteDetails(route: route!, isSimulated: isSimulated)
+            self.showRouteDetails(route: route!)
             self.navigationHelper.startNavigation(route: route!, isSimulated: isSimulated)
         }
     }
@@ -203,20 +232,19 @@ class MapController: LongPressDelegate {
     /// Shows the route details on the screen.
     /// - Parameters:
     ///   - route: The route.
-    ///   - isSimulated: Whether to use simulated locations.
-    private func showRouteDetails(route: Route, isSimulated: Bool) {
+    private func showRouteDetails(route: Route) {
+        guard let maneuver = route.sections.first?.maneuvers.first else { return }
+
         let estimatedTravelTimeInSeconds = route.duration
         let lengthInMeters = route.lengthInMeters
 
-//        let routeDetails = "Travel Time: " + formatTime(sec: estimatedTravelTimeInSeconds)
-//                         + ", Length: " + formatLength(meters: lengthInMeters)
+        let navigationEventHandler = navigationHelper.navigationEventHandler
 
-        navigationHelper.startNavigation(route: route, isSimulated: isSimulated)
+        let initialTravelEstimates = CPTravelEstimates(distanceRemaining: navigationEventHandler.getMeasurement(distanceInMeters: maneuver.lengthInMeters), timeRemaining: maneuver.duration)
 
-        // showStartNavigationDialog(title: "Route Details",
-//                                  message: routeDetails,
-//                                  route: route,
-//                                  isSimulated: isSimulated)
+        let travelEstimates = CPTravelEstimates(distanceRemaining: navigationEventHandler.getMeasurement(distanceInMeters: lengthInMeters), timeRemaining: estimatedTravelTimeInSeconds)
+
+        navigationEventHandler.showPrimaryManeuver(maneuver: maneuver, initialTravelEstimates: initialTravelEstimates, travelEstimates: travelEstimates)
     }
 
     /// Format time in minutes and seconds

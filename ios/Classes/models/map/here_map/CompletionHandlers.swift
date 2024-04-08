@@ -31,6 +31,9 @@ var recenterMapViewHandler: ((String) -> Void)?
 /// Completion handler for update map coordinates.
 var updateMapCoordinatesHandler: ((MapCoordinates) -> Void)?
 
+/// Completion handler for on route deviation
+var reroutingHandler: ((Waypoint, @escaping () -> Void) -> Void)?
+
 class MapCoordinates {
     let stationAddressCoordinates: GeoCoordinates?
     let incidentAddressCoordinates: GeoCoordinates?

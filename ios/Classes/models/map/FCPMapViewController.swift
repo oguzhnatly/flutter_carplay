@@ -339,10 +339,10 @@ extension FCPMapViewController {
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerPinSize, height: markerPinSize), metadata: metadata)
     }
 
-    func flyToCoordinates(coordinates: GeoCoordinates, bowFactor: Double = 0.2) {
+    func flyToCoordinates(coordinates: GeoCoordinates, bowFactor: Double = 0.2, duration: TimeInterval = TimeInterval(1)) {
         print("principlePoint at fly to: \(mapView.camera.principalPoint)")
 
-        let animation = MapCameraAnimationFactory.flyTo(target: GeoCoordinatesUpdate(coordinates), orientation: GeoOrientationUpdate(bearing: 0.0, tilt: 0.0), zoom: MapMeasure(kind: .distance, value: ConstantsEnum.DEFAULT_DISTANCE_IN_METERS), bowFactor: bowFactor, duration: TimeInterval(1))
+        let animation = MapCameraAnimationFactory.flyTo(target: GeoCoordinatesUpdate(coordinates), orientation: GeoOrientationUpdate(bearing: 0.0, tilt: 0.0), zoom: MapMeasure(kind: .distance, value: ConstantsEnum.DEFAULT_DISTANCE_IN_METERS), bowFactor: bowFactor, duration: duration)
 
         mapView.camera.startAnimation(animation)
     }
@@ -353,7 +353,7 @@ extension FCPMapViewController {
         let wayPoint = Waypoint(coordinates: GeoCoordinates(latitude: trip.destination.placemark.coordinate.latitude, longitude: trip.destination.placemark.coordinate.longitude))
         mapController?.setDestinationWaypoint(wayPoint)
 
-        mapController?.addRouteSimulatedLocation()
+        mapController?.addRouteDeviceLocation()
     }
 
     /// Stops the navigation
@@ -379,7 +379,7 @@ extension FCPMapViewController {
         }
 
         if let coordinates = mapView.viewToGeoCoordinates(viewCoordinates: offset) {
-            flyToCoordinates(coordinates: coordinates, bowFactor: 0.0)
+            flyToCoordinates(coordinates: coordinates, bowFactor: 0.0, duration: TimeInterval(0.5))
         }
     }
 }

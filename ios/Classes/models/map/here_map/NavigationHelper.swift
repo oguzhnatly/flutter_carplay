@@ -31,9 +31,10 @@ class NavigationHelper: DynamicRoutingDelegate {
     private let herePositioningProvider: HEREPositioningProvider
     private let herePositioningSimulator: HEREPositioningSimulator
     private let routePrefetcher: RoutePrefetcher
-    private let navigationEventHandler: NavigationEventHandler
     private let messageTextView: UITextView
     private let mapView: MapView
+
+    let navigationEventHandler: NavigationEventHandler
 
     var visualNavigatorCameraPoint: Anchor2D?
     var isNavigationInProgress = false
@@ -137,6 +138,12 @@ class NavigationHelper: DynamicRoutingDelegate {
     /// - Parameter routingError: The error that occurred.
     func onRoutingError(routingError: RoutingError) {
         print("Error while dynamically searching for a better route: \(routingError).")
+    }
+
+    /// On new route
+    /// - Parameter route: The new route
+    func onNewRoute(route: Route) {
+        visualNavigator.route = route
     }
 
     /// Starts navigation.
