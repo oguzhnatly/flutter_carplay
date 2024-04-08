@@ -31,7 +31,7 @@ enum ConstantsEnum {
 class MapController: LongPressDelegate {
     private let viewController: UIViewController
     private let mapView: MapView
-    private let routeCalculator: RouteCalculator
+    private var routeCalculator: RouteCalculator
     private var mapMarkers = [MapMarker]()
     private var mapPolygons = [MapPolygon]()
     private var mapPolylineList = [MapPolyline]()
@@ -60,11 +60,15 @@ class MapController: LongPressDelegate {
         mapView.camera.lookAt(point: ConstantsEnum.DEFAULT_MAP_CENTER,
                               zoom: distanceInMeters)
 
-        routeCalculator = RouteCalculator()
+        routeCalculator = RouteCalculator(isOfflineMode: SDKNativeEngine.sharedInstance?.isOfflineMode ?? false)
 
         navigationHelper = NavigationHelper(mapView: mapView,
                                             messageTextView: messageTextView)
         navigationHelper.startLocationProvider()
+
+        toggleOfflineModeHandler = { [weak self] isOffline in
+            self?.routeCalculator = RouteCalculator(isOfflineMode: isOffline)
+        }
 
         setLongPressGestureHandler()
         showMessage("Long press to set a destination or use a random one.")
@@ -181,7 +185,7 @@ class MapController: LongPressDelegate {
         }
         print("Last known location: \(location.coordinates)")
 
-        startingWaypoint = Waypoint(coordinates: location.coordinates)
+        startingWaypoint = Waypoint(coordinates: GeoCoordinates(latitude: -36.07478, longitude: 146.908629))
 
         // If a driver is moving, the bearing value can help to improve the route calculation.
         startingWaypoint?.headingInDegrees = location.bearingInDegrees

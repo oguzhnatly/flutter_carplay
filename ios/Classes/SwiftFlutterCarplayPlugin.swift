@@ -582,6 +582,18 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             result(true)
 
+        case FCPChannelTypes.toggleOfflineMode:
+            guard let args = call.arguments as? [String: Any],
+                  let isOffline = args["isOffline"] as? Bool
+            else {
+                result(false)
+                return
+            }
+
+            toggleOfflineModeHandler?(isOffline)
+
+            result(true)
+
         case FCPChannelTypes.toggleVoiceInstructions:
             guard let args = call.arguments as? [String: Any],
                   let isMuted = args["isMuted"] as? Bool

@@ -174,7 +174,7 @@ class NavigationHelper: DynamicRoutingDelegate {
             showMessage("Starting navigation.")
         }
 
-        startDynamicSearchForBetterRoutes(route)
+//        startDynamicSearchForBetterRoutes(route)
     }
 
     /// Starts the dynamic search for better routes.

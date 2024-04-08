@@ -21,11 +21,11 @@ import heresdk
 
 // A class that creates car Routes with the HERE SDK.
 class RouteCalculator {
-    private let routingEngine: RoutingEngine
+    private let routingEngine: heresdk.RoutingProtocol
 
-    init() {
+    init(isOfflineMode: Bool = false) {
         do {
-            try routingEngine = RoutingEngine()
+            try routingEngine = isOfflineMode ? OfflineRoutingEngine() : RoutingEngine()
         } catch let engineInstantiationError {
             fatalError("Failed to initialize routing engine. Cause: \(engineInstantiationError)")
         }

@@ -153,6 +153,9 @@ enum FCPChannelTypes {
   /// Event triggered when the maneuver action text request is complete in CarPlay.
   onManeuverActionTextRequestComplete,
 
+  /// Event for toggling offline mode in CarPlay.
+  toggleOfflineMode,
+
   /// Event for toggling a voice instruction in CarPlay.
   toggleVoiceInstructions,
 

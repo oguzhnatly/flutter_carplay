@@ -113,8 +113,10 @@ class FlutterCarPlayController {
   }
 
   /// Dismiss panning interface on the [CPMapTemplate]
-  static void dismissPanningInterface(String elementId,
-      {bool animated = true}) {
+  static void dismissPanningInterface(
+    String elementId, {
+    bool animated = true,
+  }) {
     _methodChannel.invokeMethod(
       FCPChannelTypes.dismissPanningInterface.name,
       {
@@ -157,6 +159,14 @@ class FlutterCarPlayController {
         'actionText': actionText,
         'isPrimary': isPrimary,
       },
+    );
+  }
+
+  /// Toggles offline mode.
+  static void toggleOfflineMode({bool isOffline = false}) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.toggleOfflineMode.name,
+      {'isOffline': isOffline},
     );
   }
 

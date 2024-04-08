@@ -13,6 +13,9 @@ var primaryManeuverActionTextHandler: ((String) -> Void)?
 /// Completion handler for secondary maneuver actions.
 var secondaryManeuverActionTextHandler: ((String) -> Void)?
 
+/// Completion handler for toggle offline mode.
+var toggleOfflineModeHandler: ((Bool) -> Void)?
+
 /// Completion handler for toggle voice instructions.
 var toggleVoiceInstructionsHandler: ((Bool) -> Void)?
 
