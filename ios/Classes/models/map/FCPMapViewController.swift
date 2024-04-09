@@ -63,6 +63,13 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
     var recenterMapPosition: String?
 
+    var isForDashboardScene: Bool {
+        return FlutterCarPlayTemplateManager.shared.isDashboardSceneActive
+    }
+
+    var shouldShowBanner = false
+    var shouldShowOverlay = false
+
     // MARK: - View Lifecycle
 
     override func viewDidLoad() {
@@ -97,7 +104,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
-        let scale = FlutterCarPlaySceneDelegate.carWindow?.screen.scale ?? 1.0
+        let scale = FlutterCarPlayTemplateManager.shared.carWindow?.screen.scale ?? 1.0
         let topSafeArea = view.safeAreaInsets.top * scale
         let leftSafeArea = view.safeAreaInsets.left * scale
         let rightSafeArea = view.safeAreaInsets.right * scale
@@ -212,7 +219,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// - Parameter geoCoordinates: The coordinates of the markers
     func lookAtArea(geoCoordinates: [GeoCoordinates]) {
         if let geoBox = GeoBox.containing(geoCoordinates: geoCoordinates) {
-            let scale = FlutterCarPlaySceneDelegate.carWindow?.screen.scale ?? 1.0
+            let scale = FlutterCarPlayTemplateManager.shared.carWindow?.screen.scale ?? 1.0
             let topSafeArea = view.safeAreaInsets.top * scale
             let leftSafeArea = view.safeAreaInsets.left * scale
             let rightSafeArea = view.safeAreaInsets.right * scale
@@ -239,18 +246,22 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 extension FCPMapViewController {
     /// Displays a banner message at the top of the screen
     func showBanner(message: String, color: Int) {
+        shouldShowBanner = true
         bannerView.setMessage(message)
         bannerView.setBackgroundColor(color)
-        bannerView.isHidden = false
+        bannerView.isHidden = isForDashboardScene
     }
 
     /// Hides the banner message at the top of the screen.
     func hideBanner() {
         bannerView.isHidden = true
+        shouldShowBanner = false
     }
 
     /// Displays a toast message on the screen for a specified duration.
     func showToast(message: String, duration: TimeInterval = 2.0) {
+        guard !isForDashboardScene else { return }
+
         // Cancel any previous toast
         NSObject.cancelPreviousPerformRequests(withTarget: self)
 
@@ -275,6 +286,7 @@ extension FCPMapViewController {
 
     /// Displays an overlay view on the screen.
     func showOverlay(primaryTitle: String?, secondaryTitle: String?, subtitle: String?) {
+        shouldShowOverlay = true
         overlayViewMaxWidth.constant = view.bounds.size.width * 0.65
 
         if let primaryTitle = primaryTitle {
@@ -286,7 +298,7 @@ extension FCPMapViewController {
         if let subtitle = subtitle {
             overlayView.setSubtitle(subtitle)
         }
-        overlayView.isHidden = false
+        overlayView.isHidden = isForDashboardScene
     }
 
     /// Hides the overlay view on the screen.
@@ -295,6 +307,19 @@ extension FCPMapViewController {
         overlayView.setSecondaryTitle("--")
         overlayView.setSubtitle("--")
         overlayView.isHidden = true
+        shouldShowOverlay = false
+    }
+
+    /// Hides subviews when dashboard scene is active
+    func hideSubviews() {
+        bannerView.isHidden = true
+        overlayView.isHidden = true
+    }
+
+    /// Shows subviews when CarPlay scene is active
+    func showSubviews() {
+        bannerView.isHidden = !shouldShowBanner
+        overlayView.isHidden = !shouldShowOverlay
     }
 }
 

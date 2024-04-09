@@ -68,7 +68,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
     /// The CPTemplate history for CarPlay.
     public static var cpTemplateHistory: [CPTemplate] {
-        return FlutterCarPlaySceneDelegate.interfaceController?.templates ?? []
+        return FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.templates ?? []
     }
 
     /// Registers the plugin with the Flutter engine.
@@ -723,11 +723,7 @@ extension SwiftFlutterCarplayPlugin {
             return FCPPointOfInterestTemplate(obj: rootTemplateArgs)
 
         case String(describing: FCPMapTemplate.self):
-            // For FCPMapTemplate, set the rootViewController and update the CarPlay window's rootViewController
             let mapTemplate = FCPMapTemplate(obj: rootTemplateArgs)
-            SwiftFlutterCarplayPlugin.rootViewController = mapTemplate.viewController
-            FlutterCarPlaySceneDelegate.carWindow?.rootViewController = SwiftFlutterCarplayPlugin.rootViewController
-
             return mapTemplate
 
         case String(describing: FCPListTemplate.self):
@@ -774,8 +770,14 @@ extension SwiftFlutterCarplayPlugin {
         case let mapTemplate as FCPMapTemplate:
             // For FCPMapTemplate, set the rootViewController and update the CarPlay window's rootViewController
             cpRootTemplate = mapTemplate.get
+
             SwiftFlutterCarplayPlugin.rootViewController = mapTemplate.viewController
-            FlutterCarPlaySceneDelegate.carWindow?.rootViewController = SwiftFlutterCarplayPlugin.rootViewController
+
+            if FlutterCarPlayTemplateManager.shared.isDashboardSceneActive {
+                FlutterCarPlayTemplateManager.shared.dashboardWindow?.rootViewController = mapTemplate.viewController
+            } else {
+                FlutterCarPlayTemplateManager.shared.carWindow?.rootViewController = mapTemplate.viewController
+            }
 
         case let listTemplate as FCPListTemplate:
             cpRootTemplate = listTemplate.get
@@ -788,9 +790,9 @@ extension SwiftFlutterCarplayPlugin {
 
         // If an FCPRootTemplate is successfully extracted, set it as the root template
         SwiftFlutterCarplayPlugin.rootTemplate = cpRootTemplate
-        FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(cpRootTemplate, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
+        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.setRootTemplate(cpRootTemplate, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
         SwiftFlutterCarplayPlugin.fcpRootTemplate = rootTemplate
-        SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FlutterCarPlaySceneDelegate.fcpConnectionStatus)
+        SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FlutterCarPlayTemplateManager.shared.fcpConnectionStatus)
         let animated = args["animated"] as? Bool ?? false
         SwiftFlutterCarplayPlugin.animated = animated
         result(true)
@@ -1068,7 +1070,7 @@ private extension SwiftFlutterCarplayPlugin {
     ///   - actionWhenFound: The action to perform when the list template is found.
     static func findListTemplate(elementId: String, actionWhenFound: (_ listTemplate: FCPListTemplate) -> Void) {
         // Get the array of FCPListTemplate instances.
-        var templates = getFCPListTemplatesFromHistory()
+        let templates = getFCPListTemplatesFromHistory()
 
         // Iterate through the templates to find the one with the matching element ID.
         for template in templates where template.elementId == elementId {
@@ -1085,7 +1087,7 @@ private extension SwiftFlutterCarplayPlugin {
     ///   - actionWhenFound: The action to perform when the list item is found.
     static func findListItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {
         // Get the array of FCPListTemplate instances.
-        var templates = getFCPListTemplatesFromHistory()
+        let templates = getFCPListTemplatesFromHistory()
 
         // Iterate through the templates, sections, and items to find the one with the matching element ID.
         for template in templates {

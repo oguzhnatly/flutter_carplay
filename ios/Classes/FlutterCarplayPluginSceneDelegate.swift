@@ -6,113 +6,96 @@
 //
 
 import CarPlay
+import UIKit
 
-/// Scene delegate for managing interactions between Flutter and CarPlay.
-@available(iOS 14.0, *)
-class FlutterCarPlaySceneDelegate: UIResponder {
-    /// Static properties to store the CPInterfaceController and CPWindow instances.
-    static var interfaceController: CPInterfaceController?
-    static var carWindow: CPWindow?
-    static var fcpConnectionStatus = FCPConnectionTypes.disconnected {
-        didSet {
-            SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: fcpConnectionStatus)
+class FlutterCarPlaySceneDelegate: NSObject {
+    // MARK: UISceneDelegate
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options _: UIScene.ConnectionOptions) {
+        if scene is CPTemplateApplicationScene, session.configuration.name == "CarPlayConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene will connect.")
+            FlutterCarPlayTemplateManager.shared.isDashboardSceneActive = false
+        } else if scene is CPTemplateApplicationDashboardScene, session.configuration.name == "CarPlayDashboardConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene will connect.")
+            FlutterCarPlayTemplateManager.shared.isDashboardSceneActive = true
         }
     }
 
-    /// Fired when the CarPlay scene becomes active.
+    func sceneDidDisconnect(_ scene: UIScene) {
+        if scene.session.configuration.name == "CarPlayConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene did disconnect.")
+        } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene did disconnect.")
+        }
+
+        FlutterCarPlayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.disconnected
+    }
+
     func sceneDidBecomeActive(_ scene: UIScene) {
-        if scene.session.configuration.name == "TemplateSceneConfiguration" {
-            MemoryLogger.shared.appendEvent("Template application scene did become active.")
+        if scene.session.configuration.name == "CarPlayConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene did become active.")
+            FlutterCarPlayTemplateManager.shared.setActiveMapViewController(with: scene)
+        } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene did become active.")
+            FlutterCarPlayTemplateManager.shared.setActiveMapViewController(with: scene)
         }
-        FlutterCarPlaySceneDelegate.fcpConnectionStatus = FCPConnectionTypes.connected
+
+        FlutterCarPlayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.connected
     }
 
-    /// Fired when the CarPlay scene enters the background.
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        if scene.session.configuration.name == "TemplateSceneConfiguration" {
-            MemoryLogger.shared.appendEvent("Template application scene did enter background.")
+    func sceneWillResignActive(_ scene: UIScene) {
+        if scene.session.configuration.name == "CarPlayConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene will resign active.")
+        } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene will resign active.")
         }
-        FlutterCarPlaySceneDelegate.fcpConnectionStatus = FCPConnectionTypes.background
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        if scene.session.configuration.name == "CarPlayConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene did enter background.")
+        } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect application Dashboard scene did enter background.")
+        }
+        FlutterCarPlayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.background
     }
 }
 
-// MARK: - CPTemplateApplicationSceneDelegate
+// MARK: CPTemplateApplicationSceneDelegate
 
 extension FlutterCarPlaySceneDelegate: CPTemplateApplicationSceneDelegate {
-    /// Called when the template application scene connects to an interface controller and window.
-    func templateApplicationScene(_: CPTemplateApplicationScene, didConnect interfaceController: CPInterfaceController, to window: CPWindow) {
+    func templateApplicationScene(_: CPTemplateApplicationScene,
+                                  didConnect interfaceController: CPInterfaceController, to window: CPWindow)
+    {
         MemoryLogger.shared.appendEvent("Connected to CarPlay.")
-        FlutterCarPlaySceneDelegate.carWindow = window
-        FlutterCarPlaySceneDelegate.carWindow?.isUserInteractionEnabled = true
-        FlutterCarPlaySceneDelegate.carWindow?.isMultipleTouchEnabled = true
-        FlutterCarPlaySceneDelegate.interfaceController = interfaceController
-        FlutterCarPlaySceneDelegate.interfaceController?.delegate = self
-        if let rootViewController = SwiftFlutterCarplayPlugin.rootViewController {
-            window.rootViewController = rootViewController
-        }
-
-        FlutterCarPlaySceneDelegate.fcpConnectionStatus = FCPConnectionTypes.connected
-
-        if let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate {
-            FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(rootTemplate, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
-        }
+        FlutterCarPlayTemplateManager.shared.interfaceController(interfaceController, didConnectWith: window)
     }
 
-    /// Called when the template application scene disconnects from an interface controller and window.
-    func templateApplicationScene(_: CPTemplateApplicationScene, didDisconnect _: CPInterfaceController, from _: CPWindow) {
+    func templateApplicationScene(_: CPTemplateApplicationScene,
+                                  didDisconnect interfaceController: CPInterfaceController, from window: CPWindow)
+    {
+        FlutterCarPlayTemplateManager.shared.interfaceController(interfaceController, didDisconnectWith: window)
         MemoryLogger.shared.appendEvent("Disconnected from CarPlay.")
-        if let mapTemplate = SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate {
-            mapTemplate.stopNavigation()
-        }
-        FlutterCarPlaySceneDelegate.fcpConnectionStatus = FCPConnectionTypes.disconnected
-        FlutterCarPlaySceneDelegate.interfaceController = nil
     }
 }
 
-// MARK: - CPInterfaceControllerDelegate
-
-/// Extension conforming to CPInterfaceControllerDelegate for handling template appearance and disappearance events.
-extension FlutterCarPlaySceneDelegate: CPInterfaceControllerDelegate {
-    func templateWillAppear(_: CPTemplate, animated _: Bool) {
-        // MemoryLogger.shared.appendEvent("Template \(aTemplate.classForCoder) will appear.")
+extension FlutterCarPlaySceneDelegate: CPTemplateApplicationDashboardSceneDelegate {
+    func templateApplicationDashboardScene(
+        _: CPTemplateApplicationDashboardScene,
+        didConnect dashboardController: CPDashboardController,
+        to window: UIWindow
+    ) {
+        MemoryLogger.shared.appendEvent("Connected to CarPlay dashboard.")
+        FlutterCarPlayTemplateManager.shared.dashboardController(dashboardController, didConnectWith: window)
     }
 
-    func templateDidAppear(_ aTemplate: CPTemplate, animated _: Bool) {
-        MemoryLogger.shared.appendEvent("Template \(aTemplate.classForCoder) did appear.")
-    }
-
-    func templateWillDisappear(_: CPTemplate, animated _: Bool) {
-        // MemoryLogger.shared.appendEvent("Template \(aTemplate.classForCoder) will disappear.")
-    }
-
-    func templateDidDisappear(_ aTemplate: CPTemplate, animated _: Bool) {
-        MemoryLogger.shared.appendEvent("Template \(aTemplate.classForCoder) did disappear.")
-
-        // Handle the cancel button event on search template
-        if let topTemplate = FlutterCarPlaySceneDelegate.interfaceController?.topTemplate {
-            if aTemplate is CPSearchTemplate && !(topTemplate is CPSearchTemplate) {
-                if let elementId = (((aTemplate as? CPSearchTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPSearchTemplate)?.elementId {
-                    DispatchQueue.main.async {
-                        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onSearchCancelled,
-                                                         data: ["elementId": elementId])
-                    }
-                }
-            } else if aTemplate is CPInformationTemplate, !(topTemplate is CPInformationTemplate) {
-                if let elementId = (((aTemplate as? CPInformationTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPInformationTemplate)?.elementId {
-                    DispatchQueue.main.async {
-                        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onInformationTemplatePopped,
-                                                         data: ["elementId": elementId])
-                    }
-                }
-            } else if aTemplate is CPVoiceControlTemplate, !(topTemplate is CPVoiceControlTemplate) {
-                if let elementId = (((aTemplate as? CPVoiceControlTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPVoiceControlTemplate)?.elementId {
-                    DispatchQueue.main.async {
-                        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onVoiceControlTemplatePopped,
-                                                         data: ["elementId": elementId])
-                    }
-                }
-            }
-        }
+    func templateApplicationDashboardScene(
+        _: CPTemplateApplicationDashboardScene,
+        didDisconnect dashboardController: CPDashboardController,
+        from window: UIWindow
+    ) {
+        FlutterCarPlayTemplateManager.shared.dashboardController(dashboardController, didDisconnectWith: window)
+        MemoryLogger.shared.appendEvent("Disconnected from CarPlay dashboard.")
     }
 }
 
@@ -124,7 +107,7 @@ extension FlutterCarPlaySceneDelegate {
     public static func forceUpdateRootTemplate(completion: ((Bool, Error?) -> Void)? = nil) {
         if let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate {
             let animated = SwiftFlutterCarplayPlugin.animated
-            interfaceController?.setRootTemplate(rootTemplate, animated: animated, completion: completion)
+            FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.setRootTemplate(rootTemplate, animated: animated, completion: completion)
         } else {
             completion?(false, nil)
         }
@@ -133,13 +116,13 @@ extension FlutterCarPlaySceneDelegate {
     /// Pops the current template from the navigation hierarchy.
     public static func pop(animated: Bool, completion: ((Bool, Error?) -> Void)? = nil) {
         MemoryLogger.shared.appendEvent("Pop Template.")
-        interfaceController?.popTemplate(animated: animated, completion: completion)
+        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.popTemplate(animated: animated, completion: completion)
     }
 
     /// Pops to the root template in the navigation hierarchy.
     public static func popToRootTemplate(animated: Bool, completion: ((Bool, Error?) -> Void)? = nil) {
         MemoryLogger.shared.appendEvent("Pop to Root Template.")
-        interfaceController?.popToRootTemplate(animated: animated, completion: completion)
+        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.popToRootTemplate(animated: animated, completion: completion)
     }
 
     /// Pushes a new template onto the navigation hierarchy.
@@ -148,20 +131,20 @@ extension FlutterCarPlaySceneDelegate {
     ///   - animated: A Boolean value that indicates whether the transition should be animated.
     ///   - completion: A closure to be executed upon completion of the push operation.
     public static func push(template: CPTemplate, animated: Bool, completion: ((Bool, Error?) -> Void)? = nil) {
-        guard (interfaceController?.templates.count ?? 0) <= 4 else {
+        guard (FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.templates.count ?? 0) <= 4 else {
             MemoryLogger.shared.appendEvent("Template navigation hierarchy exceeded")
             let error = NSError(domain: "FlutterCarplay", code: 0, userInfo: ["LocalizedDescriptionKey": "CarPlay cannot have more than 5 templates on navigation hierarchy."])
             completion?(false, error)
             return
         }
         MemoryLogger.shared.appendEvent("Push to \(template).")
-        interfaceController?.pushTemplate(template, animated: animated, completion: completion)
+        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.pushTemplate(template, animated: animated, completion: completion)
     }
 
     /// Closes the currently presented template.
     public static func closePresent(animated: Bool, completion: ((Bool, Error?) -> Void)? = nil) {
         MemoryLogger.shared.appendEvent("Close the presented template")
-        interfaceController?.dismissTemplate(animated: animated, completion: completion)
+        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.dismissTemplate(animated: animated, completion: completion)
     }
 
     /// Presents a new template.
@@ -171,6 +154,6 @@ extension FlutterCarPlaySceneDelegate {
     ///   - completion: A closure to be executed upon completion of the presentation.
     public static func presentTemplate(template: CPTemplate, animated: Bool, completion: ((Bool, Error?) -> Void)? = nil) {
         MemoryLogger.shared.appendEvent("Present \(template)")
-        interfaceController?.presentTemplate(template, animated: animated, completion: completion)
+        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.presentTemplate(template, animated: animated, completion: completion)
     }
 }
