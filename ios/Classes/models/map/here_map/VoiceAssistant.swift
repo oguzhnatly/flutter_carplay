@@ -26,10 +26,16 @@ class VoiceAssistant {
     private let avSpeechSynthesizer = AVSpeechSynthesizer()
     private var locale = Locale(identifier: "en-US")
 
+    /// Determines if the given language is supported.
+    /// - Parameter locale: The locale identifier.
+    /// - Returns: True if supported, false if not.
     public func isLanguageAvailable(locale: Locale) -> Bool {
         return isLanguageAvailable(identifier: locale.identifier)
     }
 
+    /// Determines if the given language is supported.
+    /// - Parameter identifier: The locale identifier.
+    /// - Returns: True if supported, false if not.
     public func isLanguageAvailable(identifier: String) -> Bool {
         let supportedVoices = AVSpeechSynthesisVoice.speechVoices()
         for aVSpeechSynthesisVoice in supportedVoices {
@@ -41,6 +47,9 @@ class VoiceAssistant {
         return false
     }
 
+    /// Sets the language.
+    /// - Parameter locale: The locale identifier.
+    /// - Returns: True if supported, false if not.
     public func setLanguage(locale: Locale) -> Bool {
         if isLanguageAvailable(locale: locale) {
             self.locale = locale

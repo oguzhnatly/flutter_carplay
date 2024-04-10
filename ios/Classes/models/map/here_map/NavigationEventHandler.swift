@@ -49,19 +49,30 @@ class NavigationEventHandler: NavigableLocationDelegate,
     private var previousManeuverIndex: Int32 = -1
     private let messageTextView: UITextView
 
+    /// The voice instructions toggle button.
     private var isVoiceInstructionsMuted = false
 
+    /// Check if a rerouting is in progress.
     private var isReroutingInProgress = false
+
+    /// Route deviation event counter.
     private var deviationEventCount = 0
 
+    /// Map template instance
     var mapTemplate: CPMapTemplate? {
         return SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate
     }
 
+    /// Navigation session instance
     var navigationSession: CPNavigationSession? {
         return (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
     }
 
+    /// Initializes a new `NavigationEventHandler` instance.
+    /// - Parameters:
+    ///   - visualNavigator: VisualNavigator
+    ///   - dynamicRoutingEngine: DynamicRoutingEngine
+    ///   - messageTextView: UITextView
     init(_ visualNavigator: VisualNavigator,
          _ dynamicRoutingEngine: DynamicRoutingEngine,
          _ messageTextView: UITextView)
@@ -73,10 +84,13 @@ class NavigationEventHandler: NavigableLocationDelegate,
         // A helper class for TTS.
         voiceAssistant = VoiceAssistant()
 
+        // Toggle voice instructions handler
         toggleVoiceInstructionsHandler = { [weak self] isMuted in
             guard let self = self else { return }
 
             self.isVoiceInstructionsMuted = isMuted
+
+            // If voice instructions are muted, stop the voice assistant
             if isMuted { voiceAssistant.stop() }
         }
 
@@ -107,6 +121,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
     /// Conform to RouteProgressDelegate.
     /// Notifies on the progress along the route including maneuver instructions.
+    /// - Parameter routeProgress: The current route progress.
     func onRouteProgressUpdated(_ routeProgress: RouteProgress) {
         // [SectionProgress] is guaranteed to be non-empty.
         let distanceToDestination = routeProgress.sectionProgress.last?.remainingDistanceInMeters ?? Int32(0)
@@ -126,24 +141,29 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
 
         let currentManeuverIndex = currentManeuverProgress.maneuverIndex
+        // Check if the current maneuver is available in the visualNavigator
         guard let currentManeuver = visualNavigator.getManeuver(index: currentManeuverIndex) else {
             // Should never happen as we retrieved the next maneuver progress above.
             return
         }
 
+        // Travel estimates for the current maneuver
         let initialTravelEstimates = CPTravelEstimates(distanceRemaining: getMeasurement(distanceInMeters: currentManeuverProgress.remainingDistanceInMeters), timeRemaining: currentManeuverProgress.remainingDuration)
 
+        // Travel estimates for the overall route
         let travelEstimates = CPTravelEstimates(distanceRemaining: getMeasurement(distanceInMeters: distanceToDestination), timeRemaining: timeToDestination)
 
         // Check if the current maneuver has changed
         if previousManeuverIndex != currentManeuverIndex {
             // Log only new maneuvers and ignore changes in distance.
 
+            // Show primary maneuver
             showPrimaryManeuver(maneuver: currentManeuver, initialTravelEstimates: initialTravelEstimates, travelEstimates: travelEstimates)
 
         } else {
             // A maneuver update contains a different distance to reach the next maneuver.
 
+            // Update the estimates for the current maneuver
             updateEstimates(initialTravelEstimates: initialTravelEstimates, travelEstimates: travelEstimates)
         }
 
@@ -152,11 +172,13 @@ class NavigationEventHandler: NavigableLocationDelegate,
             let nextManeuverProgress = nextManeuverList[1]
 
             let nextManeuverIndex = nextManeuverProgress.maneuverIndex
+            // Check if the next maneuver is available in the visualNavigator
             guard let nextManeuver = visualNavigator.getManeuver(index: nextManeuverIndex) else {
                 // Should never happen as we retrieved the next maneuver progress above.
                 return
             }
 
+            // Show secondary maneuver
             showSecondaryManeuver(maneuver: nextManeuver)
         }
 
@@ -183,10 +205,14 @@ class NavigationEventHandler: NavigableLocationDelegate,
         let roadName = getRoadName(maneuver: maneuver) ?? ""
         let nextRoadName = maneuver.nextRoadTexts.names.defaultValue() ?? ""
 
+        /// Primary maneuver action text handler
+        /// Get the action text for the primary maneuver from the main application.
         primaryManeuverActionTextHandler = { [weak self] actionText in
             guard let self = self else { return }
 
             print("Primary maneuver: \(actionText)")
+
+            // Create CPManeuver instance and set appropriate properties
             let cpManeuver = CPManeuver()
             cpManeuver.instructionVariants = [actionText]
             cpManeuver.initialTravelEstimates = initialTravelEstimates
@@ -197,13 +223,17 @@ class NavigationEventHandler: NavigableLocationDelegate,
             cpManeuver.symbolImage = symbolImage
             cpManeuver.dashboardSymbolImage = symbolImage
 
+            // Update the upcoming maneuver
+            // It will change the maneuver in the map template automatically
             self.navigationSession?.upcomingManeuvers = [cpManeuver]
 
+            // Update the overall route estimates
             if let trip = self.navigationSession?.trip {
                 mapTemplate?.updateEstimates(travelEstimates, for: trip)
             }
         }
 
+        // Send event to get the localized action text for the primary maneuver from main application.
         FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
                                          data: [
                                              "action": action,
@@ -220,6 +250,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
         let roadName = getRoadName(maneuver: maneuver) ?? ""
         let nextRoadName = maneuver.nextRoadTexts.names.defaultValue() ?? ""
 
+        /// Secondary maneuver action text handler
+        /// Get the action text for the secondary maneuver from the main application.
         secondaryManeuverActionTextHandler = { [weak self] actionText in
             guard let self = self else { return }
             print("Secondary maneuver: \(actionText)")
@@ -236,6 +268,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
             cpManeuver.symbolImage = symbolImage
             cpManeuver.dashboardSymbolImage = symbolImage
 
+            // Update the upcoming maneuver in the map template
+            // It will add the secondary maneuver in the map template automatically
             if var upcomingManeuvers = self.navigationSession?.upcomingManeuvers,
                upcomingManeuvers.count < 2
             {
@@ -244,6 +278,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
             }
         }
 
+        // Send event to get the localized action text for the secondary maneuver from main application.
         FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onManeuverActionTextRequested,
                                          data: [
                                              "action": action,
@@ -402,9 +437,9 @@ class NavigationEventHandler: NavigableLocationDelegate,
         return speedLimit.effectiveSpeedLimitInMetersPerSecond()
     }
 
-    // Conform to NavigableLocationDelegate.
-    // Notifies on the current map-matched location and other useful information while driving or walking.
-    // - Parameter navigableLocation: The current map-matched location.
+    /// Conform to NavigableLocationDelegate.
+    /// Notifies on the current map-matched location and other useful information while driving or walking.
+    /// - Parameter navigableLocation: The current map-matched location.
     func onNavigableLocationUpdated(_ navigableLocation: NavigableLocation) {
         guard navigableLocation.mapMatchedLocation != nil else {
             print("The currentNavigableLocation could not be map-matched. Are you off-road?")
@@ -418,9 +453,9 @@ class NavigationEventHandler: NavigableLocationDelegate,
         print("Driving speed: \(String(describing: speed)) plus/minus accuracy of \(String(describing: accuracy)).")
     }
 
-    // Conform to RouteDeviationDelegate.
-    // Notifies on a possible deviation from the route.
-    // - Parameter routeDeviation: The possible deviation from the route.
+    /// Conform to RouteDeviationDelegate.
+    /// Notifies on a possible deviation from the route.
+    /// - Parameter routeDeviation: The possible deviation from the route.
     func onRouteDeviation(_ routeDeviation: RouteDeviation) {
         print("onRouteDeviation: \(routeDeviation)")
         guard let route = visualNavigator.route else {
@@ -468,23 +503,31 @@ class NavigationEventHandler: NavigableLocationDelegate,
         // The deviation event is sent any time an off-route location is detected: It may make
         // sense to await around 3 events before deciding on possible actions.
 
+        // Update deviation event counter.
         deviationEventCount += 1
+
+        // Check if the user has deviated far enough.
         if distanceInMeters >=
             ConstantsEnum.ROUTE_DEVIATION_DISTANCE &&
             deviationEventCount >= 3 &&
             !isReroutingInProgress
         {
+            // Start rerouting.
             isReroutingInProgress = true
 
+            // Call the rerouting handler.
+            // Handler will be called to get the new route.
             reroutingHandler?(startingWaypoint, {
+                // On reroutingHandler completion, reset the deviation event counter.
                 self.deviationEventCount = 0
                 self.isReroutingInProgress = false
             })
         }
     }
 
-    // Conform to EventTextDelegate.
-    // Notifies on voice maneuver messages.
+    /// Conform to EventTextDelegate.
+    /// Notifies on voice maneuver messages.
+    /// - Parameter eventText: The voice maneuver message.
     func onEventTextUpdated(_ eventText: heresdk.EventText) {
         if !isVoiceInstructionsMuted {
             voiceAssistant.speak(message: eventText.text)
@@ -501,10 +544,10 @@ class NavigationEventHandler: NavigableLocationDelegate,
         previousManeuverIndex = Int32(-1)
     }
 
-    // Conform to TollStopWarningDelegate.
-    // Notifies on upcoming toll stops. Uses the same notification
-    // thresholds as other warners and provides events with or without a route to follow.
-    // - Parameter tollStop: The upcoming toll stop.
+    /// Conform to TollStopWarningDelegate.
+    /// Notifies on upcoming toll stops. Uses the same notification
+    /// thresholds as other warners and provides events with or without a route to follow.
+    /// - Parameter tollStop: The upcoming toll stop.
     func onTollStopWarning(_ tollStop: TollStop) {
         let lanes = tollStop.lanes
 
@@ -528,9 +571,9 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
-    // Conform to the ManeuverViewLaneAssistanceDelegate.
-    // Notifies which lane(s) lead to the next (next) maneuvers.
-    // - Parameter laneAssistance: The lane(s) that lead to the next maneuver.
+    /// Conform to the ManeuverViewLaneAssistanceDelegate.
+    /// Notifies which lane(s) lead to the next (next) maneuvers.
+    /// - Parameter laneAssistance: The lane(s) that lead to the next maneuver.
     func onLaneAssistanceUpdated(_ laneAssistance: ManeuverViewLaneAssistance) {
         // This lane list is guaranteed to be non-empty.
         let lanes = laneAssistance.lanesForNextManeuver
@@ -544,8 +587,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
-    // Conform to the JunctionViewLaneAssistanceDelegate.
-    // Notifies which lane(s) allow to follow the route.
+    /// Conform to the JunctionViewLaneAssistanceDelegate.
+    /// Notifies which lane(s) allow to follow the route.
     func onLaneAssistanceUpdated(_ laneAssistance: JunctionViewLaneAssistance) {
         let lanes = laneAssistance.lanesForNextJunction
         if lanes.isEmpty {
@@ -556,6 +599,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
+    /// Log lane recommendations.
+    /// - Parameter lanes: The lane(s) that lead to the next maneuver.
     private func logLaneRecommendations(_ lanes: [Lane]) {
         // The lane at index 0 is the leftmost lane adjacent to the middle of the road.
         // The lane at the last index is the rightmost lane.
@@ -585,6 +630,10 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
+    /// Log lane details.
+    /// - Parameters:
+    ///   - laneNumber: Lane number
+    ///   - lane: Lane object
     func logLaneDetails(_ laneNumber: Int, _ lane: Lane) {
         // All directions can be true or false at the same time.
         // The possible lane directions are valid independent of a route.
@@ -611,6 +660,10 @@ class NavigationEventHandler: NavigableLocationDelegate,
         logLaneAccess(laneNumber, lane.access)
     }
 
+    /// Log lane access.
+    /// - Parameters:
+    ///   - laneNumber: Lane number
+    ///   - laneAccess: LaneAccess object
     func logLaneAccess(_ laneNumber: Int, _ laneAccess: LaneAccess) {
         print("Lane access for lane \(laneNumber).")
         print("Automobiles are allowed on this lane: \(laneAccess.automobiles).")
@@ -625,8 +678,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
         print("Motorcycles are allowed on this lane: \(laneAccess.motorcycles).")
     }
 
-    // Conform to the RoadAttributesDelegate.
-    // Notifies on the attributes of the current road including usage and physical characteristics.
+    /// Conform to the RoadAttributesDelegate.
+    /// Notifies on the attributes of the current road including usage and physical characteristics.
     func onRoadAttributesUpdated(_ roadAttributes: RoadAttributes) {
         // This is called whenever any road attribute has changed.
         // If all attributes are unchanged, no new event is fired.
@@ -738,8 +791,9 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
-    // Conform to SchoolZoneWarningDelegate.
-    // Notifies on school zones ahead.
+    /// Conform to SchoolZoneWarningDelegate.
+    /// Notifies on school zones ahead.
+    /// - Parameter schoolZoneWarnings: The list of school zone warnings
     func onSchoolZoneWarningUpdated(_ schoolZoneWarnings: [heresdk.SchoolZoneWarning]) {
         // The list is guaranteed to be non-empty.
         for schoolZoneWarning in schoolZoneWarnings {
@@ -763,17 +817,18 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
-    // Conform to RealisticViewWarningDelegate.
-    // Notifies on signposts together with complex junction views.
-    // Signposts are shown as they appear along a road on a shield to indicate the upcoming directions and
-    // destinations, such as cities or road names.
-    // Junction views appear as a 3D visualization (as a static image) to help the driver to orientate.
-    //
-    // Optionally, you can use a feature-configuration to preload the assets as part of a Region.
-    //
-    // The event matches the notification for complex junctions, see JunctionViewLaneAssistance.
-    // Note that the SVG data for junction view is composed out of several 3D elements,
-    // a horizon and the actual junction geometry.
+    /// Conform to RealisticViewWarningDelegate.
+    /// Notifies on signposts together with complex junction views.
+    /// Signposts are shown as they appear along a road on a shield to indicate the upcoming directions and
+    /// destinations, such as cities or road names.
+    /// Junction views appear as a 3D visualization (as a static image) to help the driver to orientate.
+    ///
+    /// Optionally, you can use a feature-configuration to preload the assets as part of a Region.
+    ///
+    /// The event matches the notification for complex junctions, see JunctionViewLaneAssistance.
+    /// Note that the SVG data for junction view is composed out of several 3D elements,
+    /// a horizon and the actual junction geometry.
+    /// - Parameter realisticViewWarning: The list of realistic view warnings
     func onRealisticViewWarningUpdated(_ realisticViewWarning: RealisticViewWarning) {
         let distance = realisticViewWarning.distanceToRealisticViewInMeters
         let distanceType: DistanceType = realisticViewWarning.distanceType
@@ -804,13 +859,14 @@ class NavigationEventHandler: NavigableLocationDelegate,
         print("junctionViewSvgImage: \(junctionViewSvgImageContent)")
     }
 
-    // Conform to RoadTextsDelegate
-    // Notifies whenever any textual attribute of the current road changes, i.e., the current road texts differ
-    // from the previous one. This can be useful during tracking mode, when no maneuver information is provided.
+    /// Conform to RoadTextsDelegate
+    /// Notifies whenever any textual attribute of the current road changes, i.e., the current road texts differ
+    /// from the previous one. This can be useful during tracking mode, when no maneuver information is provided.
     func onRoadTextsUpdated(_: RoadTexts) {
         // See getRoadName() how to get the current road name from the provided RoadTexts.
     }
 
+    /// Set up speed warnings
     private func setupSpeedWarnings() {
         let speedLimitOffset = SpeedLimitOffset(lowSpeedOffsetInMetersPerSecond: 2,
                                                 highSpeedOffsetInMetersPerSecond: 4,
@@ -818,6 +874,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
         visualNavigator.speedWarningOptions = SpeedWarningOptions(speedLimitOffset: speedLimitOffset)
     }
 
+    /// Set up road sign warnings
     private func setupRoadSignWarnings() {
         var roadSignWarningOptions = RoadSignWarningOptions()
         // Set a filter to get only shields relevant for trucks and heavyTrucks.
@@ -825,11 +882,13 @@ class NavigationEventHandler: NavigableLocationDelegate,
         visualNavigator.roadSignWarningOptions = roadSignWarningOptions
     }
 
+    /// Set up realistic view warnings
     private func setupRealisticViewWarnings() {
         let realisticViewWarningOptions = RealisticViewWarningOptions(aspectRatio: AspectRatio.aspectRatio3X4, darkTheme: false)
         visualNavigator.realisticViewWarningOptions = realisticViewWarningOptions
     }
 
+    /// Set up school zone warnings
     private func setupSchoolZoneWarnings() {
         var schoolZoneWarningOptions = SchoolZoneWarningOptions()
         schoolZoneWarningOptions.filterOutInactiveTimeDependentWarnings = true
@@ -837,6 +896,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
         visualNavigator.schoolZoneWarningOptions = schoolZoneWarningOptions
     }
 
+    /// Set up voice guidance
     private func setupVoiceGuidance() {
         let ttsLanguageCode = getLanguageCodeForDevice(supportedVoiceSkins: VisualNavigator.availableLanguagesForManeuverNotifications())
         visualNavigator.maneuverNotificationOptions = ManeuverNotificationOptions(language: ttsLanguageCode,
@@ -853,7 +913,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
     }
 
-    // Get the language preferrably used on this device.
+    /// Get the language preferrably used on this device.
     private func getLanguageCodeForDevice(supportedVoiceSkins: [heresdk.LanguageCode]) -> LanguageCode {
         // 1. Determine if preferred device language is supported by our TextToSpeech engine.
         let identifierForCurrenDevice = Locale.preferredLanguages.first!
@@ -873,7 +933,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
         return languageCodeForCurrenDevice
     }
 
-    // A permanent view to show log content.
+    /// A permanent view to show log content.
     private func showMessage(_ message: String) {
         messageTextView.text = message
         messageTextView.textColor = .white

@@ -35,6 +35,9 @@ class FCPMapTemplate: NSObject {
     /// The trailing navigation bar buttons for the map template.
     private var trailingNavigationBarButtons: [FCPBarButton]
 
+    /// The dashboard buttons to be displayed on the CarPlay dashboard.
+    private(set) var dashboardButtons: [FCPDashboardButton]
+
     /// A boolean value indicating whether the navigation bar is automatically hidden.
     private var automaticallyHidesNavigationBar: Bool = false
 
@@ -66,6 +69,10 @@ class FCPMapTemplate: NSObject {
 
         mapButtons = (obj["mapButtons"] as? [[String: Any]] ?? []).map {
             FCPMapButton(obj: $0)
+        }
+
+        dashboardButtons = (obj["dashboardButtons"] as? [[String: Any]] ?? []).map {
+            FCPDashboardButton(obj: $0)
         }
 
         leadingNavigationBarButtons = (obj["leadingNavigationBarButtons"] as? [[String: Any]] ?? []).map {
@@ -122,7 +129,7 @@ class FCPMapTemplate: NSObject {
     ///   - mapButtons: The new array of map buttons.
     ///   - leadingNavigationBarButtons: The new array of leading navigation bar buttons.
     ///   - trailingNavigationBarButtons: The new array of trailing navigation bar buttons.
-    public func update(title: String?, automaticallyHidesNavigationBar: Bool?, hidesButtonsWithNavigationBar: Bool?, mapButtons: [FCPMapButton]?, leadingNavigationBarButtons: [FCPBarButton]?, trailingNavigationBarButtons: [FCPBarButton]?) {
+    public func update(title: String?, automaticallyHidesNavigationBar: Bool?, hidesButtonsWithNavigationBar: Bool?, mapButtons: [FCPMapButton]?, dashboardButtons: [FCPDashboardButton]?, leadingNavigationBarButtons: [FCPBarButton]?, trailingNavigationBarButtons: [FCPBarButton]?) {
         if let _title = title {
             self.title = _title
         }
@@ -140,6 +147,14 @@ class FCPMapTemplate: NSObject {
         if let _mapButtons = mapButtons {
             self.mapButtons = _mapButtons
             _super?.mapButtons = _mapButtons.map { $0.get }
+        }
+
+        if let _dashboardButtons = dashboardButtons {
+            self.dashboardButtons = _dashboardButtons
+
+            if let dashboardController = FlutterCarPlayTemplateManager.shared.carplayDashboardController, dashboardController.shortcutButtons.isEmpty {
+                dashboardController.shortcutButtons = _dashboardButtons.map { $0.get }
+            }
         }
 
         if let _leadingNavigationBarButtons = leadingNavigationBarButtons {
@@ -163,6 +178,10 @@ class FCPMapTemplate: NSObject {
 
 extension FCPMapTemplate {
     /// Show trip previews
+    /// - Parameters:
+    ///   - trips: The array of trips to show
+    ///   - selectedTrip: The selected trip
+    ///   - textConfiguration: The text configuration
     func showTripPreviews(trips: [FCPTrip], selectedTrip: FCPTrip?, textConfiguration: FCPTripPreviewTextConfiguration?) {
         let cpTrips = trips.map { $0.get }
         _super?.showTripPreviews(cpTrips, selectedTrip: selectedTrip?.get,
@@ -195,10 +214,14 @@ extension FCPMapTemplate {
         fcpMapViewController?.stopNavigation()
     }
 
+    /// Pans the camera in the specified direction
+    /// - Parameter animated: A boolean value indicating whether the transition should be animated
     func showPanningInterface(animated: Bool) {
         _super?.showPanningInterface(animated: animated)
     }
 
+    /// Dismisses the panning interface
+    /// - Parameter animated: A boolean value indicating whether the transition should be animated
     func dismissPanningInterface(animated: Bool) {
         _super?.dismissPanningInterface(animated: animated)
     }
@@ -207,6 +230,11 @@ extension FCPMapTemplate {
 // MARK: - CPMapTemplateDelegate
 
 extension FCPMapTemplate: CPMapTemplateDelegate {
+    /// Called when the map template has started a trip
+    /// - Parameter
+    ///   - mapTemplate: The map template
+    ///   - trip: The trip that was started
+    ///   - routeChoice: The route choice
     func mapTemplate(_: CPMapTemplate, startedTrip trip: CPTrip, using _: CPRouteChoice) {
         let originCoordinate = trip.origin.placemark.coordinate
         let destinationCoordinate = trip.destination.placemark.coordinate
@@ -217,13 +245,17 @@ extension FCPMapTemplate: CPMapTemplateDelegate {
     }
 
     /// Called when the panning interface is shown
-    /// - Parameter _:  The map template
+    /// - Parameter mapTemplate: The map template
     func mapTemplateDidShowPanningInterface(_: CPMapTemplate) {}
 
     /// Called when the panning interface is dismissed
-    /// - Parameter _: The map template
+    /// - Parameter mapTemplate: The map template
     func mapTemplateDidDismissPanningInterface(_: CPMapTemplate) {}
 
+    /// Called when the map template is panning
+    /// - Parameters:
+    ///   - maptemplate: The map template
+    ///   - direction: The direction of the panning
     func mapTemplate(_: CPMapTemplate, panWith direction: CPMapTemplate.PanDirection) {
         fcpMapViewController?.panInDirection(direction)
     }

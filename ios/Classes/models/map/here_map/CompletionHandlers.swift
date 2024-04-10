@@ -34,6 +34,7 @@ var updateMapCoordinatesHandler: ((MapCoordinates) -> Void)?
 /// Completion handler for on route deviation
 var reroutingHandler: ((Waypoint, @escaping () -> Void) -> Void)?
 
+/// Map coordinates to render marker on the map
 class MapCoordinates {
     let stationAddressCoordinates: GeoCoordinates?
     let incidentAddressCoordinates: GeoCoordinates?

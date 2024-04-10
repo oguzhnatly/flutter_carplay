@@ -72,6 +72,9 @@ enum FCPChannelTypes {
   /// Event triggered when a map button is pressed in CarPlay.
   onMapButtonPressed,
 
+  /// Event triggered when a dashboard button is pressed in CarPlay.
+  onDashboardButtonPressed,
+
   /// Event triggered when a text button is pressed in CarPlay.
   onTextButtonPressed,
 

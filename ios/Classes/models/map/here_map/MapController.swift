@@ -108,11 +108,6 @@ class MapController: LongPressDelegate {
         destinationWaypoint = destination
     }
 
-    /// Set the normalized principal point of the VisualNavigator camera.
-//    func setVisualNavigatorCameraPoint(normalizedPrincipalPoint: heresdk.Anchor2D) {
-//        navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: normalizedPrincipalPoint)
-//    }
-
     /// Calculate a route and start navigation using a location simulator.
     /// Start is map center and destination location is set random within viewport,
     /// unless a destination is set via long press.
@@ -219,8 +214,10 @@ class MapController: LongPressDelegate {
         // If a driver is moving, the bearing value can help to improve the route calculation.
         startingWaypoint?.headingInDegrees = location.bearingInDegrees
 
+        // Update the camera position.
         mapView.camera.lookAt(point: location.coordinates)
 
+        // When using simulated locations, we set the destination to a random location around the map center.
         if isSimulated {
             if destinationWaypoint == nil {
                 destinationWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())

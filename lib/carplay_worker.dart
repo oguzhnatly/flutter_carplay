@@ -121,6 +121,9 @@ class FlutterCarplay {
         case FCPChannelTypes.onMapButtonPressed:
           _carPlayController
               .processFCPMapButtonPressed(event['data']['elementId']);
+        case FCPChannelTypes.onDashboardButtonPressed:
+          _carPlayController
+              .processFCPDashboardButtonPressed(event['data']['elementId']);
         case FCPChannelTypes.onTextButtonPressed:
           _carPlayController
               .processFCPTextButtonPressed(event['data']['elementId']);

@@ -29,6 +29,8 @@ export 'package:flutter_carplay/models/list/list_section.dart'
     show CPListSection;
 export 'package:flutter_carplay/models/list/list_template.dart'
     show CPListTemplate;
+export 'package:flutter_carplay/models/map/dashboard_button.dart'
+    show CPDashboardButton;
 export 'package:flutter_carplay/models/map/map_button.dart' show CPMapButton;
 export 'package:flutter_carplay/models/map/map_item.dart' show MKMapItem;
 export 'package:flutter_carplay/models/map/map_template.dart'

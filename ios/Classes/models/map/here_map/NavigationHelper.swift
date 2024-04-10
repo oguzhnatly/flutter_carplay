@@ -39,6 +39,7 @@ class NavigationHelper: DynamicRoutingDelegate {
     var visualNavigatorCameraPoint: Anchor2D?
     var isNavigationInProgress = false
 
+    /// lastKnownLocation
     var lastKnownLocation: Location? {
         return herePositioningProvider.getLastKnownLocation()
     }
@@ -55,9 +56,8 @@ class NavigationHelper: DynamicRoutingDelegate {
         }
 
         // By default, enable auto-zoom during guidance.
-//        visualNavigator.cameraBehavior = DynamicCameraBehavior()
-//
-//        visualNavigator.startRendering(mapView: mapView)
+        // visualNavigator.cameraBehavior = DynamicCameraBehavior()
+        // visualNavigator.startRendering(mapView: mapView)
 
         // A class to receive real location events.
         herePositioningProvider = HEREPositioningProvider()
@@ -77,6 +77,7 @@ class NavigationHelper: DynamicRoutingDelegate {
         )
     }
 
+    /// Start location provider
     func startLocationProvider() {
         // Set navigator as delegate to receive locations from HERE Positioning.
         herePositioningProvider.startLocating(locationDelegate: visualNavigator,
@@ -84,6 +85,8 @@ class NavigationHelper: DynamicRoutingDelegate {
                                               accuracy: .navigation)
     }
 
+    /// Prefetches map data around the provided location
+    /// - Parameter currentGeoCoordinates: The current geo coordinates
     private func prefetchMapData(currentGeoCoordinates: GeoCoordinates) {
         // Prefetches map data around the provided location with a radius of 2 km into the map cache.
         // For the best experience, prefetchAroundLocationWithRadius() should be called as early as possible.
@@ -94,8 +97,9 @@ class NavigationHelper: DynamicRoutingDelegate {
         routePrefetcher.prefetchAroundRouteOnIntervals(navigator: visualNavigator)
     }
 
-    // Use this engine to periodically search for better routes during guidance, ie. when the traffic
-    // situation changes.
+    /// Use this engine to periodically search for better routes during guidance, ie. when the traffic
+    /// situation changes.
+    /// - Returns: The dynamic routing engine to search for better routes.
     private class func createDynamicRoutingEngine() -> DynamicRoutingEngine {
         // Both, minTimeDifference and minTimeDifferencePercentage, will be checked:
         // When the poll interval is reached, the smaller difference will win.
@@ -122,6 +126,10 @@ class NavigationHelper: DynamicRoutingDelegate {
 
     /// Conform to the DynamicRoutingDelegate.
     /// Notifies on traffic-optimized routes that are considered better than the current route.
+    /// - Parameters:
+    ///   - newRoute: The new route
+    ///   - etaDifferenceInSeconds: The difference in estimated time in seconds
+    ///   - distanceDifferenceInMeters: The difference in distance in meters
     func onBetterRouteFound(newRoute _: Route,
                             etaDifferenceInSeconds: Int32,
                             distanceDifferenceInMeters: Int32)
@@ -146,13 +154,14 @@ class NavigationHelper: DynamicRoutingDelegate {
         visualNavigator.route = route
     }
 
-    /// Starts navigation.
+    /// Starts navigation with the given route
     /// - Parameters:
     ///   - route: The route to be used for navigation.
     ///   - isSimulated: Whether to use simulated locations.
     func startNavigation(route: Route,
                          isSimulated: Bool)
     {
+        // Check if navigation is already in progress
         if isNavigationInProgress {
             return
         }
@@ -181,7 +190,8 @@ class NavigationHelper: DynamicRoutingDelegate {
             showMessage("Starting navigation.")
         }
 
-//        startDynamicSearchForBetterRoutes(route)
+        // Application was getting crashed in offline mode.
+        // startDynamicSearchForBetterRoutes(route)
     }
 
     /// Starts the dynamic search for better routes.

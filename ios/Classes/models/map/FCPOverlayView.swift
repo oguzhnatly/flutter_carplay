@@ -8,6 +8,7 @@
 
 import UIKit
 
+/// A custom UIView class for displaying overlay views.
 class FCPOverlayView: UIView {
     /// The background view of the overlay.
     @IBOutlet var contentView: UIView! {
@@ -17,6 +18,7 @@ class FCPOverlayView: UIView {
         }
     }
 
+    /// The title view of the overlay.
     @IBOutlet var titleView: UIView! {
         didSet {
             guard let view = titleView else { return }
@@ -24,6 +26,7 @@ class FCPOverlayView: UIView {
         }
     }
 
+    /// The subtitle view of the overlay.
     @IBOutlet var subtitleView: UIView! {
         didSet {
             guard let view = subtitleView else { return }
@@ -31,8 +34,10 @@ class FCPOverlayView: UIView {
         }
     }
 
+    /// The devider view of the overlay.
     @IBOutlet var deviderView: UIView!
 
+    /// The primary title label of the overlay.
     @IBOutlet var primaryTitleLabel: UILabel! {
         didSet {
             guard let label = primaryTitleLabel else { return }
@@ -42,6 +47,7 @@ class FCPOverlayView: UIView {
         }
     }
 
+    /// The secondary title label of the overlay.
     @IBOutlet var secondaryTitleLabel: UILabel! {
         didSet {
             guard let label = secondaryTitleLabel else { return }
@@ -51,6 +57,7 @@ class FCPOverlayView: UIView {
         }
     }
 
+    /// The subtitle label of the overlay.
     @IBOutlet var subtitleLabel: UILabel! {
         didSet {
             guard let label = subtitleLabel else { return }

@@ -20,6 +20,9 @@ class CPMapTemplate {
   /// An array of bar buttons to be displayed on the trailing side of the navigation bar.
   List<CPBarButton> trailingNavigationBarButtons;
 
+  /// An array of dashboard buttons as [CPDashboardButton] displayed on the template.
+  List<CPDashboardButton> dashboardButtons;
+
   /// Automatically hides the navigation bar when the map template is visible.
   bool automaticallyHidesNavigationBar;
 
@@ -30,6 +33,7 @@ class CPMapTemplate {
   CPMapTemplate({
     this.title = '',
     this.mapButtons = const [],
+    this.dashboardButtons = const [],
     this.leadingNavigationBarButtons = const [],
     this.trailingNavigationBarButtons = const [],
     this.automaticallyHidesNavigationBar = false,
@@ -40,6 +44,7 @@ class CPMapTemplate {
         '_elementId': _elementId,
         'title': title,
         'mapButtons': mapButtons.map((e) => e.toJson()).toList(),
+        'dashboardButtons': dashboardButtons.map((e) => e.toJson()).toList(),
         'leadingNavigationBarButtons':
             leadingNavigationBarButtons.map((e) => e.toJson()).toList(),
         'trailingNavigationBarButtons':
@@ -52,6 +57,7 @@ class CPMapTemplate {
   void update({
     String? title,
     List<CPMapButton>? mapButtons,
+    List<CPDashboardButton>? dashboardButtons,
     List<CPBarButton>? leadingNavigationBarButtons,
     List<CPBarButton>? trailingNavigationBarButtons,
     bool? automaticallyHidesNavigationBar,
@@ -62,6 +68,9 @@ class CPMapTemplate {
 
     // update mapButtons
     if (mapButtons != null) this.mapButtons = mapButtons;
+
+    // update dashboardButtons
+    if (dashboardButtons != null) this.dashboardButtons = dashboardButtons;
 
     // update leadingNavigationBarButtons
     if (leadingNavigationBarButtons != null) {

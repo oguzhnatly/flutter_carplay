@@ -31,6 +31,11 @@ class RouteCalculator {
         }
     }
 
+    /// Calculates a route between two waypoints.
+    /// - Parameters:
+    ///   - start: Starting waypoint
+    ///   - destination: Destination waypoint
+    ///   - calculateRouteCompletionHandler: The completion handler.
     func calculateRoute(start: Waypoint,
                         destination: Waypoint,
                         calculateRouteCompletionHandler: @escaping CalculateRouteCompletionHandler)
@@ -39,6 +44,7 @@ class RouteCalculator {
         var carOptions = CarOptions()
         carOptions.routeOptions.enableRouteHandle = true
 
+        // Calculates a car route.
         routingEngine.calculateRoute(with: [start, destination],
                                      carOptions: carOptions,
                                      completion: calculateRouteCompletionHandler)

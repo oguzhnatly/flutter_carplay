@@ -25,6 +25,10 @@ import heresdk
 class HEREPositioningSimulator {
     private var locationSimulator: LocationSimulator?
 
+    /// Starts simulating location updates based on the provided route.
+    /// - Parameters:
+    ///   - locationDelegate: The location delegate to receive location updates.
+    ///   - route: The route to simulate.
     func startLocating(locationDelegate: LocationDelegate, route: Route) {
         if let locationSimulator = locationSimulator {
             locationSimulator.stop()
@@ -34,6 +38,7 @@ class HEREPositioningSimulator {
         locationSimulator?.start()
     }
 
+    /// Stops simulating location updates.
     func stopLocating() {
         if locationSimulator != nil {
             locationSimulator!.stop()
@@ -41,7 +46,10 @@ class HEREPositioningSimulator {
         }
     }
 
-    // Provides fake GPS signals based on the route geometry.
+    /// Provides fake GPS signals based on the route geometry.
+    /// - Parameters:
+    ///   - locationDelegate: The location delegate to receive location updates.
+    ///   - route: The route to simulate.
     private func createLocationSimulator(locationDelegate: LocationDelegate,
                                          route: Route) -> LocationSimulator
     {

@@ -608,6 +608,24 @@ class FlutterCarPlayController {
     }
   }
 
+  /// Processes the FCPDashboardButtonPressedChannel
+  ///
+  /// Parameters:
+  /// - elementId: The id of the [CPMapButton]
+  void processFCPDashboardButtonPressed(String elementId) {
+    for (final template in templateHistory) {
+      if (template is CPMapTemplate) {
+        final button = template.dashboardButtons.singleWhereOrNull(
+          (e) => e.uniqueId == elementId,
+        );
+        if (button != null) {
+          button.onPressed();
+          return;
+        }
+      }
+    }
+  }
+
   /// Processes the FCPTextButtonPressedChannel
   ///
   /// Parameters:

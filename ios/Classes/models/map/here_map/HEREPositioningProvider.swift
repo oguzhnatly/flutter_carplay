@@ -53,10 +53,13 @@ class HEREPositioningProvider: NSObject,
         authorizeNativeLocationServices()
     }
 
+    /// Returns the last known location.
+    /// - Returns: The last known location.
     func getLastKnownLocation() -> Location? {
         return locationEngine.lastKnownLocation
     }
 
+    /// Authorizes native location services.
     private func authorizeNativeLocationServices() {
         locationManager.delegate = self
         locationManager.requestAlwaysAuthorization()
@@ -80,7 +83,11 @@ class HEREPositioningProvider: NSObject,
         }
     }
 
-    // Does nothing when engine is already running.
+    /// Starts the location engine.
+    /// Does nothing when engine is already running.
+    /// - Parameters:
+    ///   - locationDelegate: The location delegate to receive location updates.
+    ///   - accuracy: The accuracy of the location updates.
     func startLocating(locationDelegate: LocationDelegate, accuracy: LocationAccuracy) {
         if isLocationEngineStarted {
             return
@@ -102,7 +109,7 @@ class HEREPositioningProvider: NSObject,
         }
     }
 
-    // Does nothing when engine is already stopped.
+    /// Does nothing when engine is already stopped.
     func stopLocating() {
         if !isLocationEngineStarted {
             return
@@ -115,19 +122,23 @@ class HEREPositioningProvider: NSObject,
         isLocating = false
     }
 
-    // Conforms to the LocationStatusDelegate protocol.
+    /// Conforms to the LocationStatusDelegate protocol.
+    /// - Parameter locationEngineStatus: The current status of the location engine.
     func onStatusChanged(locationEngineStatus: LocationEngineStatus) {
         print("Location engine status changed: \(locationEngineStatus)")
         self.locationEngineStatus = locationEngineStatus
     }
 
-    // Conforms to the LocationStatusDelegate protocol.
+    /// Conforms to the LocationStatusDelegate protocol.
+    /// - Parameter features: The location features that are not available.
     func onFeaturesNotAvailable(features: [LocationFeature]) {
         for feature in features {
             print("Location feature not available: '%s'", String(describing: feature))
         }
     }
 
+    /// Conforms to the LocationDelegate protocol.
+    /// - Parameter location: The new location.
     func onLocationUpdated(_ location: heresdk.Location) {
         print("Location updated: \(location.coordinates)")
     }

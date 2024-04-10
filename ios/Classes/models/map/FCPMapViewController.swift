@@ -61,17 +61,24 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// The size of the marker pin.
     var markerPinSize: Double { 40 * mapView.pixelScale }
 
+    /// Rectenter map position to adjust the map camera
     var recenterMapPosition: String?
 
+    /// Whether the dashboard scene is active.
     var isDashboardSceneActive: Bool {
         return FlutterCarPlayTemplateManager.shared.isDashboardSceneActive
     }
 
+    /// Should show banner
     var shouldShowBanner = false
+
+    /// Should show overlay
     var shouldShowOverlay = false
 
+    /// Map coordinates to render marker on the map
     var mapCoordinates: MapCoordinates?
 
+    /// Overlay view width
     var overlayViewWidth = 0.0
 
     // MARK: - View Lifecycle
@@ -105,12 +112,15 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
 
+    /// View did appear
+    /// - Parameter animated: Animated
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         updateCameraPrincipalPoint()
     }
 
+    /// View safe area insets
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
@@ -121,7 +131,8 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
     // MARK: - configureMapView
 
-    // Completion handler when loading a map scene.
+    /// Completion handler when loading a map scene.
+    /// - Parameter mapError: Map error
     private func onLoadScene(mapError: MapError?) {
         guard mapError == nil else {
             print("Error: Map scene not loaded, \(String(describing: mapError))")
@@ -134,6 +145,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
         mapView.isMultipleTouchEnabled = true
 
+        // Update the map coordinates
         updateMapCoordinatesHandler = { [weak self] mapCoordinates in
             guard let self = self else { return }
             self.mapCoordinates = mapCoordinates
@@ -159,6 +171,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             }
         }
 
+        /// Recenter map position
         recenterMapViewHandler = { [weak self] recenterMapPosition in
             guard let self = self else { return }
 
@@ -284,6 +297,9 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
 extension FCPMapViewController {
     /// Displays a banner message at the top of the screen
+    /// - Parameters:
+    ///   - message: The message to display
+    ///   - color: The color of the banner
     func showBanner(message: String, color: Int) {
         shouldShowBanner = true
         bannerView.setMessage(message)
@@ -302,6 +318,9 @@ extension FCPMapViewController {
     }
 
     /// Displays a toast message on the screen for a specified duration.
+    /// - Parameters:
+    ///   - message: The message to display
+    ///   - duration: The duration of the toast
     func showToast(message: String, duration: TimeInterval = 2.0) {
         guard !isDashboardSceneActive else { return }
 
@@ -328,6 +347,10 @@ extension FCPMapViewController {
     }
 
     /// Displays an overlay view on the screen.
+    /// - Parameters:
+    ///   - primaryTitle: The primary title of the overlay view
+    ///   - secondaryTitle: The secondary title of the overlay view
+    ///   - subtitle: The subtitle of the overlay view
     func showOverlay(primaryTitle: String?, secondaryTitle: String?, subtitle: String?) {
         shouldShowOverlay = true
         overlayViewMaxWidth.constant = view.bounds.size.width * 0.65
@@ -391,6 +414,8 @@ extension FCPMapViewController {
         mapController?.addMapPolygon(coordinate: coordinates, accuracy: accuracy, metadata: metadata)
     }
 
+    /// Adds an incident marker on the map.
+    /// - Parameter coordinates: The coordinates of the marker
     func renderIncidentAddressMarker(coordinates: GeoCoordinates) {
         let metadata = heresdk.Metadata()
         metadata.setString(key: "marker", value: MapMarkerType.INCIDENT_ADDRESS.rawValue)
@@ -413,6 +438,11 @@ extension FCPMapViewController {
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerPinSize, height: markerPinSize), metadata: metadata)
     }
 
+    /// Fly to coordinates with animation on the map.
+    /// - Parameters:
+    ///   - coordinates: The coordinates of the marker
+    ///   - bowFactor: The bow factor of the animation
+    ///   - duration: The duration of the animation
     func flyToCoordinates(coordinates: GeoCoordinates, bowFactor: Double = 0.2, duration: TimeInterval = TimeInterval(1)) {
         print("principlePoint at fly to: \(mapView.camera.principalPoint)")
 
@@ -438,6 +468,8 @@ extension FCPMapViewController {
         }
     }
 
+    /// Pans the camera in the specified direction
+    /// - Parameter direction: The direction to pan
     func panInDirection(_ direction: CPMapTemplate.PanDirection) {
         MemoryLogger.shared.appendEvent("Panning to \(direction).")
 
@@ -455,6 +487,7 @@ extension FCPMapViewController {
             break
         }
 
+        // Update the Map camera position
         if let coordinates = mapView.viewToGeoCoordinates(viewCoordinates: offset) {
             flyToCoordinates(coordinates: coordinates, bowFactor: 0.0, duration: TimeInterval(0.5))
         }
