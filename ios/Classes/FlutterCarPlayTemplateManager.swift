@@ -99,7 +99,7 @@ class FlutterCarPlayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
             if let rootViewController = SwiftFlutterCarplayPlugin.rootViewController as? FCPMapViewController {
                 dashboardWindow?.rootViewController = nil
                 carWindow?.rootViewController = rootViewController
-                rootViewController.showSubviews()
+                rootViewController.carplaySceneDidBecomeActive()
             }
             FlutterCarPlaySceneDelegate.forceUpdateRootTemplate()
 
@@ -108,7 +108,7 @@ class FlutterCarPlayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
             if let rootViewController = SwiftFlutterCarplayPlugin.rootViewController as? FCPMapViewController {
                 carWindow?.rootViewController = nil
                 dashboardWindow?.rootViewController = rootViewController
-                rootViewController.hideSubviews()
+                rootViewController.dashboardSceneDidBecomeActive()
             }
         }
     }
@@ -137,7 +137,7 @@ class FlutterCarPlayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
             //                self.beginNavigation(fromDashboard: true)
         }
 
-        if let rootViewController = SwiftFlutterCarplayPlugin.rootViewController {
+        if let rootViewController = SwiftFlutterCarplayPlugin.rootViewController, isDashboardSceneActive {
             carWindow?.rootViewController = nil
             window.rootViewController = rootViewController
         }

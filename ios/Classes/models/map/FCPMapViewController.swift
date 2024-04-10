@@ -63,12 +63,16 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
     var recenterMapPosition: String?
 
-    var isForDashboardScene: Bool {
+    var isDashboardSceneActive: Bool {
         return FlutterCarPlayTemplateManager.shared.isDashboardSceneActive
     }
 
     var shouldShowBanner = false
     var shouldShowOverlay = false
+
+    var mapCoordinates: MapCoordinates?
+
+    var overlayViewWidth = 0.0
 
     // MARK: - View Lifecycle
 
@@ -101,25 +105,17 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        updateCameraPrincipalPoint()
+    }
+
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
-        let scale = FlutterCarPlayTemplateManager.shared.carWindow?.screen.scale ?? 1.0
-        let topSafeArea = view.safeAreaInsets.top * scale
-        let leftSafeArea = view.safeAreaInsets.left * scale
-        let rightSafeArea = view.safeAreaInsets.right * scale
-        let width = mapView.viewportSize.width
-        let height = mapView.viewportSize.height
-        let bannerHeight = bannerView.isHidden ? 0.0 : bannerView.bounds.height
-
-        let cameraPrincipalPoint = Point2D(x: leftSafeArea + (width - leftSafeArea - rightSafeArea) / 2.0, y: topSafeArea + bannerHeight + (height - topSafeArea - bannerHeight) / 2.0)
-        mapView.camera.principalPoint = cameraPrincipalPoint
-
-        let anchor2D = Anchor2D(horizontal: cameraPrincipalPoint.x / width, vertical: 0.75)
-        mapController?.navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: anchor2D)
-
-        if let recenterPosition = recenterMapPosition {
-            recenterMapViewHandler?(recenterPosition)
+        if !isDashboardSceneActive {
+            updateCameraPrincipalPoint()
         }
     }
 
@@ -140,7 +136,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
         updateMapCoordinatesHandler = { [weak self] mapCoordinates in
             guard let self = self else { return }
-
+            self.mapCoordinates = mapCoordinates
             if let location = mapController?.lastKnownLocation {
                 self.renderInitialMarker(coordinates: location.coordinates, accuracy: location.horizontalAccuracyInMeters ?? 0.0)
             } else if let stationCoordinates = mapCoordinates.stationAddressCoordinates {
@@ -223,11 +219,20 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             let topSafeArea = view.safeAreaInsets.top * scale
             let leftSafeArea = view.safeAreaInsets.left * scale
             let rightSafeArea = view.safeAreaInsets.right * scale
-            let width = mapView.viewportSize.width
-            let height = mapView.viewportSize.height
-            let bannerHeight = bannerView.isHidden ? 0.0 : bannerView.bounds.height
+            let width = view.frame.width * scale
+            let height = view.frame.height * scale
+            let bannerHeight = bannerView.isHidden ? 0.0 : bannerView.bounds.height * scale
 
-            mapView?.camera.lookAt(area: geoBox, orientation: GeoOrientationUpdate(bearing: 0, tilt: 0), viewRectangle: Rectangle2D(
+            let rectangle2D = isDashboardSceneActive ? Rectangle2D(
+                origin: Point2D(
+                    x: markerPinSize,
+                    y: markerPinSize
+                ),
+                size: Size2D(
+                    width: width - markerPinSize * 2,
+                    height: height - markerPinSize * 2
+                )
+            ) : Rectangle2D(
                 origin: Point2D(
                     x: leftSafeArea + markerPinSize,
                     y: topSafeArea + bannerHeight + markerPinSize
@@ -236,7 +241,41 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
                     width: width - leftSafeArea - rightSafeArea - markerPinSize * 2,
                     height: height - topSafeArea - bannerHeight - markerPinSize * 2
                 )
-            ))
+            )
+
+            mapView?.camera.lookAt(area: geoBox, orientation: GeoOrientationUpdate(bearing: 0, tilt: 0), viewRectangle: rectangle2D)
+        }
+    }
+
+    /// Update the camera principal point
+    fileprivate func updateCameraPrincipalPoint() {
+        let scale = FlutterCarPlayTemplateManager.shared.carWindow?.screen.scale ?? 1.0
+        let topSafeArea = view.safeAreaInsets.top * scale
+        let leftSafeArea = view.safeAreaInsets.left * scale
+        let rightSafeArea = view.safeAreaInsets.right * scale
+        let width = view.frame.width * scale
+        let height = view.frame.height * scale
+
+        if isDashboardSceneActive {
+            let cameraPrincipalPoint = Point2D(x: width / 2.0, y: height / 2.0)
+            mapView.camera.principalPoint = cameraPrincipalPoint
+
+            let anchor2D = Anchor2D(horizontal: 0.5, vertical: 0.75)
+            mapController?.navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: anchor2D)
+
+        } else {
+            let bannerHeight = bannerView.isHidden ? 0.0 : bannerView.bounds.height * scale
+            let overlayViewWidth = overlayView.isHidden ? 0.0 : overlayView.bounds.width * scale + 16.0
+
+            let cameraPrincipalPoint = Point2D(x: leftSafeArea + overlayViewWidth + (width - leftSafeArea - rightSafeArea - overlayViewWidth) / 2.0, y: topSafeArea + bannerHeight + (height - topSafeArea - bannerHeight) / 2.0)
+            mapView.camera.principalPoint = cameraPrincipalPoint
+
+            let anchor2D = Anchor2D(horizontal: cameraPrincipalPoint.x / width, vertical: 0.75)
+            mapController?.navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: anchor2D)
+        }
+
+        if let recenterPosition = recenterMapPosition {
+            recenterMapViewHandler?(recenterPosition)
         }
     }
 }
@@ -249,7 +288,11 @@ extension FCPMapViewController {
         shouldShowBanner = true
         bannerView.setMessage(message)
         bannerView.setBackgroundColor(color)
-        bannerView.isHidden = isForDashboardScene
+        bannerView.isHidden = isDashboardSceneActive
+
+        if !isDashboardSceneActive {
+            updateCameraPrincipalPoint()
+        }
     }
 
     /// Hides the banner message at the top of the screen.
@@ -260,7 +303,7 @@ extension FCPMapViewController {
 
     /// Displays a toast message on the screen for a specified duration.
     func showToast(message: String, duration: TimeInterval = 2.0) {
-        guard !isForDashboardScene else { return }
+        guard !isDashboardSceneActive else { return }
 
         // Cancel any previous toast
         NSObject.cancelPreviousPerformRequests(withTarget: self)
@@ -298,7 +341,12 @@ extension FCPMapViewController {
         if let subtitle = subtitle {
             overlayView.setSubtitle(subtitle)
         }
-        overlayView.isHidden = isForDashboardScene
+        overlayView.isHidden = isDashboardSceneActive
+
+        if !isDashboardSceneActive, overlayViewWidth != overlayView.bounds.width {
+            overlayViewWidth = overlayView.bounds.width
+            updateCameraPrincipalPoint()
+        }
     }
 
     /// Hides the overlay view on the screen.
@@ -307,17 +355,18 @@ extension FCPMapViewController {
         overlayView.setSecondaryTitle("--")
         overlayView.setSubtitle("--")
         overlayView.isHidden = true
+        overlayViewWidth = 0.0
         shouldShowOverlay = false
     }
 
-    /// Hides subviews when dashboard scene is active
-    func hideSubviews() {
+    /// Dashboard scene is active
+    func dashboardSceneDidBecomeActive() {
         bannerView.isHidden = true
         overlayView.isHidden = true
     }
 
-    /// Shows subviews when CarPlay scene is active
-    func showSubviews() {
+    /// CarPlay scene is active
+    func carplaySceneDidBecomeActive() {
         bannerView.isHidden = !shouldShowBanner
         overlayView.isHidden = !shouldShowOverlay
     }
@@ -378,12 +427,15 @@ extension FCPMapViewController {
         let wayPoint = Waypoint(coordinates: GeoCoordinates(latitude: trip.destination.placemark.coordinate.latitude, longitude: trip.destination.placemark.coordinate.longitude))
         mapController?.setDestinationWaypoint(wayPoint)
 
-        mapController?.addRouteDeviceLocation()
+        mapController?.addRouteSimulatedLocation()
     }
 
     /// Stops the navigation
     func stopNavigation() {
         mapController?.clearMapButtonClicked()
+        if let mapCoordinates = mapCoordinates {
+            updateMapCoordinatesHandler?(mapCoordinates)
+        }
     }
 
     func panInDirection(_ direction: CPMapTemplate.PanDirection) {

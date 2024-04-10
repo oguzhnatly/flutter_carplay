@@ -14,10 +14,8 @@ class FlutterCarPlaySceneDelegate: NSObject {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options _: UIScene.ConnectionOptions) {
         if scene is CPTemplateApplicationScene, session.configuration.name == "CarPlayConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene will connect.")
-            FlutterCarPlayTemplateManager.shared.isDashboardSceneActive = false
         } else if scene is CPTemplateApplicationDashboardScene, session.configuration.name == "CarPlayDashboardConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene will connect.")
-            FlutterCarPlayTemplateManager.shared.isDashboardSceneActive = true
         }
     }
 
