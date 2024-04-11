@@ -125,7 +125,7 @@ class FlutterCarPlayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
                 // Set the root view controller for Dashboard
                 dashboardWindow?.rootViewController = rootViewController
 
-                if let dashboardButtons = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.dashboardButtons, carplayDashboardController?.shortcutButtons.isEmpty ?? false {
+                if let dashboardButtons = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.dashboardButtons {
                     carplayDashboardController?.shortcutButtons = dashboardButtons.map { $0.get }
                 }
 
@@ -151,7 +151,7 @@ class FlutterCarPlayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
             window.rootViewController = rootViewController
         }
 
-        if let dashboardButtons = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.dashboardButtons, carplayDashboardController?.shortcutButtons.isEmpty ?? false {
+        if let dashboardButtons = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.dashboardButtons {
             dashboardController.shortcutButtons = dashboardButtons.map { $0.get }
         }
 

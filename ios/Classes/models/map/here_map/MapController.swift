@@ -77,7 +77,12 @@ class MapController: LongPressDelegate {
             guard let self = self else { return }
 
             let navigationSession = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
-            navigationSession?.pauseTrip(for: .rerouting, description: "")
+
+            if #available(iOS 15.4, *) {
+                navigationSession?.pauseTrip(for: .rerouting, description: "", turnCardColor: .systemGreen)
+            } else {
+                navigationSession?.pauseTrip(for: .rerouting, description: "")
+            }
 
             self.startingWaypoint = startWayPoint
 

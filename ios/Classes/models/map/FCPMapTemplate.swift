@@ -195,7 +195,13 @@ extension FCPMapTemplate {
 
         hideTripPreviews()
         navigationSession = _super?.startNavigationSession(for: trip)
-        navigationSession?.pauseTrip(for: .loading, description: "")
+
+        if #available(iOS 15.4, *) {
+            navigationSession?.pauseTrip(for: .loading, description: "", turnCardColor: .systemGreen)
+        } else {
+            navigationSession?.pauseTrip(for: .loading, description: "")
+        }
+
         fcpMapViewController?.startNavigation(trip: trip)
     }
 
