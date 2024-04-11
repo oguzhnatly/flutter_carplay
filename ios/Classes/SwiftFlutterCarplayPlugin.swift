@@ -914,11 +914,6 @@ extension SwiftFlutterCarplayPlugin {
                 FCPMapButton(obj: $0)
             }
 
-            // Map dictionary representations to FCPDashboardButton instances for dashboard buttons
-            let dashboardButtons = (args["dashboardButtons"] as? [[String: Any]])?.map {
-                FCPDashboardButton(obj: $0)
-            }
-
             // Map dictionary representations to FCPBarButton instances for navigation bar buttons
             let leadingNavigationBarButtons = (args["leadingNavigationBarButtons"] as? [[String: Any]])?.map {
                 FCPBarButton(obj: $0)
@@ -933,7 +928,6 @@ extension SwiftFlutterCarplayPlugin {
                 automaticallyHidesNavigationBar: automaticallyHidesNavigationBar,
                 hidesButtonsWithNavigationBar: hidesButtonsWithNavigationBar,
                 mapButtons: mapButtons,
-                dashboardButtons: dashboardButtons,
                 leadingNavigationBarButtons: leadingNavigationBarButtons,
                 trailingNavigationBarButtons: trailingNavigationBarButtons
             )

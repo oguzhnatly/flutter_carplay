@@ -223,13 +223,17 @@ class NavigationEventHandler: NavigableLocationDelegate,
             cpManeuver.symbolImage = symbolImage
             cpManeuver.dashboardSymbolImage = symbolImage
 
+            if #available(iOS 15.4, *) {
+                cpManeuver.cardBackgroundColor = .systemGreen
+            }
+
             // Update the upcoming maneuver
             // It will change the maneuver in the map template automatically
             self.navigationSession?.upcomingManeuvers = [cpManeuver]
 
             // Update the overall route estimates
             if let trip = self.navigationSession?.trip {
-                mapTemplate?.updateEstimates(travelEstimates, for: trip)
+                mapTemplate?.update(travelEstimates, for: trip, with: .green)
             }
         }
 
@@ -268,6 +272,10 @@ class NavigationEventHandler: NavigableLocationDelegate,
             cpManeuver.symbolImage = symbolImage
             cpManeuver.dashboardSymbolImage = symbolImage
 
+            if #available(iOS 15.4, *) {
+                cpManeuver.cardBackgroundColor = .systemGreen
+            }
+
             // Update the upcoming maneuver in the map template
             // It will add the secondary maneuver in the map template automatically
             if var upcomingManeuvers = self.navigationSession?.upcomingManeuvers,
@@ -298,7 +306,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
         }
 
         if let trip = navigationSession?.trip {
-            mapTemplate?.updateEstimates(travelEstimates, for: trip)
+            mapTemplate?.update(travelEstimates, for: trip, with: .green)
         }
     }
 

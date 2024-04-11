@@ -57,7 +57,6 @@ class CPMapTemplate {
   void update({
     String? title,
     List<CPMapButton>? mapButtons,
-    List<CPDashboardButton>? dashboardButtons,
     List<CPBarButton>? leadingNavigationBarButtons,
     List<CPBarButton>? trailingNavigationBarButtons,
     bool? automaticallyHidesNavigationBar,
@@ -68,9 +67,6 @@ class CPMapTemplate {
 
     // update mapButtons
     if (mapButtons != null) this.mapButtons = mapButtons;
-
-    // update dashboardButtons
-    if (dashboardButtons != null) this.dashboardButtons = dashboardButtons;
 
     // update leadingNavigationBarButtons
     if (leadingNavigationBarButtons != null) {

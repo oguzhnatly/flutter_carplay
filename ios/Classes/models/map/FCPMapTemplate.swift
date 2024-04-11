@@ -129,7 +129,7 @@ class FCPMapTemplate: NSObject {
     ///   - mapButtons: The new array of map buttons.
     ///   - leadingNavigationBarButtons: The new array of leading navigation bar buttons.
     ///   - trailingNavigationBarButtons: The new array of trailing navigation bar buttons.
-    public func update(title: String?, automaticallyHidesNavigationBar: Bool?, hidesButtonsWithNavigationBar: Bool?, mapButtons: [FCPMapButton]?, dashboardButtons: [FCPDashboardButton]?, leadingNavigationBarButtons: [FCPBarButton]?, trailingNavigationBarButtons: [FCPBarButton]?) {
+    public func update(title: String?, automaticallyHidesNavigationBar: Bool?, hidesButtonsWithNavigationBar: Bool?, mapButtons: [FCPMapButton]?, leadingNavigationBarButtons: [FCPBarButton]?, trailingNavigationBarButtons: [FCPBarButton]?) {
         if let _title = title {
             self.title = _title
         }
@@ -147,14 +147,6 @@ class FCPMapTemplate: NSObject {
         if let _mapButtons = mapButtons {
             self.mapButtons = _mapButtons
             _super?.mapButtons = _mapButtons.map { $0.get }
-        }
-
-        if let _dashboardButtons = dashboardButtons {
-            self.dashboardButtons = _dashboardButtons
-
-            if let dashboardController = FlutterCarPlayTemplateManager.shared.carplayDashboardController, dashboardController.shortcutButtons.isEmpty {
-                dashboardController.shortcutButtons = _dashboardButtons.map { $0.get }
-            }
         }
 
         if let _leadingNavigationBarButtons = leadingNavigationBarButtons {
@@ -203,6 +195,7 @@ extension FCPMapTemplate {
 
         hideTripPreviews()
         navigationSession = _super?.startNavigationSession(for: trip)
+        navigationSession?.pauseTrip(for: .loading, description: "")
         fcpMapViewController?.startNavigation(trip: trip)
     }
 
