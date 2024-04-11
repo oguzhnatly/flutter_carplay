@@ -457,7 +457,7 @@ extension FCPMapViewController {
         let wayPoint = Waypoint(coordinates: GeoCoordinates(latitude: trip.destination.placemark.coordinate.latitude, longitude: trip.destination.placemark.coordinate.longitude))
         mapController?.setDestinationWaypoint(wayPoint)
 
-        mapController?.addRouteSimulatedLocation()
+        mapController?.addRouteDeviceLocation()
     }
 
     /// Stops the navigation
