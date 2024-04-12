@@ -20,12 +20,18 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
     var carplayInterfaceController: CPInterfaceController?
     var carplayDashboardController: CPDashboardController?
 
-    // CarPlay connection status
+    // CarPlay connection status (either CarPlay or Dashboard)
     var fcpConnectionStatus = FCPConnectionTypes.disconnected {
         didSet {
             SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: fcpConnectionStatus)
         }
     }
+
+    // CarPlay Dashboard connection status
+    var dashboardConnectionStatus = FCPConnectionTypes.disconnected
+
+    // CarPlay scene connection status
+    var carplayConnectionStatus = FCPConnectionTypes.disconnected
 
     // CarPlay session configuration
     var sessionConfiguration: CPSessionConfiguration!
