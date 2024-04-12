@@ -470,7 +470,7 @@ class MapController: LongPressDelegate {
     private func onNavigationFailed(title: String, message: String) {
         debugPrint("\(title) => \(message)")
 
-        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onNavigationFailedFromCarPlay,
+        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onNavigationFailedFromCarplay,
                                          data: [
                                              "message": message,
                                          ])

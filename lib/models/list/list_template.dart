@@ -128,7 +128,7 @@ class CPListTemplate {
       this.trailingNavigationBarButtons = trailingNavigationBarButtons;
     }
 
-    FlutterCarPlayController.updateCPListTemplate(this);
+    FlutterCarplayController.updateCPListTemplate(this);
   }
 
   String get uniqueId {

@@ -172,10 +172,10 @@ enum FCPChannelTypes {
   recenterMapView,
 
   /// Event for starting the navigation from CarPlay.
-  onNavigationStartedFromCarPlay,
+  onNavigationStartedFromCarplay,
 
   /// Event for failed the navigation from CarPlay.
-  onNavigationFailedFromCarPlay,
+  onNavigationFailedFromCarplay,
 
   /// Event for zooming in the map view in CarPlay.
   zoomInMapView,

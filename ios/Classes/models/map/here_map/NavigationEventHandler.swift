@@ -218,8 +218,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
             cpManeuver.initialTravelEstimates = initialTravelEstimates
             cpManeuver.dashboardInstructionVariants = [actionText]
 
-            let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/light/\(action).png",
-                                                   darkImage: "assets/icons/car_play/maneuvers/dark/\(action).png")
+            let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/carplay/maneuvers/light/\(action).png",
+                                                   darkImage: "assets/icons/carplay/maneuvers/dark/\(action).png")
             cpManeuver.symbolImage = symbolImage
             cpManeuver.dashboardSymbolImage = symbolImage
 
@@ -267,8 +267,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
             cpManeuver.instructionVariants = [actionText, maneuver.text, formattedManeuverText]
             cpManeuver.dashboardInstructionVariants = [actionText, maneuver.text, formattedManeuverText]
 
-            let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/car_play/maneuvers/light/\(action).png",
-                                                   darkImage: "assets/icons/car_play/maneuvers/dark/\(action).png")
+            let symbolImage = UIImage.dynamicImage(lightImage: "assets/icons/carplay/maneuvers/light/\(action).png",
+                                                   darkImage: "assets/icons/carplay/maneuvers/dark/\(action).png")
             cpManeuver.symbolImage = symbolImage
             cpManeuver.dashboardSymbolImage = symbolImage
 

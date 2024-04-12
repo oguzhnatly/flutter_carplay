@@ -87,7 +87,7 @@ class CPInformationTemplate {
       this.trailingNavigationBarButtons = trailingNavigationBarButtons;
     }
 
-    FlutterCarPlayController.updateCPInformationTemplate(this);
+    FlutterCarplayController.updateCPInformationTemplate(this);
   }
 
   String get uniqueId {

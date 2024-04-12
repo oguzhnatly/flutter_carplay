@@ -20,8 +20,8 @@ import 'flutter_carplay.dart';
 /// - [Learn more about MFi Program](https://mfi.apple.com)
 class FlutterCarplay {
   /// A main Flutter CarPlay Controller to manage the system.
-  static final FlutterCarPlayController _carPlayController =
-      FlutterCarPlayController();
+  static final FlutterCarplayController _carPlayController =
+      FlutterCarplayController();
 
   /// CarPlay main bridge as a listener from CarPlay and native side.
   late final StreamSubscription<dynamic>? _eventBroadcast;
@@ -60,11 +60,11 @@ class FlutterCarplay {
     double sourceLongitude,
     double destinationLatitude,
     double destinationLongitude,
-  )? _onNavigationStartedFromCarPlay;
+  )? _onNavigationStartedFromCarplay;
 
   /// A listener function that will be triggered when
   /// navigation is failed from CarPlay.
-  static Function(String message)? _onNavigationFailedFromCarPlay;
+  static Function(String message)? _onNavigationFailedFromCarplay;
 
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
@@ -146,16 +146,16 @@ class FlutterCarplay {
             data['nextRoadName'],
             isPrimary: data['isPrimary'],
           );
-        case FCPChannelTypes.onNavigationStartedFromCarPlay:
+        case FCPChannelTypes.onNavigationStartedFromCarplay:
           final data = event['data'];
-          _onNavigationStartedFromCarPlay?.call(
+          _onNavigationStartedFromCarplay?.call(
             data['sourceLatitude'],
             data['sourceLongitude'],
             data['destinationLatitude'],
             data['destinationLongitude'],
           );
-        case FCPChannelTypes.onNavigationFailedFromCarPlay:
-          _onNavigationFailedFromCarPlay?.call(event['data']['message']);
+        case FCPChannelTypes.onNavigationFailedFromCarplay:
+          _onNavigationFailedFromCarplay?.call(event['data']['message']);
         default:
           break;
       }
@@ -231,7 +231,7 @@ class FlutterCarplay {
         'runtimeType': 'F${rootTemplate.runtimeType}',
       }).then((value) {
         if (value) {
-          FlutterCarPlayController.currentRootTemplate = rootTemplate;
+          FlutterCarplayController.currentRootTemplate = rootTemplate;
           _carPlayController.addTemplateToHistory(rootTemplate);
         }
       });
@@ -246,7 +246,7 @@ class FlutterCarplay {
   /// Getter for current root template.
   /// Return one of type [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate]
   static dynamic get rootTemplate {
-    return FlutterCarPlayController.currentRootTemplate;
+    return FlutterCarplayController.currentRootTemplate;
   }
 
   /// It will present [CPAlertTemplate] modally.
@@ -266,7 +266,7 @@ class FlutterCarplay {
       'onPresent': template.onPresent != null,
     });
 
-    if (isSuccess) FlutterCarPlayController.currentPresentTemplate = template;
+    if (isSuccess) FlutterCarplayController.currentPresentTemplate = template;
   }
 
   /// It will present [CPActionSheetTemplate] modally.
@@ -285,7 +285,7 @@ class FlutterCarplay {
       'animated': animated,
     });
 
-    if (isSuccess) FlutterCarPlayController.currentPresentTemplate = template;
+    if (isSuccess) FlutterCarplayController.currentPresentTemplate = template;
   }
 
   /// It will present [CPVoiceControlTemplate] modally.
@@ -306,7 +306,7 @@ class FlutterCarplay {
       },
     );
 
-    if (isSuccess) FlutterCarPlayController.currentPresentTemplate = template;
+    if (isSuccess) FlutterCarplayController.currentPresentTemplate = template;
   }
 
   /// Changes the [CPVoiceControlTemplate]'s state to the one matching the specified
@@ -419,40 +419,40 @@ class FlutterCarplay {
   }
 
   /// Callback function will be fired when navigation started from CarPlay.
-  static void addListenerOnNavigationStartedFromCarPlay({
+  static void addListenerOnNavigationStartedFromCarplay({
     Function(
       double sourceLatitude,
       double sourceLongitude,
       double destinationLatitude,
       double destinationLongitude,
-    )? onNavigationStartedFromCarPlay,
+    )? onNavigationStartedFromCarplay,
   }) {
-    _onNavigationStartedFromCarPlay = onNavigationStartedFromCarPlay;
+    _onNavigationStartedFromCarplay = onNavigationStartedFromCarplay;
   }
 
   /// Removes the callback function that has been set before in order to listen
   /// on navigation started from CarPlay.
-  static void removeListenerOnNavigationStartedFromCarPlay() {
-    _onNavigationStartedFromCarPlay = null;
+  static void removeListenerOnNavigationStartedFromCarplay() {
+    _onNavigationStartedFromCarplay = null;
   }
 
   /// Callback function will be fired when navigation failed from CarPlay.
-  static void addListenerOnNavigationFailedFromCarPlay({
-    Function(String message)? onNavigationFailedFromCarPlay,
+  static void addListenerOnNavigationFailedFromCarplay({
+    Function(String message)? onNavigationFailedFromCarplay,
   }) {
-    _onNavigationFailedFromCarPlay = onNavigationFailedFromCarPlay;
+    _onNavigationFailedFromCarplay = onNavigationFailedFromCarplay;
   }
 
   /// Removes the callback function that has been set before in order to listen
   /// on navigation failed from CarPlay.
-  static void removeListenerOnNavigationFailedFromCarPlay() {
-    _onNavigationFailedFromCarPlay = null;
+  static void removeListenerOnNavigationFailedFromCarplay() {
+    _onNavigationFailedFromCarplay = null;
   }
 
   /// Adds the specified [CPSpeaker] utterance to the queue of the speech synthesizer in CarPlay.
   static void speak(CPSpeaker speakerController) {
     if (speakerController.onCompleted != null) {
-      FlutterCarPlayController.callbackObjects.add(speakerController);
+      FlutterCarplayController.callbackObjects.add(speakerController);
     }
     _carPlayController.methodChannel
         .invokeMethod(
@@ -461,7 +461,7 @@ class FlutterCarplay {
     )
         .then((value) {
       if (value == false && speakerController.onCompleted != null) {
-        FlutterCarPlayController.callbackObjects
+        FlutterCarplayController.callbackObjects
             .removeWhere((e) => e.uniqueId == speakerController.uniqueId);
       }
     });
@@ -489,7 +489,7 @@ class FlutterCarplay {
     );
 
     if (isSuccess) {
-      final templateHistory = FlutterCarPlayController.templateHistory;
+      final templateHistory = FlutterCarplayController.templateHistory;
       for (final _ in Iterable<int>.generate(count)) {
         if (templateHistory.isNotEmpty) {
           templateHistory.removeLast();
@@ -506,7 +506,7 @@ class FlutterCarplay {
   static Future<bool> popToRoot({bool animated = true}) async {
     await FlutterCarplay.popModal(forcePop: true);
 
-    if (FlutterCarPlayController.templateHistory.length <= 1) return false;
+    if (FlutterCarplayController.templateHistory.length <= 1) return false;
 
     final isSuccess = await _carPlayController.reactToNativeModule(
       FCPChannelTypes.popToRootTemplate,
@@ -514,9 +514,9 @@ class FlutterCarplay {
     );
 
     if (isSuccess) {
-      if (FlutterCarPlayController.currentRootTemplate != null) {
-        FlutterCarPlayController.templateHistory = [
-          FlutterCarPlayController.currentRootTemplate,
+      if (FlutterCarplayController.currentRootTemplate != null) {
+        FlutterCarplayController.templateHistory = [
+          FlutterCarplayController.currentRootTemplate,
         ];
       }
     }
@@ -530,7 +530,7 @@ class FlutterCarplay {
     bool animated = true,
     bool forcePop = false,
   }) async {
-    final cpTemplate = FlutterCarPlayController.currentPresentTemplate;
+    final cpTemplate = FlutterCarplayController.currentPresentTemplate;
 
     if (cpTemplate == null) return false;
 
@@ -544,7 +544,7 @@ class FlutterCarplay {
       animated,
     );
 
-    if (isSuccess) FlutterCarPlayController.currentPresentTemplate = null;
+    if (isSuccess) FlutterCarplayController.currentPresentTemplate = null;
     return isSuccess;
   }
 

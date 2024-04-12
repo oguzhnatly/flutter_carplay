@@ -1,5 +1,5 @@
 //
-// FlutterCarPlayTemplateManager.swift
+// FlutterCarplayTemplateManager.swift
 // flutter_carplay
 //
 // Created by Pradip Sutariya on 09/04/24.
@@ -9,8 +9,8 @@ import CarPlay
 import Foundation
 
 /// FlutterCarPlayTemplateManager handles CarPlay scene and the Dashboard scene
-class FlutterCarPlayTemplateManager: NSObject, CPInterfaceControllerDelegate, CPSessionConfigurationDelegate {
-    static let shared = FlutterCarPlayTemplateManager()
+class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CPSessionConfigurationDelegate {
+    static let shared = FlutterCarplayTemplateManager()
 
     // MARK: - Properties
 
@@ -112,7 +112,7 @@ class FlutterCarPlayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
             }
 
             // Update the root template
-            FlutterCarPlaySceneDelegate.forceUpdateRootTemplate()
+            FlutterCarplaySceneDelegate.forceUpdateRootTemplate()
 
         } else if activeScene is CPTemplateApplicationDashboardScene {
             isDashboardSceneActive = true
@@ -159,7 +159,7 @@ class FlutterCarPlayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
         carplayDashboardController = dashboardController
 
         // save dashboard window
-        FlutterCarPlayTemplateManager.shared.dashboardWindow = window
+        FlutterCarplayTemplateManager.shared.dashboardWindow = window
     }
 
     /// Dashboard scene did disconnect

@@ -42,7 +42,7 @@
 					<key>UISceneConfigurationName</key>
 					<string>CarPlay Configuration</string>
 					<key>UISceneDelegateClassName</key>
-					<string>flutter_carplay.FlutterCarPlaySceneDelegate</string>
+					<string>flutter_carplay.FlutterCarplaySceneDelegate</string>
 				</dict>
 			</array>
 			<key>UIWindowSceneSessionRoleApplication</key>

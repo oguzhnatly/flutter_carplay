@@ -191,10 +191,10 @@ enum FCPChannelTypes {
     static let recenterMapView = "recenterMapView"
 
     /// Event for starting navigation from CarPlay.
-    static let onNavigationStartedFromCarPlay = "onNavigationStartedFromCarPlay"
+    static let onNavigationStartedFromCarplay = "onNavigationStartedFromCarplay"
 
     /// Event for failed navigation from CarPlay.
-    static let onNavigationFailedFromCarPlay = "onNavigationFailedFromCarPlay"
+    static let onNavigationFailedFromCarplay = "onNavigationFailedFromCarplay"
 
     /// Event for zooming in the map view in CarPlay.
     static let zoomInMapView = "zoomInMapView"

@@ -87,7 +87,7 @@ class CPMapTemplate {
     if (hidesButtonsWithNavigationBar != null) {
       this.hidesButtonsWithNavigationBar = hidesButtonsWithNavigationBar;
     }
-    FlutterCarPlayController.updateCPMapTemplate(this);
+    FlutterCarplayController.updateCPMapTemplate(this);
   }
 
   /// Displays a trip preview on [CPMapTemplate]
@@ -96,7 +96,7 @@ class CPMapTemplate {
     CPTrip? selectedTrip,
     CPTripPreviewTextConfiguration? textConfiguration,
   }) {
-    FlutterCarPlayController.showTripPreviews(
+    FlutterCarplayController.showTripPreviews(
       uniqueId,
       trips,
       selectedTrip,
@@ -106,17 +106,17 @@ class CPMapTemplate {
 
   /// Hides the trip preview on [CPMapTemplate]
   void hideTripPreviews() {
-    FlutterCarPlayController.hideTripPreviews(uniqueId);
+    FlutterCarplayController.hideTripPreviews(uniqueId);
   }
 
   /// Displays a banner on [CPMapTemplate]
   void showBanner({required String message, required int color}) {
-    FlutterCarPlayController.showBanner(uniqueId, message, color);
+    FlutterCarplayController.showBanner(uniqueId, message, color);
   }
 
   /// Hides the banner on [CPMapTemplate]
   void hideBanner() {
-    FlutterCarPlayController.hideBanner(uniqueId);
+    FlutterCarplayController.hideBanner(uniqueId);
   }
 
   /// Displays a banner on [CPMapTemplate]
@@ -124,7 +124,7 @@ class CPMapTemplate {
     required String message,
     Duration duration = const Duration(seconds: 2),
   }) {
-    FlutterCarPlayController.showToast(uniqueId, message, duration);
+    FlutterCarplayController.showToast(uniqueId, message, duration);
   }
 
   /// Displays an overlay card on [CPMapTemplate]
@@ -133,7 +133,7 @@ class CPMapTemplate {
     String? secondaryTitle,
     String? subtitle,
   }) {
-    FlutterCarPlayController.showOverlay(
+    FlutterCarplayController.showOverlay(
       uniqueId,
       primaryTitle,
       secondaryTitle,
@@ -143,12 +143,12 @@ class CPMapTemplate {
 
   /// Hides the overlay on [CPMapTemplate]
   void hideOverlay() {
-    FlutterCarPlayController.hideOverlay(uniqueId);
+    FlutterCarplayController.hideOverlay(uniqueId);
   }
 
   /// Starts a navigation.
   void startNavigation({required CPTrip trip}) {
-    FlutterCarPlayController.startNavigation(
+    FlutterCarplayController.startNavigation(
       uniqueId,
       trip,
     );
@@ -156,17 +156,17 @@ class CPMapTemplate {
 
   /// Stops a navigation.
   void stopNavigation() {
-    FlutterCarPlayController.stopNavigation(uniqueId);
+    FlutterCarplayController.stopNavigation(uniqueId);
   }
 
   /// Show panning interface on the [CPMapTemplate]
   void showPanningInterface({bool animated = true}) {
-    FlutterCarPlayController.showPanningInterface(uniqueId, animated: animated);
+    FlutterCarplayController.showPanningInterface(uniqueId, animated: animated);
   }
 
   /// Dismiss panning interface on the [CPMapTemplate]
   void dismissPanningInterface({bool animated = true}) {
-    FlutterCarPlayController.dismissPanningInterface(
+    FlutterCarplayController.dismissPanningInterface(
       uniqueId,
       animated: animated,
     );

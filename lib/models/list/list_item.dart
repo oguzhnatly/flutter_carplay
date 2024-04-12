@@ -156,13 +156,13 @@ class CPListItem {
     if (playbackProgress != null) {
       if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
         this.playbackProgress = playbackProgress;
-        FlutterCarPlayController.updateCPListItem(this);
+        FlutterCarplayController.updateCPListItem(this);
       } else {
         throw RangeError('playbackProgress must be between 0.0 and 1.0');
       }
     }
 
-    FlutterCarPlayController.updateCPListItem(this);
+    FlutterCarplayController.updateCPListItem(this);
   }
 
   String get uniqueId {

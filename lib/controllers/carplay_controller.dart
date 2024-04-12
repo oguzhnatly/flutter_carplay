@@ -6,9 +6,9 @@ import '../constants/private_constants.dart';
 import '../flutter_carplay.dart';
 import '../helpers/carplay_helper.dart';
 
-/// [FlutterCarPlayController] is an root object in order to control and communication
+/// [FlutterCarplayController] is an root object in order to control and communication
 /// system with the Apple CarPlay and native functions.
-class FlutterCarPlayController {
+class FlutterCarplayController {
   static final FlutterCarplayHelper _carplayHelper = FlutterCarplayHelper();
   static final MethodChannel _methodChannel =
       MethodChannel(_carplayHelper.makeFCPChannelId());
@@ -458,12 +458,12 @@ class FlutterCarPlayController {
   Future<void> proessFCPVoiceControlTemplatePoppedChannel(
     String elementId,
   ) async {
-    final topTemplate = FlutterCarPlayController.currentPresentTemplate;
+    final topTemplate = FlutterCarplayController.currentPresentTemplate;
     if (topTemplate is CPVoiceControlTemplate &&
         topTemplate.uniqueId == elementId) {
       await FlutterCarplay.stopVoiceControl();
       FlutterCarplay.removeListenerOnSpeechRecognitionTranscriptChange();
-      FlutterCarPlayController.currentPresentTemplate = null;
+      FlutterCarplayController.currentPresentTemplate = null;
     }
   }
 

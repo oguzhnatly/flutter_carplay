@@ -8,7 +8,7 @@
 import CarPlay
 import UIKit
 
-class FlutterCarPlaySceneDelegate: NSObject {
+class FlutterCarplaySceneDelegate: NSObject {
     // MARK: UISceneDelegate
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options _: UIScene.ConnectionOptions) {
@@ -26,19 +26,19 @@ class FlutterCarPlaySceneDelegate: NSObject {
             MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene did disconnect.")
         }
 
-        FlutterCarPlayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.disconnected
+        FlutterCarplayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.disconnected
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         if scene.session.configuration.name == "CarPlayConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene did become active.")
-            FlutterCarPlayTemplateManager.shared.setActiveMapViewController(with: scene)
+            FlutterCarplayTemplateManager.shared.setActiveMapViewController(with: scene)
         } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene did become active.")
-            FlutterCarPlayTemplateManager.shared.setActiveMapViewController(with: scene)
+            FlutterCarplayTemplateManager.shared.setActiveMapViewController(with: scene)
         }
 
-        FlutterCarPlayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.connected
+        FlutterCarplayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.connected
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
@@ -55,36 +55,36 @@ class FlutterCarPlaySceneDelegate: NSObject {
         } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect application Dashboard scene did enter background.")
         }
-        FlutterCarPlayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.background
+        FlutterCarplayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.background
     }
 }
 
 // MARK: CPTemplateApplicationSceneDelegate
 
-extension FlutterCarPlaySceneDelegate: CPTemplateApplicationSceneDelegate {
+extension FlutterCarplaySceneDelegate: CPTemplateApplicationSceneDelegate {
     func templateApplicationScene(_: CPTemplateApplicationScene,
                                   didConnect interfaceController: CPInterfaceController, to window: CPWindow)
     {
         MemoryLogger.shared.appendEvent("Connected to CarPlay.")
-        FlutterCarPlayTemplateManager.shared.interfaceController(interfaceController, didConnectWith: window)
+        FlutterCarplayTemplateManager.shared.interfaceController(interfaceController, didConnectWith: window)
     }
 
     func templateApplicationScene(_: CPTemplateApplicationScene,
                                   didDisconnect interfaceController: CPInterfaceController, from window: CPWindow)
     {
-        FlutterCarPlayTemplateManager.shared.interfaceController(interfaceController, didDisconnectWith: window)
+        FlutterCarplayTemplateManager.shared.interfaceController(interfaceController, didDisconnectWith: window)
         MemoryLogger.shared.appendEvent("Disconnected from CarPlay.")
     }
 }
 
-extension FlutterCarPlaySceneDelegate: CPTemplateApplicationDashboardSceneDelegate {
+extension FlutterCarplaySceneDelegate: CPTemplateApplicationDashboardSceneDelegate {
     func templateApplicationDashboardScene(
         _: CPTemplateApplicationDashboardScene,
         didConnect dashboardController: CPDashboardController,
         to window: UIWindow
     ) {
         MemoryLogger.shared.appendEvent("Connected to CarPlay dashboard.")
-        FlutterCarPlayTemplateManager.shared.dashboardController(dashboardController, didConnectWith: window)
+        FlutterCarplayTemplateManager.shared.dashboardController(dashboardController, didConnectWith: window)
     }
 
     func templateApplicationDashboardScene(
@@ -92,20 +92,20 @@ extension FlutterCarPlaySceneDelegate: CPTemplateApplicationDashboardSceneDelega
         didDisconnect dashboardController: CPDashboardController,
         from window: UIWindow
     ) {
-        FlutterCarPlayTemplateManager.shared.dashboardController(dashboardController, didDisconnectWith: window)
+        FlutterCarplayTemplateManager.shared.dashboardController(dashboardController, didDisconnectWith: window)
         MemoryLogger.shared.appendEvent("Disconnected from CarPlay dashboard.")
     }
 }
 
 // MARK: - Public Funcitons
 
-extension FlutterCarPlaySceneDelegate {
+extension FlutterCarplaySceneDelegate {
     /// Forces an update of the root template.
     /// - Parameter completion: A closure to be executed upon completion of the update.
     public static func forceUpdateRootTemplate(completion: ((Bool, Error?) -> Void)? = nil) {
         if let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate {
             let animated = SwiftFlutterCarplayPlugin.animated
-            FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.setRootTemplate(rootTemplate, animated: animated, completion: completion)
+            FlutterCarplayTemplateManager.shared.carplayInterfaceController?.setRootTemplate(rootTemplate, animated: animated, completion: completion)
         } else {
             completion?(false, nil)
         }
@@ -114,13 +114,13 @@ extension FlutterCarPlaySceneDelegate {
     /// Pops the current template from the navigation hierarchy.
     public static func pop(animated: Bool, completion: ((Bool, Error?) -> Void)? = nil) {
         MemoryLogger.shared.appendEvent("Pop Template.")
-        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.popTemplate(animated: animated, completion: completion)
+        FlutterCarplayTemplateManager.shared.carplayInterfaceController?.popTemplate(animated: animated, completion: completion)
     }
 
     /// Pops to the root template in the navigation hierarchy.
     public static func popToRootTemplate(animated: Bool, completion: ((Bool, Error?) -> Void)? = nil) {
         MemoryLogger.shared.appendEvent("Pop to Root Template.")
-        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.popToRootTemplate(animated: animated, completion: completion)
+        FlutterCarplayTemplateManager.shared.carplayInterfaceController?.popToRootTemplate(animated: animated, completion: completion)
     }
 
     /// Pushes a new template onto the navigation hierarchy.
@@ -129,20 +129,20 @@ extension FlutterCarPlaySceneDelegate {
     ///   - animated: A Boolean value that indicates whether the transition should be animated.
     ///   - completion: A closure to be executed upon completion of the push operation.
     public static func push(template: CPTemplate, animated: Bool, completion: ((Bool, Error?) -> Void)? = nil) {
-        guard (FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.templates.count ?? 0) <= 4 else {
+        guard (FlutterCarplayTemplateManager.shared.carplayInterfaceController?.templates.count ?? 0) <= 4 else {
             MemoryLogger.shared.appendEvent("Template navigation hierarchy exceeded")
             let error = NSError(domain: "FlutterCarplay", code: 0, userInfo: ["LocalizedDescriptionKey": "CarPlay cannot have more than 5 templates on navigation hierarchy."])
             completion?(false, error)
             return
         }
         MemoryLogger.shared.appendEvent("Push to \(template).")
-        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.pushTemplate(template, animated: animated, completion: completion)
+        FlutterCarplayTemplateManager.shared.carplayInterfaceController?.pushTemplate(template, animated: animated, completion: completion)
     }
 
     /// Closes the currently presented template.
     public static func closePresent(animated: Bool, completion: ((Bool, Error?) -> Void)? = nil) {
         MemoryLogger.shared.appendEvent("Close the presented template")
-        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.dismissTemplate(animated: animated, completion: completion)
+        FlutterCarplayTemplateManager.shared.carplayInterfaceController?.dismissTemplate(animated: animated, completion: completion)
     }
 
     /// Presents a new template.
@@ -152,6 +152,6 @@ extension FlutterCarPlaySceneDelegate {
     ///   - completion: A closure to be executed upon completion of the presentation.
     public static func presentTemplate(template: CPTemplate, animated: Bool, completion: ((Bool, Error?) -> Void)? = nil) {
         MemoryLogger.shared.appendEvent("Present \(template)")
-        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.presentTemplate(template, animated: animated, completion: completion)
+        FlutterCarplayTemplateManager.shared.carplayInterfaceController?.presentTemplate(template, animated: animated, completion: completion)
     }
 }

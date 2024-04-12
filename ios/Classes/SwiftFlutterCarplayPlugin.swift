@@ -68,7 +68,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
     /// The CPTemplate history for CarPlay.
     public static var cpTemplateHistory: [CPTemplate] {
-        return FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.templates ?? []
+        return FlutterCarplayTemplateManager.shared.carplayInterfaceController?.templates ?? []
     }
 
     /// Registers the plugin with the Flutter engine.
@@ -111,7 +111,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             setRootTemplate(rootTemplate, args: args, result: result)
         case FCPChannelTypes.forceUpdateRootTemplate:
-            FlutterCarPlaySceneDelegate.forceUpdateRootTemplate(completion: { completed, _ in
+            FlutterCarplaySceneDelegate.forceUpdateRootTemplate(completion: { completed, _ in
                 result(completed)
             })
         case FCPChannelTypes.updateInformationTemplate:
@@ -190,7 +190,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             if fcpPresentTemplate != nil {
                 fcpPresentTemplate = nil
-                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
+                FlutterCarplaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
                     showAlertTemplate()
                 })
             } else {
@@ -199,7 +199,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             func showAlertTemplate() {
                 let alertTemplate = FCPAlertTemplate(obj: rootTemplateArgs)
                 fcpPresentTemplate = alertTemplate
-                FlutterCarPlaySceneDelegate
+                FlutterCarplaySceneDelegate
                     .presentTemplate(template: alertTemplate.get, animated: animated, completion: { completed, _ in
                         FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
                                                          data: ["completed": completed])
@@ -217,7 +217,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             if fcpPresentTemplate != nil {
                 fcpPresentTemplate = nil
-                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
+                FlutterCarplaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
                     showActionSheet()
                 })
             } else {
@@ -227,7 +227,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             func showActionSheet() {
                 let actionSheetTemplate = FCPActionSheetTemplate(obj: rootTemplateArgs)
                 fcpPresentTemplate = actionSheetTemplate
-                FlutterCarPlaySceneDelegate.presentTemplate(template: actionSheetTemplate.get, animated: animated, completion: { completed, _ in
+                FlutterCarplaySceneDelegate.presentTemplate(template: actionSheetTemplate.get, animated: animated, completion: { completed, _ in
                     result(completed)
                 })
             }
@@ -241,7 +241,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return
             }
             for _ in 1 ... count {
-                FlutterCarPlaySceneDelegate.pop(animated: animated, completion: { _, _ in
+                FlutterCarplaySceneDelegate.pop(animated: animated, completion: { _, _ in
                 })
             }
             result(true)
@@ -250,7 +250,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(false)
                 return
             }
-            FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { completed, _ in
+            FlutterCarplaySceneDelegate.closePresent(animated: animated, completion: { completed, _ in
                 result(completed)
             })
             fcpPresentTemplate = nil
@@ -265,7 +265,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(false)
                 return
             }
-            FlutterCarPlaySceneDelegate.popToRootTemplate(animated: animated, completion: { completed, _ in
+            FlutterCarplaySceneDelegate.popToRootTemplate(animated: animated, completion: { completed, _ in
                 result(completed)
             })
             fcpPresentTemplate = nil
@@ -280,7 +280,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             if fcpPresentTemplate != nil {
                 fcpPresentTemplate = nil
-                FlutterCarPlaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
+                FlutterCarplaySceneDelegate.closePresent(animated: animated, completion: { _, _ in
                     showVoiceTemplate()
                 })
             } else {
@@ -290,7 +290,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             func showVoiceTemplate() {
                 let voiceControlTemplate = FCPVoiceControlTemplate(obj: rootTemplateArgs)
                 fcpPresentTemplate = voiceControlTemplate
-                FlutterCarPlaySceneDelegate.presentTemplate(template: voiceControlTemplate.get, animated: animated, completion: { completed, _ in
+                FlutterCarplaySceneDelegate.presentTemplate(template: voiceControlTemplate.get, animated: animated, completion: { completed, _ in
                     FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
                                                      data: ["completed": completed])
                     result(completed)
@@ -773,10 +773,10 @@ extension SwiftFlutterCarplayPlugin {
 
             SwiftFlutterCarplayPlugin.rootViewController = mapTemplate.viewController
 
-            if FlutterCarPlayTemplateManager.shared.isDashboardSceneActive {
-                FlutterCarPlayTemplateManager.shared.dashboardWindow?.rootViewController = mapTemplate.viewController
+            if FlutterCarplayTemplateManager.shared.isDashboardSceneActive {
+                FlutterCarplayTemplateManager.shared.dashboardWindow?.rootViewController = mapTemplate.viewController
             } else {
-                FlutterCarPlayTemplateManager.shared.carWindow?.rootViewController = mapTemplate.viewController
+                FlutterCarplayTemplateManager.shared.carWindow?.rootViewController = mapTemplate.viewController
             }
 
         case let listTemplate as FCPListTemplate:
@@ -790,9 +790,9 @@ extension SwiftFlutterCarplayPlugin {
 
         // If an FCPRootTemplate is successfully extracted, set it as the root template
         SwiftFlutterCarplayPlugin.rootTemplate = cpRootTemplate
-        FlutterCarPlayTemplateManager.shared.carplayInterfaceController?.setRootTemplate(cpRootTemplate, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
+        FlutterCarplayTemplateManager.shared.carplayInterfaceController?.setRootTemplate(cpRootTemplate, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
         SwiftFlutterCarplayPlugin.fcpRootTemplate = rootTemplate
-        SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FlutterCarPlayTemplateManager.shared.fcpConnectionStatus)
+        SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FlutterCarplayTemplateManager.shared.fcpConnectionStatus)
         let animated = args["animated"] as? Bool ?? false
         SwiftFlutterCarplayPlugin.animated = animated
         result(true)
@@ -835,7 +835,7 @@ extension SwiftFlutterCarplayPlugin {
         }
 
         // Push the template onto the navigation stack
-        FlutterCarPlaySceneDelegate.push(template: pushTemplate, animated: animated) { completed, _ in
+        FlutterCarplaySceneDelegate.push(template: pushTemplate, animated: animated) { completed, _ in
             result(completed)
         }
     }

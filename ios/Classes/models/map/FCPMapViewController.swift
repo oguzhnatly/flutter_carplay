@@ -66,7 +66,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
     /// Whether the dashboard scene is active.
     var isDashboardSceneActive: Bool {
-        return FlutterCarPlayTemplateManager.shared.isDashboardSceneActive
+        return FlutterCarplayTemplateManager.shared.isDashboardSceneActive
     }
 
     /// Should show banner
@@ -228,7 +228,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// - Parameter geoCoordinates: The coordinates of the markers
     func lookAtArea(geoCoordinates: [GeoCoordinates]) {
         if let geoBox = GeoBox.containing(geoCoordinates: geoCoordinates) {
-            let scale = FlutterCarPlayTemplateManager.shared.carWindow?.screen.scale ?? 1.0
+            let scale = FlutterCarplayTemplateManager.shared.carWindow?.screen.scale ?? 1.0
             let topSafeArea = view.safeAreaInsets.top * scale
             let leftSafeArea = view.safeAreaInsets.left * scale
             let rightSafeArea = view.safeAreaInsets.right * scale
@@ -262,7 +262,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
     /// Update the camera principal point
     fileprivate func updateCameraPrincipalPoint() {
-        let scale = FlutterCarPlayTemplateManager.shared.carWindow?.screen.scale ?? 1.0
+        let scale = FlutterCarplayTemplateManager.shared.carWindow?.screen.scale ?? 1.0
         let topSafeArea = view.safeAreaInsets.top * scale
         let leftSafeArea = view.safeAreaInsets.left * scale
         let rightSafeArea = view.safeAreaInsets.right * scale
@@ -407,7 +407,7 @@ extension FCPMapViewController {
         metadata.setString(key: "marker", value: MapMarkerType.INITIAL.rawValue)
         metadata.setString(key: "polygon", value: MapMarkerType.INITIAL.rawValue)
 
-        let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/position.png")
+        let image = UIImage().fromFlutterAsset(name: "assets/icons/carplay/position.png")
         let markerSize = 30 * mapView.pixelScale
 
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerSize, height: markerSize), metadata: metadata)
@@ -420,7 +420,7 @@ extension FCPMapViewController {
         let metadata = heresdk.Metadata()
         metadata.setString(key: "marker", value: MapMarkerType.INCIDENT_ADDRESS.rawValue)
 
-        let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/map_marker_big.png")
+        let image = UIImage().fromFlutterAsset(name: "assets/icons/carplay/map_marker_big.png")
 
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerPinSize, height: markerPinSize), metadata: metadata)
     }
@@ -433,7 +433,7 @@ extension FCPMapViewController {
         let metadata = heresdk.Metadata()
         metadata.setString(key: "marker", value: MapMarkerType.DESTINATION_ADDRESS.rawValue)
 
-        let image = UIImage().fromFlutterAsset(name: "assets/icons/car_play/map_marker_wp.png")
+        let image = UIImage().fromFlutterAsset(name: "assets/icons/carplay/map_marker_wp.png")
 
         mapController?.addMapMarker(coordinates: coordinates, markerImage: image, markerSize: CGSize(width: markerPinSize, height: markerPinSize), metadata: metadata)
     }
