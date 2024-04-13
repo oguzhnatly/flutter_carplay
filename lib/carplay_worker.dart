@@ -214,33 +214,35 @@ class FlutterCarplay {
   /// this flag when there isn’t an existing navigation hierarchy to replace.
   ///
   /// [!] CarPlay cannot have more than 5 templates on one screen.
-  static void setRootTemplate({
+  static Future<void> setRootTemplate({
     required dynamic rootTemplate,
     bool animated = true,
-  }) {
+  }) async {
     if (rootTemplate is CPMapTemplate ||
         rootTemplate is CPGridTemplate ||
         rootTemplate is CPListTemplate ||
         rootTemplate is CPTabBarTemplate ||
         rootTemplate is CPInformationTemplate ||
         rootTemplate is CPPointOfInterestTemplate) {
-      _carPlayController.methodChannel
+      final isSuccess = await _carPlayController.methodChannel
           .invokeMethod('setRootTemplate', <String, dynamic>{
         'animated': animated,
         'rootTemplate': rootTemplate.toJson(),
         'runtimeType': 'F${rootTemplate.runtimeType}',
-      }).then((value) {
-        if (value) {
-          FlutterCarplayController.currentRootTemplate = rootTemplate;
-          _carPlayController.addTemplateToHistory(rootTemplate);
-        }
       });
+
+      if (isSuccess) {
+        FlutterCarplayController.currentRootTemplate = rootTemplate;
+        _carPlayController.addTemplateToHistory(rootTemplate);
+      }
     }
   }
 
   /// It will set the current root template again.
-  void forceUpdateRootTemplate() {
-    _carPlayController.methodChannel.invokeMethod('forceUpdateRootTemplate');
+  Future<void> forceUpdateRootTemplate() async {
+    await _carPlayController.methodChannel.invokeMethod(
+      'forceUpdateRootTemplate',
+    );
   }
 
   /// Getter for current root template.

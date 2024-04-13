@@ -119,7 +119,7 @@ extension FlutterCarplaySceneDelegate: CPTemplateApplicationDashboardSceneDelega
     }
 }
 
-// MARK: - Public Funcitons
+// MARK: - Public Functions
 
 extension FlutterCarplaySceneDelegate {
     /// Forces an update of the root template.
