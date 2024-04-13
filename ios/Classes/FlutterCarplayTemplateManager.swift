@@ -114,7 +114,7 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
                 carWindow?.rootViewController = rootViewController
 
                 // Update UI when CarPlay scene is active
-                rootViewController.carplaySceneDidBecomeActive()
+                rootViewController.showSubviews()
             }
 
             // Update the root template
@@ -136,7 +136,7 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
                 }
 
                 // Update UI when Dashboard scene is active
-                rootViewController.dashboardSceneDidBecomeActive()
+                rootViewController.hideSubviews()
             }
         }
     }
@@ -166,8 +166,6 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
 
         // save dashboard window
         FlutterCarplayTemplateManager.shared.dashboardWindow = window
-
-        dashboardConnectionStatus = FCPConnectionTypes.connected
     }
 
     /// Dashboard scene did disconnect
@@ -208,10 +206,6 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
             window.rootViewController = rootViewController
         }
 
-        // Update the CarPlay connection status
-        carplayConnectionStatus = FCPConnectionTypes.connected
-        fcpConnectionStatus = FCPConnectionTypes.connected
-
         // Update the root template
         if let rootTemplate = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.get {
             SwiftFlutterCarplayPlugin.rootTemplate = rootTemplate
@@ -229,8 +223,6 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
         if let mapTemplate = SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate {
             mapTemplate.stopNavigation()
         }
-        carplayConnectionStatus = FCPConnectionTypes.disconnected
-        fcpConnectionStatus = FCPConnectionTypes.disconnected
         carplayInterfaceController = nil
         carWindow?.rootViewController = nil
     }

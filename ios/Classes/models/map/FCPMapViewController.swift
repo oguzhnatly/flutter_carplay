@@ -69,6 +69,11 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         return FlutterCarplayTemplateManager.shared.isDashboardSceneActive
     }
 
+    /// Whether the dashboard scene is active.
+    var isPanningInterfaceVisible: Bool {
+        return (SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate)?.isPanningInterfaceVisible ?? false
+    }
+
     /// Should show banner
     var shouldShowBanner = false
 
@@ -189,9 +194,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
                     if initialMarkerCoordinates != nil {
                         flyToCoordinates(coordinates: initialMarkerCoordinates!)
                     }
-
                 case "addressMarker":
-
                     if incidentAddressCoordinates != nil, destinationAddressCoordinates != nil {
                         lookAtArea(geoCoordinates: [
                             incidentAddressCoordinates!,
@@ -201,9 +204,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
                     } else if incidentAddressCoordinates != nil {
                         flyToCoordinates(coordinates: incidentAddressCoordinates!)
                     }
-
                 case "bothMarkers":
-
                     if initialMarkerCoordinates != nil,
                        incidentAddressCoordinates != nil
                     {
@@ -265,7 +266,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         let scale = FlutterCarplayTemplateManager.shared.carWindow?.screen.scale ?? 1.0
         let topSafeArea = view.safeAreaInsets.top * scale
         let leftSafeArea = view.safeAreaInsets.left * scale
-        let rightSafeArea = view.safeAreaInsets.right * scale
+        let rightSafeArea = isPanningInterfaceVisible ? 0.0 : view.safeAreaInsets.right * scale
         let width = view.frame.width * scale
         let height = view.frame.height * scale
 
@@ -304,7 +305,7 @@ extension FCPMapViewController {
         shouldShowBanner = true
         bannerView.setMessage(message)
         bannerView.setBackgroundColor(color)
-        bannerView.isHidden = isDashboardSceneActive
+        bannerView.isHidden = isDashboardSceneActive || isPanningInterfaceVisible
 
         if !isDashboardSceneActive {
             updateCameraPrincipalPoint()
@@ -364,7 +365,7 @@ extension FCPMapViewController {
         if let subtitle = subtitle {
             overlayView.setSubtitle(subtitle)
         }
-        overlayView.isHidden = isDashboardSceneActive
+        overlayView.isHidden = isDashboardSceneActive || isPanningInterfaceVisible
 
         if !isDashboardSceneActive, overlayViewWidth != overlayView.bounds.width {
             overlayViewWidth = overlayView.bounds.width
@@ -382,16 +383,18 @@ extension FCPMapViewController {
         shouldShowOverlay = false
     }
 
-    /// Dashboard scene is active
-    func dashboardSceneDidBecomeActive() {
+    /// Hide all the subviews
+    func hideSubviews() {
         bannerView.isHidden = true
         overlayView.isHidden = true
+        updateCameraPrincipalPoint()
     }
 
-    /// CarPlay scene is active
-    func carplaySceneDidBecomeActive() {
-        bannerView.isHidden = !shouldShowBanner
-        overlayView.isHidden = !shouldShowOverlay
+    /// Show the subviews
+    func showSubviews() {
+        bannerView.isHidden = !shouldShowBanner || isPanningInterfaceVisible
+        overlayView.isHidden = !shouldShowOverlay || isPanningInterfaceVisible
+        updateCameraPrincipalPoint()
     }
 }
 
@@ -446,9 +449,15 @@ extension FCPMapViewController {
     func flyToCoordinates(coordinates: GeoCoordinates, bowFactor: Double = 0.2, duration: TimeInterval = TimeInterval(1)) {
         print("principlePoint at fly to: \(mapView.camera.principalPoint)")
 
-        let animation = MapCameraAnimationFactory.flyTo(target: GeoCoordinatesUpdate(coordinates), orientation: GeoOrientationUpdate(bearing: 0.0, tilt: 0.0), zoom: MapMeasure(kind: .distance, value: ConstantsEnum.DEFAULT_DISTANCE_IN_METERS), bowFactor: bowFactor, duration: duration)
+        if isPanningInterfaceVisible {
+            let animation = MapCameraAnimationFactory.flyTo(target: GeoCoordinatesUpdate(coordinates), orientation: GeoOrientationUpdate(bearing: 0.0, tilt: 0.0), bowFactor: 0.0, duration: TimeInterval(0.5))
 
-        mapView.camera.startAnimation(animation)
+            mapView.camera.startAnimation(animation)
+        } else {
+            let animation = MapCameraAnimationFactory.flyTo(target: GeoCoordinatesUpdate(coordinates), orientation: GeoOrientationUpdate(bearing: 0.0, tilt: 0.0), zoom: MapMeasure(kind: .distance, value: ConstantsEnum.DEFAULT_DISTANCE_IN_METERS), bowFactor: bowFactor, duration: duration)
+
+            mapView.camera.startAnimation(animation)
+        }
     }
 
     /// Starts the navigation
@@ -489,7 +498,19 @@ extension FCPMapViewController {
 
         // Update the Map camera position
         if let coordinates = mapView.viewToGeoCoordinates(viewCoordinates: offset) {
-            flyToCoordinates(coordinates: coordinates, bowFactor: 0.0, duration: TimeInterval(0.5))
+            flyToCoordinates(coordinates: coordinates)
         }
+    }
+
+    /// Zooms in the camera
+    func zoomInMapView() {
+        let zoomLevel = min(mapView.camera.state.zoomLevel + 1, 22)
+        mapView.camera.zoomTo(zoomLevel: zoomLevel)
+    }
+
+    /// Zooms out the camera
+    func zoomOutMapView() {
+        let zoomLevel = max(mapView.camera.state.zoomLevel - 1, 0)
+        mapView.camera.zoomTo(zoomLevel: zoomLevel)
     }
 }

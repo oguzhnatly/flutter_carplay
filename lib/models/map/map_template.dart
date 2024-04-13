@@ -14,14 +14,20 @@ class CPMapTemplate {
   /// The array of map buttons as [CPMapButton] displayed on the template.
   List<CPMapButton> mapButtons;
 
+  /// An array of dashboard buttons as [CPDashboardButton] displayed on the template.
+  List<CPDashboardButton> dashboardButtons;
+
+  /// The array of map buttons as [CPMapButton] displayed on the template while panning.
+  List<CPMapButton> mapButtonsWhilePanningMode;
+
+  /// An array of bar buttons to be displayed on the navigation bar while panning.
+  List<CPBarButton> barButtonsWhilePanningMode;
+
   /// An array of bar buttons to be displayed on the leading side of the navigation bar.
   List<CPBarButton> leadingNavigationBarButtons;
 
   /// An array of bar buttons to be displayed on the trailing side of the navigation bar.
   List<CPBarButton> trailingNavigationBarButtons;
-
-  /// An array of dashboard buttons as [CPDashboardButton] displayed on the template.
-  List<CPDashboardButton> dashboardButtons;
 
   /// Automatically hides the navigation bar when the map template is visible.
   bool automaticallyHidesNavigationBar;
@@ -29,15 +35,21 @@ class CPMapTemplate {
   /// Hides the buttons in the navigation bar when the map template is visible.
   bool hidesButtonsWithNavigationBar;
 
+  /// Whether the map template is in panning mode.
+  bool isPanningModeOn;
+
   /// Creates [CPMapTemplate]
   CPMapTemplate({
     this.title = '',
     this.mapButtons = const [],
     this.dashboardButtons = const [],
+    this.mapButtonsWhilePanningMode = const [],
+    this.barButtonsWhilePanningMode = const [],
     this.leadingNavigationBarButtons = const [],
     this.trailingNavigationBarButtons = const [],
     this.automaticallyHidesNavigationBar = false,
     this.hidesButtonsWithNavigationBar = false,
+    this.isPanningModeOn = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -45,12 +57,17 @@ class CPMapTemplate {
         'title': title,
         'mapButtons': mapButtons.map((e) => e.toJson()).toList(),
         'dashboardButtons': dashboardButtons.map((e) => e.toJson()).toList(),
+        'mapButtonsWhilePanningMode':
+            mapButtonsWhilePanningMode.map((e) => e.toJson()).toList(),
+        'barButtonsWhilePanningMode':
+            barButtonsWhilePanningMode.map((e) => e.toJson()).toList(),
         'leadingNavigationBarButtons':
             leadingNavigationBarButtons.map((e) => e.toJson()).toList(),
         'trailingNavigationBarButtons':
             trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
         'automaticallyHidesNavigationBar': automaticallyHidesNavigationBar,
         'hidesButtonsWithNavigationBar': hidesButtonsWithNavigationBar,
+        'isPanningModeOn': isPanningModeOn,
       };
 
   /// Update the properties of the [CPMapTemplate]
@@ -61,6 +78,7 @@ class CPMapTemplate {
     List<CPBarButton>? trailingNavigationBarButtons,
     bool? automaticallyHidesNavigationBar,
     bool? hidesButtonsWithNavigationBar,
+    bool? isPanningModeOn,
   }) {
     // update title
     if (title != null) this.title = title;
@@ -87,7 +105,35 @@ class CPMapTemplate {
     if (hidesButtonsWithNavigationBar != null) {
       this.hidesButtonsWithNavigationBar = hidesButtonsWithNavigationBar;
     }
-    FlutterCarplayController.updateCPMapTemplate(this);
+
+    // update isPanningModeOn
+    if (isPanningModeOn != null) {
+      this.isPanningModeOn = isPanningModeOn;
+      if (isPanningModeOn) {
+        showPanningInterface();
+      } else {
+        dismissPanningInterface();
+      }
+    }
+
+    FlutterCarplayController.updateCPMapTemplate(
+      _elementId,
+      title: title ?? this.title,
+      isPanningModeOn: isPanningModeOn ?? this.isPanningModeOn,
+      automaticallyHidesNavigationBar: automaticallyHidesNavigationBar ??
+          this.automaticallyHidesNavigationBar,
+      hidesButtonsWithNavigationBar:
+          hidesButtonsWithNavigationBar ?? this.hidesButtonsWithNavigationBar,
+      mapButtons: this.isPanningModeOn
+          ? mapButtonsWhilePanningMode
+          : mapButtons ?? this.mapButtons,
+      leadingNavigationBarButtons: this.isPanningModeOn
+          ? []
+          : leadingNavigationBarButtons ?? this.leadingNavigationBarButtons,
+      trailingNavigationBarButtons: this.isPanningModeOn
+          ? barButtonsWhilePanningMode
+          : trailingNavigationBarButtons ?? this.trailingNavigationBarButtons,
+    );
   }
 
   /// Displays a trip preview on [CPMapTemplate]
@@ -170,6 +216,16 @@ class CPMapTemplate {
       uniqueId,
       animated: animated,
     );
+  }
+
+  /// Zoom in on the [CPMapTemplate]
+  void zoomInMapView() {
+    FlutterCarplayController.zoomInMapView(uniqueId);
+  }
+
+  /// Zoom out on the [CPMapTemplate]
+  void zoomOutMapView() {
+    FlutterCarplayController.zoomOutMapView(uniqueId);
   }
 
   String get uniqueId {

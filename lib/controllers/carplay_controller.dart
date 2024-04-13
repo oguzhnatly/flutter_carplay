@@ -126,6 +126,22 @@ class FlutterCarplayController {
     );
   }
 
+  /// Zoom in on the [CPMapTemplate]
+  static void zoomInMapView(String elementId) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.zoomInMapView.name,
+      {'_elementId': elementId},
+    );
+  }
+
+  /// Zoom out on the [CPMapTemplate]
+  static void zoomOutMapView(String elementId) {
+    _methodChannel.invokeMethod(
+      FCPChannelTypes.zoomOutMapView.name,
+      {'_elementId': elementId},
+    );
+  }
+
   /// Starts a navigation.
   static void startNavigation(
     String elementId,
@@ -260,16 +276,34 @@ class FlutterCarplayController {
   }
 
   /// Updates the [CPMapTemplate]
-  static void updateCPMapTemplate(CPMapTemplate updatedTemplate) {
-    final elementId = updatedTemplate.uniqueId;
-    _methodChannel
-        .invokeMethod(
+  static void updateCPMapTemplate(
+    String elementId, {
+    String? title,
+    List<CPMapButton>? mapButtons,
+    List<CPBarButton>? leadingNavigationBarButtons,
+    List<CPBarButton>? trailingNavigationBarButtons,
+    bool? automaticallyHidesNavigationBar,
+    bool? hidesButtonsWithNavigationBar,
+    bool? isPanningModeOn,
+  }) {
+    _methodChannel.invokeMethod(
       FCPChannelTypes.updateMapTemplate.name,
-      updatedTemplate.toJson(),
-    )
-        .then((value) {
+      {
+        '_elementId': elementId,
+        'title': title ?? '',
+        'mapButtons': mapButtons?.map((e) => e.toJson()).toList() ?? [],
+        'leadingNavigationBarButtons':
+            leadingNavigationBarButtons?.map((e) => e.toJson()).toList() ?? [],
+        'trailingNavigationBarButtons':
+            trailingNavigationBarButtons?.map((e) => e.toJson()).toList() ?? [],
+        'automaticallyHidesNavigationBar':
+            automaticallyHidesNavigationBar ?? false,
+        'hidesButtonsWithNavigationBar': hidesButtonsWithNavigationBar ?? false,
+        'isPanningModeOn': isPanningModeOn ?? false,
+      },
+    ).then((value) {
       if (value) {
-        for (var template in templateHistory) {
+        for (final template in templateHistory) {
           switch (template) {
             // case final CPTabBarTemplate tabBarTemplate:
             //   for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
@@ -280,7 +314,7 @@ class FlutterCarplayController {
             //   }
             case final CPMapTemplate mapTemplate:
               if (mapTemplate.uniqueId == elementId) {
-                template = updatedTemplate;
+                // template = updatedTemplate;
                 return;
               }
             default:
@@ -581,6 +615,9 @@ class FlutterCarplayController {
             ) ??
             template.trailingNavigationBarButtons.singleWhereOrNull(
               (e) => e.uniqueId == elementId,
+            ) ??
+            template.barButtonsWhilePanningMode.singleWhereOrNull(
+              (e) => e.uniqueId == elementId,
             );
         if (button != null) {
           button.onPressed();
@@ -598,8 +635,11 @@ class FlutterCarplayController {
     for (final template in templateHistory) {
       if (template is CPMapTemplate) {
         final button = template.mapButtons.singleWhereOrNull(
-          (e) => e.uniqueId == elementId,
-        );
+              (e) => e.uniqueId == elementId,
+            ) ??
+            template.mapButtonsWhilePanningMode.singleWhereOrNull(
+              (e) => e.uniqueId == elementId,
+            );
         if (button != null) {
           button.onPressed();
           return;

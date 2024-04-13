@@ -44,6 +44,9 @@ class FCPMapTemplate: NSObject {
     /// A boolean value indicating whether buttons are hidden with the navigation bar.
     private var hidesButtonsWithNavigationBar: Bool = false
 
+    /// A boolean value indicating whether the map is in panning mode.
+    var isPanningModeOn: Bool = false
+
     /// Navigation session used to manage the upcomingManeuvers and  arrival estimation details
     var navigationSession: CPNavigationSession?
 
@@ -66,6 +69,7 @@ class FCPMapTemplate: NSObject {
         title = obj["title"] as? String
         automaticallyHidesNavigationBar = obj["automaticallyHidesNavigationBar"] as? Bool ?? false
         hidesButtonsWithNavigationBar = obj["hidesButtonsWithNavigationBar"] as? Bool ?? false
+        isPanningModeOn = obj["isPanningModeOn"] as? Bool ?? false
 
         mapButtons = (obj["mapButtons"] as? [[String: Any]] ?? []).map {
             FCPMapButton(obj: $0)
@@ -129,7 +133,7 @@ class FCPMapTemplate: NSObject {
     ///   - mapButtons: The new array of map buttons.
     ///   - leadingNavigationBarButtons: The new array of leading navigation bar buttons.
     ///   - trailingNavigationBarButtons: The new array of trailing navigation bar buttons.
-    public func update(title: String?, automaticallyHidesNavigationBar: Bool?, hidesButtonsWithNavigationBar: Bool?, mapButtons: [FCPMapButton]?, leadingNavigationBarButtons: [FCPBarButton]?, trailingNavigationBarButtons: [FCPBarButton]?) {
+    public func update(title: String?, automaticallyHidesNavigationBar: Bool?, hidesButtonsWithNavigationBar: Bool?, isPanningModeOn: Bool?, mapButtons: [FCPMapButton]?, leadingNavigationBarButtons: [FCPBarButton]?, trailingNavigationBarButtons: [FCPBarButton]?) {
         if let _title = title {
             self.title = _title
         }
@@ -142,6 +146,10 @@ class FCPMapTemplate: NSObject {
         if let _automaticallyHidesNavigationBar = automaticallyHidesNavigationBar {
             self.automaticallyHidesNavigationBar = _automaticallyHidesNavigationBar
             _super?.automaticallyHidesNavigationBar = _automaticallyHidesNavigationBar
+        }
+
+        if let _isPanningModeOn = isPanningModeOn {
+            self.isPanningModeOn = _isPanningModeOn
         }
 
         if let _mapButtons = mapButtons {
@@ -245,11 +253,15 @@ extension FCPMapTemplate: CPMapTemplateDelegate {
 
     /// Called when the panning interface is shown
     /// - Parameter mapTemplate: The map template
-    func mapTemplateDidShowPanningInterface(_: CPMapTemplate) {}
+    func mapTemplateDidShowPanningInterface(_: CPMapTemplate) {
+        fcpMapViewController?.hideSubviews()
+    }
 
     /// Called when the panning interface is dismissed
     /// - Parameter mapTemplate: The map template
-    func mapTemplateDidDismissPanningInterface(_: CPMapTemplate) {}
+    func mapTemplateDidDismissPanningInterface(_: CPMapTemplate) {
+        fcpMapViewController?.showSubviews()
+    }
 
     /// Called when the map template is panning
     /// - Parameters:
