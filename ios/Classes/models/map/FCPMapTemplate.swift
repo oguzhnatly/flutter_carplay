@@ -255,12 +255,14 @@ extension FCPMapTemplate: CPMapTemplateDelegate {
     /// - Parameter mapTemplate: The map template
     func mapTemplateDidShowPanningInterface(_: CPMapTemplate) {
         fcpMapViewController?.hideSubviews()
+        fcpMapViewController?.mapController?.navigationHelper.stopCameraTracking()
     }
 
     /// Called when the panning interface is dismissed
     /// - Parameter mapTemplate: The map template
     func mapTemplateDidDismissPanningInterface(_: CPMapTemplate) {
         fcpMapViewController?.showSubviews()
+        fcpMapViewController?.mapController?.navigationHelper.startCameraTracking()
     }
 
     /// Called when the map template is panning

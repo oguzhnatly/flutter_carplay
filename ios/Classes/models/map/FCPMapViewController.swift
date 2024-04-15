@@ -53,7 +53,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     }
 
     /// The app associated with the map view controller.
-    private var mapController: MapController?
+    var mapController: MapController?
 
     /// The map marker associated with the map view controller.
     var mapMarker: MapMarker?
@@ -277,6 +277,10 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             let anchor2D = Anchor2D(horizontal: 0.5, vertical: 0.75)
             mapController?.navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: anchor2D)
 
+            if let recenterPosition = recenterMapPosition {
+                recenterMapViewHandler?(recenterPosition)
+            }
+
         } else {
             let bannerHeight = bannerView.isHidden ? 0.0 : bannerView.bounds.height * scale
             let overlayViewWidth = overlayView.isHidden ? 0.0 : overlayView.bounds.width * scale + 16.0
@@ -284,12 +288,16 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             let cameraPrincipalPoint = Point2D(x: leftSafeArea + overlayViewWidth + (width - leftSafeArea - rightSafeArea - overlayViewWidth) / 2.0, y: topSafeArea + bannerHeight + (height - topSafeArea - bannerHeight) / 2.0)
             mapView.camera.principalPoint = cameraPrincipalPoint
 
-            let anchor2D = Anchor2D(horizontal: cameraPrincipalPoint.x / width, vertical: 0.75)
+            let anchor2D = Anchor2D(horizontal: cameraPrincipalPoint.x / width, vertical: isPanningInterfaceVisible ? cameraPrincipalPoint.y / height : 0.75)
             mapController?.navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: anchor2D)
-        }
 
-        if let recenterPosition = recenterMapPosition {
-            recenterMapViewHandler?(recenterPosition)
+            if isPanningInterfaceVisible {
+                mapController?.navigationHelper.stopCameraTracking()
+            } else {
+                if let recenterPosition = recenterMapPosition {
+                    recenterMapViewHandler?(recenterPosition)
+                }
+            }
         }
     }
 }
@@ -467,6 +475,9 @@ extension FCPMapViewController {
         mapController?.setDestinationWaypoint(wayPoint)
 
         mapController?.addRouteDeviceLocation()
+
+        mapController?.removeMarker(markerType: .INITIAL)
+        mapController?.removePolygon(markerType: .INITIAL)
     }
 
     /// Stops the navigation

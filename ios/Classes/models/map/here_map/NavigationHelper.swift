@@ -44,6 +44,10 @@ class NavigationHelper: DynamicRoutingDelegate {
         return herePositioningProvider.getLastKnownLocation()
     }
 
+    var fcpMapViewController: FCPMapViewController? {
+        return (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.fcpMapViewController
+    }
+
     init(mapView: MapView, messageTextView: UITextView) {
         self.messageTextView = messageTextView
         self.mapView = mapView
@@ -167,11 +171,16 @@ class NavigationHelper: DynamicRoutingDelegate {
         }
         isNavigationInProgress = true
 
-        // By default, enable auto-zoom during guidance.
-        visualNavigator.cameraBehavior = DynamicCameraBehavior()
-        if let normalizedPrincipalPoint = visualNavigatorCameraPoint {
-            visualNavigator.cameraBehavior?.normalizedPrincipalPoint = normalizedPrincipalPoint
+        // Don't start camera tracking if panning interface is visible and CarPlay scene is active
+        if fcpMapViewController?.isPanningInterfaceVisible ?? false && !(fcpMapViewController?.isDashboardSceneActive ?? false) {
+            stopCameraTracking()
+        } else {
+            visualNavigator.cameraBehavior = DynamicCameraBehavior()
+            if let normalizedPrincipalPoint = visualNavigatorCameraPoint {
+                visualNavigator.cameraBehavior?.normalizedPrincipalPoint = normalizedPrincipalPoint
+            }
         }
+
         visualNavigator.startRendering(mapView: mapView)
 
         let startGeoCoordinates = route.geometry.vertices[0]
