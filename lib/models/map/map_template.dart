@@ -36,7 +36,7 @@ class CPMapTemplate {
   bool hidesButtonsWithNavigationBar;
 
   /// Whether the map template is in panning mode.
-  bool isPanningModeOn;
+  bool isPanningInterfaceVisible;
 
   /// Creates [CPMapTemplate]
   CPMapTemplate({
@@ -49,7 +49,7 @@ class CPMapTemplate {
     this.trailingNavigationBarButtons = const [],
     this.automaticallyHidesNavigationBar = false,
     this.hidesButtonsWithNavigationBar = false,
-    this.isPanningModeOn = false,
+    this.isPanningInterfaceVisible = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -67,7 +67,7 @@ class CPMapTemplate {
             trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
         'automaticallyHidesNavigationBar': automaticallyHidesNavigationBar,
         'hidesButtonsWithNavigationBar': hidesButtonsWithNavigationBar,
-        'isPanningModeOn': isPanningModeOn,
+        'isPanningInterfaceVisible': isPanningInterfaceVisible,
       };
 
   /// Update the properties of the [CPMapTemplate]
@@ -78,7 +78,7 @@ class CPMapTemplate {
     List<CPBarButton>? trailingNavigationBarButtons,
     bool? automaticallyHidesNavigationBar,
     bool? hidesButtonsWithNavigationBar,
-    bool? isPanningModeOn,
+    bool togglePanningInterface = false,
   }) {
     // update title
     if (title != null) this.title = title;
@@ -106,34 +106,17 @@ class CPMapTemplate {
       this.hidesButtonsWithNavigationBar = hidesButtonsWithNavigationBar;
     }
 
-    // update isPanningModeOn
-    if (isPanningModeOn != null) {
-      this.isPanningModeOn = isPanningModeOn;
-      if (isPanningModeOn) {
+    // update isPanningInterfaceVisible
+    if (togglePanningInterface) {
+      isPanningInterfaceVisible = !isPanningInterfaceVisible;
+      if (isPanningInterfaceVisible) {
         showPanningInterface();
       } else {
         dismissPanningInterface();
       }
     }
 
-    FlutterCarplayController.updateCPMapTemplate(
-      _elementId,
-      title: title ?? this.title,
-      isPanningModeOn: isPanningModeOn ?? this.isPanningModeOn,
-      automaticallyHidesNavigationBar: automaticallyHidesNavigationBar ??
-          this.automaticallyHidesNavigationBar,
-      hidesButtonsWithNavigationBar:
-          hidesButtonsWithNavigationBar ?? this.hidesButtonsWithNavigationBar,
-      mapButtons: this.isPanningModeOn
-          ? mapButtonsWhilePanningMode
-          : mapButtons ?? this.mapButtons,
-      leadingNavigationBarButtons: this.isPanningModeOn
-          ? []
-          : leadingNavigationBarButtons ?? this.leadingNavigationBarButtons,
-      trailingNavigationBarButtons: this.isPanningModeOn
-          ? barButtonsWhilePanningMode
-          : trailingNavigationBarButtons ?? this.trailingNavigationBarButtons,
-    );
+    FlutterCarplayController.updateCPMapTemplate(this);
   }
 
   /// Displays a trip preview on [CPMapTemplate]

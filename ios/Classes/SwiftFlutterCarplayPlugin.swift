@@ -939,7 +939,7 @@ extension SwiftFlutterCarplayPlugin {
             let title = args["title"] as? String
             let hidesButtonsWithNavigationBar = args["hidesButtonsWithNavigationBar"] as? Bool
             let automaticallyHidesNavigationBar = args["automaticallyHidesNavigationBar"] as? Bool
-            let isPanningModeOn = args["isPanningModeOn"] as? Bool
+            let isPanningInterfaceVisible = args["isPanningInterfaceVisible"] as? Bool
 
             // Map dictionary representations to FCPMapButton instances for map buttons
             let mapButtons = (args["mapButtons"] as? [[String: Any]])?.map {
@@ -959,7 +959,7 @@ extension SwiftFlutterCarplayPlugin {
                 title: title,
                 automaticallyHidesNavigationBar: automaticallyHidesNavigationBar,
                 hidesButtonsWithNavigationBar: hidesButtonsWithNavigationBar,
-                isPanningModeOn: isPanningModeOn,
+                isPanningInterfaceVisible: isPanningInterfaceVisible,
                 mapButtons: mapButtons,
                 leadingNavigationBarButtons: leadingNavigationBarButtons,
                 trailingNavigationBarButtons: trailingNavigationBarButtons

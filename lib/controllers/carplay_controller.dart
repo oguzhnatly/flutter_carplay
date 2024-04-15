@@ -276,34 +276,37 @@ class FlutterCarplayController {
   }
 
   /// Updates the [CPMapTemplate]
-  static void updateCPMapTemplate(
-    String elementId, {
-    String? title,
-    List<CPMapButton>? mapButtons,
-    List<CPBarButton>? leadingNavigationBarButtons,
-    List<CPBarButton>? trailingNavigationBarButtons,
-    bool? automaticallyHidesNavigationBar,
-    bool? hidesButtonsWithNavigationBar,
-    bool? isPanningModeOn,
-  }) {
+  static void updateCPMapTemplate(CPMapTemplate updatedTemplate) {
+    final isPanningInterfaceVisible = updatedTemplate.isPanningInterfaceVisible;
     _methodChannel.invokeMethod(
       FCPChannelTypes.updateMapTemplate.name,
       {
-        '_elementId': elementId,
-        'title': title ?? '',
-        'mapButtons': mapButtons?.map((e) => e.toJson()).toList() ?? [],
-        'leadingNavigationBarButtons':
-            leadingNavigationBarButtons?.map((e) => e.toJson()).toList() ?? [],
-        'trailingNavigationBarButtons':
-            trailingNavigationBarButtons?.map((e) => e.toJson()).toList() ?? [],
+        '_elementId': updatedTemplate.uniqueId,
+        'title': updatedTemplate.title,
+        'isPanningInterfaceVisible': isPanningInterfaceVisible,
         'automaticallyHidesNavigationBar':
-            automaticallyHidesNavigationBar ?? false,
-        'hidesButtonsWithNavigationBar': hidesButtonsWithNavigationBar ?? false,
-        'isPanningModeOn': isPanningModeOn ?? false,
+            updatedTemplate.automaticallyHidesNavigationBar,
+        'hidesButtonsWithNavigationBar':
+            updatedTemplate.hidesButtonsWithNavigationBar,
+        'mapButtons': (isPanningInterfaceVisible
+                ? updatedTemplate.mapButtonsWhilePanningMode
+                : updatedTemplate.mapButtons)
+            .map((e) => e.toJson())
+            .toList(),
+        'leadingNavigationBarButtons': (isPanningInterfaceVisible
+                ? <CPBarButton>[]
+                : updatedTemplate.leadingNavigationBarButtons)
+            .map((e) => e.toJson())
+            .toList(),
+        'trailingNavigationBarButtons': (isPanningInterfaceVisible
+                ? updatedTemplate.barButtonsWhilePanningMode
+                : updatedTemplate.trailingNavigationBarButtons)
+            .map((e) => e.toJson())
+            .toList(),
       },
     ).then((value) {
       if (value) {
-        for (final template in templateHistory) {
+        for (var template in templateHistory) {
           switch (template) {
             // case final CPTabBarTemplate tabBarTemplate:
             //   for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
@@ -313,8 +316,8 @@ class FlutterCarplayController {
             //     }
             //   }
             case final CPMapTemplate mapTemplate:
-              if (mapTemplate.uniqueId == elementId) {
-                // template = updatedTemplate;
+              if (mapTemplate.uniqueId == updatedTemplate.uniqueId) {
+                template = updatedTemplate;
                 return;
               }
             default:
