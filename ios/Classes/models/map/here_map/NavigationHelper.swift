@@ -162,8 +162,7 @@ class NavigationHelper: DynamicRoutingDelegate {
     /// - Parameters:
     ///   - route: The route to be used for navigation.
     ///   - isSimulated: Whether to use simulated locations.
-    func startNavigation(route: Route,
-                         isSimulated: Bool)
+    func startNavigation(route: Route, isSimulated: Bool)
     {
         // Check if navigation is already in progress
         if isNavigationInProgress {

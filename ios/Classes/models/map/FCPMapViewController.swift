@@ -64,6 +64,15 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// Rectenter map position to adjust the map camera
     var recenterMapPosition: String?
 
+    /// Map coordinates to render marker on the map
+    var mapCoordinates: MapCoordinates?
+
+    /// Whether the satellite view is enabled.
+    var isSatelliteViewEnabled = false
+
+    /// Whether the traffic view is enabled.
+    var isTrafficViewEnabled = true
+
     /// Whether the dashboard scene is active.
     var isDashboardSceneActive: Bool {
         return FlutterCarplayTemplateManager.shared.isDashboardSceneActive
@@ -80,9 +89,6 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// Should show overlay
     var shouldShowOverlay = false
 
-    /// Map coordinates to render marker on the map
-    var mapCoordinates: MapCoordinates?
-
     /// Overlay view width
     var overlayViewWidth = 0.0
 
@@ -96,15 +102,28 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         // Load the map scene using a map scheme to render the map with.
         mapView.mapScene.loadScene(mapScheme: MapScheme.normalDay, completion: onLoadScene)
 
-        toggleSatelliteViewHandler = { [weak self] showSatelliteView in
+        toggleSatelliteViewHandler = { [weak self] isSatelliteViewEnabled in
             guard let self = self else { return }
-            self.mapView.mapScene.loadScene(mapScheme: showSatelliteView ? .satellite : .normalDay, completion: onLoadScene)
+
+            self.isSatelliteViewEnabled = isSatelliteViewEnabled
+
+            var mapScheme: MapScheme = .normalDay
+
+            if self.traitCollection.userInterfaceStyle == .dark {
+                mapScheme = isSatelliteViewEnabled ? .hybridNight : .normalNight
+            } else {
+                mapScheme = isSatelliteViewEnabled ? .hybridDay : .normalDay
+            }
+
+            self.mapView.mapScene.loadScene(mapScheme: mapScheme, completion: onLoadScene)
         }
 
-        toggleTrafficViewHandler = { [weak self] showTrafficView in
+        toggleTrafficViewHandler = { [weak self] isTrafficViewEnabled in
             guard let self = self else { return }
 
-            if showTrafficView {
+            self.isTrafficViewEnabled = isTrafficViewEnabled
+
+            if isTrafficViewEnabled {
                 self.mapView.mapScene.enableFeatures([
                     MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow,
                     MapFeatures.trafficIncidents: MapFeatureModes.trafficIncidentsAll,
@@ -134,6 +153,14 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
 
+    /// Trait collection
+    /// - Parameter previousTraitCollection: Previous trait collection
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        toggleSatelliteViewHandler?(isSatelliteViewEnabled)
+    }
+
     // MARK: - configureMapView
 
     /// Completion handler when loading a map scene.
@@ -149,6 +176,9 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         }
 
         mapView.isMultipleTouchEnabled = true
+
+        // Set traffic view
+        toggleTrafficViewHandler?(isTrafficViewEnabled)
 
         // Update the map coordinates
         updateMapCoordinatesHandler = { [weak self] mapCoordinates in
@@ -482,7 +512,7 @@ extension FCPMapViewController {
 
     /// Stops the navigation
     func stopNavigation() {
-        mapController?.clearMapButtonClicked()
+        mapController?.clearMap()
         if let mapCoordinates = mapCoordinates {
             updateMapCoordinatesHandler?(mapCoordinates)
         }

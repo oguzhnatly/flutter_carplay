@@ -127,12 +127,6 @@ class MapController: LongPressDelegate {
         calculateRoute(isSimulated: false)
     }
 
-    /// Clears the map and resets the route and navigation.
-    func clearMapButtonClicked() {
-        clearMap()
-        isLongpressDestination = false
-    }
-
     /// Add a marker on the map.
     /// - Parameters:
     ///   - coordinates: The coordinates of the marker
@@ -180,7 +174,7 @@ class MapController: LongPressDelegate {
     /// Calculates a route and start navigation.
     /// - Parameter isSimulated: Whether to use simulated locations.
     private func calculateRoute(isSimulated: Bool) {
-        clearMap()
+        clearMap(clearInitialOnly: true)
 
         if !determineRouteWaypoints(isSimulated: isSimulated) {
             return
@@ -197,7 +191,6 @@ class MapController: LongPressDelegate {
 
             // When routingError is nil, routes is guaranteed to contain at least one route.
             let route = routes!.first
-//            self.showRouteOnMap(route: route!)
             self.showRouteDetails(route: route!)
             self.navigationHelper.startNavigation(route: route!, isSimulated: isSimulated)
         }
@@ -294,9 +287,15 @@ class MapController: LongPressDelegate {
     }
 
     /// Clear the map
-    func clearMap() {
-        clearWaypointMapMarkers()
-        clearMapPolygons()
+    /// - Parameter clearInitialOnly: Whether to clear only the initial map marker
+    func clearMap(clearInitialOnly: Bool = false) {
+        if clearInitialOnly {
+            removeMarker(markerType: .INITIAL)
+            removePolygon(markerType: .INITIAL)
+        } else {
+            clearWaypointMapMarkers()
+            clearMapPolygons()
+        }
         clearRoute()
 
         navigationHelper.stopNavigation()
