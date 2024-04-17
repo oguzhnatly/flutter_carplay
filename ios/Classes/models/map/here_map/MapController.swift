@@ -138,6 +138,8 @@ class MapController: LongPressDelegate {
 
         if let existingMarker = marker {
             existingMarker.coordinates = coordinates
+            mapView.mapScene.removeMapMarker(existingMarker)
+            mapView.mapScene.addMapMarker(existingMarker)
         } else {
             guard let imageData = markerImage.pngData() else { return }
 
@@ -161,8 +163,10 @@ class MapController: LongPressDelegate {
             $0.metadata?.getString(key: "polygon") == metadata?.getString(key: "polygon")
         })
 
-        if let existingpolygon = polygon {
-            existingpolygon.geometry = GeoPolygon(geoCircle: GeoCircle(center: coordinate, radiusInMeters: accuracy))
+        if let existingPolygon = polygon {
+            existingPolygon.geometry = GeoPolygon(geoCircle: GeoCircle(center: coordinate, radiusInMeters: accuracy))
+            mapView.mapScene.removeMapPolygon(existingPolygon)
+            mapView.mapScene.addMapPolygon(existingPolygon)
         } else {
             let mapPolygon = MapPolygon(geometry: GeoPolygon(geoCircle: GeoCircle(center: coordinate, radiusInMeters: accuracy)), color: UIColor(argb: 0x550B_C7C2))
             mapPolygon.metadata = metadata
