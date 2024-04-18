@@ -11,11 +11,11 @@ import CarPlay
 class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private static var interfaceController: CPInterfaceController?
 
-    public static func forceUpdateRootTemplate() {
+    public static func forceUpdateRootTemplate(completion: ((Bool, (any Error)?) -> Void)? = nil) {
         let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
         let animated = SwiftFlutterCarplayPlugin.animated
 
-        interfaceController?.setRootTemplate(rootTemplate!, animated: animated)
+        interfaceController?.setRootTemplate(rootTemplate!, animated: animated, completion: completion)
     }
 
     // Fired when just before the carplay become active
@@ -28,20 +28,20 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
         SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.background)
     }
 
-    public static func pop(animated: Bool) {
-        interfaceController?.popTemplate(animated: animated)
+    public static func pop(animated: Bool, completion: ((Bool, (any Error)?) -> Void)? = nil) {
+        interfaceController?.popTemplate(animated: animated, completion: completion)
     }
 
-    public static func popToRootTemplate(animated: Bool) {
-        interfaceController?.popToRootTemplate(animated: animated)
+    public static func popToRootTemplate(animated: Bool, completion: ((Bool, (any Error)?) -> Void)? = nil) {
+        interfaceController?.popToRootTemplate(animated: animated, completion: completion)
     }
 
-    public static func push(template: CPTemplate, animated: Bool) {
-        interfaceController?.pushTemplate(template, animated: animated)
+    public static func push(template: CPTemplate, animated: Bool, completion: ((Bool, (any Error)?) -> Void)? = nil) {
+        interfaceController?.pushTemplate(template, animated: animated, completion: completion)
     }
 
-    public static func closePresent(animated: Bool) {
-        interfaceController?.dismissTemplate(animated: animated)
+    public static func closePresent(animated: Bool, completion: ((Bool, (any Error)?) -> Void)? = nil) {
+        interfaceController?.dismissTemplate(animated: animated, completion: completion)
     }
 
     public static func presentTemplate(template: CPTemplate, animated: Bool,
@@ -69,7 +69,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
             return
         }
 
-        FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(rootTemplate!, animated: SwiftFlutterCarplayPlugin.animated)
+        FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(rootTemplate!, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
     }
 
     func templateApplicationScene(_: CPTemplateApplicationScene,
