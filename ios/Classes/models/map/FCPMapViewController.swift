@@ -148,9 +148,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
-        if !isDashboardSceneActive {
-            updateCameraPrincipalPoint()
-        }
+        updateCameraPrincipalPoint()
     }
 
     /// Trait collection
@@ -211,6 +209,10 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             guard let self = self else { return }
 
             self.recenterMapPosition = recenterMapPosition
+
+            if isPanningInterfaceVisible {
+                return
+            }
 
             if mapController?.navigationHelper.isNavigationInProgress ?? false {
                 mapController?.navigationHelper.startCameraTracking()
@@ -295,6 +297,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     fileprivate func updateCameraPrincipalPoint() {
         let scale = FlutterCarplayTemplateManager.shared.carWindow?.screen.scale ?? 1.0
         let topSafeArea = view.safeAreaInsets.top * scale
+        let bottomSafeArea = view.safeAreaInsets.bottom * scale
         let leftSafeArea = view.safeAreaInsets.left * scale
         let rightSafeArea = isPanningInterfaceVisible ? 0.0 : view.safeAreaInsets.right * scale
         let width = view.frame.width * scale
@@ -304,13 +307,17 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             let cameraPrincipalPoint = Point2D(x: width / 2.0, y: height / 2.0)
             mapView.camera.principalPoint = cameraPrincipalPoint
 
-            let anchor2D = Anchor2D(horizontal: 0.5, vertical: 0.75)
+            let anchor2D = Anchor2D(horizontal: 0.5, vertical: 0.65)
             mapController?.navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: anchor2D)
 
             if let recenterPosition = recenterMapPosition {
                 recenterMapViewHandler?(recenterPosition)
             }
 
+            mapView.setWatermarkLocation(anchor: Anchor2D(horizontal: leftSafeArea / width, vertical: (height - bottomSafeArea) / height), offset: Point2D(
+                x: -mapView.watermarkSize.width / 2,
+                y: -mapView.watermarkSize.height / 2
+            ))
         } else {
             let bannerHeight = bannerView.isHidden ? 0.0 : bannerView.bounds.height * scale
             let overlayViewWidth = overlayView.isHidden ? 0.0 : overlayView.bounds.width * scale + 16.0
@@ -328,6 +335,11 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
                     recenterMapViewHandler?(recenterPosition)
                 }
             }
+
+            mapView.setWatermarkLocation(anchor: Anchor2D(horizontal: leftSafeArea / width, vertical: (height - bottomSafeArea) / height), offset: Point2D(
+                x: mapView.watermarkSize.width / 2,
+                y: mapView.watermarkSize.height / 2
+            ))
         }
     }
 }
