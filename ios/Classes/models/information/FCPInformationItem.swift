@@ -1,5 +1,5 @@
 //
-//  FCPPointOfInterestTemplate.swift
+//  FCPInformationItem.swift
 //  flutter_carplay
 //
 //  Created by Olaf Schneider on 17.02.22.
@@ -13,19 +13,16 @@ class FCPInformationItem {
     private(set) var elementId: String
     private var title: String?
     private var detail: String?
-    
 
-    
-    init(obj: [String : Any]) {
-        self.elementId = obj["_elementId"] as! String
-        self.title = obj["title"] as? String
-        self.detail = obj["detail"] as? String
+    init(obj: [String: Any]) {
+        elementId = obj["_elementId"] as! String
+        title = obj["title"] as? String
+        detail = obj["detail"] as? String
     }
-    
+
     var get: CPInformationItem {
-        let informationItem = CPInformationItem.init(title: self.title, detail: self.detail)
-        self._super = informationItem
+        let informationItem = CPInformationItem(title: title, detail: detail)
+        _super = informationItem
         return informationItem
     }
 }
-

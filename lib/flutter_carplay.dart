@@ -28,8 +28,7 @@ export "package:flutter_carplay/models/list/list_section.dart"
     show CPListSection;
 export "package:flutter_carplay/models/list/list_template.dart"
     show CPListTemplate;
-export "package:flutter_carplay/models/poi/poi.dart"
-    show CPPointOfInterest;
+export "package:flutter_carplay/models/poi/poi.dart" show CPPointOfInterest;
 export "package:flutter_carplay/models/poi/poi_template.dart"
     show CPPointOfInterestTemplate;
 export "package:flutter_carplay/models/tabbar/tabbar_template.dart"
