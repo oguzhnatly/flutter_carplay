@@ -123,16 +123,16 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
             self.isTrafficViewEnabled = isTrafficViewEnabled
 
-            if isTrafficViewEnabled {
-                self.mapView.mapScene.enableFeatures([
-                    MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow,
-                    MapFeatures.trafficIncidents: MapFeatureModes.trafficIncidentsAll,
-                ])
-            } else {
-                self.mapView.mapScene.disableFeatures(
-                    [MapFeatures.trafficFlow, MapFeatures.trafficIncidents]
-                )
-            }
+            // if isTrafficViewEnabled {
+            //     self.mapView.mapScene.enableFeatures([
+            //         MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow,
+            //         MapFeatures.trafficIncidents: MapFeatureModes.trafficIncidentsAll,
+            //     ])
+            // } else {
+            //     self.mapView.mapScene.disableFeatures(
+            //         [MapFeatures.trafficFlow, MapFeatures.trafficIncidents]
+            //     )
+            // }
         }
     }
 
