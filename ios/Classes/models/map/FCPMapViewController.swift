@@ -83,6 +83,9 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         return (SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate)?.isPanningInterfaceVisible ?? false
     }
 
+    /// Should stop voice assistant
+    var shouldStopVoiceAssistant = true
+
     /// Should show banner
     var shouldShowBanner = false
 

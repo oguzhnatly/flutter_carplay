@@ -196,6 +196,9 @@ enum FCPChannelTypes {
     /// Event for failed navigation from CarPlay.
     static let onNavigationFailedFromCarplay = "onNavigationFailedFromCarplay"
 
+    /// Event for completed navigation from CarPlay.
+    static let onNavigationCompletedFromCarplay = "onNavigationCompletedFromCarplay"
+
     /// Event for zooming in the map view in CarPlay.
     static let zoomInMapView = "zoomInMapView"
 

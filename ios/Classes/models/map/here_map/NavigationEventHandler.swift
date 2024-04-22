@@ -63,6 +63,11 @@ class NavigationEventHandler: NavigableLocationDelegate,
         return SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate
     }
 
+    /// FCP Map View Controller instance
+    var fcpMapViewController: FCPMapViewController? {
+        return (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.fcpMapViewController
+    }
+
     /// Navigation session instance
     var navigationSession: CPNavigationSession? {
         return (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
@@ -358,6 +363,11 @@ class NavigationEventHandler: NavigableLocationDelegate,
         // switch to tracking mode or stop rendering or locating or do anything else that may
         // be useful to support your app flow.
         // If the DynamicRoutingEngine was started before, consider to stop it now.
+
+        // Don't stop voice assistant when the destination is reached
+        fcpMapViewController?.shouldStopVoiceAssistant = false
+
+        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onNavigationCompletedFromCarplay, data: [:])
     }
 
     /// Conform to MilestoneStatusDelegate.
@@ -535,10 +545,10 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
     /// Conform to EventTextDelegate.
     /// Notifies on voice maneuver messages.
-    /// - Parameter eventText: The voice maneuver message.
-    func onEventTextUpdated(_ eventText: heresdk.EventText) {
-        if !isVoiceInstructionsMuted {
-            voiceAssistant.speak(message: eventText.text)
+    /// - Parameter event: The voice maneuver message.
+    func onEventTextUpdated(_ event: heresdk.EventText) {
+        if !isVoiceInstructionsMuted, event.type == .maneuver {
+            voiceAssistant.speak(message: event.text)
         }
     }
 

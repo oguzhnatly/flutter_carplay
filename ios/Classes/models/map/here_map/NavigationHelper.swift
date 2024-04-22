@@ -44,6 +44,7 @@ class NavigationHelper: DynamicRoutingDelegate {
         return herePositioningProvider.getLastKnownLocation()
     }
 
+    /// FCP Map View Controller instance
     var fcpMapViewController: FCPMapViewController? {
         return (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.fcpMapViewController
     }
@@ -228,9 +229,13 @@ class NavigationHelper: DynamicRoutingDelegate {
         visualNavigator.route = nil
         enableDevicePositioning()
         visualNavigator.stopRendering()
-        navigationEventHandler.stopVoiceAssistant()
         navigationEventHandler.resetPreviousManeuverIndex()
         showMessage("Tracking device's location.")
+        
+        if fcpMapViewController?.shouldStopVoiceAssistant ?? true {
+            navigationEventHandler.stopVoiceAssistant()
+        }
+        fcpMapViewController?.shouldStopVoiceAssistant = true
     }
 
     /// Provides location updates based on the given route.

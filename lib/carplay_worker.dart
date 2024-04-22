@@ -66,6 +66,10 @@ class FlutterCarplay {
   /// navigation is failed from CarPlay.
   static Function(String message)? _onNavigationFailedFromCarplay;
 
+  /// A listener function that will be triggered when
+  /// navigation is completed from CarPlay.
+  static Function()? _onNavigationCompletedFromCarplay;
+
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
     _eventBroadcast = _carPlayController.eventChannel
@@ -156,6 +160,8 @@ class FlutterCarplay {
           );
         case FCPChannelTypes.onNavigationFailedFromCarplay:
           _onNavigationFailedFromCarplay?.call(event['data']['message']);
+        case FCPChannelTypes.onNavigationCompletedFromCarplay:
+          _onNavigationCompletedFromCarplay?.call();
         default:
           break;
       }
@@ -449,6 +455,19 @@ class FlutterCarplay {
   /// on navigation failed from CarPlay.
   static void removeListenerOnNavigationFailedFromCarplay() {
     _onNavigationFailedFromCarplay = null;
+  }
+
+  /// Callback function will be fired when navigation completed from CarPlay.
+  static void addListenerOnNavigationCompletedFromCarplay({
+    Function()? onNavigationCompletedFromCarplay,
+  }) {
+    _onNavigationCompletedFromCarplay = onNavigationCompletedFromCarplay;
+  }
+
+  /// Removes the callback function that has been set before in order to listen
+  /// on navigation completed from CarPlay.
+  static void removeListenerOnNavigationCompletedFromCarplay() {
+    _onNavigationCompletedFromCarplay = null;
   }
 
   /// Adds the specified [CPSpeaker] utterance to the queue of the speech synthesizer in CarPlay.
