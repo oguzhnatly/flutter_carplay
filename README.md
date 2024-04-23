@@ -22,7 +22,7 @@ It supports **only iOS 14.0+**. For general design guidance, see [Human Interfac
 
 Before you begin CarPlay integration, you must carefully read this section.
 
-[_The official App Programming Guidelines from Apple_](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf) is the most valuable resource for understanding the needs, limits, and capabilities of CarPlay Apps. This documentation is a 49-page which clearly spells out the some actions required, and you are strongly advised to read it. If you are interested in a CarPlay System, [learn more about the MFi Program](https://mfi.apple.com/).
+The official [_CarPlay App Programming Guide_](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf) from Apple is the most valuable resource for understanding the needs, limits, and capabilities of CarPlay Apps. This documentation is a 49-page which clearly spells out the some actions required, and you are strongly advised to read it. If you are interested in a CarPlay System, [learn more about the MFi Program](https://mfi.apple.com/).
 
 ## Templates
 
@@ -64,7 +64,7 @@ Other templates will be supported in the future releases by `flutter_carplay`.
 
 > All CarPlay apps require a CarPlay app entitlement.
 
-If you want to build, run and publish your app on Apple with CarPlay compatibility or test or share the app with others through the TestfFlight or AdHoc, you must first request Apple to approve your Developer account for CarPlay access. The process can take from a few days to weeks or even months. It depends on the type of Entitlement you are requesting.
+If you want to build, run, and publish your app on Apple with CarPlay compatibility or test or share the app with others through the TestfFlight or AdHoc, you must first request Apple to approve your Developer account for CarPlay access. The process can take from a few days to weeks or even months. It depends on the type of Entitlement you are requesting.
 
 To request a CarPlay app entitlement from Apple, go to https://developer.apple.com/contact/carplay and provide information about your app, including the CarPlay App Category. You must also agree to the CarPlay Entitlement Addendum.
 
@@ -80,58 +80,58 @@ For more detailed instructions about how to create and import the CarPlay Provis
 
 # Disclaimer Before The Installation
 
-You are about to make some minor changes to your Xcode project after installing this package. This is due to the fact that It requires bitcode compilation which is missing in Flutter. You will procedure that will relocate (we won't remove or edit) some Flutter and its package engines. If you're planning to add this package to a critical project for you, you should proceed cautiously.
+You are about to make some minor changes to your Xcode project after installing this package. This is due to the fact that it requires bitcode compilation which is missing in Flutter. The procedure will relocate (we won't remove or edit) some Flutter and its package engines. If you're planning to add this package to a project that is critical to you, you should proceed cautiously.
 
-**Please check [THE EXAMPLE PROJECT](https://github.com/oguzhnatly/flutter_carplay/tree/master/example) before you begin to the installation.**
+**Please check [THE EXAMPLE PROJECT](https://github.com/oguzhnatly/flutter_carplay/tree/master/example) before you begin the installation.**
 
-THE INSTALLATION STEPS MAY BE DIFFICULT OR MAY NOT WORK PROPERLY WITH A FEW PACKAGES IN YOUR CURRENT PROJECT THAT COMMUNICATE WITH THE FLUTTER ENGINE. IF YOU ARE NOT COMPLETELY SURE WHAT YOU ARE DOING, PLEASE CREATE AN ISSUE, SO THAT I CAN HELP YOU TO SOLVE YOUR PROBLEM OR EXPLAIN WHAT YOU NEED TO.
+THE NECESSARY STEPS MAY BE DIFFICULT OR MAY NOT WORK PROPERLY WITH PACKAGES THAT COMMUNICATE WITH THE FLUTTER ENGINE. IF YOU ARE NOT COMPLETELY SURE WHAT YOU ARE DOING, PLEASE CREATE AN ISSUE, SO THAT I CAN HELP YOU SOLVE ANY PROBLEMS OR BETTER EXPLAIN WHAT YOU NEED TO DO.
 
-WHILE THE INSTALLATION PROGRESS, IF YOU TRY TO CHANGE ANYTHING (E.G. ANYTHING WORKS WITH FLUTTER ENGINE, ANYTHING IN GENERATED PLUGIN REGISTRANT SPECIFICALLY ITS LOCATION, ANY FILE NAME, ANY CLASS NAME, OR ANY OTHER FUNCTION THAT WORKS ON APPDELEGATE CLASS, TEMPLATE OR WINDOW APPLICATION DELEGATE SCENE NAMES USED IN INFO.PLIST, INCLUDED STORYBOARD NAMES, BUT NOT LIMITED TO THESE), YOU ARE MOST LIKELY TO ENCOUNTER IRREVERSIBLE ERRORS AND IT MAY DAMAGE TO YOUR PROJECT. I STRONGLY RECOMMEND THAT YOU SHOULD COPY YOUR EXISTING PROJECT BEFORE THE INSTALLATION.
+WHILE THE INSTALLATION PROGRESS, IF YOU TRY TO CHANGE ANYTHING (E.G. ANYTHING WORKS WITH FLUTTER ENGINE, ANYTHING IN GENERATED PLUGIN REGISTRANT SPECIFICALLY ITS LOCATION, ANY FILE NAME, ANY CLASS NAME, OR ANY OTHER FUNCTION THAT WORKS ON THE APPDELEGATE CLASS, TEMPLATE OR WINDOW APPLICATION DELEGATE SCENE NAMES USED IN INFO.PLIST, INCLUDED STORYBOARD NAMES, BUT NOT LIMITED TO THESE), YOU ARE MOST LIKELY TO ENCOUNTER IRREVERSIBLE ERRORS AND IT MAY CAUSE DAMAGE TO YOUR PROJECT. I STRONGLY RECOMMEND COPYING YOUR EXISTING PROJECT BEFORE THE ATTEMPTING THE INSTALLATION PROCEDURE.
 
 # Get Started
 
-### Requirement Actions after Installating the Package
+## Required Actions After Installing the Package
 
-1. The iOS platform version must be set to 14.0. To make it global, navigate to `ios/Podfile` and copy the first two lines:
+1. The iOS platform version must be set to 14.0. To make it global, navigate to `ios/Podfile` and make the following change:
 
-```diff
-# Uncomment this line to define a global platform for your project
-+ platform :ios, '14.0'
-- # platform :ios, '9.0'
-```
+   ```diff
+   # Uncomment this line to define a global platform for your project
+   + platform :ios, '14.0'
+   - # platform :ios, '9.0'
+   ```
 
-After changing the platform version, execute the following command in your terminal to update your pod files:
+2. After changing the platform version, execute the following command in your terminal to update your pod files:
 
-```shell
-// For Apple Silicon M1 chips:
-$ cd ios && arch -x86_64 pod install --repo-update
+   ```shell
+   // For Apple Silicon M1 chips:
+   $ cd ios && arch -x86_64 pod install --repo-update
 
-// For Intel chips:
-$ cd ios && pod install --repo-update
-```
+   // For Intel chips:
+   $ cd ios && pod install --repo-update
+   ```
 
-2. Open `ios/Runner.xcworkspace` in Xcode. In your project navigator, open `AppDelegate.swift`.
+3. Open `ios/Runner.xcworkspace` in Xcode. In your project navigator, open `AppDelegate.swift`.
 
    ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/step2.png)
 
-   Delete the specified codes below from the application function in `AppDelegate.swift`, and change it with the code below:
+   The changes required in the `application` function in `AppDelegate.swift` are outlined in the diff below:
 
-```diff
-import UIKit
-import Flutter
+   ```diff
+   import UIKit
+   import Flutter
 
-@UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate {
-override func application( _ application: UIApplication,
-                        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
--   GeneratedPluginRegistrant.register(with: self)
--   return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-+   return true
-}
-}
-```
+   @UIApplicationMain
+   @objc class AppDelegate: FlutterAppDelegate {
+      override func application( _ application: UIApplication,
+                              didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+   -      GeneratedPluginRegistrant.register(with: self)
+   -      return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+   +      return true
+      }
+   }
+   ```
 
-3. Create a swift file named `SceneDelegate.swift` in the Runner folder (not in the xcode main project file) and add the code below:
+4. Create a Swift file named `SceneDelegate.swift` in the Runner folder (not in the Xcode main project file) and add the code below:
 
    ```swift
    @available(iOS 13.0, *)
@@ -155,7 +155,7 @@ override func application( _ application: UIApplication,
 
    ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/step3.png)
 
-4. One more step, open the `Info.plist` file whether in your favorite code editor or in the Xcode. I'm going to share the base code, so if you open in the Xcode, you can fill with the raw keys with the values.
+5. Open the `Info.plist` file either in your favorite code editor or in the Xcode. I'm going to share the base code, so if you open in the Xcode, you can fill with the raw keys with the values.
 
    ```xml
    <key>UIApplicationSceneManifest</key>
@@ -192,7 +192,7 @@ override func application( _ application: UIApplication,
 
 # Solve problems configuring your project
 
-Take a look at [this detailed issue reply](https://github.com/oguzhnatly/flutter_carplay/issues/3#issuecomment-926146126) if you got any error.
+Take a look at this detailed Issue [reply](https://github.com/oguzhnatly/flutter_carplay/issues/3#issuecomment-926146126) if you have any issues with the configuration process.
 
 # Usage & Features
 
@@ -200,7 +200,7 @@ Take a look at [this detailed issue reply](https://github.com/oguzhnatly/flutter
 
 ## Basic Usage
 
-- Import the all classes that you need from just one file:
+- Import all of the classes that you need from a single file:
 
 ```dart
 import 'package:flutter_carplay/flutter_carplay.dart';
@@ -274,9 +274,9 @@ _flutterCarplay.removeListenerOnConnectionChange();
 Sets the root template of the navigation hierarchy. If a navigation
 hierarchy already exists, CarPlay replaces the entire hierarchy.
 
-- rootTemplate is a template to use as the root of a new navigation hierarchy. If one exists,
+- `rootTemplate` is a template to use as the root of a new navigation hierarchy. If one exists,
   it will replace the current rootTemplate. **Must be one of the type:**
-  **CPTabBarTemplate**, **CPGridTemplate**, **CPListTemplate**. If not, it will throw an **TypeError**.
+  **`CPTabBarTemplate`**, **`CPGridTemplate`**, **`CPListTemplate`**. If not, it will throw an **`TypeError`**.
 - If animated is true, CarPlay animates the presentation of the template, but will be ignored
   this flag when there isn’t an existing navigation hierarchy to replace.
 
@@ -293,8 +293,8 @@ FlutterCarplay.setRootTemplate(
 
 Adds a template to the navigation hierarchy and displays it.
 
-- template is to add to the navigation hierarchy. **Must be one of the type:** **CPGridTemplate**, **CPListTemplate**. If not, it will throw an **TypeError**.
-- If animated is true, CarPlay animates the transition between templates.
+- template is to add to the navigation hierarchy. **Must be one of the type:** **`CPGridTemplate`**, **`CPListTemplate`**. If not, it will throw an **`TypeError`**.
+- If `animated` is `true`, CarPlay animates the transition between templates.
 
 > There is a limit to the number of templates that you can push onto the screen. All apps are limited to pushing up to 5 templates in depth, including the root template.
 
@@ -309,8 +309,8 @@ FlutterCarplay.push(
 
 Removes the top-most template from the navigation hierarchy.
 
-- If animated is true, CarPlay animates the transition between templates.
-- count represents how many times this function will occur.
+- If `animated` is `true`, CarPlay animates the transition between templates.
+- `count` represents how many times this function will occur.
 
 ```dart
 FlutterCarplay.pop();
@@ -322,7 +322,7 @@ FlutterCarplay.pop(animated: true, count: 1);
 
 Removes all of the templates from the navigation hierarchy except the root template.
 
-- If animated is true, CarPlay animates the presentation of the template.
+- If `animated` is `true`, CarPlay animates the presentation of the template.
 
 ```dart
 FlutterCarplay.popToRoot(animated: true);
@@ -330,9 +330,9 @@ FlutterCarplay.popToRoot(animated: true);
 
 ### **CarPlay.popModal**
 
-Removes a modal template. Since **CPAlertTemplate** and **CPActionSheetTemplate** are both modals, they can be removed.
+Removes a modal template. Since **`CPAlertTemplate`** and **`CPActionSheetTemplate`** are both modals, they can be removed.
 
-- If animated is true, CarPlay animates the transition between templates.
+- If `animated` is `true`, CarPlay animates the transition between templates.
 
 ```dart
 FlutterCarplay.popModal(animated: true);
@@ -340,7 +340,7 @@ FlutterCarplay.popModal(animated: true);
 
 ### **CarPlay.connectionStatus**
 
-Getter for current CarPlay connection status. It will return one of **CPConnectionStatusTypes** as String.
+Getter for current CarPlay connection status. It will return one of **`CPConnectionStatusTypes`** as `String`.
 
 ```dart
 FlutterCarplay.connectionStatus
@@ -622,6 +622,7 @@ FlutterCarplay.setRootTemplate(rootTemplate: informationTemplate, animated: true
 ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/point_of_interest_template.png)
 
 A Point Of Interest template shows multiple points of interest on a Map
+
 The map section is determined by the points of interest.
 
 > The Template is limited to 12 Points of Interest.
