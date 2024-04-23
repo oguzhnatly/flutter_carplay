@@ -62,10 +62,10 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     var markerPinSize: Double { 40 * mapView.pixelScale }
 
     /// Rectenter map position to adjust the map camera
-    var recenterMapPosition: String?
+    var recenterMapPosition = "initialMarker"
 
     /// Map coordinates to render marker on the map
-    var mapCoordinates: MapCoordinates?
+    var mapCoordinates = MapCoordinates()
 
     /// Whether the satellite view is enabled.
     var isSatelliteViewEnabled = false
@@ -95,12 +95,20 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// Overlay view width
     var overlayViewWidth = 0.0
 
+    /// To perform actions only once when map is loaded
+    var mapLoadedOnce = false
+
+    /// Default coordinates for the map
+    let defaultCoordinates = GeoCoordinates(latitude: -25.02970994781628, longitude: 134.28333173662492)
+
     // MARK: - View Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+
+        mapLoadedOnce = false
 
         // Load the map scene using a map scheme to render the map with.
         mapView.mapScene.loadScene(mapScheme: MapScheme.normalDay, completion: onLoadScene)
@@ -207,7 +215,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             }
         }
 
-        /// Recenter map position
+        // Recenter map position
         recenterMapViewHandler = { [weak self] recenterMapPosition in
             guard let self = self else { return }
 
@@ -257,6 +265,20 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
                     break
                 }
             }
+        }
+
+        // Update the initial location marker
+        locationUpdatedHandler = { [weak self] _ in
+            guard let self = self else { return }
+
+            updateMapCoordinatesHandler?(self.mapCoordinates)
+
+            recenterMapViewHandler?(self.recenterMapPosition)
+        }
+
+        if !mapLoadedOnce {
+            flyToCoordinates(coordinates: defaultCoordinates)
+            mapLoadedOnce = true
         }
     }
 
@@ -313,9 +335,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             let anchor2D = Anchor2D(horizontal: 0.5, vertical: 0.65)
             mapController?.navigationHelper.setVisualNavigatorCameraPoint(normalizedPrincipalPoint: anchor2D)
 
-            if let recenterPosition = recenterMapPosition {
-                recenterMapViewHandler?(recenterPosition)
-            }
+            recenterMapViewHandler?(recenterMapPosition)
 
             mapView.setWatermarkLocation(anchor: Anchor2D(horizontal: leftSafeArea / width, vertical: (height - bottomSafeArea) / height), offset: Point2D(
                 x: -mapView.watermarkSize.width / 2,
@@ -334,9 +354,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
             if isPanningInterfaceVisible {
                 mapController?.navigationHelper.stopCameraTracking()
             } else {
-                if let recenterPosition = recenterMapPosition {
-                    recenterMapViewHandler?(recenterPosition)
-                }
+                recenterMapViewHandler?(recenterMapPosition)
             }
 
             mapView.setWatermarkLocation(anchor: Anchor2D(horizontal: leftSafeArea / width, vertical: (height - bottomSafeArea) / height), offset: Point2D(
@@ -459,6 +477,8 @@ extension FCPMapViewController {
     ///   - coordinates: The coordinates of the marker
     ///   - accuracy: The accuracy of the marker
     func renderInitialMarker(coordinates: GeoCoordinates, accuracy: Double) {
+        guard !(mapController?.navigationHelper.isNavigationInProgress ?? false) else { return }
+
         let metadata = heresdk.Metadata()
         metadata.setString(key: "marker", value: MapMarkerType.INITIAL.rawValue)
         metadata.setString(key: "polygon", value: MapMarkerType.INITIAL.rawValue)
@@ -528,9 +548,7 @@ extension FCPMapViewController {
     /// Stops the navigation
     func stopNavigation() {
         mapController?.clearMap()
-        if let mapCoordinates = mapCoordinates {
-            updateMapCoordinatesHandler?(mapCoordinates)
-        }
+        updateMapCoordinatesHandler?(mapCoordinates)
     }
 
     /// Pans the camera in the specified direction

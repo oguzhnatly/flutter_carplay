@@ -34,15 +34,18 @@ var updateMapCoordinatesHandler: ((MapCoordinates) -> Void)?
 /// Completion handler for on route deviation
 var reroutingHandler: ((Waypoint, @escaping () -> Void) -> Void)?
 
+/// Completion handler for on location updated
+var locationUpdatedHandler: ((Location) -> Void)?
+
 /// Map coordinates to render marker on the map
 class MapCoordinates {
     let stationAddressCoordinates: GeoCoordinates?
     let incidentAddressCoordinates: GeoCoordinates?
     let destinationAddressCoordinates: GeoCoordinates?
 
-    init(stationAddressCoordinates: GeoCoordinates?,
-         incidentAddressCoordinates: GeoCoordinates?,
-         destinationAddressCoordinates: GeoCoordinates?)
+    init(stationAddressCoordinates: GeoCoordinates? = nil,
+         incidentAddressCoordinates: GeoCoordinates? = nil,
+         destinationAddressCoordinates: GeoCoordinates? = nil)
     {
         self.stationAddressCoordinates = stationAddressCoordinates
         self.incidentAddressCoordinates = incidentAddressCoordinates

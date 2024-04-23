@@ -38,6 +38,7 @@ class HEREPositioningProvider: NSObject,
     private var accuracy = LocationAccuracy.bestAvailable
     private var isLocating = false
     private var locationEngineStatus: LocationEngineStatus?
+    private var lastKnownLocation: Location?
     var isLocationEngineStarted: Bool {
         return locationEngineStatus == .engineStarted || locationEngineStatus == .alreadyStarted
     }
@@ -99,9 +100,10 @@ class HEREPositioningProvider: NSObject,
 
         // Set delegates to get location updates.
         locationEngine.addLocationDelegate(locationDelegate: locationUpdateDelegate!)
+        locationEngine.addLocationDelegate(locationDelegate: self)
         locationEngine.addLocationStatusDelegate(locationStatusDelegate: self)
 
-        // Without native permissins granted by user, the LocationEngine cannot be started.
+        // Without native permissions granted by user, the LocationEngine cannot be started.
         let status = locationEngine.start(locationAccuracy: .bestAvailable)
         print("Location engine status:==> \(status)")
         if status == .missingPermissions {
@@ -117,6 +119,7 @@ class HEREPositioningProvider: NSObject,
         print("Stop locating.")
         // Remove delegates and stop location engine.
         locationEngine.removeLocationDelegate(locationDelegate: locationUpdateDelegate!)
+        locationEngine.removeLocationDelegate(locationDelegate: self)
         locationEngine.removeLocationStatusDelegate(locationStatusDelegate: self)
         locationEngine.stop()
         isLocating = false
@@ -141,5 +144,26 @@ class HEREPositioningProvider: NSObject,
     /// - Parameter location: The new location.
     func onLocationUpdated(_ location: heresdk.Location) {
         print("Location updated: \(location.coordinates)")
+
+        let lastCoordinates = lastKnownLocation?.coordinates
+        let currentCoordinates = location.coordinates
+
+        let lastLatitude = lastCoordinates?.latitude ?? 0.0
+        let currentLatitude = currentCoordinates.latitude
+        let lastLongitude = lastCoordinates?.longitude ?? 0.0
+        let currentLongitude = currentCoordinates.longitude
+
+        let latitudeDifference = abs(lastLatitude - currentLatitude)
+        let longitudeDifference = abs(lastLongitude - currentLongitude)
+
+        // Skip update if the location didn't change significantly.
+        print("lastCoordinates: \(String(describing: lastCoordinates))")
+        print("latitudeDifference: \(latitudeDifference)")
+        print("longitudeDifference: \(longitudeDifference)")
+        if latitudeDifference < 0.0001 && longitudeDifference < 0.0001 { return }
+
+        lastKnownLocation = location
+
+        locationUpdatedHandler?(location)
     }
 }

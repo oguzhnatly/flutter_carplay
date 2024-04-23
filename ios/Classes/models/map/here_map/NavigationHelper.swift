@@ -231,7 +231,7 @@ class NavigationHelper: DynamicRoutingDelegate {
         visualNavigator.stopRendering()
         navigationEventHandler.resetPreviousManeuverIndex()
         showMessage("Tracking device's location.")
-        
+
         if fcpMapViewController?.shouldStopVoiceAssistant ?? true {
             navigationEventHandler.stopVoiceAssistant()
         }

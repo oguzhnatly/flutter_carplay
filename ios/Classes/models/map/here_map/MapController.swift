@@ -41,8 +41,10 @@ class MapController: LongPressDelegate {
     private var isLongpressDestination = false
     private var messageTextView: UITextView
 
+    /// NavigationHelper instance
     let navigationHelper: NavigationHelper
 
+    /// lastKnownLocation getter
     var lastKnownLocation: Location? {
         return navigationHelper.lastKnownLocation
     }
