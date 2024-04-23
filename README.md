@@ -14,7 +14,7 @@ Flutter Apps now on Apple CarPlay! `flutter_carplay` aims to make it safe to use
 >
 > Your app uses the CarPlay framework to present UI elements to the user. iOS manages the display of UI elements and handles the interface with the car. Your app does not need to manage the layout of UI elements for different screen resolutions, or support different input hardware such as touchscreens, knobs, or touch pads.
 
-It supports **only iOS 14.0+**. For general design guidance, see [Human Interface Guidelines for CarPlay Apps](https://developer.apple.com/design/human-interface-guidelines/carplay/overview/introduction/).
+It supports **only iOS 15.0+**. For general design guidance, see [Human Interface Guidelines for CarPlay Apps](https://developer.apple.com/design/human-interface-guidelines/carplay/overview/introduction/).
 
 # Overview
 

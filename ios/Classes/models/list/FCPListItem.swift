@@ -7,7 +7,7 @@
 
 import CarPlay
 
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 class FCPListItem {
   private(set) var _super: CPListItem?
   private(set) var elementId: String
@@ -20,7 +20,8 @@ class FCPListItem {
   private var isPlaying: Bool?
   private var playingIndicatorLocation: CPListItemPlayingIndicatorLocation?
   private var accessoryType: CPListItemAccessoryType?
-  
+  private var isEnabled: Bool?
+
   init(obj: [String : Any]) {
     self.elementId = obj["_elementId"] as! String
     self.text = obj["text"] as! String
@@ -31,8 +32,9 @@ class FCPListItem {
     self.isPlaying = obj["isPlaying"] as? Bool
     self.setPlayingIndicatorLocation(fromString: obj["playingIndicatorLocation"] as? String)
     self.setAccessoryType(fromString: obj["accessoryType"] as? String)
+    self.isEnabled = obj["isEnabled"] as? Bool
   }
-  
+
   var get: CPListItem {
     let listItem = CPListItem.init(text: text, detailText: detailText)
     listItem.handler = ((CPSelectableListItem, @escaping () -> Void) -> Void)? { selectedItem, complete in
@@ -47,7 +49,12 @@ class FCPListItem {
       }
     }
     if image != nil {
-      listItem.setImage(UIImage().fromFlutterAsset(name: image!))
+      let uiImage = getSystemImage(systemName: image!)
+      if uiImage == nil {
+        listItem.setImage(UIImage().fromFlutterAsset(name: image!))
+      } else {
+        listItem.setImage(uiImage)
+      }
     }
     if playbackProgress != nil {
       listItem.playbackProgress = playbackProgress!
@@ -61,10 +68,13 @@ class FCPListItem {
     if accessoryType != nil {
       listItem.accessoryType = accessoryType!
     }
+    if isEnabled != nil {
+      listItem.isEnabled = isEnabled!
+    }
     self._super = listItem
     return listItem
   }
-  
+
   public func stopHandler() {
     guard self.completeHandler != nil else {
       return
@@ -72,8 +82,15 @@ class FCPListItem {
     self.completeHandler!()
     self.completeHandler = nil
   }
-  
-  public func update(text: String?, detailText: String?, image: String?, playbackProgress: CGFloat?, isPlaying: Bool?, playingIndicatorLocation: String?, accessoryType: String?) {
+
+  private func getSystemImage(systemName: String) -> UIImage? {
+    guard let uiImage = UIImage(systemName: systemName) else {
+       return nil
+    }
+    return uiImage
+  }
+
+  public func update(text: String?, detailText: String?, image: String?, playbackProgress: CGFloat?, isPlaying: Bool?, playingIndicatorLocation: String?, accessoryType: String?, isEnabled: Bool?) {
     if text != nil {
       self._super?.setText(text!)
       self.text = text!
@@ -83,7 +100,12 @@ class FCPListItem {
       self.detailText = detailText
     }
     if image != nil {
-      self._super?.setImage(UIImage().fromFlutterAsset(name: image!))
+      let uiImage = getSystemImage(systemName: image!)
+      if uiImage == nil {
+        self._super?.setImage(UIImage().fromFlutterAsset(name: image!))
+      } else {
+        self._super?.setImage(uiImage)
+      }
       self.image = image
     }
     if playbackProgress != nil {
@@ -106,8 +128,11 @@ class FCPListItem {
         self._super?.accessoryType = self.accessoryType!
       }
     }
+    if isEnabled != nil {
+      self._super?.isEnabled = isEnabled!
+    }
   }
-  
+
   private func setPlayingIndicatorLocation(fromString: String?) {
     if fromString == "leading" {
       self.playingIndicatorLocation = CPListItemPlayingIndicatorLocation.leading
@@ -115,7 +140,7 @@ class FCPListItem {
       self.playingIndicatorLocation = CPListItemPlayingIndicatorLocation.trailing
     }
   }
-  
+
   private func setAccessoryType(fromString: String?) {
     if fromString == "cloud" {
       self.accessoryType = CPListItemAccessoryType.cloud
