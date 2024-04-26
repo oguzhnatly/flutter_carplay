@@ -157,9 +157,6 @@ class HEREPositioningProvider: NSObject,
         let longitudeDifference = abs(lastLongitude - currentLongitude)
 
         // Skip update if the location didn't change significantly.
-        print("lastCoordinates: \(String(describing: lastCoordinates))")
-        print("latitudeDifference: \(latitudeDifference)")
-        print("longitudeDifference: \(longitudeDifference)")
         if latitudeDifference < 0.0001 && longitudeDifference < 0.0001 { return }
 
         lastKnownLocation = location

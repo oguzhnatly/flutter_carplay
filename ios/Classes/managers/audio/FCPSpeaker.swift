@@ -21,10 +21,47 @@ class FCPSpeaker: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     /// A closure that will be called when speech synthesis is completed or canceled.
     private var willEnd: (() -> Void)?
 
+    /// The locale identifier.
+    private var locale = Locale(identifier: "en-US")
+
     /// Initializes the text-to-speech manager and sets itself as the delegate for the AVSpeechSynthesizer.
     override init() {
         super.init()
         synthesizer.delegate = self
+    }
+
+    /// Determines if the given language is supported.
+    /// - Parameter locale: The locale identifier.
+    /// - Returns: True if supported, false if not.
+    public func isLanguageAvailable(locale: Locale) -> Bool {
+        return isLanguageAvailable(identifier: locale.identifier)
+    }
+
+    /// Determines if the given language is supported.
+    /// - Parameter identifier: The locale identifier.
+    /// - Returns: True if supported, false if not.
+    public func isLanguageAvailable(identifier: String) -> Bool {
+        let supportedVoices = AVSpeechSynthesisVoice.speechVoices()
+        for aVSpeechSynthesisVoice in supportedVoices {
+            if aVSpeechSynthesisVoice.language == identifier {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    /// Sets the language.
+    /// - Parameter locale: The locale identifier.
+    /// - Returns: True if supported, false if not.
+    public func setLanguage(locale: Locale) -> Bool {
+        if isLanguageAvailable(locale: locale) {
+            self.locale = locale
+            return true
+        }
+
+        print("Apple's AVSpeechSynthesisVoice does not support this language: \(locale). Keeping \(self.locale).")
+        return false
     }
 
     /// Synthesizes and speaks the provided text using the specified language.
@@ -33,12 +70,17 @@ class FCPSpeaker: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     ///   - text: The text to be spoken.
     ///   - language: The language in which the text should be spoken.
     ///   - didEnd: A closure to be executed when speech synthesis is completed or canceled.
-    func speak(_ text: String, language: String, didEnd: @escaping () -> Void) {
+    func speak(_ text: String, rate: Float = 0.5, didEnd: @escaping () -> Void) {
         do {
             let utterance = AVSpeechUtterance(string: text)
-            utterance.voice = AVSpeechSynthesisVoice(language: language)
+            utterance.rate = rate
+            utterance.voice = AVSpeechSynthesisVoice(language: locale.identifier)
+            if utterance.voice == nil {
+                print("Error: Apple's AVSpeechSynthesisVoice does not support this language: \(locale).")
+                return
+            }
 
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .voicePrompt)
             try AVAudioSession.sharedInstance().setActive(true)
             synthesizer.speak(utterance)
             willEnd = didEnd

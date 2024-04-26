@@ -44,7 +44,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
 {
     private let visualNavigator: VisualNavigator
     private let dynamicRoutingEngine: DynamicRoutingEngine
-    private let voiceAssistant: VoiceAssistant
+    private let voiceAssistant: FCPSpeaker
     private var lastMapMatchedLocation: MapMatchedLocation?
     private var previousManeuverIndex: Int32 = -1
     private let messageTextView: UITextView
@@ -87,7 +87,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
         self.messageTextView = messageTextView
 
         // A helper class for TTS.
-        voiceAssistant = VoiceAssistant()
+        voiceAssistant = FCPSpeaker.shared
 
         // Toggle voice instructions handler
         toggleVoiceInstructionsHandler = { [weak self] isMuted in
@@ -548,7 +548,8 @@ class NavigationEventHandler: NavigableLocationDelegate,
     /// - Parameter event: The voice maneuver message.
     func onEventTextUpdated(_ event: heresdk.EventText) {
         if !isVoiceInstructionsMuted, event.type == .maneuver {
-            voiceAssistant.speak(message: event.text)
+            stopVoiceAssistant()
+            voiceAssistant.speak(event.text, rate: 0.55) {}
         }
     }
 
@@ -916,39 +917,41 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
     /// Set up voice guidance
     private func setupVoiceGuidance() {
-        let ttsLanguageCode = getLanguageCodeForDevice(supportedVoiceSkins: VisualNavigator.availableLanguagesForManeuverNotifications())
+        // used enUS as the default language
+        // let ttsLanguageCode = getLanguageCodeForDevice(supportedVoiceSkins: VisualNavigator.availableLanguagesForManeuverNotifications())
+        let ttsLanguageCode = LanguageCode.enUs
         visualNavigator.maneuverNotificationOptions = ManeuverNotificationOptions(language: ttsLanguageCode,
                                                                                   unitSystem: UnitSystem.metric)
 
-        print("LanguageCode for maneuver notifications: \(ttsLanguageCode).")
+        MemoryLogger.shared.appendEvent("LanguageCode for maneuver notifications: \(ttsLanguageCode).")
 
         // Set language to our TextToSpeech engine.
         let locale = LanguageCodeConverter.getLocale(languageCode: ttsLanguageCode)
-        if voiceAssistant.setLanguage(locale: locale) {
-            print("TextToSpeech engine uses this language: \(locale)")
-        } else {
-            print("TextToSpeech engine does not support this language: \(locale)")
-        }
+         if voiceAssistant.setLanguage(locale: locale) {
+             print("TextToSpeech engine uses this language: \(locale)")
+         } else {
+             print("TextToSpeech engine does not support this language: \(locale)")
+         }
     }
 
     /// Get the language preferrably used on this device.
     private func getLanguageCodeForDevice(supportedVoiceSkins: [heresdk.LanguageCode]) -> LanguageCode {
         // 1. Determine if preferred device language is supported by our TextToSpeech engine.
-        let identifierForCurrenDevice = Locale.preferredLanguages.first!
-        var localeForCurrenDevice = Locale(identifier: identifierForCurrenDevice)
-        if !voiceAssistant.isLanguageAvailable(identifier: identifierForCurrenDevice) {
-            print("TextToSpeech engine does not support: \(identifierForCurrenDevice), falling back to en-US.")
-            localeForCurrenDevice = Locale(identifier: "en-US")
+        let identifierForCurrentDevice = Locale.preferredLanguages.first!
+        var localeForCurrentDevice = Locale(identifier: identifierForCurrentDevice)
+        if !voiceAssistant.isLanguageAvailable(identifier: identifierForCurrentDevice) {
+            print("TextToSpeech engine does not support: \(identifierForCurrentDevice), falling back to en-US.")
+            localeForCurrentDevice = Locale(identifier: "en-US")
         }
 
         // 2. Determine supported voice skins from HERE SDK.
-        var languageCodeForCurrenDevice = LanguageCodeConverter.getLanguageCode(locale: localeForCurrenDevice)
-        if !supportedVoiceSkins.contains(languageCodeForCurrenDevice) {
-            print("No voice skins available for \(languageCodeForCurrenDevice), falling back to enUs.")
-            languageCodeForCurrenDevice = LanguageCode.enUs
+        var languageCodeForCurrentDevice = LanguageCodeConverter.getLanguageCode(locale: localeForCurrentDevice)
+        if !supportedVoiceSkins.contains(languageCodeForCurrentDevice) {
+            print("No voice skins available for \(languageCodeForCurrentDevice), falling back to enUs.")
+            languageCodeForCurrentDevice = LanguageCode.enUs
         }
 
-        return languageCodeForCurrenDevice
+        return languageCodeForCurrentDevice
     }
 
     /// A permanent view to show log content.
