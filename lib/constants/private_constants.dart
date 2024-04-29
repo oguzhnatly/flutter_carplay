@@ -15,5 +15,9 @@ enum FCPChannelTypes {
   setActionSheet,
   onBarButtonPressed,
   onTextButtonPressed,
+  onSearchTextUpdated,
+  onSearchResultSelected,
+  onSearchTextUpdatedComplete,
+  onSearchCancelled,
   popToRootTemplate,
 }

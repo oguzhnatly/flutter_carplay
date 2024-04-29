@@ -1,18 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_carplay/constants/private_constants.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:flutter_carplay/helpers/carplay_helper.dart';
-import 'package:flutter_carplay/helpers/enum_utils.dart';
-import 'package:flutter_carplay/models/alert/alert_action.dart';
-import 'package:flutter_carplay/models/button/bar_button.dart';
-import 'package:flutter_carplay/models/button/text_button.dart';
-import 'package:flutter_carplay/models/grid/grid_button.dart';
-import 'package:flutter_carplay/models/grid/grid_template.dart';
-import 'package:flutter_carplay/models/list/list_template.dart';
-import 'package:flutter_carplay/models/information/information_template.dart';
-import 'package:flutter_carplay/models/poi/poi.dart';
-import 'package:flutter_carplay/models/poi/poi_template.dart';
-import 'package:flutter_carplay/models/tabbar/tabbar_template.dart';
-import 'package:flutter_carplay/constants/private_constants.dart';
 
 /// [FlutterCarPlayController] is an root object in order to control and communication
 /// system with the Apple CarPlay and native functions.
@@ -23,10 +13,10 @@ class FlutterCarPlayController {
   static final EventChannel _eventChannel =
       EventChannel(_carplayHelper.makeFCPChannelId(event: "/event"));
 
-  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate] in a List
+  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate], [CPSearchTemplate] in a List
   static List<dynamic> templateHistory = [];
 
-  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate]
+  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate]
   static dynamic currentRootTemplate;
 
   /// [CPAlertTemplate], [CPActionSheetTemplate]
@@ -92,7 +82,8 @@ class FlutterCarPlayController {
         template.runtimeType == CPGridTemplate ||
         template.runtimeType == CPInformationTemplate ||
         template.runtimeType == CPPointOfInterestTemplate ||
-        template.runtimeType == CPListTemplate) {
+        template.runtimeType == CPListTemplate ||
+        template.runtimeType == CPSearchTemplate) {
       templateHistory.add(template);
     } else {
       throw TypeError();
@@ -171,9 +162,7 @@ class FlutterCarPlayController {
             break l1;
           }
         }
-      }
-      else
-      {
+      } else {
         if (t.runtimeType.toString() == "CPInformationTemplate") {
           l2:
           for (CPTextButton b in t.actions) {
@@ -186,6 +175,52 @@ class FlutterCarPlayController {
       }
     }
   }
+
+  void processFCPSearchQueryUpdated(String elementId, String query) {
+    for (final template in templateHistory) {
+      if (template is CPSearchTemplate && template.uniqueId == elementId) {
+        template.onSearchTextUpdated(
+          query,
+          (searchResults) {
+            template.searchResults = searchResults;
+            reactToNativeModule(
+              FCPChannelTypes.onSearchTextUpdatedComplete,
+              {
+                '_elementId': elementId,
+                'searchResults': searchResults.map((e) => e.toJson()).toList(),
+              },
+            );
+          },
+        );
+        return;
+      }
+    }
   }
 
+  void processFCPSearchResultSelected(
+    String elementId,
+    String itemElementId,
+  ) {
+    for (final template in templateHistory) {
+      if (template is CPSearchTemplate && template.uniqueId == elementId) {
+        final selectedItem = template.searchResults.singleWhereOrNull(
+          (result) => result.uniqueId == itemElementId,
+        );
+        if (selectedItem != null) {
+          selectedItem.onPress?.call(
+            () {},
+            selectedItem,
+          );
+        }
+        return;
+      }
+    }
+  }
 
+  void processFCPSearchCancelled(String elementId) {
+    final topTemplate = templateHistory.lastOrNull;
+    if (topTemplate is CPSearchTemplate && topTemplate.uniqueId == elementId) {
+      templateHistory.removeLast();
+    }
+  }
+}

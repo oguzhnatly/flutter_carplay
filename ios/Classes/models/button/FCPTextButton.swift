@@ -13,35 +13,33 @@ class FCPTextButton {
     private(set) var elementId: String
     private var title: String
     private var style: CPTextButtonStyle
-    
-    init(obj: [String : Any]) {
-        self.elementId = obj["_elementId"] as! String
-        self.title = obj["title"] as! String
+
+    init(obj: [String: Any]) {
+        elementId = obj["_elementId"] as! String
+        title = obj["title"] as! String
         let style = obj["style"] as? String
         if style == nil || style == "normal" {
             self.style = CPTextButtonStyle.normal
         } else {
-            if style == "cancel"{
+            if style == "cancel" {
                 self.style = CPTextButtonStyle.cancel
-            }
-            else {
-                if style == "confirm"{
+            } else {
+                if style == "confirm" {
                     self.style = CPTextButtonStyle.confirm
-                }
-                else {
+                } else {
                     self.style = CPTextButtonStyle.normal
                 }
             }
         }
     }
-    
+
     var get: CPTextButton {
-        let textButton = CPTextButton.init(title: title, textStyle:self.style, handler: { _ in
+        let textButton = CPTextButton(title: title, textStyle: style, handler: { _ in
             DispatchQueue.main.async {
                 FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onTextButtonPressed, data: ["elementId": self.elementId])
             }
         })
-        self._super = textButton
+        _super = textButton
         return textButton
     }
 }

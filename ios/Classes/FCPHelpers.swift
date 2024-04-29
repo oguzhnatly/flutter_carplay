@@ -6,5 +6,5 @@
 //
 
 func makeFCPChannelId(event: String?) -> String {
-  return "com.oguzhnatly.flutter_carplay" + event!
+    return "com.oguzhnatly.flutter_carplay" + event!
 }
