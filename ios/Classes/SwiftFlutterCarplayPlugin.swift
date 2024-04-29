@@ -103,6 +103,23 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 item.stopHandler()
             })
             result(true)
+
+        case FCPChannelTypes.onSearchTextUpdatedComplete:
+            guard let args = call.arguments as? [String: Any],
+                  let elementId = args["_elementId"] as? String
+            else {
+                result(false)
+                return
+            }
+
+            let searchResults = (args["searchResults"] as? [[String: Any]] ?? []).map {
+                FCPListItem(obj: $0)
+            }
+
+            SwiftFlutterCarplayPlugin.findSearchTemplate(elementId: elementId, actionWhenFound: { template in
+                template.searchCompleted(searchResults)
+            })
+            result(true)
         case FCPChannelTypes.setAlert:
             guard objcPresentTemplate == nil else {
                 result(FlutterError(code: "ERROR",
@@ -173,6 +190,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             case String(describing: FCPListTemplate.self):
                 pushTemplate = FCPListTemplate(obj: args["template"] as! [String: Any], templateType: FCPListTemplateTypes.DEFAULT).get
+
+            case String(describing: FCPSearchTemplate.self):
+                pushTemplate = FCPSearchTemplate(obj: args["template"] as! [String: Any]).get
             default:
                 result(false)
                 return
@@ -221,6 +241,20 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                         break l1
                     }
                 }
+            }
+        }
+    }
+
+    static func findSearchTemplate(elementId: String, actionWhenFound: (_ searchTemplate: FCPSearchTemplate) -> Void) {
+        let filteredTemplates = FlutterCarPlaySceneDelegate.getTemplates().filter { $0 is CPSearchTemplate }
+
+        for t in filteredTemplates {
+            if let userInfo = t.userInfo as? [String: Any],
+               let fcpTemplate = userInfo["FCPObject"] as? FCPSearchTemplate,
+               fcpTemplate.elementId == elementId
+            {
+                actionWhenFound(fcpTemplate)
+                break
             }
         }
     }

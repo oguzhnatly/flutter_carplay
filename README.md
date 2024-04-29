@@ -40,6 +40,7 @@ CarPlay apps are built from a fixed set of user interface templates that iOS ren
 - [x] Tab Bar Template
 - [x] Information Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
 - [x] Point of Interest Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
+- [x] Search (contribution from [Aubergine Solutions Pvt. Ltd.](https://github.com/AubergineSolutions/flutter_carplay))
 
 By evaluating this information, you can request for the relevant entitlement from Apple.
 
@@ -48,7 +49,6 @@ By evaluating this information, you can request for the relevant entitlement fro
 Other templates will be supported in the future releases by `flutter_carplay`.
 
 - [ ] Map
-- [ ] Search
 - [ ] Voice Control & "Hey Siri" for hands-free voice activation
 - [ ] Contact
 - [ ] Now Playing
@@ -656,6 +656,47 @@ The map section is determined by the points of interest.
     // OR
     FlutterCarplay.setRootTemplate(rootTemplate: pointOfInterestTemplate, animated: true);
 ```
+
+## Search Template
+![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/search_template.mov)
+
+The search template displays a text entry field, a list of search results, and a keyboard.
+
+```dart
+final CPSearchTemplate searchTemplate = CPSearchTemplate(
+  onSearchTextUpdated: (query, onSearchResults) {
+    final searchResults = List.generate(100, (index) => 'Item $index')
+        .where((element) => element.contains(query))
+        .map((e) {
+      return CPListItem(
+          text: e,
+          onPress: (complete, item) {
+            complete();
+            FlutterCarplay.showAlert(
+              template: CPAlertTemplate(
+                titleVariants: ["${item.text} selected"],
+                actions: [
+                  CPAlertAction(
+                    title: "Okay",
+                    style: CPAlertActionStyles.cancel,
+                    onPress: () {
+                      FlutterCarplay.popModal(animated: true);
+                      print("Okay pressed");
+                    },
+                  ),
+                ],
+              ),
+            );
+          });
+    }).toList();
+    onSearchResults(searchResults);
+  },
+  shouldSearchAsType: true,
+);
+
+FlutterCarplay.push(template: searchTemplate, animated: true);
+```
+
 
 # LICENSE
 

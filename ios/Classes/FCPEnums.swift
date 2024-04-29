@@ -28,6 +28,11 @@ enum FCPChannelTypes {
     static let setActionSheet = "setActionSheet"
     static let onBarButtonPressed = "onBarButtonPressed"
     static let onTextButtonPressed = "onTextButtonPressed"
+    static let onSearchTextUpdated = "onSearchTextUpdated"
+    static let onSearchTextUpdatedComplete = "onSearchTextUpdatedComplete"
+    static let onSearchResultSelected = "onSearchResultSelected"
+    static let onSearchButtonPressed = "onSearchButtonPressed"
+    static let onSearchCancelled = "onSearchCancelled"
     static let popToRootTemplate = "popToRootTemplate"
 }
 

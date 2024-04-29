@@ -61,6 +61,10 @@ class FCPListItem {
         if accessoryType != nil {
             listItem.accessoryType = accessoryType!
         }
+
+        // Save elementId to user info in order to identify which item was selected
+        listItem.userInfo = ["elementId": elementId]
+
         _super = listItem
         return listItem
     }

@@ -55,11 +55,16 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
             onPresent(completed)
         })
     }
+    
+   public static func getTemplates() -> [CPTemplate] {
+       return interfaceController?.templates ?? []
+    }
 
     func templateApplicationScene(_: CPTemplateApplicationScene,
                                   didConnect interfaceController: CPInterfaceController)
     {
         FlutterCarPlaySceneDelegate.interfaceController = interfaceController
+        FlutterCarPlaySceneDelegate.interfaceController?.delegate = self
 
         SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
         let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
@@ -86,5 +91,36 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
         SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.disconnected)
 
         // FlutterCarPlaySceneDelegate.interfaceController = nil
+    }
+}
+
+// MARK: CPInterfaceControllerDelegate
+extension FlutterCarPlaySceneDelegate: CPInterfaceControllerDelegate {
+    func templateWillAppear(_ aTemplate: CPTemplate, animated _: Bool) {
+        print("Template \(aTemplate.classForCoder) will appear.")
+    }
+
+    func templateDidAppear(_ aTemplate: CPTemplate, animated _: Bool) {
+        print("Template \(aTemplate.classForCoder) did appear.")
+    }
+
+    func templateWillDisappear(_ aTemplate: CPTemplate, animated _: Bool) {
+        print("Template \(aTemplate.classForCoder) will disappear.")
+    }
+
+    func templateDidDisappear(_ aTemplate: CPTemplate, animated _: Bool) {
+        print("Template \(aTemplate.classForCoder) did disappear.")
+
+        if let topTemplate = FlutterCarPlaySceneDelegate.interfaceController?.topTemplate {
+            // Handle the cancel button event on search template
+            if aTemplate is CPSearchTemplate && !(topTemplate is CPSearchTemplate) {
+                if let elementId = (((aTemplate as? CPSearchTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPSearchTemplate)?.elementId {
+                    DispatchQueue.main.async {
+                        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onSearchCancelled,
+                                                         data: ["elementId": elementId])
+                    }
+                }
+            }
+        }
     }
 }

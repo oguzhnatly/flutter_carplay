@@ -133,6 +133,14 @@ class _MyAppState extends State<MyApp> {
             complete();
           },
         ),
+        CPListItem(
+          text: "Search Template",
+          detailText: "Displays a list of items with Search bar.",
+          onPress: (complete, self) {
+            openSearchTemplate();
+            complete();
+          },
+        )
       ],
       header: "Features",
     ));
@@ -394,6 +402,42 @@ class _MyAppState extends State<MyApp> {
           ),
         ]),
         animated: true);
+  }
+
+  void openSearchTemplate() {
+    FlutterCarplay.push(
+      template: CPSearchTemplate(
+        onSearchTextUpdated: (query, onSearchResults) {
+          final searchResults = List.generate(100, (index) => 'Item $index')
+              .where((element) => element.contains(query))
+              .map((e) {
+            return CPListItem(
+                text: e,
+                onPress: (complete, item) {
+                  complete();
+                  FlutterCarplay.showAlert(
+                    template: CPAlertTemplate(
+                      titleVariants: ["${item.text} selected"],
+                      actions: [
+                        CPAlertAction(
+                          title: "Okay",
+                          style: CPAlertActionStyles.cancel,
+                          onPress: () {
+                            FlutterCarplay.popModal(animated: true);
+                            print("Okay pressed");
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                });
+          }).toList();
+          onSearchResults(searchResults);
+        },
+        shouldSearchAsType: true,
+      ),
+      animated: true,
+    );
   }
 
   @override
