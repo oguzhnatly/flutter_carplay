@@ -166,6 +166,11 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
         mapView.isMultipleTouchEnabled = true
 
+        // Disable traffic view support
+        mapView.mapScene.disableFeatures(
+            [MapFeatures.trafficFlow, MapFeatures.trafficIncidents]
+        )
+
         // Update the map coordinates
         updateMapCoordinatesHandler = { [weak self] mapCoordinates in
             guard let self = self else { return }
