@@ -70,10 +70,9 @@ class FCPSpeaker: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     ///   - text: The text to be spoken.
     ///   - language: The language in which the text should be spoken.
     ///   - didEnd: A closure to be executed when speech synthesis is completed or canceled.
-    func speak(_ text: String, rate: Float = 0.5, didEnd: @escaping () -> Void) {
+    func speak(_ text: String, didEnd: @escaping () -> Void) {
         do {
             let utterance = AVSpeechUtterance(string: text)
-            utterance.rate = rate
             utterance.voice = AVSpeechSynthesisVoice(language: locale.identifier)
             if utterance.voice == nil {
                 print("Error: Apple's AVSpeechSynthesisVoice does not support this language: \(locale).")

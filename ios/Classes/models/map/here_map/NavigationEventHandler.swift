@@ -549,7 +549,7 @@ class NavigationEventHandler: NavigableLocationDelegate,
     func onEventTextUpdated(_ event: heresdk.EventText) {
         if !isVoiceInstructionsMuted, event.type == .maneuver {
             stopVoiceAssistant()
-            voiceAssistant.speak(event.text, rate: 0.55) {}
+            voiceAssistant.speak(event.text) {}
         }
     }
 

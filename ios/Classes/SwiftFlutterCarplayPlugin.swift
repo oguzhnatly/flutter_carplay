@@ -650,18 +650,6 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             result(true)
 
-        case FCPChannelTypes.toggleTrafficView:
-            guard let args = call.arguments as? [String: Any],
-                  let showTrafficView = args["showTrafficView"] as? Bool
-            else {
-                result(false)
-                return
-            }
-
-            toggleTrafficViewHandler?(showTrafficView)
-
-            result(true)
-
         case FCPChannelTypes.recenterMapView:
             guard let args = call.arguments as? [String: Any],
                   let recenterMapPosition = args["recenterMapPosition"] as? String

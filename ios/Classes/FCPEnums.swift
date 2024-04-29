@@ -184,9 +184,6 @@ enum FCPChannelTypes {
     /// Event for toggling satellite view in CarPlay.
     static let toggleSatelliteView = "toggleSatelliteView"
 
-    /// Event for toggling traffic view in CarPlay.
-    static let toggleTrafficView = "toggleTrafficView"
-
     /// Event for recentering the map view in CarPlay.
     static let recenterMapView = "recenterMapView"
 

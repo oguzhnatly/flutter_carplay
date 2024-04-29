@@ -165,9 +165,6 @@ enum FCPChannelTypes {
   /// Event for toggling satellite view in CarPlay.
   toggleSatelliteView,
 
-  /// Event for toggling traffic view in CarPlay.
-  toggleTrafficView,
-
   /// Event for recentering the map view in CarPlay.
   recenterMapView,
 
