@@ -22,9 +22,6 @@ var toggleVoiceInstructionsHandler: ((Bool) -> Void)?
 /// Completion handler for toggle satellite view.
 var toggleSatelliteViewHandler: ((Bool) -> Void)?
 
-/// Completion handler for toggle traffic view.
-var toggleTrafficViewHandler: ((Bool) -> Void)?
-
 /// Completion handler for recenter map view.
 var recenterMapViewHandler: ((String) -> Void)?
 

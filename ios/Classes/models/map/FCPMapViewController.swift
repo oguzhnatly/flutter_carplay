@@ -70,9 +70,6 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// Whether the satellite view is enabled.
     var isSatelliteViewEnabled = false
 
-    /// Whether the traffic view is enabled.
-    var isTrafficViewEnabled = true
-
     /// Whether the dashboard scene is active.
     var isDashboardSceneActive: Bool {
         return FlutterCarplayTemplateManager.shared.isDashboardSceneActive
@@ -128,23 +125,6 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
             self.mapView.mapScene.loadScene(mapScheme: mapScheme, completion: onLoadScene)
         }
-
-        toggleTrafficViewHandler = { [weak self] isTrafficViewEnabled in
-            guard let self = self else { return }
-
-            self.isTrafficViewEnabled = isTrafficViewEnabled
-
-            // if isTrafficViewEnabled {
-            //     self.mapView.mapScene.enableFeatures([
-            //         MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow,
-            //         MapFeatures.trafficIncidents: MapFeatureModes.trafficIncidentsAll,
-            //     ])
-            // } else {
-            //     self.mapView.mapScene.disableFeatures(
-            //         [MapFeatures.trafficFlow, MapFeatures.trafficIncidents]
-            //     )
-            // }
-        }
     }
 
     /// View did appear
@@ -185,9 +165,6 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
         }
 
         mapView.isMultipleTouchEnabled = true
-
-        // Set traffic view
-        toggleTrafficViewHandler?(isTrafficViewEnabled)
 
         // Update the map coordinates
         updateMapCoordinatesHandler = { [weak self] mapCoordinates in
