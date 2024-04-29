@@ -96,7 +96,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     ///   - call: The `FlutterMethodCall` representing the invoked method.
     ///   - result: The callback to provide the result of the method call to Flutter.
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        MemoryLogger.shared.appendEvent("FlutterMethodCall received : \(call.method)")
+        if call.method != FCPChannelTypes.showOverlay {
+            MemoryLogger.shared.appendEvent("FlutterMethodCall received : \(call.method)")
+        }
 
         switch call.method {
         case FCPChannelTypes.setRootTemplate:
