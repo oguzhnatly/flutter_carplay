@@ -202,14 +202,6 @@ class FlutterCarplayController {
     );
   }
 
-  /// Toggles the traffic view on the [CPMapTemplate].
-  static void toggleTrafficView({bool showTrafficView = false}) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.toggleTrafficView.name,
-      {'showTrafficView': showTrafficView},
-    );
-  }
-
   /// Re-centers the map view on the [CPMapTemplate].
   static void recenterMapView(String recenterMapPosition) {
     _methodChannel.invokeMethod(
