@@ -927,11 +927,11 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
         // Set language to our TextToSpeech engine.
         let locale = LanguageCodeConverter.getLocale(languageCode: ttsLanguageCode)
-         if voiceAssistant.setLanguage(locale: locale) {
-             print("TextToSpeech engine uses this language: \(locale)")
-         } else {
-             print("TextToSpeech engine does not support this language: \(locale)")
-         }
+        if voiceAssistant.setLanguage(locale: locale) {
+            print("TextToSpeech engine uses this language: \(locale)")
+        } else {
+            print("TextToSpeech engine does not support this language: \(locale)")
+        }
     }
 
     /// Get the language preferrably used on this device.

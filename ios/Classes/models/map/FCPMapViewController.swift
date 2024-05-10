@@ -92,6 +92,9 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// Overlay view width
     var overlayViewWidth = 0.0
 
+    /// Banner view height
+    var bannerViewHeight = 0.0
+
     /// To perform actions only once when map is loaded
     var mapLoadedOnce = false
 
@@ -360,7 +363,8 @@ extension FCPMapViewController {
         bannerView.setBackgroundColor(color)
         bannerView.isHidden = isDashboardSceneActive || isPanningInterfaceVisible
 
-        if !isDashboardSceneActive {
+        if !isDashboardSceneActive, bannerViewHeight != bannerView.bounds.height {
+            bannerViewHeight = bannerView.bounds.height
             updateCameraPrincipalPoint()
         }
     }
@@ -459,7 +463,11 @@ extension FCPMapViewController {
     ///   - coordinates: The coordinates of the marker
     ///   - accuracy: The accuracy of the marker
     func renderInitialMarker(coordinates: GeoCoordinates, accuracy: Double) {
-        guard !(mapController?.navigationHelper.isNavigationInProgress ?? false) else { return }
+        guard !(mapController?.navigationHelper.isNavigationInProgress ?? false) else {
+            mapController?.removeMarker(markerType: .INITIAL)
+            mapController?.removePolygon(markerType: .INITIAL)
+            return
+        }
 
         let metadata = heresdk.Metadata()
         metadata.setString(key: "marker", value: MapMarkerType.INITIAL.rawValue)

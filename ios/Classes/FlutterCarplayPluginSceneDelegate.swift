@@ -13,9 +13,9 @@ class FlutterCarplaySceneDelegate: NSObject {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options _: UIScene.ConnectionOptions) {
         if scene is CPTemplateApplicationScene, session.configuration.name == "CarPlayConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene will connect.")
+            MemoryLogger.shared.appendEvent("STEMConnect application scene will connect.")
         } else if scene is CPTemplateApplicationDashboardScene, session.configuration.name == "CarPlayDashboardConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene will connect.")
+            MemoryLogger.shared.appendEvent("STEMConnect application dashboard scene will connect.")
         }
     }
 
@@ -24,10 +24,10 @@ class FlutterCarplaySceneDelegate: NSObject {
         var dashboardConnectionStatus = FlutterCarplayTemplateManager.shared.dashboardConnectionStatus
 
         if scene.session.configuration.name == "CarPlayConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene did disconnect.")
+            MemoryLogger.shared.appendEvent("STEMConnect application scene did disconnect.")
             carplayConnectionStatus = FCPConnectionTypes.disconnected
         } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene did disconnect.")
+            MemoryLogger.shared.appendEvent("STEMConnect application dashboard scene did disconnect.")
             dashboardConnectionStatus = FCPConnectionTypes.disconnected
         }
 
@@ -41,11 +41,11 @@ class FlutterCarplaySceneDelegate: NSObject {
         var dashboardConnectionStatus = FlutterCarplayTemplateManager.shared.dashboardConnectionStatus
 
         if scene.session.configuration.name == "CarPlayConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene did become active.")
+            MemoryLogger.shared.appendEvent("STEMConnect application scene did become active.")
             carplayConnectionStatus = FCPConnectionTypes.connected
             FlutterCarplayTemplateManager.shared.setActiveMapViewController(with: scene)
         } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene did become active.")
+            MemoryLogger.shared.appendEvent("STEMConnect application dashboard scene did become active.")
             dashboardConnectionStatus = FCPConnectionTypes.connected
             FlutterCarplayTemplateManager.shared.setActiveMapViewController(with: scene)
         }
@@ -60,7 +60,7 @@ class FlutterCarplaySceneDelegate: NSObject {
         var dashboardConnectionStatus = FlutterCarplayTemplateManager.shared.dashboardConnectionStatus
 
         if scene.session.configuration.name == "CarPlayConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene did enter background.")
+            MemoryLogger.shared.appendEvent("STEMConnect application scene did enter background.")
             carplayConnectionStatus = FCPConnectionTypes.background
         } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect application Dashboard scene did enter background.")
@@ -74,9 +74,9 @@ class FlutterCarplaySceneDelegate: NSObject {
 
     func sceneWillResignActive(_ scene: UIScene) {
         if scene.session.configuration.name == "CarPlayConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect applicaiton scene will resign active.")
+            MemoryLogger.shared.appendEvent("STEMConnect application scene will resign active.")
         } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect applicaiton dashboard scene will resign active.")
+            MemoryLogger.shared.appendEvent("STEMConnect application dashboard scene will resign active.")
         }
     }
 }
