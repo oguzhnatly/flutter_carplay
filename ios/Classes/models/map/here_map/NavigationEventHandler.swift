@@ -60,17 +60,17 @@ class NavigationEventHandler: NavigableLocationDelegate,
 
     /// Map template instance
     var mapTemplate: CPMapTemplate? {
-        return SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate
+        return FlutterCarplayPlugin.rootTemplate as? CPMapTemplate
     }
 
     /// FCP Map View Controller instance
     var fcpMapViewController: FCPMapViewController? {
-        return (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.fcpMapViewController
+        return (FlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.fcpMapViewController
     }
 
     /// Navigation session instance
     var navigationSession: CPNavigationSession? {
-        return (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
+        return (FlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
     }
 
     /// Initializes a new `NavigationEventHandler` instance.

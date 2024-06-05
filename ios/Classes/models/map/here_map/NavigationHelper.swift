@@ -46,7 +46,7 @@ class NavigationHelper: DynamicRoutingDelegate {
 
     /// FCP Map View Controller instance
     var fcpMapViewController: FCPMapViewController? {
-        return (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.fcpMapViewController
+        return (FlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.fcpMapViewController
     }
 
     init(mapView: MapView, messageTextView: UITextView) {

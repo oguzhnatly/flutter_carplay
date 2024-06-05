@@ -78,7 +78,7 @@ class MapController: LongPressDelegate {
         reroutingHandler = { [weak self] startWayPoint, completion in
             guard let self = self else { return }
 
-            let navigationSession = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
+            let navigationSession = (FlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
 
             if #available(iOS 15.4, *) {
                 navigationSession?.pauseTrip(for: .rerouting, description: "", turnCardColor: .systemGreen)

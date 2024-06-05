@@ -77,7 +77,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
     /// Whether the dashboard scene is active.
     var isPanningInterfaceVisible: Bool {
-        return (SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate)?.isPanningInterfaceVisible ?? false
+        return (FlutterCarplayPlugin.rootTemplate as? CPMapTemplate)?.isPanningInterfaceVisible ?? false
     }
 
     /// Should stop voice assistant

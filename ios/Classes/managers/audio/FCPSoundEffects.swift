@@ -32,7 +32,7 @@ public final class FCPSoundEffects: NSObject {
     ///   - sound: The name of the audio file.
     ///   - volume: The volume level for the sound effects.
     func prepare(sound: String, volume: Float) {
-        let x = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: sound)
+        let x = FlutterCarplayPlugin.registrar?.lookupKey(forAsset: sound)
 
         guard let s = Bundle.main.path(forResource: x, ofType: nil) else {
             fatalError("[FlutterCarPlay]: Music could not be found in the resources.")

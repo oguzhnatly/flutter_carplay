@@ -16,7 +16,7 @@ struct FCPSpeechRecognizer {
         var transcript = ""
 
         func set(newValue: String) {
-            SwiftFlutterCarplayPlugin.sendSpeechRecognitionTranscriptChangeEvent(transcript: newValue)
+            FlutterCarplayPlugin.sendSpeechRecognitionTranscriptChangeEvent(transcript: newValue)
             transcript = newValue
         }
 

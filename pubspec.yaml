@@ -21,5 +21,8 @@ dev_dependencies:
 flutter:
   plugin:
     platforms:
+      android:
+        package: com.oguzhnatly.flutter_carplay
+        pluginClass: FlutterCarplayPlugin
       ios:
         pluginClass: FlutterCarplayPlugin
