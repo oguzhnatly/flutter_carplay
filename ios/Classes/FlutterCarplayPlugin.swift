@@ -156,7 +156,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
             updateListItem(elementId: elementId, args: args)
             result(true)
-        case FCPChannelTypes.onListItemSelectedComplete:
+        case FCPChannelTypes.onFCPListItemSelectedComplete:
             guard let args = call.arguments as? String else {
                 result(false)
                 return
@@ -233,7 +233,6 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                     result(completed)
                 })
             }
-
         case FCPChannelTypes.popTemplate:
             guard let args = call.arguments as? [String: Any],
                   let count = args["count"] as? Int,

@@ -6,11 +6,17 @@ import androidx.car.app.validation.HostValidator
 
 class AndroidAutoService : CarAppService() {
 
+    companion object {
+        lateinit var session: AndroidAutoSession
+    }
+
     override fun createHostValidator(): HostValidator {
         return HostValidator.ALLOW_ALL_HOSTS_VALIDATOR
     }
 
     override fun onCreateSession(): Session {
-        return PlacesSession(applicationContext)
+        Logger.log("onCreateSession")
+        session = AndroidAutoSession(applicationContext)
+        return session
     }
 }

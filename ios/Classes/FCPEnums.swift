@@ -56,10 +56,10 @@ enum FCPChannelTypes {
     static let onInformationTemplatePopped = "onInformationTemplatePopped"
 
     /// Event triggered when a list item is selected in CarPlay.
-    static let onListItemSelected = "onFCPListItemSelected"
+    static let onFCPListItemSelected = "onFCPListItemSelected"
 
     /// Event triggered when a list item selection is complete in CarPlay.
-    static let onListItemSelectedComplete = "onFCPListItemSelectedComplete"
+    static let onFCPListItemSelectedComplete = "onFCPListItemSelectedComplete"
 
     /// Event triggered when an alert action is pressed in CarPlay.
     static let onAlertActionPressed = "onFCPAlertActionPressed"

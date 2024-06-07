@@ -342,7 +342,6 @@ class FlutterCarplay {
   static Future<String?> getActiveVoiceControlStateIdentifier() async {
     final value = await _carPlayController.methodChannel.invokeMethod(
       FCPChannelTypes.getActiveVoiceControlStateIdentifier.name,
-      null,
     );
     return value as String?;
   }
@@ -353,7 +352,6 @@ class FlutterCarplay {
   static Future<bool> startVoiceControl() async {
     final value = await _carPlayController.methodChannel.invokeMethod(
       FCPChannelTypes.startVoiceControl.name,
-      null,
     );
     return value as bool? ?? false;
   }
@@ -364,7 +362,6 @@ class FlutterCarplay {
   static Future<bool> stopVoiceControl() async {
     final value = await _carPlayController.methodChannel.invokeMethod(
       FCPChannelTypes.stopVoiceControl.name,
-      null,
     );
     return value as bool? ?? false;
   }

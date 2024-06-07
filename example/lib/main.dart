@@ -163,58 +163,117 @@ class _MyAppState extends State<MyApp> {
     ];
 
     FlutterCarplay.setRootTemplate(
-      rootTemplate: CPMapTemplate(
-        title: 'Map Template',
-        mapButtons: [],
-        leadingNavigationBarButtons: [
-          CPBarButton(
-            title: 'Home',
-            onPressed: () async {
-              final didPush = await FlutterCarplay.push(
-                template: CPListTemplate(
-                  sections: section1Items,
-                  title: 'Home',
-                  systemIcon: 'house.fill',
-                ),
-              );
-              if (didPush) log('Opened Home');
-            },
+      rootTemplate: CPListTemplate(
+        sections: [
+          CPListSection(
+            header: 'A Section',
+            items: [
+              CPListItem(
+                text: 'Item 1',
+                onPressed: (onCompleted, item) {
+                  log('Item 1 clicked');
+                  // item.update(isEnabled: false);
+                  onCompleted();
+                },
+              ),
+              CPListItem(
+                text: 'Item 2',
+                onPressed: (onCompleted, item) {
+                  log('Item 2 clicked');
+                  // FlutterCarplay.pop();
+                  // item.update(text: 'ABC', detailText: 'New ABC');
+                  onCompleted();
+                },
+              ),
+              CPListItem(
+                text: 'Item 3',
+                onPressed: (onCompleted, item) {
+                  log('Item 3 clicked');
+                  openListTemplate();
+                  onCompleted();
+                },
+              ),
+              CPListItem(text: 'Item 4'),
+            ],
+          ),
+          CPListSection(
+            header: 'B Section',
+            items: [
+              CPListItem(text: 'Item 5'),
+              CPListItem(text: 'Item 6'),
+            ],
+          ),
+          CPListSection(
+            header: 'C Section',
+            items: [
+              CPListItem(text: 'Item 7'),
+              CPListItem(text: 'Item 8'),
+            ],
           ),
         ],
-        trailingNavigationBarButtons: [
-          CPBarButton(
-            title: 'Features',
-            // image: 'images/logo_flutter_1080px_clr.png',
-            onPressed: () async {
-              final didPush = await FlutterCarplay.push(
-                template: CPListTemplate(
-                  title: 'Features',
-                  sections: section2Items,
-                  systemIcon: 'star.circle.fill',
-                ),
-              );
-              if (didPush) log('Opened Features');
-            },
-          ),
-          CPBarButton(
-            title: 'Settings',
-            onPressed: () async {
-              final didPush = await FlutterCarplay.push(
-                template: CPListTemplate(
-                  sections: [],
-                  title: 'Settings',
-                  emptyViewTitleVariants: ['Settings'],
-                  emptyViewSubtitleVariants: [
-                    'No settings have been added here yet. You can start adding right away',
-                  ],
-                  systemIcon: 'gear',
-                ),
-              );
-              if (didPush) log('Opened Settings');
-            },
-          ),
-        ],
+        systemIcon: 'systemIcon',
+        title: 'List Template',
+        // backButton: CPBarButton(
+        //   title: 'Back',
+        //   onPressed: () {
+        //     log('back button call back received');
+        //     FlutterCarplay.pop();
+        //   },
+        //   style: CPBarButtonStyles.none,
+        // ),
       ),
+      // rootTemplate: CPMapTemplate(
+      //   title: 'Map Template',
+      //   mapButtons: [],
+      //   leadingNavigationBarButtons: [
+      //     CPBarButton(
+      //       title: 'Home',
+      //       onPressed: () async {
+      //         final didPush = await FlutterCarplay.push(
+      //           template: CPListTemplate(
+      //             sections: section1Items,
+      //             title: 'Home',
+      //             systemIcon: 'house.fill',
+      //           ),
+      //         );
+      //         if (didPush) log('Opened Home');
+      //       },
+      //     ),
+      //   ],
+      //   trailingNavigationBarButtons: [
+      //     CPBarButton(
+      //       title: 'Features',
+      //       // image: 'images/logo_flutter_1080px_clr.png',
+      //       onPressed: () async {
+      //         final didPush = await FlutterCarplay.push(
+      //           template: CPListTemplate(
+      //             title: 'Features',
+      //             sections: section2Items,
+      //             systemIcon: 'star.circle.fill',
+      //           ),
+      //         );
+      //         if (didPush) log('Opened Features');
+      //       },
+      //     ),
+      //     CPBarButton(
+      //       title: 'Settings',
+      //       onPressed: () async {
+      //         final didPush = await FlutterCarplay.push(
+      //           template: CPListTemplate(
+      //             sections: [],
+      //             title: 'Settings',
+      //             emptyViewTitleVariants: ['Settings'],
+      //             emptyViewSubtitleVariants: [
+      //               'No settings have been added here yet. You can start adding right away',
+      //             ],
+      //             systemIcon: 'gear',
+      //           ),
+      //         );
+      //         if (didPush) log('Opened Settings');
+      //       },
+      //     ),
+      //   ],
+      // ),
       // rootTemplate: CPTabBarTemplate(
       //   templates: [
       //     CPListTemplate(
@@ -239,6 +298,7 @@ class _MyAppState extends State<MyApp> {
       //   ],
       // ),
     );
+    print('AndroidAutoLogs: setRootTemplate sent');
 
     _flutterCarplay
       ..forceUpdateRootTemplate()
@@ -392,6 +452,7 @@ class _MyAppState extends State<MyApp> {
   void openListTemplate() {
     FlutterCarplay.push(
       template: CPListTemplate(
+
         sections: [
           CPListSection(
             header: 'A Section',
@@ -400,7 +461,7 @@ class _MyAppState extends State<MyApp> {
                 text: 'Item 1',
                 onPressed: (onCompleted, item) {
                   log('Item 1 clicked');
-                  item.update(isEnabled: false);
+                  // item.update(isEnabled: false);
                   onCompleted();
                 },
               ),
@@ -408,14 +469,15 @@ class _MyAppState extends State<MyApp> {
                 text: 'Item 2',
                 onPressed: (onCompleted, item) {
                   log('Item 2 clicked');
-                  item.update(text: 'ABC', detailText: 'New ABC');
+                  FlutterCarplay.pop();
+                  // item.update(text: 'ABC', detailText: 'New ABC');
                   onCompleted();
                 },
               ),
               CPListItem(
                 text: 'Item 3',
                 onPressed: (onCompleted, item) {
-                  log('Item 2 clicked');
+                  log('Item 3 clicked');
                   openListTemplate();
                   onCompleted();
                 },
@@ -439,7 +501,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ],
         systemIcon: 'systemIcon',
-        title: 'List Template',
+        title: 'List Template 2',
         backButton: CPBarButton(
           title: 'Back',
           onPressed: () {
