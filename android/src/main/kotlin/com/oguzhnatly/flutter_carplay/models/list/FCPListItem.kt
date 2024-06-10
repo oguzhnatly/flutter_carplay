@@ -16,7 +16,7 @@ import com.oguzhnatly.flutter_carplay.UIImage
  * @param obj A map containing information about the list item.
  */
 class FCPListItem
-    (obj: Map<String, Any>) {
+    (obj: Map<String, Any>, val onInvalidated: () -> Unit = {}) {
 
     /// The underlying CPListItem instance.
     private lateinit var _super: CPListItem
@@ -178,7 +178,7 @@ class FCPListItem
 //        accessoryType?.let { setAccessoryType(fromString: it) }
 
 
-//        invalidate()
+        onInvalidated()
     }
 
 

@@ -9,7 +9,7 @@ import androidx.car.app.model.SectionedItemList
  * @param obj A map containing information about the list section.
  */
 class FCPListSection
-    (obj: Map<String, Any>) {
+    (obj: Map<String, Any>, onInvalidated: () -> Unit = {}) {
 
     /// The underlying CPListSection instance.
     private lateinit var _super: SectionedItemList
@@ -22,7 +22,7 @@ class FCPListSection
     private var header: String
 
     /// An array of CPListTemplateItem instances associated with the list section.
-    private lateinit var items: ItemList
+    private var items: ItemList
 
     /// An array of FCPListItem instances associated with the list section.
     private var objcItems: List<FCPListItem>
@@ -33,7 +33,7 @@ class FCPListSection
         elementId = elementIdValue!!
         header = obj["header"] as? String ?: ""
         objcItems = (obj["items"] as? List<Map<String, Any>> ?: emptyList<FCPListItem>()).map {
-            FCPListItem(it as Map<String, Any>)
+            FCPListItem(it as Map<String, Any>, onInvalidated = onInvalidated)
         }
         val builder = ItemList.Builder()
         objcItems.forEach {

@@ -20,7 +20,7 @@ class AndroidAutoSession(applicationContext: Context) : Session() {
     val screenManager = carContext.getCarService<ScreenManager>(ScreenManager::class.java)
 
     override fun onCreateScreen(intent: Intent): Screen {
-        FlutterCarplayPlugin.instance.carContext = carContext
+        FlutterCarplayPlugin.carContext = carContext
 
         // MainScreen will be an unresolved reference until the next step
         lifecycle.addObserver(
@@ -44,8 +44,6 @@ class AndroidAutoSession(applicationContext: Context) : Session() {
                         flutterEngine!!.dartExecutor.executeDartEntrypoint(
                             DartExecutor.DartEntrypoint.createDefault()
                         )
-                        // TODO: is this needed?
-//                        isStartRequired = false
                     }
 
                     super.onStart(owner)
@@ -71,7 +69,7 @@ class AndroidAutoSession(applicationContext: Context) : Session() {
             }
         )
 
-        return FlutterCarplayPlugin.instance.fcpRootTemplate ?: MainScreen(
+        return FlutterCarplayPlugin.fcpRootTemplate ?: MainScreen(
             carContext,
             flutterEngine!!
         )
@@ -88,7 +86,7 @@ class AndroidAutoSession(applicationContext: Context) : Session() {
      * @param result the result object to send the success result to
      */
     fun forceUpdateRootTemplate(result: MethodChannel.Result? = null) {
-        FlutterCarplayPlugin.instance.fcpRootTemplate?.let {
+        FlutterCarplayPlugin.fcpRootTemplate?.let {
             Logger.log("Force Update Root Template.")
             // Pop to root first inorder to remove all screens except root
             screenManager.popToRoot()
@@ -96,6 +94,8 @@ class AndroidAutoSession(applicationContext: Context) : Session() {
             screenManager.push(it)
             // Remove the old root template
             screenManager.remove(screenManager.screenStack.first())
+            it.invalidate()
+            
             result?.success(true)
         }
             ?: result?.success(false)

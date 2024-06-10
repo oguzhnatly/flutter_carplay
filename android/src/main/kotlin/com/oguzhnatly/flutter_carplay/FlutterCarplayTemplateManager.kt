@@ -11,7 +11,7 @@ object FlutterCarplayTemplateManager {
     var fcpConnectionStatus = FCPConnectionTypes.DISCONNECTED
         set(value) {
             field = value
-            FlutterCarplayPlugin.instance.onCarplayConnectionChange(value.name)
+            FlutterCarplayPlugin.onCarplayConnectionChange(value.name)
         }
 
     // Android Auto Dashboard connection status

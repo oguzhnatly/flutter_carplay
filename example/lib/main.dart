@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
@@ -25,6 +24,8 @@ class _MyAppState extends State<MyApp> {
   /// true = voice control recording started and listening, false = not recording
   bool voiceControlStatus = false;
 
+  late final CPListTemplate rootTemplate;
+
   @override
   void initState() {
     super.initState();
@@ -48,17 +49,18 @@ class _MyAppState extends State<MyApp> {
             image: 'images/logo_flutter_1080px_clr.png',
           ),
           CPListItem(
-            text: 'Item 2',
+            text: 'Updated Item 2',
             detailText: 'Start progress bar',
             isPlaying: false,
             playbackProgress: 0,
             image: 'images/logo_flutter_1080px_clr.png',
             onPressed: (complete, self) {
-              for (var i = 1; i <= 100; i++) {
-                sleep(const Duration(milliseconds: 10));
-                self.update(playbackProgress: i / 100);
-                if (i == 100) complete();
-              }
+              print('Item list updated');
+              // for (var i = 1; i <= 100; i++) {
+              //   sleep(const Duration(milliseconds: 10));
+              //   self.update(playbackProgress: i / 100);
+              //   if (i == 100) complete();
+              // }
             },
           ),
         ],
@@ -162,66 +164,66 @@ class _MyAppState extends State<MyApp> {
       ),
     ];
 
-    FlutterCarplay.setRootTemplate(
-      rootTemplate: CPListTemplate(
-        sections: [
-          CPListSection(
-            header: 'A Section',
-            items: [
-              CPListItem(
-                text: 'Item 1',
-                onPressed: (onCompleted, item) {
-                  log('Item 1 clicked');
-                  // item.update(isEnabled: false);
-                  onCompleted();
-                },
-              ),
-              CPListItem(
-                text: 'Item 2',
-                onPressed: (onCompleted, item) {
-                  log('Item 2 clicked');
-                  // FlutterCarplay.pop();
-                  // item.update(text: 'ABC', detailText: 'New ABC');
-                  onCompleted();
-                },
-              ),
-              CPListItem(
-                text: 'Item 3',
-                onPressed: (onCompleted, item) {
-                  log('Item 3 clicked');
-                  openListTemplate();
-                  onCompleted();
-                },
-              ),
-              CPListItem(text: 'Item 4'),
-            ],
-          ),
-          CPListSection(
-            header: 'B Section',
-            items: [
-              CPListItem(text: 'Item 5'),
-              CPListItem(text: 'Item 6'),
-            ],
-          ),
-          CPListSection(
-            header: 'C Section',
-            items: [
-              CPListItem(text: 'Item 7'),
-              CPListItem(text: 'Item 8'),
-            ],
-          ),
-        ],
-        systemIcon: 'systemIcon',
-        title: 'List Template',
-        // backButton: CPBarButton(
-        //   title: 'Back',
-        //   onPressed: () {
-        //     log('back button call back received');
-        //     FlutterCarplay.pop();
-        //   },
-        //   style: CPBarButtonStyles.none,
-        // ),
+    rootTemplate = CPListTemplate(
+      sections: [
+        CPListSection(
+          header: 'A Section',
+          items: [
+            CPListItem(
+              text: 'Item 1',
+              onPressed: (onCompleted, item) {
+                log('Item 1 clicked');
+                item.update(isEnabled: false);
+                onCompleted();
+              },
+            ),
+            CPListItem(
+              text: 'Item 2',
+              onPressed: (onCompleted, item) {
+                log('Item 2 clicked');
+                item.update(text: 'ABC', detailText: 'New ABC');
+                // rootTemplate.update(sections: section1Items);
+                onCompleted();
+              },
+            ),
+            CPListItem(
+              text: 'Item 3',
+              onPressed: (onCompleted, item) {
+                log('Item 3 clicked');
+                onCompleted();
+              },
+            ),
+            CPListItem(text: 'Item 4'),
+          ],
+        ),
+        CPListSection(
+          header: 'B Section',
+          items: [
+            CPListItem(text: 'Item 5'),
+            CPListItem(text: 'Item 6'),
+          ],
+        ),
+        CPListSection(
+          header: 'C Section',
+          items: [
+            CPListItem(text: 'Item 7'),
+            CPListItem(text: 'Item 8'),
+          ],
+        ),
+      ],
+      systemIcon: 'systemIcon',
+      title: 'List Template',
+      backButton: CPBarButton(
+        title: 'Back',
+        onPressed: () {
+          log('back button call back received');
+          FlutterCarplay.pop();
+        },
+        style: CPBarButtonStyles.none,
       ),
+    );
+    FlutterCarplay.setRootTemplate(
+      rootTemplate: rootTemplate,
       // rootTemplate: CPMapTemplate(
       //   title: 'Map Template',
       //   mapButtons: [],
@@ -298,8 +300,6 @@ class _MyAppState extends State<MyApp> {
       //   ],
       // ),
     );
-    print('AndroidAutoLogs: setRootTemplate sent');
-
     _flutterCarplay
       ..forceUpdateRootTemplate()
       ..addListenerOnConnectionChange(onCarplayConnectionChange);
@@ -452,7 +452,6 @@ class _MyAppState extends State<MyApp> {
   void openListTemplate() {
     FlutterCarplay.push(
       template: CPListTemplate(
-
         sections: [
           CPListSection(
             header: 'A Section',
@@ -461,7 +460,7 @@ class _MyAppState extends State<MyApp> {
                 text: 'Item 1',
                 onPressed: (onCompleted, item) {
                   log('Item 1 clicked');
-                  // item.update(isEnabled: false);
+                  item.update(isEnabled: false);
                   onCompleted();
                 },
               ),
@@ -469,8 +468,7 @@ class _MyAppState extends State<MyApp> {
                 text: 'Item 2',
                 onPressed: (onCompleted, item) {
                   log('Item 2 clicked');
-                  FlutterCarplay.pop();
-                  // item.update(text: 'ABC', detailText: 'New ABC');
+                  item.update(text: 'ABC', detailText: 'New ABC');
                   onCompleted();
                 },
               ),
@@ -478,7 +476,6 @@ class _MyAppState extends State<MyApp> {
                 text: 'Item 3',
                 onPressed: (onCompleted, item) {
                   log('Item 3 clicked');
-                  openListTemplate();
                   onCompleted();
                 },
               ),

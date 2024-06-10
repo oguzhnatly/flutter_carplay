@@ -3,11 +3,11 @@ package com.oguzhnatly.flutter_carplay.models.list
 import FCPListTemplateTypes
 import androidx.car.app.CarContext
 import androidx.car.app.model.ListTemplate
-import androidx.car.app.model.Template
 import com.oguzhnatly.flutter_carplay.Bool
 import com.oguzhnatly.flutter_carplay.CPBarButton
 import com.oguzhnatly.flutter_carplay.CPListSection
 import com.oguzhnatly.flutter_carplay.CPListTemplate
+import com.oguzhnatly.flutter_carplay.CPTemplate
 import com.oguzhnatly.flutter_carplay.FCPRootTemplate
 import com.oguzhnatly.flutter_carplay.models.button.FCPBarButton
 
@@ -80,7 +80,9 @@ class FCPListTemplate
         isLoading = obj["isLoading"] as? Bool ?: false
         objcSections =
             (obj["sections"] as? List<Map<String, Any>> ?: emptyList<FCPListSection>()).map {
-                FCPListSection(it as Map<String, Any>)
+                FCPListSection(it as Map<String, Any>) {
+                    invalidate()
+                }
             }
         sections = objcSections.map {
             it.getTemplate
@@ -158,12 +160,12 @@ class FCPListTemplate
      * @param isLoading The new loading state of the list template.
      */
     fun update(
-        isLoading: Bool?,
-        emptyViewTitleVariants: List<String>?,
-        emptyViewSubtitleVariants: List<String>?,
-        sections: List<FCPListSection>?,
-        leadingNavigationBarButtons: List<FCPBarButton>?,
-        trailingNavigationBarButtons: List<FCPBarButton>?
+        isLoading: Bool? = null,
+        emptyViewTitleVariants: List<String>? = null,
+        emptyViewSubtitleVariants: List<String>? = null,
+        sections: List<FCPListSection>? = null,
+        leadingNavigationBarButtons: List<FCPBarButton>? = null,
+        trailingNavigationBarButtons: List<FCPBarButton>? = null
     ) {
         isLoading?.let { this.isLoading = it }
         emptyViewTitleVariants?.let { this.emptyViewTitleVariants = it }
@@ -178,7 +180,7 @@ class FCPListTemplate
         invalidate()
     }
 
-    override fun onGetTemplate(): Template {
+    override fun onGetTemplate(): CPTemplate {
         return getTemplate
     }
 }

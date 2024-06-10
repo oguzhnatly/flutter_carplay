@@ -880,13 +880,13 @@ extension FlutterCarplayPlugin {
 
 // MARK: - Update FCPObjects
 
-extension FlutterCarplayPlugin {
+private extension FlutterCarplayPlugin {
     /// Updates a CarPlay information template identified by its element ID with new data.
     ///
     /// - Parameters:
     ///   - elementId: The unique identifier of the information template to be updated.
     ///   - args: Additional arguments for updating the information template.
-    private func updateInformationTemplate(elementId: String, args: [String: Any]) {
+    func updateInformationTemplate(elementId: String, args: [String: Any]) {
         // Find the information template based on the provided element ID
         FlutterCarplayPlugin.findInformationTemplate(elementId: elementId) { infoTemplate in
             // Map dictionary representations to FCPInformationItem instances for items
@@ -922,7 +922,7 @@ extension FlutterCarplayPlugin {
     /// - Parameters:
     ///   - elementId: The unique identifier of the list template to be updated.
     ///   - args: Additional arguments for updating the list template.
-    private func updateMapTemplate(elementId: String, args: [String: Any]) {
+    func updateMapTemplate(elementId: String, args: [String: Any]) {
         // Find the map template based on the provided element ID
         FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
             // Extract and handle the data for updating the map template
@@ -963,7 +963,7 @@ extension FlutterCarplayPlugin {
     ///   - elementId: The unique identifier of the list template to be updated.
     ///   - sections: An array of dictionaries representing the updated sections of the list template.
     ///   - args: Additional arguments for updating the list template.
-    private func updateListTemplate(elementId: String, sections: [[String: Any]], args: [String: Any]) {
+    func updateListTemplate(elementId: String, sections: [[String: Any]], args: [String: Any]) {
         // Find the list template based on the provided element ID
         FlutterCarplayPlugin.findListTemplate(elementId: elementId) { listTemplate in
             // Extract and handle the data for updating the list template
@@ -994,7 +994,7 @@ extension FlutterCarplayPlugin {
     /// - Parameters:
     ///   - elementId: The unique identifier of the list item to be updated.
     ///   - args: Additional arguments for updating the list item.
-    private func updateListItem(elementId: String, args: [String: Any]) {
+    func updateListItem(elementId: String, args: [String: Any]) {
         // Find the list item based on the provided element ID
         FlutterCarplayPlugin.findListItem(elementId: elementId) { item in
             // Extract and handle the data for updating the list item
