@@ -1,13 +1,11 @@
 package com.oguzhnatly.flutter_carplay.models.list
 
 import FCPListTemplateTypes
-import androidx.car.app.CarContext
 import androidx.car.app.model.ListTemplate
 import com.oguzhnatly.flutter_carplay.Bool
 import com.oguzhnatly.flutter_carplay.CPBarButton
 import com.oguzhnatly.flutter_carplay.CPListSection
 import com.oguzhnatly.flutter_carplay.CPListTemplate
-import com.oguzhnatly.flutter_carplay.CPTemplate
 import com.oguzhnatly.flutter_carplay.FCPRootTemplate
 import com.oguzhnatly.flutter_carplay.models.button.FCPBarButton
 
@@ -18,12 +16,11 @@ import com.oguzhnatly.flutter_carplay.models.button.FCPBarButton
  * @param templateType The template type of the list template.
  */
 class FCPListTemplate(
-    carContext: CarContext,
     obj: Map<String, Any>,
 
     /// The template type of the list template.
     private var templateType: FCPListTemplateTypes
-) : FCPRootTemplate(carContext) {
+) : FCPRootTemplate() {
 
     /// The underlying CPListTemplate instance.
     private lateinit var _super: CPListTemplate
@@ -98,39 +95,38 @@ class FCPListTemplate(
     }
 
     /// Returns the underlying CPListTemplate instance configured with the specified properties.
-    val getTemplate: CPListTemplate
-        get() {
-            // Implementation details for returning CPListTemplate instance
-            val listTemplate = ListTemplate.Builder().setTitle(title ?: "").setLoading(isLoading)
-            sections.forEach { listTemplate.addSectionedList(it) }
-            //        listTemplate.setFCPObject(self)
-            //        listTemplate.emptyViewTitleVariants = emptyViewTitleVariants
-            //        listTemplate.emptyViewSubtitleVariants = emptyViewSubtitleVariants
-            //        listTemplate.showsTabBadge = showsTabBadge
+    override fun getTemplate(): CPListTemplate {
+        // Implementation details for returning CPListTemplate instance
+        val listTemplate = ListTemplate.Builder().setTitle(title ?: "").setLoading(isLoading)
+        sections.forEach { listTemplate.addSectionedList(it) }
+        //        listTemplate.setFCPObject(self)
+        //        listTemplate.emptyViewTitleVariants = emptyViewTitleVariants
+        //        listTemplate.emptyViewSubtitleVariants = emptyViewSubtitleVariants
+        //        listTemplate.showsTabBadge = showsTabBadge
 
-            //        if let icon = systemIcon {
-            //            listTemplate.tabImage = UIImage(systemName: icon)
-            //        }
+        //        if let icon = systemIcon {
+        //            listTemplate.tabImage = UIImage(systemName: icon)
+        //        }
 
-            //        if (templateType == FCPListTemplateTypes.DEFAULT) {
-            //            listTemplate.backButton = backButton
-            //        }
+        //        if (templateType == FCPListTemplateTypes.DEFAULT) {
+        //            listTemplate.backButton = backButton
+        //        }
 
-            //        var lBButtons: MutableList<CPBarButton> = mutableListOf()
-            //        for (button in leadingNavigationBarButtons) {
-            //            lBButtons.add(button.getTemplate)
-            //        }
-            //
-            //        var tBButtons: MutableList<CPBarButton> = mutableListOf()
-            //        for (button in trailingNavigationBarButtons) {
-            //            tBButtons.add(button.getTemplate)
-            //        }
-            //        listTemplate.leadingNavigationBarButtons = lBButtons
-            //        listTemplate.trailingNavigationBarButtons = tBButtons
+        //        var lBButtons: MutableList<CPBarButton> = mutableListOf()
+        //        for (button in leadingNavigationBarButtons) {
+        //            lBButtons.add(button.getTemplate)
+        //        }
+        //
+        //        var tBButtons: MutableList<CPBarButton> = mutableListOf()
+        //        for (button in trailingNavigationBarButtons) {
+        //            tBButtons.add(button.getTemplate)
+        //        }
+        //        listTemplate.leadingNavigationBarButtons = lBButtons
+        //        listTemplate.trailingNavigationBarButtons = tBButtons
 
-            _super = listTemplate.build()
-            return _super
-        }
+        _super = listTemplate.build()
+        return _super
+    }
 
     /**
      * Retrieves an array of FCPListSection instances associated with the list template.
@@ -169,10 +165,6 @@ class FCPListTemplate(
             this.sections = objcSections.map { section -> section.getTemplate }
         }
 
-        invalidate()
-    }
-
-    override fun onGetTemplate(): CPTemplate {
-        return getTemplate
+        onInvalidate()
     }
 }

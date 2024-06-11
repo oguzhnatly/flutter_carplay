@@ -1,6 +1,5 @@
 package com.oguzhnatly.flutter_carplay
 
-import androidx.car.app.CarContext
 import androidx.car.app.model.MessageTemplate
 
 /**
@@ -8,13 +7,14 @@ import androidx.car.app.model.MessageTemplate
  *
  * @param carContext The car context used to create the template.
  */
-class RootTemplate(carContext: CarContext) : FCPRootTemplate(carContext) {
+class RootTemplate : FCPRootTemplate() {
 
     init {
         elementId = "rootTemplate"
     }
 
-    override fun onGetTemplate(): CPTemplate {
+    override fun getTemplate(): CPTemplate {
         return MessageTemplate.Builder("Loading...").build()
     }
+
 }

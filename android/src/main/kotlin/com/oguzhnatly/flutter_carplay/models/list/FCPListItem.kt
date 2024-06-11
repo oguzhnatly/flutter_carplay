@@ -90,13 +90,13 @@ class FCPListItem
     val getTemplate: CPListItem
         get() {
             val builder = Row.Builder().setOnClickListener(ParkedOnlyOnClickListener.create {
-                    if (isOnPressListenerActive) {
-                        FCPStreamHandlerPlugin.sendEvent(
-                            FCPChannelTypes.onFCPListItemSelected.name,
-                            mapOf("elementId" to elementId)
-                        )
-                    }
-                }).setTitle(text).setEnabled(isEnabled)
+                if (isOnPressListenerActive) {
+                    FCPStreamHandlerPlugin.sendEvent(
+                        FCPChannelTypes.onFCPListItemSelected.name,
+                        mapOf("elementId" to elementId)
+                    )
+                }
+            }).setTitle(text).setEnabled(isEnabled)
 
 
 //        listItem.setFCPObject(self)

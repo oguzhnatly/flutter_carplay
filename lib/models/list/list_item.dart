@@ -101,7 +101,9 @@ class CPListItem {
         'accessoryDarkImage': accessoryDarkImage,
       };
 
-  /// Updates the properties of the [CPListItem]
+  /// Updates the properties of the [CPListItem].
+  ///
+  /// Available only on Apple CarPlay and has no effect on Android Auto.
   void update({
     String? text,
     String? detailText,

@@ -3,9 +3,10 @@ package com.oguzhnatly.flutter_carplay
 import FCPConnectionTypes
 import androidx.car.app.CarContext
 
+/** FlutterCarPlayTemplateManager handles CarPlay scene and the Dashboard scene. */
 object FlutterCarplayTemplateManager {
     var carplayInterfaceController: CarContext? = null
-//    var carplayDashboardController: CPDashboardController?
+    //    var carplayDashboardController: CPDashboardController?
 
     // CarPlay connection status (either CarPlay or Dashboard)
     var fcpConnectionStatus = FCPConnectionTypes.DISCONNECTED
