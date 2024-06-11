@@ -2,10 +2,9 @@
 //  Debounce.swift
 //  flutter_carplay
 //
-//  Created by Oğuzhan Atalay on 25.08.2021.
 //
 
-/// Class implementing the debounce for optimizing search events.
+/// Class implementing the debounce operation.
 class Debounce {
     private let delay: TimeInterval
     private var workItem: DispatchWorkItem?

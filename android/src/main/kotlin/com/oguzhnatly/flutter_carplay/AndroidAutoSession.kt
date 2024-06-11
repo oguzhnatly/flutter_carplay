@@ -1,7 +1,6 @@
 package com.oguzhnatly.flutter_carplay
 
 import FCPConnectionTypes
-import android.content.Context
 import android.content.Intent
 import androidx.car.app.Screen
 import androidx.car.app.ScreenManager
@@ -12,67 +11,89 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
-class AndroidAutoSession(applicationContext: Context) : Session() {
+/**
+ * A class representing an Android Auto session in the Flutter CarPlay plugin.
+ *
+ * This class handles the lifecycle of the Android Auto session, including starting and stopping the
+ * Flutter engine, managing the screen manager, and handling method channel callbacks.
+ *
+ * @property flutterEngine The Flutter engine used to run the Flutter app.
+ * @property isStartRequired A flag indicating whether the Flutter engine needs to be started.
+ * @property screenManager The screen manager used to manage the screens in the Android Auto
+ * session.
+ */
+class AndroidAutoSession : Session() {
     private var flutterEngine: FlutterEngine? = null
     var isStartRequired = false
 
     val screenManager = carContext.getCarService<ScreenManager>(ScreenManager::class.java)
 
+    private val bouncer = Debounce(CoroutineScope(Dispatchers.Main))
+
     override fun onCreateScreen(intent: Intent): Screen {
         FlutterCarplayPlugin.carContext = carContext
 
-        // MainScreen will be an unresolved reference until the next step
+        // RootTemplate will be an unresolved reference until the next step
         lifecycle.addObserver(
-            object : DefaultLifecycleObserver {
+                object : DefaultLifecycleObserver {
 
-                override fun onCreate(owner: LifecycleOwner) {
-                    Logger.log("onCreate")
-                    flutterEngine = FlutterEngineCache.getInstance().get("SharedEngine")
-                    if (flutterEngine == null) {
-                        isStartRequired = true
-                        flutterEngine = FlutterEngine(carContext.applicationContext)
-                        FlutterEngineCache.getInstance().put("SharedEngine", flutterEngine)
+                    override fun onCreate(owner: LifecycleOwner) {
+                        Logger.log("onCreate")
+                        flutterEngine = FlutterEngineCache.getInstance().get("SharedEngine")
+                        if (flutterEngine == null) {
+                            isStartRequired = true
+                            flutterEngine = FlutterEngine(carContext.applicationContext)
+                            FlutterEngineCache.getInstance().put("SharedEngine", flutterEngine)
+                        }
+
+                        super.onCreate(owner)
                     }
 
-                    super.onCreate(owner)
-                }
+                    override fun onStart(owner: LifecycleOwner) {
+                        Logger.log("onStart")
+                        if (isStartRequired) {
+                            flutterEngine!!.dartExecutor.executeDartEntrypoint(
+                                    DartExecutor.DartEntrypoint.createDefault()
+                            )
+                        }
 
-                override fun onStart(owner: LifecycleOwner) {
-                    Logger.log("onStart")
-                    if (isStartRequired) {
-                        flutterEngine!!.dartExecutor.executeDartEntrypoint(
-                            DartExecutor.DartEntrypoint.createDefault()
-                        )
+                        super.onStart(owner)
                     }
 
-                    super.onStart(owner)
-                }
+                    override fun onPause(owner: LifecycleOwner) {
+                        Logger.log("onPause")
+                        FlutterCarplayTemplateManager.fcpConnectionStatus =
+                                FCPConnectionTypes.BACKGROUND
 
-                override fun onPause(owner: LifecycleOwner) {
-                    FlutterCarplayTemplateManager.fcpConnectionStatus =
-                        FCPConnectionTypes.BACKGROUND
-                    super.onPause(owner)
-                }
+                        super.onPause(owner)
+                    }
 
-                override fun onResume(owner: LifecycleOwner) {
-                    FlutterCarplayTemplateManager.fcpConnectionStatus = FCPConnectionTypes.CONNECTED
+                    override fun onResume(owner: LifecycleOwner) {
+                        Logger.log("onResume")
+                        FlutterCarplayTemplateManager.fcpConnectionStatus =
+                                FCPConnectionTypes.CONNECTED
 
-                    super.onResume(owner)
-                }
+                        super.onResume(owner)
+                    }
 
-                override fun onStop(owner: LifecycleOwner) {
-                    FlutterCarplayTemplateManager.fcpConnectionStatus =
-                        FCPConnectionTypes.DISCONNECTED
-                    super.onStop(owner)
+                    override fun onStop(owner: LifecycleOwner) {
+                        Logger.log("onStop")
+                        FlutterCarplayTemplateManager.fcpConnectionStatus =
+                                FCPConnectionTypes.DISCONNECTED
+                        super.onStop(owner)
+                    }
+
+                    override fun onDestroy(owner: LifecycleOwner) {
+                        Logger.log("onDestroy")
+                        super.onDestroy(owner)
+                    }
                 }
-            }
         )
 
-        return FlutterCarplayPlugin.fcpRootTemplate ?: MainScreen(
-            carContext,
-            flutterEngine!!
-        )
+        return FlutterCarplayPlugin.fcpRootTemplate ?: RootTemplate(carContext)
     }
 
     /**
@@ -86,19 +107,24 @@ class AndroidAutoSession(applicationContext: Context) : Session() {
      * @param result the result object to send the success result to
      */
     fun forceUpdateRootTemplate(result: MethodChannel.Result? = null) {
-        FlutterCarplayPlugin.fcpRootTemplate?.let {
-            Logger.log("Force Update Root Template.")
-            // Pop to root first inorder to remove all screens except root
-            screenManager.popToRoot()
-            // Push the new root template
-            screenManager.push(it)
-            // Remove the old root template
-            screenManager.remove(screenManager.screenStack.first())
-            it.invalidate()
-            
-            result?.success(true)
+        bouncer.debounce(interval = 500L) {
+            FlutterCarplayPlugin.fcpRootTemplate?.let {
+                Logger.log("Force Update Root Template.")
+                if (it.elementId != (screenManager.top as? FCPTemplate)?.elementId) {
+                    // Pop to root first inorder to remove all screens except root
+                    screenManager.popToRoot()
+                    // Push the new root template
+                    screenManager.push(it)
+                    // Remove the old root template
+                    screenManager.remove(screenManager.screenStack.last())
+                } else {
+                    it.invalidate()
+                }
+
+                result?.success(true)
+            }
+                    ?: result?.success(false)
         }
-            ?: result?.success(false)
     }
 
     /**
@@ -115,9 +141,9 @@ class AndroidAutoSession(applicationContext: Context) : Session() {
         if (screenManager.stackSize >= 5) {
             Logger.log("Template navigation hierarchy exceeded")
             result?.error(
-                "0",
-                "Android Auto cannot have more than 5 templates on navigation hierarchy.",
-                null
+                    "0",
+                    "Android Auto cannot have more than 5 templates on navigation hierarchy.",
+                    null
             )
             return
         }
@@ -172,9 +198,9 @@ class AndroidAutoSession(applicationContext: Context) : Session() {
         if (screenManager.stackSize >= 5) {
             Logger.log("Template navigation hierarchy exceeded")
             result?.error(
-                "0",
-                "Android Auto cannot have more than 5 templates on navigation hierarchy.",
-                null
+                    "0",
+                    "Android Auto cannot have more than 5 templates on navigation hierarchy.",
+                    null
             )
             return
         }

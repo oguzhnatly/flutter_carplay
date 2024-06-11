@@ -16,7 +16,7 @@ import com.oguzhnatly.flutter_carplay.UIImage
  * @param obj A map containing information about the list item.
  */
 class FCPListItem
-    (obj: Map<String, Any>, val onInvalidated: () -> Unit = {}) {
+    (obj: Map<String, Any>) {
 
     /// The underlying CPListItem instance.
     private lateinit var _super: CPListItem
@@ -89,18 +89,14 @@ class FCPListItem
     /** Returns the underlying CPListItem instance configured with the specified properties. */
     val getTemplate: CPListItem
         get() {
-            val builder = Row.Builder()
-                .setOnClickListener(
-                    ParkedOnlyOnClickListener.create {
-                        if (isOnPressListenerActive) {
-                            FCPStreamHandlerPlugin.sendEvent(
-                                FCPChannelTypes.onFCPListItemSelected.name,
-                                mapOf("elementId" to elementId)
-                            )
-                        }
-                    })
-                .setTitle(text)
-                .setEnabled(isEnabled)
+            val builder = Row.Builder().setOnClickListener(ParkedOnlyOnClickListener.create {
+                    if (isOnPressListenerActive) {
+                        FCPStreamHandlerPlugin.sendEvent(
+                            FCPChannelTypes.onFCPListItemSelected.name,
+                            mapOf("elementId" to elementId)
+                        )
+                    }
+                }).setTitle(text).setEnabled(isEnabled)
 
 
 //        listItem.setFCPObject(self)
@@ -176,9 +172,6 @@ class FCPListItem
 //        playbackProgress?.let { this.playbackProgress = it }
 //        playingIndicatorLocation?.let { setPlayingIndicatorLocation(fromString: it) }
 //        accessoryType?.let { setAccessoryType(fromString: it) }
-
-
-        onInvalidated()
     }
 
 

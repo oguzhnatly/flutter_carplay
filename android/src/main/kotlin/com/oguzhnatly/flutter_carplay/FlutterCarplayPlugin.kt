@@ -48,7 +48,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
         // The Template history for CarPlay.
         var fcpTemplateHistory: List<Screen> = emptyList()
             private set
-            get() = AndroidAutoService.session.screenManager.screenStack.toList()
+            get() = AndroidAutoService.session?.screenManager?.screenStack?.toList() ?: emptyList()
     }
 
     /// The stream handler for CarPlay communication.
@@ -103,7 +103,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             FCPChannelTypes.forceUpdateRootTemplate.name -> {
-                AndroidAutoService.session.forceUpdateRootTemplate(result)
+                AndroidAutoService.session?.forceUpdateRootTemplate(result)
             }
 
             FCPChannelTypes.popTemplate.name -> {
@@ -115,7 +115,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
                 }
 
                 List(count) {
-                    AndroidAutoService.session.pop()
+                    AndroidAutoService.session?.pop()
                 }
 
                 result.success(true)
@@ -123,7 +123,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
 
             FCPChannelTypes.closePresent.name -> {
                 fcpPresentTemplate = null
-                AndroidAutoService.session.closePresent(result)
+                AndroidAutoService.session?.closePresent(result)
             }
 
             FCPChannelTypes.pushTemplate.name -> {
@@ -137,7 +137,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
 
             FCPChannelTypes.popToRootTemplate.name -> {
                 fcpPresentTemplate = null
-                AndroidAutoService.session.popToRootTemplate(result)
+                AndroidAutoService.session?.popToRootTemplate(result)
             }
 
             FCPChannelTypes.updateListTemplate.name -> {
@@ -283,7 +283,7 @@ private fun FlutterCarplayPlugin.Companion.setRootTemplate(
     // If an FCPRootTemplate is successfully extracted, set it as the root template
     FlutterCarplayPlugin.rootTemplate = cpRootTemplate
     fcpRootTemplate = rootTemplate
-    AndroidAutoService.session.forceUpdateRootTemplate()
+    AndroidAutoService.session?.forceUpdateRootTemplate()
 
     onCarplayConnectionChange(
         status = FlutterCarplayTemplateManager.fcpConnectionStatus.name
@@ -341,7 +341,7 @@ private fun FlutterCarplayPlugin.Companion.pushTemplate(
     }
 
     // Push the template onto the navigation stack
-    AndroidAutoService.session.push(pushTemplate, result)
+    AndroidAutoService.session?.push(pushTemplate, result)
 }
 
 /**
@@ -388,7 +388,7 @@ private fun FlutterCarplayPlugin.Companion.updateListTemplate(
             isLoading = isLoading,
             emptyViewTitleVariants = emptyViewTitleVariants,
             emptyViewSubtitleVariants = emptyViewSubtitleVariants,
-            sections = sections.map { FCPListSection(it) {} },
+            sections = sections.map { FCPListSection(it) },
 //        leadingNavigationBarButtons = leadingNavigationBarButtons,
 //        trailingNavigationBarButtons = trailingNavigationBarButtons
         )

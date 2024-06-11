@@ -1,3 +1,5 @@
+@file:Suppress("EnumEntryName")
+
 /** Enum defining different types of CarPlay channel events. */
 enum class FCPChannelTypes {
     /// Event triggered when the CarPlay connection state changes.
