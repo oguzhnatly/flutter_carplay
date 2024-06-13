@@ -2,6 +2,7 @@ package com.oguzhnatly.flutter_carplay
 
 import FCPChannelTypes
 import FCPListTemplateTypes
+import com.oguzhnatly.flutter_carplay.models.grid.FCPGridTemplate
 import com.oguzhnatly.flutter_carplay.models.list.FCPListItem
 import com.oguzhnatly.flutter_carplay.models.list.FCPListSection
 import com.oguzhnatly.flutter_carplay.models.list.FCPListTemplate
@@ -185,7 +186,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
  * @return An instance of FCPRootTemplate if successful, otherwise null.
  */
 private fun FlutterCarplayPlugin.Companion.createRootTemplate(
-    args: Map<String, Any>, runtimeType: String
+    args: Map<String, Any>, runtimeType: String,
 ): FCPRootTemplate? {
     // Ensure that the rootTemplateArgs key exists in the args map
     val rootTemplateArgs = args["rootTemplate"] as? Map<String, Any> ?: return null
@@ -193,7 +194,7 @@ private fun FlutterCarplayPlugin.Companion.createRootTemplate(
     // Create an FCPRootTemplate based on the provided runtime type
     return when (runtimeType) {
 //        FCPTabBarTemplate::class.java.simpleName -> FCPTabBarTemplate(rootTemplateArgs)
-//        FCPGridTemplate::class.java.simpleName -> FCPGridTemplate(rootTemplateArgs)
+        FCPGridTemplate::class.java.simpleName -> FCPGridTemplate(rootTemplateArgs)
 //        FCPInformationTemplate::class.java.simpleName -> FCPInformationTemplate(rootTemplateArgs)
 //        FCPPointOfInterestTemplate::class.java.simpleName -> FCPPointOfInterestTemplate(rootTemplateArgs)
 //        FCPMapTemplate::class.java.simpleName -> {
@@ -223,7 +224,7 @@ private fun FlutterCarplayPlugin.Companion.createRootTemplate(
  * @param result A FlutterResult callback to communicate the success or failure of the operation.
  */
 private fun FlutterCarplayPlugin.Companion.setRootTemplate(
-    fcpRootTemplate: FCPRootTemplate, result: Result
+    fcpRootTemplate: FCPRootTemplate, result: Result,
 ) {
     val cpRootTemplate: CPTemplate
 
@@ -235,24 +236,24 @@ private fun FlutterCarplayPlugin.Companion.setRootTemplate(
 //                result.success(false)
 //                return
 //            }
-//            cpRootTemplate = get
+//            cpRootTemplate = fcpRootTemplate.getTemplate()
 //        }
 //
-//        is FCPGridTemplate -> {
-//            cpRootTemplate = get
-//        }
+        is FCPGridTemplate -> {
+            cpRootTemplate = fcpRootTemplate.getTemplate()
+        }
 //
 //        is FCPInformationTemplate -> {
-//            cpRootTemplate = get
+//            cpRootTemplate = fcpRootTemplate.getTemplate()
 //        }
 //
 //        is FCPPointOfInterestTemplate -> {
-//            cpRootTemplate = get
+//            cpRootTemplate = fcpRootTemplate.getTemplate()
 //        }
 //
 //        is FCPMapTemplate -> {
 //            // For FCPMapTemplate, set the rootViewController and update the CarPlay window's rootViewController
-//            cpRootTemplate = get
+//            cpRootTemplate = fcpRootTemplate.getTemplate()
 //
 //            rootViewController = viewController
 //
@@ -293,7 +294,7 @@ private fun FlutterCarplayPlugin.Companion.setRootTemplate(
  * @param result The FlutterResult to return the completion status of the operation.
  */
 private fun FlutterCarplayPlugin.Companion.pushTemplate(
-    args: Map<String, Any>, result: Result
+    args: Map<String, Any>, result: Result,
 ) {
     // Extract necessary information from the provided arguments
 
@@ -307,20 +308,24 @@ private fun FlutterCarplayPlugin.Companion.pushTemplate(
 
     // Create the appropriate FCPTemplate based on the runtime type
     val pushTemplate = when (runtimeType) {
-//        FCPTabBarTemplate::class.java.name ->
-//             FCPGridTemplate(obj = templateArgs)
+//        FCPTabBarTemplate::class.java.simpleName ->
+//             FCPTabBarTemplate(obj = templateArgs)
 //
-//        FCPGridTemplate::class.java.name ->
+        FCPGridTemplate::class.java.simpleName ->
+            FCPGridTemplate(obj = templateArgs)
+//
+//        FCPInformationTemplate::class.java.simpleName ->
+//             FCPInformationTemplate(obj = templateArgs)
+//
+//        FCPPointOfInterestTemplate::class.java.simpleName ->
 //             FCPPointOfInterestTemplate(obj = templateArgs)
 //
-//        FCPInformationTemplate::class.java.name ->
+//        FCPMapTemplate::class.java.simpleName ->
 //             FCPMapTemplate(obj = templateArgs)
 //
-//        FCPPointOfInterestTemplate::class.java.name ->
-//             FCPSearchTemplate(obj = templateArgs)
-//
-//        FCPMapTemplate::class.java.name ->
-//             FCPInformationTemplate(obj = templateArgs)
+//        FCPSearchTemplate::class.java.simpleName -> FCPSearchTemplate(
+//            obj = templateArgs
+//        )
 
         FCPListTemplate::class.java.simpleName -> FCPListTemplate(
             obj = templateArgs,
@@ -359,7 +364,7 @@ fun FlutterCarplayPlugin.Companion.onCarplayConnectionChange(status: String) {
 private fun FlutterCarplayPlugin.Companion.updateListTemplate(
     elementId: String,
     sections: List<Map<String, Any>>,
-    args: Map<String, Any>
+    args: Map<String, Any>,
 ) {
     // Find the list template based on the provided element ID
     findListTemplate(elementId) { listTemplate ->
@@ -398,7 +403,7 @@ private fun FlutterCarplayPlugin.Companion.updateListTemplate(
  */
 private fun FlutterCarplayPlugin.Companion.updateListItem(
     elementId: String,
-    args: Map<String, Any>
+    args: Map<String, Any>,
 ) {
     // Find the list item based on the provided element ID
     findListItem(elementId) { item ->
@@ -429,7 +434,7 @@ private fun FlutterCarplayPlugin.Companion.updateListItem(
  */
 private fun FlutterCarplayPlugin.Companion.findListTemplate(
     elementId: String,
-    actionWhenFound: (listTemplate: FCPListTemplate) -> Unit
+    actionWhenFound: (listTemplate: FCPListTemplate) -> Unit,
 ) {
     // Get the array of FCPListTemplate instances.
     val templates = getFCPListTemplatesFromHistory()
@@ -452,7 +457,7 @@ private fun FlutterCarplayPlugin.Companion.findListTemplate(
  */
 private fun FlutterCarplayPlugin.Companion.findListItem(
     elementId: String,
-    actionWhenFound: (item: FCPListItem) -> Unit
+    actionWhenFound: (item: FCPListItem) -> Unit,
 ) {
     // Get the array of FCPListTemplate instances.
     val templates = getFCPListTemplatesFromHistory()
