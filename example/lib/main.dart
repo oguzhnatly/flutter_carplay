@@ -179,10 +179,11 @@ class _MyAppState extends State<MyApp> {
             ),
             CPListItem(
               text: 'Item 2',
+              accessoryType: CPListItemAccessoryTypes.disclosureIndicator,
               onPressed: (onCompleted, item) {
                 log('Item 2 clicked');
-                item.update(text: 'ABC', detailText: 'New ABC');
-                // rootTemplate.update(sections: section1Items);
+                // item.update(text: 'ABC', detailText: 'New ABC');
+                rootTemplate.update(sections: section1Items);
                 onCompleted();
               },
             ),
@@ -213,6 +214,20 @@ class _MyAppState extends State<MyApp> {
       ],
       systemIcon: 'systemIcon',
       title: 'List Template',
+      leadingNavigationBarButtons: [
+        CPBarButton(
+          image: 'Back 1',
+          onPressed: () {
+            print('back 1 button call back received');
+          },
+        ),
+        CPBarButton(
+          image: 'Back 2',
+          onPressed: () {
+            print('back 2 button call back received');
+          },
+        ),
+      ],
       backButton: CPBarButton(
         title: 'Back',
         onPressed: () {

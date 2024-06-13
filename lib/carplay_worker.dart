@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'constants/private_constants.dart';
 import 'controllers/carplay_controller.dart';
@@ -497,7 +498,14 @@ class FlutterCarplay {
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
   /// - count represents how many times this function will occur.
-  static Future<bool> pop({bool animated = true, int count = 1}) async {
+  /// - ignoreOnAndroid will ignore the function if the platform is Android.
+  static Future<bool> pop({
+    int count = 1,
+    bool animated = true,
+    bool ignoreOnAndroid = false,
+  }) async {
+    if (ignoreOnAndroid && Platform.isAndroid) return false;
+    
     final isSuccess = await _carPlayController.reactToNativeModule(
       FCPChannelTypes.popTemplate,
       <String, dynamic>{

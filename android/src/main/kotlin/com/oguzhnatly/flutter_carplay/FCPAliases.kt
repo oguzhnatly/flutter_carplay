@@ -7,11 +7,13 @@ import androidx.car.app.model.Row
 import androidx.car.app.model.SectionedItemList
 import androidx.car.app.model.Template
 
-typealias CPListItem = Row
-typealias UIImage = CarIcon
-typealias CGFloat = Double
 typealias Bool = Boolean
+typealias CGFloat = Double
+typealias UIImage = CarIcon
+typealias CPTemplate = Template
+typealias CPListItem = Row
 typealias CPListTemplate = ListTemplate
 typealias CPListSection = SectionedItemList
 typealias CPBarButton = Action
-typealias CPTemplate = Template
+typealias CPMapButton = Action
+typealias CPTextButton = Action

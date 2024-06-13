@@ -2,6 +2,8 @@ package com.oguzhnatly.flutter_carplay.models.list
 
 import CPListItemAccessoryType
 import FCPChannelTypes
+import androidx.car.app.model.Action
+import androidx.car.app.model.CarIcon
 import androidx.car.app.model.ParkedOnlyOnClickListener
 import androidx.car.app.model.Row
 import com.oguzhnatly.flutter_carplay.Bool
@@ -62,7 +64,9 @@ class FCPListItem
     init {
         val elementIdValue = obj["_elementId"] as? String
         val textValue = obj["text"] as? String
-        assert(elementIdValue != null && textValue != null) { "Missing required keys in dictionary for FCPListItem initialization." }
+        assert(elementIdValue != null && textValue != null) {
+            "Missing required keys in dictionary for FCPListItem initialization."
+        }
         elementId = elementIdValue!!
         text = textValue!!
         detailText = obj["detailText"] as? String
@@ -82,49 +86,50 @@ class FCPListItem
 //        )
 //
 //        setPlayingIndicatorLocation(obj["playingIndicatorLocation"] as? String)
-//        setAccessoryType(obj["accessoryType"] as? String)
+        setAccessoryType(obj["accessoryType"] as? String)
     }
 
 
     /** Returns the underlying CPListItem instance configured with the specified properties. */
-    val getTemplate: CPListItem
-        get() {
-            val builder = Row.Builder().setOnClickListener(ParkedOnlyOnClickListener.create {
-                if (isOnPressListenerActive) {
-                    FCPStreamHandlerPlugin.sendEvent(
-                        FCPChannelTypes.onFCPListItemSelected.name,
-                        mapOf("elementId" to elementId)
-                    )
-                }
-            }).setTitle(text).setEnabled(isEnabled)
+    fun getTemplate(): CPListItem {
 
+        val onClick = {
+            if (isOnPressListenerActive) {
+                FCPStreamHandlerPlugin.sendEvent(
+                    FCPChannelTypes.onFCPListItemSelected.name, mapOf("elementId" to elementId)
+                )
+            }
+        }
 
-//        listItem.setFCPObject(self)
-//        listItem.handler = { [weak self] _, complete in
-//            guard let self = self else { return }
-//            if self.isOnPressListenerActive == true {
-//                DispatchQueue.main.async {
-//                    self.completeHandler = complete
-//                    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onFCPListItemSelected,
-//                    data: ["elementId": self.elementId])
-//                }
-//            } else {
-//                complete()
-//            }
-//        }
-            detailText?.let { builder.addText(it) }
-            image?.let { builder.setImage(it) }
+        val builder = Row.Builder().setOnClickListener(ParkedOnlyOnClickListener.create(onClick))
+            .setTitle(text).setEnabled(isEnabled)
 
-//            accessoryImage?.let { builder.setAccessoryImage(it) }
+        detailText?.let { builder.addText(it) }
+        image?.let { builder.setImage(it) }
+        accessoryImage?.let {
+            builder.addAction(
+                Action.Builder().setIcon(CarIcon.BACK).setOnClickListener(onClick).build()
+            )
+        }
+
+        when (accessoryType) {
+            CPListItemAccessoryType.disclosureIndicator -> {
+                builder.addAction(
+                    Action.Builder().setIcon(CarIcon.BACK).setOnClickListener(onClick).build()
+                )
+            }
+
+            CPListItemAccessoryType.none, CPListItemAccessoryType.cloud -> {}
+            else -> {}
+        }
+        
 //            playbackProgress?.let { builder.playbackProgress = it }
 //            isPlaying?.let { builder.isPlaying = it }
 //            playingIndicatorLocation?.let { builder.playingIndicatorLocation = it }
-//            accessoryType?.let { builder.accessoryType = it }
 
-            _super = builder.build()
-
-            return _super
-        }
+        _super = builder.build()
+        return _super
+    }
 
 
     /** Stops the onPressed event handler for the list item. */
@@ -159,37 +164,37 @@ class FCPListItem
         isPlaying: Bool?,
         playingIndicatorLocation: String?,
         accessoryType: String?,
-        isEnabled: Bool?
+        isEnabled: Bool?,
     ) {
 
         text?.let { this.text = it }
         detailText?.let { this.detailText = it }
         isEnabled?.let { this.isEnabled = it }
+        accessoryType?.let { setAccessoryType(it) }
+//        image?.let { this.image = UIImage.dynamicImage(lightImage= it, darkImage= darkImage) }
+//        accessoryImage?.let { this.accessoryImage = UIImage.dynamicImage(lightImage= it, darkImage= accessoryDarkImage) }
 
 //        isPlaying?.let { this.isPlaying = it }
-//        image?.let { this.image = UIImage.dynamicImage(lightImage: it, darkImage: darkImage) }
-//        accessoryImage?.let { this.accessoryImage = UIImage.dynamicImage(lightImage: it, darkImage: accessoryDarkImage) }
 //        playbackProgress?.let { this.playbackProgress = it }
 //        playingIndicatorLocation?.let { setPlayingIndicatorLocation(fromString: it) }
-//        accessoryType?.let { setAccessoryType(fromString: it) }
     }
 
 
-//    private fun setPlayingIndicatorLocation(fromString: String?) {
+    //    private fun setPlayingIndicatorLocation(fromString: String?) {
 //        if fromString == "leading" {
 //            playingIndicatorLocation = CPListItemPlayingIndicatorLocation.leading
 //        } else if fromString == "trailing" {
 //            playingIndicatorLocation = CPListItemPlayingIndicatorLocation.trailing
 //        }
 //    }
-//
-//    private fun setAccessoryType(fromString: String?) {
-//        if fromString == "cloud" {
-//            accessoryType = CPListItemAccessoryType.cloud
-//        } else if fromString == "disclosureIndicator" {
-//            accessoryType = CPListItemAccessoryType.disclosureIndicator
-//        } else {
-//            accessoryType = CPListItemAccessoryType.none
-//        }
-//    }
+
+    /** Sets the accessory type of the CPListItem based on the provided string value. */
+    private fun setAccessoryType(fromString: String?) {
+        accessoryType = when (fromString) {
+            "none" -> CPListItemAccessoryType.none
+            "cloud" -> CPListItemAccessoryType.cloud
+            "disclosureIndicator" -> CPListItemAccessoryType.disclosureIndicator
+            else -> CPListItemAccessoryType.none
+        }
+    }
 }

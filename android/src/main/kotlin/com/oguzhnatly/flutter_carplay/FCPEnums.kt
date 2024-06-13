@@ -198,6 +198,15 @@ enum class CPListItemAccessoryType {
     disclosureIndicator,
 }
 
+/** Enum defining different styles of bar buttons in CarPlay. */
+enum class CPBarButtonStyle {
+    /// The default style for a bar button.
+    none,
+
+    /// The style for a bar button that has rounded corners.
+    rounded,
+}
+
 /** Enum defining different types of CarPlay connection states. */
 enum class FCPConnectionTypes {
     /// Represents a connected state to CarPlay.
@@ -218,6 +227,7 @@ enum class FCPAlertActionTypes {
     /// Represents a default type of alert action.
     ALERT,
 }
+
 
 /** Enum defining different types of list template in CarPlay. */
 enum class FCPListTemplateTypes {

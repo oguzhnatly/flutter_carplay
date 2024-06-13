@@ -29,7 +29,9 @@ class FCPListSection
 
     init {
         val elementIdValue = obj["_elementId"] as? String?
-        assert(elementIdValue != null) { "Missing required keys in dictionary for FCPListSection initialization." }
+        assert(elementIdValue != null) {
+            "Missing required keys in dictionary for FCPListSection initialization."
+        }
         elementId = elementIdValue!!
         header = obj["header"] as? String ?: ""
         objcItems = (obj["items"] as? List<Map<String, Any>> ?: emptyList<FCPListItem>()).map {
@@ -37,19 +39,18 @@ class FCPListSection
         }
         val builder = ItemList.Builder()
         objcItems.forEach {
-            builder.addItem(it.getTemplate)
+            builder.addItem(it.getTemplate())
         }
         items = builder.build()
     }
 
 
     /** Returns the underlying CPListSection instance configured with the specified properties. */
-    val getTemplate: SectionedItemList
-        get() {
-            val listSection = SectionedItemList.create(items, header)
-            _super = listSection
-            return listSection
-        }
+    fun getTemplate(): SectionedItemList {
+        val listSection = SectionedItemList.create(items, header)
+        _super = listSection
+        return listSection
+    }
 
 
     /**

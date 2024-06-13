@@ -1,6 +1,7 @@
 package com.oguzhnatly.flutter_carplay.models.list
 
 import FCPListTemplateTypes
+import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.ListTemplate
 import com.oguzhnatly.flutter_carplay.Bool
 import com.oguzhnatly.flutter_carplay.CPBarButton
@@ -19,7 +20,7 @@ class FCPListTemplate(
     obj: Map<String, Any>,
 
     /// The template type of the list template.
-    private var templateType: FCPListTemplateTypes
+    private var templateType: FCPListTemplateTypes,
 ) : FCPRootTemplate() {
 
     /// The underlying CPListTemplate instance.
@@ -77,53 +78,42 @@ class FCPListTemplate(
             (obj["sections"] as? List<Map<String, Any>> ?: emptyList<FCPListSection>()).map {
                 FCPListSection(it as Map<String, Any>)
             }
-        sections = objcSections.map { it.getTemplate }
-        //        if let backButtonData = obj ["backButton"] as? [ String : Any] {
-        //            objcBackButton = FCPBarButton(obj: backButtonData)
-        //            backButton = objcBackButton?.get
-        //        }
-        //        leadingNavigationBarButtons = (obj["leadingNavigationBarButtons"] as?
-        // List<Map<String, Any>>
-        //            ?: emptyList<FCPBarButton>()).map {
-        //            FCPBarButton(it as Map<String, Any>)
-        //        }
-        //        trailingNavigationBarButtons =
-        //            (obj["trailingNavigationBarButtons"] as? List<Map<String, Any>>
-        //                ?: emptyList<FCPBarButton>()).map {
-        //                FCPBarButton(it as Map<String, Any>)
-        //            }
+        sections = objcSections.map { it.getTemplate() }
+        (obj["backButton"] as? Map<String, Any>)?.let {
+            objcBackButton =
+                FCPBarButton(it).apply { isBackButton = true }
+//            backButton = objcBackButton?.getTemplate()
+        }
+        leadingNavigationBarButtons =
+            (obj["leadingNavigationBarButtons"] as? List<Map<String, Any>>)?.map {
+                FCPBarButton(it)
+            } ?: emptyList()
+        trailingNavigationBarButtons =
+            (obj["trailingNavigationBarButtons"] as? List<Map<String, Any>>)?.map {
+                FCPBarButton(it)
+            } ?: emptyList()
     }
 
-    /// Returns the underlying CPListTemplate instance configured with the specified properties.
+    /** Returns the underlying CPListTemplate instance configured with the specified properties. */
     override fun getTemplate(): CPListTemplate {
         // Implementation details for returning CPListTemplate instance
-        val listTemplate = ListTemplate.Builder().setTitle(title ?: "").setLoading(isLoading)
+        val listTemplate = ListTemplate.Builder().setLoading(isLoading)
+
         sections.forEach { listTemplate.addSectionedList(it) }
-        //        listTemplate.setFCPObject(self)
-        //        listTemplate.emptyViewTitleVariants = emptyViewTitleVariants
-        //        listTemplate.emptyViewSubtitleVariants = emptyViewSubtitleVariants
-        //        listTemplate.showsTabBadge = showsTabBadge
 
-        //        if let icon = systemIcon {
-        //            listTemplate.tabImage = UIImage(systemName: icon)
-        //        }
+        title?.let { listTemplate.setTitle(it) }
+        backButton?.let { listTemplate.setHeaderAction(it) }
 
-        //        if (templateType == FCPListTemplateTypes.DEFAULT) {
-        //            listTemplate.backButton = backButton
-        //        }
-
-        //        var lBButtons: MutableList<CPBarButton> = mutableListOf()
-        //        for (button in leadingNavigationBarButtons) {
-        //            lBButtons.add(button.getTemplate)
-        //        }
-        //
-        //        var tBButtons: MutableList<CPBarButton> = mutableListOf()
-        //        for (button in trailingNavigationBarButtons) {
-        //            tBButtons.add(button.getTemplate)
-        //        }
-        //        listTemplate.leadingNavigationBarButtons = lBButtons
-        //        listTemplate.trailingNavigationBarButtons = tBButtons
-
+        if (leadingNavigationBarButtons.isNotEmpty() || trailingNavigationBarButtons.isNotEmpty()) {
+            val actionStrip = ActionStrip.Builder()
+            for (button in leadingNavigationBarButtons) {
+                actionStrip.addAction(button.getTemplate())
+            }
+            for (button in trailingNavigationBarButtons) {
+                actionStrip.addAction(button.getTemplate())
+            }
+            listTemplate.setActionStrip(actionStrip.build())
+        }
         _super = listTemplate.build()
         return _super
     }
@@ -153,7 +143,7 @@ class FCPListTemplate(
         emptyViewSubtitleVariants: List<String>? = null,
         sections: List<FCPListSection>? = null,
         leadingNavigationBarButtons: List<FCPBarButton>? = null,
-        trailingNavigationBarButtons: List<FCPBarButton>? = null
+        trailingNavigationBarButtons: List<FCPBarButton>? = null,
     ) {
         isLoading?.let { this.isLoading = it }
         emptyViewTitleVariants?.let { this.emptyViewTitleVariants = it }
@@ -162,7 +152,7 @@ class FCPListTemplate(
         trailingNavigationBarButtons?.let { this.trailingNavigationBarButtons = it }
         sections?.let {
             objcSections = it
-            this.sections = objcSections.map { section -> section.getTemplate }
+            this.sections = objcSections.map { section -> section.getTemplate() }
         }
 
         onInvalidate()
