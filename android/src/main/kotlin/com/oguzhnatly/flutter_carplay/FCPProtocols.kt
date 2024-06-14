@@ -7,8 +7,13 @@ abstract class FCPTemplate {
     /// The unique identifier for the template.
     lateinit var elementId: String
 
+    /// The unique identifier for the template's back button.
+    var backButtonElementId : String? = null
+
+    /// Update the template on UI.
     var onInvalidate: (() -> Unit) = {}
 
+    /// Returns the underlying CPTemplate instance configured with the specified properties.
     abstract fun getTemplate(): CPTemplate
 }
 

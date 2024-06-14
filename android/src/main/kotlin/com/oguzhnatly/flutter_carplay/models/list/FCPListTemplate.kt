@@ -1,6 +1,7 @@
 package com.oguzhnatly.flutter_carplay.models.list
 
 import FCPListTemplateTypes
+import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.ListTemplate
 import com.oguzhnatly.flutter_carplay.Bool
@@ -80,9 +81,9 @@ class FCPListTemplate(
             }
         sections = objcSections.map { it.getTemplate() }
         (obj["backButton"] as? Map<String, Any>)?.let {
-            objcBackButton =
-                FCPBarButton(it).apply { isBackButton = true }
-//            backButton = objcBackButton?.getTemplate()
+            objcBackButton = FCPBarButton(it)
+            backButtonElementId = objcBackButton?.elementId
+            backButton = Action.Builder(Action.BACK).setEnabled(false).build()
         }
         leadingNavigationBarButtons =
             (obj["leadingNavigationBarButtons"] as? List<Map<String, Any>>)?.map {

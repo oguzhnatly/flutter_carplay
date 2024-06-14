@@ -34,9 +34,6 @@ class FCPBarButton(obj: Map<String, Any>) {
     /// The enabled state of the bar button.
     private var isEnabled: Bool
 
-    /// Whether the bar button is a back button.
-    var isBackButton: Bool = false
-
     init {
         val elementIdValue = obj["_elementId"] as? String
         assert(elementIdValue != null) { "Missing required keys in dictionary for FCPBarButton initialization." }
@@ -62,7 +59,6 @@ class FCPBarButton(obj: Map<String, Any>) {
                 )
             }
         when {
-            isBackButton -> action.setIcon(CarIcon.BACK)
             title != null -> action.setTitle(title!!)
             image != null -> action.setIcon(image!!)
             else -> {}
