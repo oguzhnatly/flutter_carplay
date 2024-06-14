@@ -1,188 +1,188 @@
 @file:Suppress("EnumEntryName")
 
-/** Enum defining different types of CarPlay channel events. */
+/** Enum defining different types of Android Auto channel events. */
 enum class FCPChannelTypes {
-    /// Event triggered when the CarPlay connection state changes.
+    /// Event triggered when the Android Auto connection state changes.
     onCarplayConnectionChange,
 
-    /// Event for setting the root template in CarPlay.
+    /// Event for setting the root template in Android Auto.
     setRootTemplate,
 
-    /// Event to force an update to the root template in CarPlay.
+    /// Event to force an update to the root template in Android Auto.
     forceUpdateRootTemplate,
 
-    /// Event to update a specific list item in CarPlay.
+    /// Event to update a specific list item in Android Auto.
     updateListItem,
 
-    /// Event to update the content of a list template in CarPlay.
+    /// Event to update the content of a list template in Android Auto.
     updateListTemplate,
 
-    /// Event to update the content of a map template in CarPlay.
+    /// Event to update the content of a map template in Android Auto.
     updateMapTemplate,
 
-    /// Event to update the content of an information template in CarPlay.
+    /// Event to update the content of an information template in Android Auto.
     updateInformationTemplate,
 
-    /// Event triggered when the search text is updated in CarPlay.
+    /// Event triggered when the search text is updated in Android Auto.
     onSearchTextUpdated,
 
-    /// Event triggered when the search text update is complete in CarPlay.
+    /// Event triggered when the search text update is complete in Android Auto.
     onSearchTextUpdatedComplete,
 
-    /// Event triggered when a search result is selected in CarPlay.
+    /// Event triggered when a search result is selected in Android Auto.
     onSearchResultSelected,
 
-    /// Event triggered when the search is cancelled in CarPlay.
+    /// Event triggered when the search is cancelled in Android Auto.
     onSearchCancelled,
 
-    /// Event triggered when the information template is popped in CarPlay.
+    /// Event triggered when the information template is popped in Android Auto.
     onInformationTemplatePopped,
 
-    /// Event triggered when a list item is selected in CarPlay.
+    /// Event triggered when a list item is selected in Android Auto.
     onFCPListItemSelected,
 
-    /// Event triggered when a list item selection is complete in CarPlay.
+    /// Event triggered when a list item selection is complete in Android Auto.
     onFCPListItemSelectedComplete,
 
-    /// Event triggered when an alert action is pressed in CarPlay.
+    /// Event triggered when an alert action is pressed in Android Auto.
     onFCPAlertActionPressed,
 
-    /// Event for setting an alert template in CarPlay.
+    /// Event for setting an alert template in Android Auto.
     setAlert,
 
-    /// Event triggered when the presentation state changes in CarPlay.
+    /// Event triggered when the presentation state changes in Android Auto.
     onPresentStateChanged,
 
-    /// Event for popping a template in CarPlay.
+    /// Event for popping a template in Android Auto.
     popTemplate,
 
-    /// Event for pushing a template in CarPlay.
+    /// Event for pushing a template in Android Auto.
     pushTemplate,
 
-    /// Event for closing the current presentation in CarPlay.
+    /// Event for closing the current presentation in Android Auto.
     closePresent,
 
-    /// Event triggered when a grid button is pressed in CarPlay.
+    /// Event triggered when a grid button is pressed in Android Auto.
     onGridButtonPressed,
 
-    /// Event for setting an action sheet template in CarPlay.
+    /// Event for setting an action sheet template in Android Auto.
     setActionSheet,
 
-    /// Event triggered when a bar button is pressed in CarPlay.
+    /// Event triggered when a bar button is pressed in Android Auto.
     onBarButtonPressed,
 
-    /// Event triggered when a map button is pressed in CarPlay.
+    /// Event triggered when a map button is pressed in Android Auto.
     onMapButtonPressed,
 
-    /// Event triggered when a dashboard button is pressed in CarPlay.
+    /// Event triggered when a dashboard button is pressed in Android Auto.
     onDashboardButtonPressed,
 
-    /// Event triggered when a text button is pressed in CarPlay.
+    /// Event triggered when a text button is pressed in Android Auto.
     onTextButtonPressed,
 
-    /// Event for popping to the root template in CarPlay.
+    /// Event for popping to the root template in Android Auto.
     popToRootTemplate,
 
-    /// Event for setting a voice control template in CarPlay.
+    /// Event for setting a voice control template in Android Auto.
     setVoiceControl,
 
-    /// Event for activating a specific voice control state in CarPlay.
+    /// Event for activating a specific voice control state in Android Auto.
     activateVoiceControlState,
 
-    /// Event for starting the voice control in CarPlay.
+    /// Event for starting the voice control in Android Auto.
     startVoiceControl,
 
-    /// Event for stopping the voice control in CarPlay.
+    /// Event for stopping the voice control in Android Auto.
     stopVoiceControl,
 
-    /// Event for getting the active voice control state identifier in CarPlay.
+    /// Event for getting the active voice control state identifier in Android Auto.
     getActiveVoiceControlStateIdentifier,
 
-    /// Event triggered when the voice control transcript changes in CarPlay.
+    /// Event triggered when the voice control transcript changes in Android Auto.
     onVoiceControlTranscriptChanged,
 
-    // Event triggered when the voice control template is popped in CarPlay.
+    // Event triggered when the voice control template is popped in Android Auto.
     onVoiceControlTemplatePopped,
 
-    /// Event for speaking text in CarPlay.
+    /// Event for speaking text in Android Auto.
     speak,
 
-    /// Event triggered when speech is completed in CarPlay.
+    /// Event triggered when speech is completed in Android Auto.
     onSpeechCompleted,
 
-    /// Event for playing audio in CarPlay.
+    /// Event for playing audio in Android Auto.
     playAudio,
 
-    /// Event for getting CarPlay configuration information.
+    /// Event for getting Android Auto configuration information.
     getConfig,
 
-    /// Event for showing a banner in CarPlay.
+    /// Event for showing a banner in Android Auto.
     showBanner,
 
-    /// Event for hiding a banner in CarPlay.
+    /// Event for hiding a banner in Android Auto.
     hideBanner,
 
-    /// Event for showing a toast in CarPlay.
+    /// Event for showing a toast in Android Auto.
     showToast,
 
-    /// Event for showing an overlay in CarPlay.
+    /// Event for showing an overlay in Android Auto.
     showOverlay,
 
-    /// Event for hiding an overlay in CarPlay.
+    /// Event for hiding an overlay in Android Auto.
     hideOverlay,
 
-    /// Event for showing a trip preview in CarPlay.
+    /// Event for showing a trip preview in Android Auto.
     showTripPreviews,
 
-    /// Event for hiding a trip preview in CarPlay.
+    /// Event for hiding a trip preview in Android Auto.
     hideTripPreviews,
 
-    /// Event for showing the panning interface in CarPlay.
+    /// Event for showing the panning interface in Android Auto.
     showPanningInterface,
 
-    /// Event for dismissing the panning interface in CarPlay.
+    /// Event for dismissing the panning interface in Android Auto.
     dismissPanningInterface,
 
-    /// Event for starting a navigation in CarPlay.
+    /// Event for starting a navigation in Android Auto.
     startNavigation,
 
-    /// Event for stopping a navigation in CarPlay.
+    /// Event for stopping a navigation in Android Auto.
     stopNavigation,
 
-    /// Event for updating the map coordinates in CarPlay.
+    /// Event for updating the map coordinates in Android Auto.
     updateMapCoordinates,
 
-    /// Event for requesting a maneuver action text in CarPlay.
+    /// Event for requesting a maneuver action text in Android Auto.
     onManeuverActionTextRequested,
 
-    /// Event triggered when the maneuver action text request is complete in CarPlay.
+    /// Event triggered when the maneuver action text request is complete in Android Auto.
     onManeuverActionTextRequestComplete,
 
-    /// Event for toggling offline mode in CarPlay.
+    /// Event for toggling offline mode in Android Auto.
     toggleOfflineMode,
 
-    /// Event for toggling a voice instruction in CarPlay.
+    /// Event for toggling a voice instruction in Android Auto.
     toggleVoiceInstructions,
 
-    /// Event for toggling satellite view in CarPlay.
+    /// Event for toggling satellite view in Android Auto.
     toggleSatelliteView,
 
-    /// Event for recentering the map view in CarPlay.
+    /// Event for recentering the map view in Android Auto.
     recenterMapView,
 
-    /// Event for starting the navigation from CarPlay.
+    /// Event for starting the navigation from Android Auto.
     onNavigationStartedFromCarplay,
 
-    /// Event for failed the navigation from CarPlay.
+    /// Event for failed the navigation from Android Auto.
     onNavigationFailedFromCarplay,
 
-    /// Event for completed navigation from CarPlay.
+    /// Event for completed navigation from Android Auto.
     onNavigationCompletedFromCarplay,
 
-    /// Event for zooming in the map view in CarPlay.
+    /// Event for zooming in the map view in Android Auto.
     zoomInMapView,
 
-    /// Event for zooming out the map view in CarPlay.
+    /// Event for zooming out the map view in Android Auto.
     zoomOutMapView,
 }
 
@@ -198,7 +198,7 @@ enum class CPListItemAccessoryType {
     disclosureIndicator,
 }
 
-/** Enum defining different styles of bar buttons in CarPlay. */
+/** Enum defining different styles of bar buttons in Android Auto. */
 enum class CPBarButtonStyle {
     /// The default style for a bar button.
     none,
@@ -207,19 +207,31 @@ enum class CPBarButtonStyle {
     rounded,
 }
 
-/** Enum defining different types of CarPlay connection states. */
+/** Enum defining different styles of alert actions in Android Auto. */
+enum class CPAlertActionStyle {
+    /// The default style for an alert action.
+    normal,
+
+    /// The style for an alert action that cancels an alert.
+    cancel,
+
+    /// The style for an alert action that indicates a destructive action.
+    destructive,
+}
+
+/** Enum defining different types of Android Auto connection states. */
 enum class FCPConnectionTypes {
-    /// Represents a connected state to CarPlay.
+    /// Represents a connected state to Android Auto.
     CONNECTED,
 
-    /// Represents a background state in CarPlay.
+    /// Represents a background state in Android Auto.
     BACKGROUND,
 
-    /// Represents a disconnected state from CarPlay.
+    /// Represents a disconnected state from Android Auto.
     DISCONNECTED,
 }
 
-/** Enum defining different types of alert actions in CarPlay. */
+/** Enum defining different types of alert actions in Android Auto. */
 enum class FCPAlertActionTypes {
     /// Represents an action sheet type of alert action.
     ACTION_SHEET,
@@ -229,23 +241,23 @@ enum class FCPAlertActionTypes {
 }
 
 
-/** Enum defining different types of list template in CarPlay. */
+/** Enum defining different types of list template in Android Auto. */
 enum class FCPListTemplateTypes {
-    /// Represents a part of a grid template in CarPlay.
+    /// Represents a part of a grid template in Android Auto.
     PART_OF_GRID_TEMPLATE,
 
-    /// Represents a default type of list template in CarPlay.
+    /// Represents a default type of list template in Android Auto.
     DEFAULT,
 }
 
-/** Enum defining different types of map marker in CarPlay. */
+/** Enum defining different types of map marker in Android Auto. */
 enum class MapMarkerType {
-    /// Represents either the current location or the home station location marker in CarPlay.
+    /// Represents either the current location or the home station location marker in Android Auto.
     INITIAL,
 
-    /// Represents an incident address marker in CarPlay.
+    /// Represents an incident address marker in Android Auto.
     INCIDENT_ADDRESS,
 
-    /// Represents a destination address marker in CarPlay.
+    /// Represents a destination address marker in Android Auto.
     DESTINATION_ADDRESS,
 }

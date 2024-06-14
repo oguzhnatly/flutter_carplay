@@ -2,6 +2,7 @@ package com.oguzhnatly.flutter_carplay
 
 import FCPChannelTypes
 import FCPListTemplateTypes
+import com.oguzhnatly.flutter_carplay.models.action_sheet.FCPActionSheetTemplate
 import com.oguzhnatly.flutter_carplay.models.grid.FCPGridTemplate
 import com.oguzhnatly.flutter_carplay.models.list.FCPListItem
 import com.oguzhnatly.flutter_carplay.models.list.FCPListSection
@@ -163,6 +164,32 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             FCPChannelTypes.onFCPListItemSelectedComplete.name -> {}
+
+            FCPChannelTypes.setActionSheet.name -> {
+                val args = call.arguments as? Map<String, Any>
+                val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
+                if (args == null || rootTemplateArgs == null) {
+                    result.success(false)
+                    return
+                }
+
+                val showActionSheet = {
+                    val actionSheetTemplate = FCPActionSheetTemplate(rootTemplateArgs)
+                    fcpPresentTemplate = actionSheetTemplate
+                    AndroidAutoService.session?.presentTemplate(
+                        template = actionSheetTemplate,
+                        result = result
+                    )
+                }
+
+                if (fcpPresentTemplate != null) {
+                    fcpPresentTemplate = null
+                    AndroidAutoService.session?.closePresent(result)
+                    showActionSheet()
+                } else {
+                    showActionSheet()
+                }
+            }
 
             else -> result.notImplemented()
         }
