@@ -1,13 +1,13 @@
 package com.oguzhnatly.flutter_carplay.models.button
 
-import CPBarButtonStyle
-import FCPChannelTypes
 import androidx.car.app.model.Action
-import androidx.car.app.model.CarIcon
 import com.oguzhnatly.flutter_carplay.Bool
 import com.oguzhnatly.flutter_carplay.CPBarButton
+import com.oguzhnatly.flutter_carplay.CPBarButtonStyle
+import com.oguzhnatly.flutter_carplay.FCPChannelTypes
 import com.oguzhnatly.flutter_carplay.FCPStreamHandlerPlugin
 import com.oguzhnatly.flutter_carplay.UIImage
+import com.oguzhnatly.flutter_carplay.UIImageObject
 
 /**
  * A wrapper class for CPBarButton with additional functionality.
@@ -41,7 +41,7 @@ class FCPBarButton(obj: Map<String, Any>) {
         title = obj["title"] as? String
 
         (obj["image"] as? String)?.let {
-            image = CarIcon.BACK
+            image = UIImageObject.fromFlutterAsset(it)
         }
         isEnabled = obj["isEnabled"] as? Bool ?: true
         style =

@@ -1,12 +1,11 @@
 package com.oguzhnatly.flutter_carplay.models.alert
 
-import CPAlertActionStyle
-import android.graphics.Color
 import androidx.car.app.model.Action
 import androidx.car.app.model.CarColor
-import androidx.car.app.model.CarIcon
 import androidx.car.app.model.ParkedOnlyOnClickListener
 import com.oguzhnatly.flutter_carplay.CPAlertAction
+import com.oguzhnatly.flutter_carplay.CPAlertActionStyle
+import com.oguzhnatly.flutter_carplay.FCPChannelTypes
 import com.oguzhnatly.flutter_carplay.FCPStreamHandlerPlugin
 
 /**
@@ -33,7 +32,6 @@ class FCPAlertAction(obj: Map<String, Any>) {
     init {
         val elementIdValue = obj["_elementId"] as? String
         val titleValue = obj["title"] as? String
-
         assert(elementIdValue != null || titleValue != null) {
             "Missing required keys: _elementId, title"
         }

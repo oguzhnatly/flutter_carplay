@@ -1,7 +1,5 @@
 package com.oguzhnatly.flutter_carplay
 
-import FCPChannelTypes
-import FCPListTemplateTypes
 import com.oguzhnatly.flutter_carplay.models.action_sheet.FCPActionSheetTemplate
 import com.oguzhnatly.flutter_carplay.models.grid.FCPGridTemplate
 import com.oguzhnatly.flutter_carplay.models.list.FCPListItem
@@ -33,8 +31,8 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
         /// The root template to be displayed on CarPlay.
         var fcpRootTemplate: FCPRootTemplate? = null
 
-//        /// The root view controller for CarPlay.
-//        var rootViewController: UIViewController? = null
+        //        /// The root view controller for CarPlay.
+        //        var rootViewController: UIViewController? = null
 
         /// The root template for CarPlay.
         var rootTemplate: CPTemplate? = null
@@ -45,15 +43,18 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
         // The Template history for CarPlay.
         var fcpTemplateHistory: List<FCPTemplate> = emptyList()
             private set
-            get() = (AndroidAutoService.session?.screenManager?.screenStack?.toList() as? List<FCPScreen>)?.map { it.fcpTemplate }
-                ?: emptyList()
+            get() =
+                (AndroidAutoService.session?.screenManager?.screenStack?.toList() as?
+                        List<FCPScreen>)
+                    ?.map { it.fcpTemplate }
+                    ?: emptyList()
+
+        /// The Flutter plugin registrar.
+        var flutterPluginBinding: FlutterPlugin.FlutterPluginBinding? = null
     }
 
     /// The stream handler for CarPlay communication.
     private var streamHandler: FCPStreamHandlerPlugin? = null
-
-    /// The Flutter plugin registrar.
-    private var flutterPluginBinding: FlutterPlugin.FlutterPluginBinding? = null
 
     /**
      * Attaches the plugin to the Flutter engine.
@@ -64,7 +65,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
         Logger.log("onAttachedToEngine")
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, makeFCPChannelId(""))
         channel.setMethodCallHandler(this)
-        this.flutterPluginBinding = flutterPluginBinding
+        FlutterCarplayPlugin.flutterPluginBinding = flutterPluginBinding
         streamHandler = FCPStreamHandlerPlugin(flutterPluginBinding)
     }
 
@@ -112,9 +113,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
                     return
                 }
 
-                List(count) {
-                    AndroidAutoService.session?.pop()
-                }
+                List(count) { AndroidAutoService.session?.pop() }
 
                 result.success(true)
             }
@@ -164,7 +163,6 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             FCPChannelTypes.onFCPListItemSelectedComplete.name -> {}
-
             FCPChannelTypes.setActionSheet.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
@@ -213,30 +211,29 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
  * @return An instance of FCPRootTemplate if successful, otherwise null.
  */
 private fun FlutterCarplayPlugin.Companion.createRootTemplate(
-    args: Map<String, Any>, runtimeType: String,
+    args: Map<String, Any>,
+    runtimeType: String,
 ): FCPRootTemplate? {
     // Ensure that the rootTemplateArgs key exists in the args map
     val rootTemplateArgs = args["rootTemplate"] as? Map<String, Any> ?: return null
 
     // Create an FCPRootTemplate based on the provided runtime type
     return when (runtimeType) {
-//        FCPTabBarTemplate::class.java.simpleName -> FCPTabBarTemplate(rootTemplateArgs)
+        //        FCPTabBarTemplate::class.java.simpleName -> FCPTabBarTemplate(rootTemplateArgs)
         FCPGridTemplate::class.java.simpleName -> FCPGridTemplate(rootTemplateArgs)
-//        FCPInformationTemplate::class.java.simpleName -> FCPInformationTemplate(rootTemplateArgs)
-//        FCPPointOfInterestTemplate::class.java.simpleName -> FCPPointOfInterestTemplate(rootTemplateArgs)
-//        FCPMapTemplate::class.java.simpleName -> {
-//            val mapTemplate = FCPMapTemplate(rootTemplateArgs)
-//            mapTemplate
-//        }
-//
+        //        FCPInformationTemplate::class.java.simpleName ->
+        // FCPInformationTemplate(rootTemplateArgs)
+        //        FCPPointOfInterestTemplate::class.java.simpleName ->
+        // FCPPointOfInterestTemplate(rootTemplateArgs)
+        //        FCPMapTemplate::class.java.simpleName -> {
+        //            val mapTemplate = FCPMapTemplate(rootTemplateArgs)
+        //            mapTemplate
+        //        }
+        //
         FCPListTemplate::class.java.simpleName -> {
             val templateType = FCPListTemplateTypes.DEFAULT
 
-            FCPListTemplate(
-                obj = rootTemplateArgs,
-                templateType = templateType
-            )
-
+            FCPListTemplate(obj = rootTemplateArgs, templateType = templateType)
         }
 
         else -> null
@@ -251,47 +248,51 @@ private fun FlutterCarplayPlugin.Companion.createRootTemplate(
  * @param result A FlutterResult callback to communicate the success or failure of the operation.
  */
 private fun FlutterCarplayPlugin.Companion.setRootTemplate(
-    fcpRootTemplate: FCPRootTemplate, result: Result,
+    fcpRootTemplate: FCPRootTemplate,
+    result: Result,
 ) {
     val cpRootTemplate: CPTemplate
 
     // Check the type of the root template and extract the corresponding FCPRootTemplate
     when (fcpRootTemplate) {
-//        is FCPTabBarTemplate -> {
-//            // Ensure that the number of templates in the tab bar template is within the CarPlay limit
-//            if (rootTemplate.getTemplates().count > 5) {
-//                result.success(false)
-//                return
-//            }
-//            cpRootTemplate = fcpRootTemplate.getTemplate()
-//        }
-//
+        //        is FCPTabBarTemplate -> {
+        //            // Ensure that the number of templates in the tab bar template is within the
+        // CarPlay limit
+        //            if (rootTemplate.getTemplates().count > 5) {
+        //                result.success(false)
+        //                return
+        //            }
+        //            cpRootTemplate = fcpRootTemplate.getTemplate()
+        //        }
+        //
         is FCPGridTemplate -> {
             cpRootTemplate = fcpRootTemplate.getTemplate()
         }
-//
-//        is FCPInformationTemplate -> {
-//            cpRootTemplate = fcpRootTemplate.getTemplate()
-//        }
-//
-//        is FCPPointOfInterestTemplate -> {
-//            cpRootTemplate = fcpRootTemplate.getTemplate()
-//        }
-//
-//        is FCPMapTemplate -> {
-//            // For FCPMapTemplate, set the rootViewController and update the CarPlay window's rootViewController
-//            cpRootTemplate = fcpRootTemplate.getTemplate()
-//
-//            rootViewController = viewController
-//
-//            if (FlutterCarplayTemplateManager.shared.isDashboardSceneActive) {
-//                FlutterCarplayTemplateManager.shared.dashboardWindow?.rootViewController =
-//                    viewController
-//            } else {
-//                FlutterCarplayTemplateManager.shared.carWindow?.rootViewController = viewController
-//            }
-//        }
-//
+        //
+        //        is FCPInformationTemplate -> {
+        //            cpRootTemplate = fcpRootTemplate.getTemplate()
+        //        }
+        //
+        //        is FCPPointOfInterestTemplate -> {
+        //            cpRootTemplate = fcpRootTemplate.getTemplate()
+        //        }
+        //
+        //        is FCPMapTemplate -> {
+        //            // For FCPMapTemplate, set the rootViewController and update the CarPlay
+        // window's rootViewController
+        //            cpRootTemplate = fcpRootTemplate.getTemplate()
+        //
+        //            rootViewController = viewController
+        //
+        //            if (FlutterCarplayTemplateManager.shared.isDashboardSceneActive) {
+        //                FlutterCarplayTemplateManager.shared.dashboardWindow?.rootViewController =
+        //                    viewController
+        //            } else {
+        //                FlutterCarplayTemplateManager.shared.carWindow?.rootViewController =
+        // viewController
+        //            }
+        //        }
+        //
         is FCPListTemplate -> {
             cpRootTemplate = fcpRootTemplate.getTemplate()
         }
@@ -308,9 +309,7 @@ private fun FlutterCarplayPlugin.Companion.setRootTemplate(
     this.fcpRootTemplate = fcpRootTemplate
     AndroidAutoService.session?.forceUpdateRootTemplate()
 
-    onCarplayConnectionChange(
-        status = FlutterCarplayTemplateManager.fcpConnectionStatus.name
-    )
+    onCarplayConnectionChange(status = FlutterCarplayTemplateManager.fcpConnectionStatus.name)
     result.success(true)
 }
 
@@ -321,7 +320,8 @@ private fun FlutterCarplayPlugin.Companion.setRootTemplate(
  * @param result The FlutterResult to return the completion status of the operation.
  */
 private fun FlutterCarplayPlugin.Companion.pushTemplate(
-    args: Map<String, Any>, result: Result,
+    args: Map<String, Any>,
+    result: Result,
 ) {
     // Extract necessary information from the provided arguments
 
@@ -332,35 +332,35 @@ private fun FlutterCarplayPlugin.Companion.pushTemplate(
         return
     }
 
-
     // Create the appropriate FCPTemplate based on the runtime type
-    val pushTemplate = when (runtimeType) {
-//        FCPTabBarTemplate::class.java.simpleName ->
-//             FCPTabBarTemplate(obj = templateArgs)
-//
-        FCPGridTemplate::class.java.simpleName ->
-            FCPGridTemplate(obj = templateArgs)
-//
-//        FCPInformationTemplate::class.java.simpleName ->
-//             FCPInformationTemplate(obj = templateArgs)
-//
-//        FCPPointOfInterestTemplate::class.java.simpleName ->
-//             FCPPointOfInterestTemplate(obj = templateArgs)
-//
-//        FCPMapTemplate::class.java.simpleName ->
-//             FCPMapTemplate(obj = templateArgs)
-//
-//        FCPSearchTemplate::class.java.simpleName -> FCPSearchTemplate(
-//            obj = templateArgs
-//        )
+    val pushTemplate =
+        when (runtimeType) {
+            //        FCPTabBarTemplate::class.java.simpleName ->
+            //             FCPTabBarTemplate(obj = templateArgs)
+            //
+            FCPGridTemplate::class.java.simpleName -> FCPGridTemplate(obj = templateArgs)
+            //
+            //        FCPInformationTemplate::class.java.simpleName ->
+            //             FCPInformationTemplate(obj = templateArgs)
+            //
+            //        FCPPointOfInterestTemplate::class.java.simpleName ->
+            //             FCPPointOfInterestTemplate(obj = templateArgs)
+            //
+            //        FCPMapTemplate::class.java.simpleName ->
+            //             FCPMapTemplate(obj = templateArgs)
+            //
+            //        FCPSearchTemplate::class.java.simpleName -> FCPSearchTemplate(
+            //            obj = templateArgs
+            //        )
 
-        FCPListTemplate::class.java.simpleName -> FCPListTemplate(
-            obj = templateArgs,
-            templateType = FCPListTemplateTypes.DEFAULT
-        )
+            FCPListTemplate::class.java.simpleName ->
+                FCPListTemplate(
+                    obj = templateArgs,
+                    templateType = FCPListTemplateTypes.DEFAULT
+                )
 
-        else -> null
-    }
+            else -> null
+        }
     if (pushTemplate == null) {
         result.success(false)
         return
@@ -377,7 +377,8 @@ private fun FlutterCarplayPlugin.Companion.pushTemplate(
  */
 fun FlutterCarplayPlugin.Companion.onCarplayConnectionChange(status: String) {
     FCPStreamHandlerPlugin.sendEvent(
-        FCPChannelTypes.onCarplayConnectionChange.name, mapOf("status" to status)
+        FCPChannelTypes.onCarplayConnectionChange.name,
+        mapOf("status" to status)
     )
 }
 
@@ -402,12 +403,14 @@ private fun FlutterCarplayPlugin.Companion.updateListTemplate(
         val emptyViewSubtitleVariants = args["emptyViewSubtitleVariants"] as? List<String>
 
         // Map dictionary representations to FCPBarButton instances for navigation bar buttons
-//        val leadingNavigationBarButtons = (args["leadingNavigationBarButtons"] as? List<Map<String,Any>>)?.map {
-//            FCPBarButton(it as Map<String, Any>)
-//        }
-//        val trailingNavigationBarButtons = (args["trailingNavigationBarButtons"] as? List<Map<String,Any>>)?.map {
-//            FCPBarButton(it as Map<String, Any>)
-//        }
+        //        val leadingNavigationBarButtons = (args["leadingNavigationBarButtons"] as?
+        // List<Map<String,Any>>)?.map {
+        //            FCPBarButton(it as Map<String, Any>)
+        //        }
+        //        val trailingNavigationBarButtons = (args["trailingNavigationBarButtons"] as?
+        // List<Map<String,Any>>)?.map {
+        //            FCPBarButton(it as Map<String, Any>)
+        //        }
 
         // Update the list template with the extracted data
         listTemplate.update(
@@ -415,12 +418,11 @@ private fun FlutterCarplayPlugin.Companion.updateListTemplate(
             emptyViewTitleVariants = emptyViewTitleVariants,
             emptyViewSubtitleVariants = emptyViewSubtitleVariants,
             sections = sections.map { FCPListSection(it) },
-//        leadingNavigationBarButtons = leadingNavigationBarButtons,
-//        trailingNavigationBarButtons = trailingNavigationBarButtons
+            //        leadingNavigationBarButtons = leadingNavigationBarButtons,
+            //        trailingNavigationBarButtons = trailingNavigationBarButtons
         )
     }
 }
-
 
 /**
  * Updates a CarPlay list item identified by its element ID with new data.
@@ -450,7 +452,6 @@ private fun FlutterCarplayPlugin.Companion.updateListItem(
             accessoryDarkImage = args["accessoryDarkImage"] as? String
         )
     }
-
 }
 
 /**
@@ -489,7 +490,8 @@ private fun FlutterCarplayPlugin.Companion.findListItem(
     // Get the array of FCPListTemplate instances.
     val templates = getFCPListTemplatesFromHistory()
 
-    // Iterate through the templates, sections, and items to find the one with the matching element ID.
+    // Iterate through the templates, sections, and items to find the one with the matching element
+    // ID.
     for (template in templates) {
         for (section in template.getSections()) {
             for (item in section.getItems()) {
@@ -517,9 +519,9 @@ private fun FlutterCarplayPlugin.Companion.getFCPListTemplatesFromHistory(): Lis
         if (template is FCPListTemplate) {
             templates.add(template)
         }
-//        else if (template is CPTabBarTemplate) {
-//            templates.addAll(template.getTemplates())
-//        }
+        //        else if (template is CPTabBarTemplate) {
+        //            templates.addAll(template.getTemplates())
+        //        }
     }
 
     return templates

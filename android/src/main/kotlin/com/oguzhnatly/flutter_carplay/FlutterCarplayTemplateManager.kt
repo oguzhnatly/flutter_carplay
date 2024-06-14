@@ -1,6 +1,5 @@
 package com.oguzhnatly.flutter_carplay
 
-import FCPConnectionTypes
 import androidx.car.app.CarContext
 
 /** FlutterCarPlayTemplateManager handles CarPlay scene and the Dashboard scene. */

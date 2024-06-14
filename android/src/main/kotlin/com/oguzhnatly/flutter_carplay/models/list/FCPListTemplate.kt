@@ -1,6 +1,5 @@
 package com.oguzhnatly.flutter_carplay.models.list
 
-import FCPListTemplateTypes
 import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.ListTemplate
@@ -8,6 +7,7 @@ import com.oguzhnatly.flutter_carplay.Bool
 import com.oguzhnatly.flutter_carplay.CPBarButton
 import com.oguzhnatly.flutter_carplay.CPListSection
 import com.oguzhnatly.flutter_carplay.CPListTemplate
+import com.oguzhnatly.flutter_carplay.FCPListTemplateTypes
 import com.oguzhnatly.flutter_carplay.FCPRootTemplate
 import com.oguzhnatly.flutter_carplay.models.button.FCPBarButton
 
@@ -88,11 +88,13 @@ class FCPListTemplate(
         leadingNavigationBarButtons =
             (obj["leadingNavigationBarButtons"] as? List<Map<String, Any>>)?.map {
                 FCPBarButton(it)
-            } ?: emptyList()
+            }
+                ?: emptyList()
         trailingNavigationBarButtons =
             (obj["trailingNavigationBarButtons"] as? List<Map<String, Any>>)?.map {
                 FCPBarButton(it)
-            } ?: emptyList()
+            }
+                ?: emptyList()
     }
 
     /** Returns the underlying CPListTemplate instance configured with the specified properties. */

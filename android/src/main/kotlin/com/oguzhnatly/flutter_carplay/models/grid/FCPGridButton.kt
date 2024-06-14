@@ -1,10 +1,11 @@
 package com.oguzhnatly.flutter_carplay.models.grid
 
-import FCPChannelTypes
-import androidx.car.app.model.CarIcon
 import androidx.car.app.model.GridItem
 import com.oguzhnatly.flutter_carplay.CPGridButton
+import com.oguzhnatly.flutter_carplay.FCPChannelTypes
 import com.oguzhnatly.flutter_carplay.FCPStreamHandlerPlugin
+import com.oguzhnatly.flutter_carplay.UIImage
+import com.oguzhnatly.flutter_carplay.UIImageObject
 
 /**
  * A wrapper class for CPGridButton with additional functionality.
@@ -24,7 +25,7 @@ class FCPGridButton(obj: Map<String, Any>) {
     private var titleVariants: List<String>
 
     /// The image associated with the grid button.
-//        private var image: UIImage
+    private var image: UIImage
 
     init {
         val elementIdValue = obj["_elementId"] as? String
@@ -35,13 +36,13 @@ class FCPGridButton(obj: Map<String, Any>) {
         }
         elementId = elementIdValue!!
         titleVariants = titleVariantsValue!!
-//            image = UIImage.dynamicImage(lightImage = imageValue) ?? UIImage()
+        image = UIImageObject.fromFlutterAsset(imageValue!!)
     }
 
     /** Returns the underlying CPGridButton instance configured with the specified properties. */
     fun getTemplate(): CPGridButton {
         val gridButton =
-            GridItem.Builder().setImage(CarIcon.BACK)
+            GridItem.Builder().setImage(image)
                 .setOnClickListener {
                     // Dispatch an event when the grid button is pressed.
                     FCPStreamHandlerPlugin.sendEvent(

@@ -1,5 +1,7 @@
 @file:Suppress("EnumEntryName")
 
+package com.oguzhnatly.flutter_carplay
+
 /** Enum defining different types of Android Auto channel events. */
 enum class FCPChannelTypes {
     /// Event triggered when the Android Auto connection state changes.

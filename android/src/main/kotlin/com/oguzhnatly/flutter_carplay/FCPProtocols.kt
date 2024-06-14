@@ -8,7 +8,7 @@ abstract class FCPTemplate {
     lateinit var elementId: String
 
     /// The unique identifier for the template's back button.
-    var backButtonElementId : String? = null
+    var backButtonElementId: String? = null
 
     /// Update the template on UI.
     var onInvalidate: (() -> Unit) = {}

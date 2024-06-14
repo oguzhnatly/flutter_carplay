@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'constants/private_constants.dart';
 import 'controllers/carplay_controller.dart';

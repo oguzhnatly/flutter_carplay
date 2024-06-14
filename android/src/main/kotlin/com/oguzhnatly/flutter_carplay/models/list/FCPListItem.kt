@@ -1,7 +1,5 @@
 package com.oguzhnatly.flutter_carplay.models.list
 
-import CPListItemAccessoryType
-import FCPChannelTypes
 import androidx.car.app.model.Action
 import androidx.car.app.model.CarIcon
 import androidx.car.app.model.ParkedOnlyOnClickListener
@@ -9,8 +7,11 @@ import androidx.car.app.model.Row
 import com.oguzhnatly.flutter_carplay.Bool
 import com.oguzhnatly.flutter_carplay.CGFloat
 import com.oguzhnatly.flutter_carplay.CPListItem
+import com.oguzhnatly.flutter_carplay.CPListItemAccessoryType
+import com.oguzhnatly.flutter_carplay.FCPChannelTypes
 import com.oguzhnatly.flutter_carplay.FCPStreamHandlerPlugin
 import com.oguzhnatly.flutter_carplay.UIImage
+import com.oguzhnatly.flutter_carplay.UIImageObject
 
 /**
  * A wrapper class for CPListItem with additional functionality.
@@ -74,7 +75,9 @@ class FCPListItem
         playbackProgress = obj["playbackProgress"] as? CGFloat
         isPlaying = obj["isPlaying"] as? Bool ?: false
         isEnabled = obj["isEnabled"] as? Bool ?: true
-
+        image = (obj["image"] as? String)?.let { UIImageObject.fromFlutterAsset(it) }
+        accessoryImage =
+            (obj["accessoryImage"] as? String)?.let { UIImageObject.fromFlutterAsset(it) }
 //        image = UIImage.dynamicImage(
 //            lightImage: obj["image"] as? String,
 //            darkImage: obj["darkImage"] as? String
@@ -108,7 +111,7 @@ class FCPListItem
         image?.let { builder.setImage(it) }
         accessoryImage?.let {
             builder.addAction(
-                Action.Builder().setIcon(CarIcon.BACK).setOnClickListener(onClick).build()
+                Action.Builder().setIcon(it).setOnClickListener(onClick).build()
             )
         }
 
@@ -122,7 +125,7 @@ class FCPListItem
             CPListItemAccessoryType.none, CPListItemAccessoryType.cloud -> {}
             else -> {}
         }
-        
+
 //            playbackProgress?.let { builder.playbackProgress = it }
 //            isPlaying?.let { builder.isPlaying = it }
 //            playingIndicatorLocation?.let { builder.playingIndicatorLocation = it }
@@ -166,11 +169,12 @@ class FCPListItem
         accessoryType: String?,
         isEnabled: Bool?,
     ) {
-
         text?.let { this.text = it }
         detailText?.let { this.detailText = it }
         isEnabled?.let { this.isEnabled = it }
         accessoryType?.let { setAccessoryType(it) }
+        image?.let { this.image = UIImageObject.fromFlutterAsset(it) }
+        accessoryImage?.let { this.accessoryImage = UIImageObject.fromFlutterAsset(it) }
 //        image?.let { this.image = UIImage.dynamicImage(lightImage= it, darkImage= darkImage) }
 //        accessoryImage?.let { this.accessoryImage = UIImage.dynamicImage(lightImage= it, darkImage= accessoryDarkImage) }
 

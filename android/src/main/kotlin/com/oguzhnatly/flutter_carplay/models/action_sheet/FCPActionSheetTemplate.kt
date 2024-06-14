@@ -1,9 +1,10 @@
 package com.oguzhnatly.flutter_carplay.models.action_sheet
 
-import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.LongMessageTemplate
 import com.oguzhnatly.flutter_carplay.CPActionSheetTemplate
+import com.oguzhnatly.flutter_carplay.CPAlertAction
+import com.oguzhnatly.flutter_carplay.CPAlertActionStyle
 import com.oguzhnatly.flutter_carplay.FCPPresentTemplate
 import com.oguzhnatly.flutter_carplay.models.alert.FCPAlertAction
 
@@ -24,21 +25,17 @@ class FCPActionSheetTemplate(obj: Map<String, Any>) : FCPPresentTemplate() {
     private var message: String?
 
     /// An array of CPAlertAction instances associated with the action sheet template.
-    private var actions: List<Action>
+    private var actions: List<CPAlertAction>
 
     /// An array of FCPAlertAction instances associated with the action sheet template.
     private var objcActions: List<FCPAlertAction>
 
     init {
         val elementIdValue = obj["_elementId"] as? String
-        assert(elementIdValue != null) {
-            "Missing required key: _elementId"
-        }
+        assert(elementIdValue != null) { "Missing required key: _elementId" }
         elementId = elementIdValue!!
-
         title = obj["title"] as? String
         message = obj["message"] as? String
-
         objcActions = (obj["actions"] as? List<Map<String, Any>>)?.map {
             FCPAlertAction(it)
         } ?: emptyList()
