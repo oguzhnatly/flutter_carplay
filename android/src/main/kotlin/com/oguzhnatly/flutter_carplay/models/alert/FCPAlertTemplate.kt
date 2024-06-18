@@ -6,7 +6,6 @@ import com.oguzhnatly.flutter_carplay.CPAlertAction
 import com.oguzhnatly.flutter_carplay.CPAlertActionStyle
 import com.oguzhnatly.flutter_carplay.CPAlertTemplate
 import com.oguzhnatly.flutter_carplay.FCPPresentTemplate
-import com.oguzhnatly.flutter_carplay.models.alert.FCPAlertAction
 
 /**
  * A wrapper class for CPActionSheetTemplate with additional functionality.
@@ -40,13 +39,8 @@ class FCPAlertTemplate(obj: Map<String, Any>) : FCPPresentTemplate() {
 
     /** Returns the underlying CPActionSheetTemplate instance configured with the specified properties. */
     override fun getTemplate(): CPAlertTemplate {
-        val stringBuilder = StringBuilder()
-        titleVariants?.forEach {
-            stringBuilder.append(it)
-            stringBuilder.append("\n")
-        }
         val alertTemplate =
-            MessageTemplate.Builder(stringBuilder.toString())
+            MessageTemplate.Builder(titleVariants?.first() ?: "").setTitle(" ")
         objcActions.forEach {
             when (it.style) {
                 CPAlertActionStyle.destructive, CPAlertActionStyle.cancel -> {

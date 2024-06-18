@@ -164,6 +164,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             FCPChannelTypes.onFCPListItemSelectedComplete.name -> {}
+
             FCPChannelTypes.setAlert.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
@@ -175,12 +176,12 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
                 val showAlertTemplate = {
                     val alertTemplate = FCPAlertTemplate(rootTemplateArgs)
                     fcpPresentTemplate = alertTemplate
-                    AndroidAutoService.session?.presentTemplate(
-                        template = alertTemplate,result=result
+                    AndroidAutoService.session?.presentTemplate(template = alertTemplate)
+                    FCPStreamHandlerPlugin.sendEvent(
+                        type = FCPChannelTypes.onPresentStateChanged.name,
+                        data = mapOf("completed" to true)
                     )
-                    /*FCPStreamHandlerPlugin.sendEvent(type = FCPChannelTypes.onPresentStateChanged.name,
-                        data = mapOf("completed" to true))*/
-                    //result.success(true)
+                    result.success(true)
                 }
 
                 if (fcpPresentTemplate != null) {
@@ -191,6 +192,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
                     showAlertTemplate()
                 }
             }
+
             FCPChannelTypes.setActionSheet.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
