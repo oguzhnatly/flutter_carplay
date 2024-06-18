@@ -8,22 +8,22 @@ import com.oguzhnatly.flutter_carplay.CPAlertTemplate
 import com.oguzhnatly.flutter_carplay.FCPPresentTemplate
 
 /**
- * A wrapper class for CPActionSheetTemplate with additional functionality.
+ * A wrapper class for CPAlertTemplate with additional functionality.
  *
- * @param obj A map containing information about the action sheet template.
+ * @param obj A map containing information about the alert template.
  */
 class FCPAlertTemplate(obj: Map<String, Any>) : FCPPresentTemplate() {
 
     /// The underlying CPActionSheetTemplate instance.
     private lateinit var _super: CPAlertTemplate
 
-    /// The title of the action sheet template (optional).
+    /// The title of the alert template (optional).
     private var titleVariants: List<String>?
 
-    /// An array of CPAlertAction instances associated with the action sheet template.
+    /// An array of CPAlertAction instances associated with the alert template.
     private var actions: List<CPAlertAction>
 
-    /// An array of FCPAlertAction instances associated with the action sheet template.
+    /// An array of FCPAlertAction instances associated with the alert template.
     private var objcActions: List<FCPAlertAction>
 
     init {
@@ -37,7 +37,7 @@ class FCPAlertTemplate(obj: Map<String, Any>) : FCPPresentTemplate() {
         actions = objcActions.map { it.getTemplate() }
     }
 
-    /** Returns the underlying CPActionSheetTemplate instance configured with the specified properties. */
+    /** Returns the underlying CPAlertTemplate instance configured with the specified properties. */
     override fun getTemplate(): CPAlertTemplate {
         val alertTemplate =
             MessageTemplate.Builder(titleVariants?.first() ?: "").setTitle(" ")
