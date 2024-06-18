@@ -14,7 +14,7 @@ class RootTemplate : FCPRootTemplate() {
     }
 
     override fun getTemplate(): CPTemplate {
-        return MessageTemplate.Builder("Loading...").build()
+        return MessageTemplate.Builder("Loading...").setLoading(true).build()
     }
 
 }

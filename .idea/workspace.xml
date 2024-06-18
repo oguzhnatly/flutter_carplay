@@ -4,20 +4,8 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f5fb0b89-71c7-4b2b-a91d-dc73570843de" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/oguzhnatly/flutter_carplay/models/action_sheet/FCPActionSheetTemplate.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/oguzhnatly/flutter_carplay/models/alert/FCPAlertAction.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+    <list default="true" id="f5fb0b89-71c7-4b2b-a91d-dc73570843de" name="Default Changelist" comment="add: added action sheet template support for android auto">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/oguzhnatly/flutter_carplay/FCPAliases.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/oguzhnatly/flutter_carplay/FCPAliases.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/oguzhnatly/flutter_carplay/FlutterCarplayPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/oguzhnatly/flutter_carplay/FlutterCarplayPlugin.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_carplay.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_carplay.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,6 +16,11 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="feat/android-auto-integration" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -52,6 +45,7 @@
     "git-widget-placeholder": "feat/android-auto-integration",
     "io.flutter.reload.alreadyRun": "true",
     "last_opened_file_path": "/home/aubergine/Desktop/flutter_carplay/example",
+    "settings.editor.selected.configurable": "configurable.group.appearance",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
@@ -69,6 +63,23 @@
       <option name="presentableId" value="Default" />
       <updated>1647509393608</updated>
     </task>
+    <task id="LOCAL-00001" summary="add: added action sheet template support for android auto">
+      <option name="closed" value="true" />
+      <created>1718367925682</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1718367925682</updated>
+    </task>
+    <task id="LOCAL-00002" summary="add: added action sheet template support for android auto">
+      <option name="closed" value="true" />
+      <created>1718368308376</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1718368308376</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -93,5 +104,11 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="add: added action sheet template support for android auto" />
+    <option name="LAST_COMMIT_MESSAGE" value="add: added action sheet template support for android auto" />
   </component>
 </project>
