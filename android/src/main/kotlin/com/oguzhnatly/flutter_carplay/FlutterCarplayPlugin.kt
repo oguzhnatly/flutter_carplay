@@ -2,10 +2,13 @@ package com.oguzhnatly.flutter_carplay
 
 import com.oguzhnatly.flutter_carplay.models.action_sheet.FCPActionSheetTemplate
 import com.oguzhnatly.flutter_carplay.models.alert.FCPAlertTemplate
+import com.oguzhnatly.flutter_carplay.models.button.FCPBarButton
 import com.oguzhnatly.flutter_carplay.models.grid.FCPGridTemplate
 import com.oguzhnatly.flutter_carplay.models.list.FCPListItem
 import com.oguzhnatly.flutter_carplay.models.list.FCPListSection
 import com.oguzhnatly.flutter_carplay.models.list.FCPListTemplate
+import com.oguzhnatly.flutter_carplay.models.map.FCPMapButton
+import com.oguzhnatly.flutter_carplay.models.map.FCPMapTemplate
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -44,11 +47,8 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
         // The Template history for CarPlay.
         var fcpTemplateHistory: List<FCPTemplate> = emptyList()
             private set
-            get() =
-                (AndroidAutoService.session?.screenManager?.screenStack?.toList() as?
-                        List<FCPScreen>)
-                    ?.map { it.fcpTemplate }
-                    ?: emptyList()
+            get() = (AndroidAutoService.session?.screenManager?.screenStack?.toList() as? List<FCPScreen>)?.map { it.fcpTemplate }
+                ?: emptyList()
 
         /// The Flutter plugin registrar.
         var flutterPluginBinding: FlutterPlugin.FlutterPluginBinding? = null
@@ -138,6 +138,18 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
                 AndroidAutoService.session?.popToRootTemplate(result)
             }
 
+            FCPChannelTypes.updateMapTemplate.name -> {
+                val args = call.arguments as? Map<String, Any>
+                val elementId = args?.get("_elementId") as? String
+                if (args == null || elementId == null) {
+                    result.success(false)
+                    return
+                }
+
+                updateMapTemplate(elementId = elementId, args = args)
+                result.success(true)
+            }
+
             FCPChannelTypes.updateListTemplate.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val elementId = args?.get("_elementId") as? String
@@ -152,7 +164,6 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             FCPChannelTypes.updateListItem.name -> {
-
                 val args = call.arguments as? Map<String, Any>
                 val elementId = args?.get("_elementId") as? String
                 if (args == null || elementId == null) {
@@ -164,7 +175,6 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             FCPChannelTypes.onFCPListItemSelectedComplete.name -> {}
-
             FCPChannelTypes.setAlert.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
@@ -205,8 +215,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
                     val actionSheetTemplate = FCPActionSheetTemplate(rootTemplateArgs)
                     fcpPresentTemplate = actionSheetTemplate
                     AndroidAutoService.session?.presentTemplate(
-                        template = actionSheetTemplate,
-                        result = result
+                        template = actionSheetTemplate, result = result
                     )
                 }
 
@@ -255,15 +264,9 @@ private fun FlutterCarplayPlugin.Companion.createRootTemplate(
         // FCPInformationTemplate(rootTemplateArgs)
         //        FCPPointOfInterestTemplate::class.java.simpleName ->
         // FCPPointOfInterestTemplate(rootTemplateArgs)
-        //        FCPMapTemplate::class.java.simpleName -> {
-        //            val mapTemplate = FCPMapTemplate(rootTemplateArgs)
-        //            mapTemplate
-        //        }
-        //
+        FCPMapTemplate::class.java.simpleName -> FCPMapTemplate(rootTemplateArgs)
         FCPListTemplate::class.java.simpleName -> {
-            val templateType = FCPListTemplateTypes.DEFAULT
-
-            FCPListTemplate(obj = rootTemplateArgs, templateType = templateType)
+            FCPListTemplate(obj = rootTemplateArgs, templateType = FCPListTemplateTypes.DEFAULT)
         }
 
         else -> null
@@ -307,21 +310,21 @@ private fun FlutterCarplayPlugin.Companion.setRootTemplate(
         //            cpRootTemplate = fcpRootTemplate.getTemplate()
         //        }
         //
-        //        is FCPMapTemplate -> {
-        //            // For FCPMapTemplate, set the rootViewController and update the CarPlay
-        // window's rootViewController
-        //            cpRootTemplate = fcpRootTemplate.getTemplate()
-        //
-        //            rootViewController = viewController
-        //
-        //            if (FlutterCarplayTemplateManager.shared.isDashboardSceneActive) {
-        //                FlutterCarplayTemplateManager.shared.dashboardWindow?.rootViewController =
-        //                    viewController
-        //            } else {
-        //                FlutterCarplayTemplateManager.shared.carWindow?.rootViewController =
-        // viewController
-        //            }
-        //        }
+        is FCPMapTemplate -> {
+            // For FCPMapTemplate, set the rootViewController and update the CarPlay window's
+            // rootViewController
+            cpRootTemplate = fcpRootTemplate.getTemplate()
+
+            //            rootViewController = viewController
+            //
+            //            if (FlutterCarplayTemplateManager.isDashboardSceneActive) {
+            //                FlutterCarplayTemplateManager.dashboardWindow?.rootViewController =
+            //                    viewController
+            //            } else {
+            //                FlutterCarplayTemplateManager.carWindow?.rootViewController =
+            //                    viewController
+            //            }
+        }
         //
         is FCPListTemplate -> {
             cpRootTemplate = fcpRootTemplate.getTemplate()
@@ -363,34 +366,30 @@ private fun FlutterCarplayPlugin.Companion.pushTemplate(
     }
 
     // Create the appropriate FCPTemplate based on the runtime type
-    val pushTemplate =
-        when (runtimeType) {
-            //        FCPTabBarTemplate::class.java.simpleName ->
-            //             FCPTabBarTemplate(obj = templateArgs)
-            //
-            FCPGridTemplate::class.java.simpleName -> FCPGridTemplate(obj = templateArgs)
-            //
-            //        FCPInformationTemplate::class.java.simpleName ->
-            //             FCPInformationTemplate(obj = templateArgs)
-            //
-            //        FCPPointOfInterestTemplate::class.java.simpleName ->
-            //             FCPPointOfInterestTemplate(obj = templateArgs)
-            //
-            //        FCPMapTemplate::class.java.simpleName ->
-            //             FCPMapTemplate(obj = templateArgs)
-            //
-            //        FCPSearchTemplate::class.java.simpleName -> FCPSearchTemplate(
-            //            obj = templateArgs
-            //        )
+    val pushTemplate = when (runtimeType) {
+        //        FCPTabBarTemplate::class.java.simpleName ->
+        //             FCPTabBarTemplate(obj = templateArgs)
+        //
+        FCPGridTemplate::class.java.simpleName -> FCPGridTemplate(obj = templateArgs)
+        //
+        //        FCPInformationTemplate::class.java.simpleName ->
+        //             FCPInformationTemplate(obj = templateArgs)
+        //
+        //        FCPPointOfInterestTemplate::class.java.simpleName ->
+        //             FCPPointOfInterestTemplate(obj = templateArgs)
+        //
+        FCPMapTemplate::class.java.simpleName -> FCPMapTemplate(obj = templateArgs)
+        //
+        //        FCPSearchTemplate::class.java.simpleName -> FCPSearchTemplate(
+        //            obj = templateArgs
+        //        )
 
-            FCPListTemplate::class.java.simpleName ->
-                FCPListTemplate(
-                    obj = templateArgs,
-                    templateType = FCPListTemplateTypes.DEFAULT
-                )
-
-            else -> null
+        FCPListTemplate::class.java.simpleName -> {
+            FCPListTemplate(obj = templateArgs, templateType = FCPListTemplateTypes.DEFAULT)
         }
+
+        else -> null
+    }
     if (pushTemplate == null) {
         result.success(false)
         return
@@ -407,13 +406,56 @@ private fun FlutterCarplayPlugin.Companion.pushTemplate(
  */
 fun FlutterCarplayPlugin.Companion.onCarplayConnectionChange(status: String) {
     FCPStreamHandlerPlugin.sendEvent(
-        FCPChannelTypes.onCarplayConnectionChange.name,
-        mapOf("status" to status)
+        FCPChannelTypes.onCarplayConnectionChange.name, mapOf("status" to status)
     )
 }
 
 /**
- * Updates a Android Auto list template identified by its element ID with new data.
+ * Updates an Android Auto map template identified by its element ID with new data.
+ *
+ * @param elementId The unique identifier of the map template to be updated.
+ * @param args Additional arguments for updating the map template.
+ */
+private fun FlutterCarplayPlugin.Companion.updateMapTemplate(
+    elementId: String,
+    args: Map<String, Any>,
+) {
+    // Find the map template based on the provided element ID
+    findMapTemplate(elementId) { mapTemplate ->
+        // Extract and handle the data for updating the map template
+        val title = args["title"] as? String
+        val hidesButtonsWithNavigationBar = args["hidesButtonsWithNavigationBar"] as? Bool
+        val automaticallyHidesNavigationBar = args["automaticallyHidesNavigationBar"] as? Bool
+        val isPanningInterfaceVisible = args["isPanningInterfaceVisible"] as? Bool
+
+        // Map dictionary representations to FCPMapButton instances for map buttons
+        val mapButtons = (args["mapButtons"] as? List<Map<String, Any>>)?.map { FCPMapButton(it) }
+
+        // Map dictionary representations to FCPBarButton instances for navigation bar buttons
+        val leadingNavigationBarButtons =
+            (args["leadingNavigationBarButtons"] as? List<Map<String, Any>>)?.map {
+                FCPBarButton(it)
+            }
+
+        val trailingNavigationBarButtons =
+            (args["trailingNavigationBarButtons"] as? List<Map<String, Any>>)?.map {
+                FCPBarButton(it)
+            }
+
+        mapTemplate.update(
+            title = title,
+            mapButtons = mapButtons,
+            isPanningInterfaceVisible = isPanningInterfaceVisible,
+            leadingNavigationBarButtons = leadingNavigationBarButtons,
+            trailingNavigationBarButtons = trailingNavigationBarButtons,
+            hidesButtonsWithNavigationBar = hidesButtonsWithNavigationBar,
+            automaticallyHidesNavigationBar = automaticallyHidesNavigationBar,
+        )
+    }
+}
+
+/**
+ * Updates an Android Auto list template identified by its element ID with new data.
  *
  * @param elementId The unique identifier of the list template to be updated.
  * @param sections An array of dictionaries representing the updated sections of the list template.
@@ -433,14 +475,14 @@ private fun FlutterCarplayPlugin.Companion.updateListTemplate(
         val emptyViewSubtitleVariants = args["emptyViewSubtitleVariants"] as? List<String>
 
         // Map dictionary representations to FCPBarButton instances for navigation bar buttons
-        //        val leadingNavigationBarButtons = (args["leadingNavigationBarButtons"] as?
-        // List<Map<String,Any>>)?.map {
-        //            FCPBarButton(it as Map<String, Any>)
-        //        }
-        //        val trailingNavigationBarButtons = (args["trailingNavigationBarButtons"] as?
-        // List<Map<String,Any>>)?.map {
-        //            FCPBarButton(it as Map<String, Any>)
-        //        }
+        val leadingNavigationBarButtons =
+            (args["leadingNavigationBarButtons"] as? List<Map<String, Any>>)?.map {
+                FCPBarButton(it)
+            }
+        val trailingNavigationBarButtons =
+            (args["trailingNavigationBarButtons"] as? List<Map<String, Any>>)?.map {
+                FCPBarButton(it)
+            }
 
         // Update the list template with the extracted data
         listTemplate.update(
@@ -448,14 +490,14 @@ private fun FlutterCarplayPlugin.Companion.updateListTemplate(
             emptyViewTitleVariants = emptyViewTitleVariants,
             emptyViewSubtitleVariants = emptyViewSubtitleVariants,
             sections = sections.map { FCPListSection(it) },
-            //        leadingNavigationBarButtons = leadingNavigationBarButtons,
-            //        trailingNavigationBarButtons = trailingNavigationBarButtons
+            leadingNavigationBarButtons = leadingNavigationBarButtons,
+            trailingNavigationBarButtons = trailingNavigationBarButtons
         )
     }
 }
 
 /**
- * Updates a CarPlay list item identified by its element ID with new data.
+ * Updates an Android Auto list item identified by its element ID with new data.
  *
  * @param elementId The unique identifier of the list item to be updated.
  * @param args Additional arguments for updating the list item.
@@ -485,7 +527,30 @@ private fun FlutterCarplayPlugin.Companion.updateListItem(
 }
 
 /**
- * Finds a CarPlay list template by element ID and performs an action when found.
+ * Finds an Android Auto map template by element ID and performs an action when found.
+ *
+ * @param elementId The element ID of the map template.
+ * @param actionWhenFound The action to perform when the map template is found.
+ */
+private fun FlutterCarplayPlugin.Companion.findMapTemplate(
+    elementId: String,
+    actionWhenFound: (mapTemplate: FCPMapTemplate) -> Unit,
+) {
+    // Get the array of FCPMapTemplate instances.
+    val templates = getFCPMapTemplatesFromHistory()
+
+    // Iterate through the templates to find the one with the matching element ID.
+    for (template in templates) {
+        if (template.elementId == elementId) {
+            // Perform the specified action when the template is found.
+            actionWhenFound(template)
+            break
+        }
+    }
+}
+
+/**
+ * Finds an Android Auto list template by element ID and performs an action when found.
  *
  * @param elementId The element ID of the list template.
  * @param actionWhenFound The action to perform when the list template is found.
@@ -508,7 +573,7 @@ private fun FlutterCarplayPlugin.Companion.findListTemplate(
 }
 
 /**
- * Finds a CarPlay list item by element ID and performs an action when found.
+ * Finds an Android Auto list item by element ID and performs an action when found.
  *
  * @param elementId The element ID of the list item.
  * @param actionWhenFound The action to perform when the list item is found.
@@ -536,7 +601,24 @@ private fun FlutterCarplayPlugin.Companion.findListItem(
 }
 
 /**
- * Finds a CarPlay list templates from history.
+ * Finds an Android Auto map templates from history.
+ *
+ * @return An array of FCPMapTemplate instances.
+ */
+private fun FlutterCarplayPlugin.Companion.getFCPMapTemplatesFromHistory(): List<FCPMapTemplate> {
+    // Initialize an array to store FCPMapTemplate instances.
+    val templates: MutableList<FCPMapTemplate> = mutableListOf()
+    // Filter the template history to include only FCPMapTemplate instances.
+    for (template in fcpTemplateHistory) {
+        if (template is FCPMapTemplate) {
+            templates.add(template)
+        }
+    }
+    return templates
+}
+
+/**
+ * Finds an Android Auto list templates from history.
  *
  * @return An array of FCPListTemplate instances.
  */

@@ -33,7 +33,7 @@ class FCPListSection
             "Missing required keys in dictionary for FCPListSection initialization."
         }
         elementId = elementIdValue!!
-        header = obj["header"] as? String ?: ""
+        header = obj["header"] as? String ?: " "
         objcItems = (obj["items"] as? List<Map<String, Any>> ?: emptyList<FCPListItem>()).map {
             FCPListItem(it as Map<String, Any>)
         }

@@ -102,7 +102,6 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
 
         switch call.method {
         case FCPChannelTypes.setRootTemplate:
-
             guard let args = call.arguments as? [String: Any],
                   let runtimeType = args["runtimeType"] as? String,
                   let rootTemplate = createRootTemplate(from: args, runtimeType: runtimeType)
@@ -112,10 +111,12 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             setRootTemplate(rootTemplate, args: args, result: result)
+
         case FCPChannelTypes.forceUpdateRootTemplate:
             FlutterCarplaySceneDelegate.forceUpdateRootTemplate(completion: { completed, _ in
                 result(completed)
             })
+
         case FCPChannelTypes.updateInformationTemplate:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -126,6 +127,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             updateInformationTemplate(elementId: elementId, args: args)
             result(true)
+
         case FCPChannelTypes.updateMapTemplate:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -136,6 +138,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             updateMapTemplate(elementId: elementId, args: args)
             result(true)
+
         case FCPChannelTypes.updateListTemplate:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,
@@ -147,6 +150,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             updateListTemplate(elementId: elementId, sections: sections, args: args)
             result(true)
+
         case FCPChannelTypes.updateListItem:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -156,6 +160,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
             updateListItem(elementId: elementId, args: args)
             result(true)
+
         case FCPChannelTypes.onFCPListItemSelectedComplete:
             guard let args = call.arguments as? String else {
                 result(false)
@@ -165,6 +170,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 item.stopHandler()
             })
             result(true)
+
         case FCPChannelTypes.onSearchTextUpdatedComplete:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -181,6 +187,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 template.searchPerformed(searchResults)
             })
             result(true)
+
         case FCPChannelTypes.setAlert:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
@@ -208,6 +215,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                         result(completed)
                     })
             }
+
         case FCPChannelTypes.setActionSheet:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
@@ -233,6 +241,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                     result(completed)
                 })
             }
+
         case FCPChannelTypes.popTemplate:
             guard let args = call.arguments as? [String: Any],
                   let count = args["count"] as? Int,
@@ -246,6 +255,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 })
             }
             result(true)
+
         case FCPChannelTypes.closePresent:
             guard let animated = call.arguments as? Bool else {
                 result(false)
@@ -255,12 +265,14 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(completed)
             })
             fcpPresentTemplate = nil
+
         case FCPChannelTypes.pushTemplate:
             guard let args = call.arguments as? [String: Any] else {
                 result(false)
                 return
             }
             pushTemplate(args: args, result: result)
+
         case FCPChannelTypes.popToRootTemplate:
             guard let animated = call.arguments as? Bool else {
                 result(false)
@@ -270,6 +282,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(completed)
             })
             fcpPresentTemplate = nil
+
         case FCPChannelTypes.setVoiceControl:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
@@ -297,6 +310,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                     result(completed)
                 })
             }
+
         case FCPChannelTypes.activateVoiceControlState:
             guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
@@ -315,6 +329,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             } else {
                 result(false)
             }
+
         case FCPChannelTypes.getActiveVoiceControlStateIdentifier:
             guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
@@ -329,6 +344,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             } else {
                 result(nil)
             }
+
         case FCPChannelTypes.startVoiceControl:
             guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
@@ -342,6 +358,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             } else {
                 result(false)
             }
+
         case FCPChannelTypes.stopVoiceControl:
             guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
@@ -355,6 +372,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             } else {
                 result(false)
             }
+
         case FCPChannelTypes.speak:
             guard let args = call.arguments as? [String: Any],
                   let text = args["text"] as? String,
@@ -373,6 +391,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 }
             }
             result(true)
+
         case FCPChannelTypes.playAudio:
             guard let args = call.arguments as? [String: Any],
                   let soundPath = args["soundPath"] as? String,
@@ -384,12 +403,14 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             FCPSoundEffects.shared.prepare(sound: soundPath, volume: volume.floatValue)
             FCPSoundEffects.shared.play()
             result(true)
+
         case FCPChannelTypes.getConfig:
             let config = [
                 "maximumItemCount": CPListTemplate.maximumItemCount,
                 "maximumSectionCount": CPListTemplate.maximumSectionCount,
             ]
             result(config)
+
         case FCPChannelTypes.showTripPreviews:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,
@@ -427,6 +448,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return result(true)
             }
             result(false)
+
         case FCPChannelTypes.showBanner:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,
@@ -443,6 +465,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return result(true)
             }
             result(false)
+
         case FCPChannelTypes.hideBanner:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -457,6 +480,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return result(true)
             }
             result(false)
+
         case FCPChannelTypes.showToast:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,
@@ -473,6 +497,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return result(true)
             }
             result(false)
+
         case FCPChannelTypes.showOverlay:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -492,6 +517,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return result(true)
             }
             result(false)
+
         case FCPChannelTypes.hideOverlay:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -554,6 +580,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             result(false)
+
         case FCPChannelTypes.zoomOutMapView:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -744,8 +771,7 @@ extension FlutterCarplayPlugin {
             return FCPPointOfInterestTemplate(obj: rootTemplateArgs)
 
         case String(describing: FCPMapTemplate.self):
-            let mapTemplate = FCPMapTemplate(obj: rootTemplateArgs)
-            return mapTemplate
+            return FCPMapTemplate(obj: rootTemplateArgs)
 
         case String(describing: FCPListTemplate.self):
             // For FCPListTemplate, set the template type to DEFAULT

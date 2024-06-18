@@ -87,7 +87,7 @@ class FCPMapTemplate: NSObject {
             FCPBarButton(obj: $0)
         }
 
-        /// Initialize the view controller.
+        // Initialize the view controller.
         viewController = FCPMapViewController(nibName: "FCPMapViewController", bundle: Bundle(for: FCPMapViewController.self))
     }
 

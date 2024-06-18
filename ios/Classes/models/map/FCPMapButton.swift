@@ -7,6 +7,7 @@
 
 import CarPlay
 
+/// A wrapper class for CPMapButton with additional functionality.
 @available(iOS 14.0, *)
 class FCPMapButton {
     /// The underlying CPMapButton instance.

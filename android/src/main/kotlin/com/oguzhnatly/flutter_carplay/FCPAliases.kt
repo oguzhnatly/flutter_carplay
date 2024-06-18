@@ -10,6 +10,7 @@ import androidx.car.app.model.MessageTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.SectionedItemList
 import androidx.car.app.model.Template
+import androidx.car.app.navigation.model.NavigationTemplate
 
 typealias Bool = Boolean
 typealias CGFloat = Double
@@ -26,3 +27,4 @@ typealias CPGridTemplate = GridTemplate
 typealias CPGridButton = GridItem
 typealias CPActionSheetTemplate = LongMessageTemplate
 typealias CPAlertTemplate = MessageTemplate
+typealias CPMapTemplate = NavigationTemplate

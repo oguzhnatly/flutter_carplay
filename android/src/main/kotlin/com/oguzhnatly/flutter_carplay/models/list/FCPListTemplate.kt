@@ -102,7 +102,11 @@ class FCPListTemplate(
         // Implementation details for returning CPListTemplate instance
         val listTemplate = ListTemplate.Builder().setLoading(isLoading)
 
-        sections.forEach { listTemplate.addSectionedList(it) }
+        if (sections.count() == 1 && sections.first().header.toCharSequence().isBlank()) {
+            listTemplate.setSingleList(sections.first().itemList)
+        } else {
+            sections.forEach { listTemplate.addSectionedList(it) }
+        }
 
         title?.let { listTemplate.setTitle(it) }
         backButton?.let { listTemplate.setHeaderAction(it) }
@@ -117,6 +121,7 @@ class FCPListTemplate(
             }
             listTemplate.setActionStrip(actionStrip.build())
         }
+
         _super = listTemplate.build()
         return _super
     }

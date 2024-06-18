@@ -8,6 +8,7 @@
 import CarPlay
 import Foundation
 
+/// A wrapper class for CPDashboardButton with additional functionality.
 @available(iOS 14.0, *)
 class FCPDashboardButton {
     /// The underlying CPDashboardButton instance.
