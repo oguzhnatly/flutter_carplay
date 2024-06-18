@@ -1,6 +1,7 @@
 package com.oguzhnatly.flutter_carplay
 
 import com.oguzhnatly.flutter_carplay.models.action_sheet.FCPActionSheetTemplate
+import com.oguzhnatly.flutter_carplay.models.alert.FCPAlertTemplate
 import com.oguzhnatly.flutter_carplay.models.grid.FCPGridTemplate
 import com.oguzhnatly.flutter_carplay.models.list.FCPListItem
 import com.oguzhnatly.flutter_carplay.models.list.FCPListSection
@@ -163,6 +164,33 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             FCPChannelTypes.onFCPListItemSelectedComplete.name -> {}
+            FCPChannelTypes.setAlert.name -> {
+                val args = call.arguments as? Map<String, Any>
+                val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
+                if (args == null || rootTemplateArgs == null) {
+                    result.success(false)
+                    return
+                }
+
+                val showAlertTemplate = {
+                    val alertTemplate = FCPAlertTemplate(rootTemplateArgs)
+                    fcpPresentTemplate = alertTemplate
+                    AndroidAutoService.session?.presentTemplate(
+                        template = alertTemplate,result=result
+                    )
+                    /*FCPStreamHandlerPlugin.sendEvent(type = FCPChannelTypes.onPresentStateChanged.name,
+                        data = mapOf("completed" to true))*/
+                    //result.success(true)
+                }
+
+                if (fcpPresentTemplate != null) {
+                    fcpPresentTemplate = null
+                    AndroidAutoService.session?.closePresent(result)
+                    showAlertTemplate()
+                } else {
+                    showAlertTemplate()
+                }
+            }
             FCPChannelTypes.setActionSheet.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
