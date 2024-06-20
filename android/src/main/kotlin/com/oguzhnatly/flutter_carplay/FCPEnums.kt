@@ -221,6 +221,18 @@ enum class CPAlertActionStyle {
     destructive,
 }
 
+/** Enum defining different styles of text buttons in Android Auto. */
+enum class CPTextButtonStyle {
+    /// The default style for a text button.
+    normal,
+
+    /// The style for a text button that indicates a cancel action.
+    cancel,
+
+    /// The style for a text button that indicates a confirm action.
+    confirm
+}
+
 /** Enum defining different types of Android Auto connection states. */
 enum class FCPConnectionTypes {
     /// Represents a connected state to Android Auto.

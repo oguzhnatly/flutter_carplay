@@ -3,6 +3,8 @@ package com.oguzhnatly.flutter_carplay
 import androidx.activity.OnBackPressedCallback
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
+import com.oguzhnatly.flutter_carplay.models.information.FCPInformationTemplate
+import com.oguzhnatly.flutter_carplay.models.list.FCPListTemplate
 
 /**
  * Represents a CarPlay screen in the Flutter CarPlay plugin.
@@ -17,12 +19,24 @@ class FCPScreen(carContext: CarContext, val fcpTemplate: FCPTemplate) : Screen(c
     /** The OnBackPressedCallback used to handle the back button press. */
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            // Handle the back button press from dart side
-            fcpTemplate.backButtonElementId?.let {
-                FCPStreamHandlerPlugin.sendEvent(
-                    type = FCPChannelTypes.onBarButtonPressed.name,
-                    data = mapOf("elementId" to it)
-                )
+            when (fcpTemplate) {
+                is FCPInformationTemplate -> {
+                    AndroidAutoService.session?.pop()
+                    FCPStreamHandlerPlugin.sendEvent(
+                        type = FCPChannelTypes.onInformationTemplatePopped.name,
+                        data = mapOf("elementId" to fcpTemplate.elementId)
+                    )
+                }
+
+                else -> {
+                    // Handle the back button press from dart side
+                    fcpTemplate.backButtonElementId?.let {
+                        FCPStreamHandlerPlugin.sendEvent(
+                            type = FCPChannelTypes.onBarButtonPressed.name,
+                            data = mapOf("elementId" to it)
+                        )
+                    }
+                }
             }
         }
     }
