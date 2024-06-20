@@ -7,6 +7,7 @@ import androidx.car.app.model.GridTemplate
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.LongMessageTemplate
 import androidx.car.app.model.MessageTemplate
+import androidx.car.app.model.PaneTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.SectionedItemList
 import androidx.car.app.model.Template
@@ -27,4 +28,6 @@ typealias CPGridTemplate = GridTemplate
 typealias CPGridButton = GridItem
 typealias CPActionSheetTemplate = LongMessageTemplate
 typealias CPAlertTemplate = MessageTemplate
+typealias CPInformationTemplate = PaneTemplate
+typealias CPInformationItem = Row
 typealias CPMapTemplate = NavigationTemplate

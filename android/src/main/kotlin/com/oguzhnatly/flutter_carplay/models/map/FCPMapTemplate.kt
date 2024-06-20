@@ -6,6 +6,7 @@ import com.oguzhnatly.flutter_carplay.Bool
 import com.oguzhnatly.flutter_carplay.CPMapTemplate
 import com.oguzhnatly.flutter_carplay.FCPRootTemplate
 import com.oguzhnatly.flutter_carplay.models.button.FCPBarButton
+import com.oguzhnatly.flutter_carplay.models.map.FCPMapButton
 
 /**
  * A custom Android Auto map template with additional customization options.
