@@ -52,5 +52,6 @@ android {
     dependencies {
         compileOnly rootProject.findProject(":here_sdk")
         implementation "androidx.car.app:app:1.4.0"
+        compileOnly fileTree(dir: project(':here_sdk').file('libs').path, include: ['*.aar', '*.jar'], exclude: ['*mock*.jar'])
     }
 }

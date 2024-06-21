@@ -1,6 +1,7 @@
 //// A wrapper class for CPRouteChoice with additional functionality.
 import CarPlay
 
+/// A wrapper class for CPRouteChoice with additional functionality.
 @available(iOS 14.0, *)
 class FCPRouteChoice {
     /// The underlying CPRouteChoice instance.
@@ -9,15 +10,14 @@ class FCPRouteChoice {
     /// The unique identifier for the bar button.
     private(set) var elementId: String
 
-    /// summaryVariants is an array of summary variants for this route choice
+    /// The array of summary variants for this route choice
     private(set) var summaryVariants: [String]?
 
-    /// selectionSummaryVariants is an array of selection summary variants
+    /// The array of selection summary variants
     /// for this route choice
     private(set) var selectionSummaryVariants: [String]?
 
-    /// additionalInformationVariants is an array of additional information
-    /// variants for this route choice
+    /// The array of additional information variants for this route choice
     private(set) var additionalInformationVariants: [String]?
 
     init(obj: [String: Any]) {

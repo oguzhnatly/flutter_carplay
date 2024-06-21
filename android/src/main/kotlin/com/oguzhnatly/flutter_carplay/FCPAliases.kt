@@ -11,7 +11,9 @@ import androidx.car.app.model.PaneTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.SectionedItemList
 import androidx.car.app.model.Template
+import androidx.car.app.navigation.model.Destination
 import androidx.car.app.navigation.model.NavigationTemplate
+import androidx.car.app.navigation.model.Trip
 
 typealias Bool = Boolean
 typealias CGFloat = Double
@@ -31,3 +33,5 @@ typealias CPAlertTemplate = MessageTemplate
 typealias CPInformationTemplate = PaneTemplate
 typealias CPInformationItem = Row
 typealias CPMapTemplate = NavigationTemplate
+typealias CPRouteChoice = Destination
+typealias CPTrip = Trip

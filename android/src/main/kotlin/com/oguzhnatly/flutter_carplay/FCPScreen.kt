@@ -4,7 +4,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import com.oguzhnatly.flutter_carplay.models.information.FCPInformationTemplate
-import com.oguzhnatly.flutter_carplay.models.list.FCPListTemplate
 
 /**
  * Represents a CarPlay screen in the Flutter CarPlay plugin.

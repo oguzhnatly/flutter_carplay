@@ -42,29 +42,32 @@ class FCPMapButton(obj: Map<String, Any>) {
         elementId = elementIdValue!!
         isEnabled = obj["isEnabled"] as? Bool ?: true
         isHidden = obj["isHidden"] as? Bool ?: false
-        image = (obj["focusedImage"] as? String)?.let { UIImageObject.fromFlutterAsset(it) }
-        focusedImage =
-            (obj["focusedImage"] as? String)?.let { UIImageObject.fromFlutterAsset(it) }
+        focusedImage = (obj["focusedImage"] as? String)?.let { UIImageObject.fromFlutterAsset(it) }
+        image =
+            focusedImage ?: (obj["image"] as? String)?.let { UIImageObject.fromFlutterAsset(it) }
+
+        (obj["tintColor"] as? Long)?.let {
+            image = image?.withColor(it)
+        }
 
         //        image = UIImage.dynamicImage(lightImage: obj["image"] as? String,
         //            darkImage: obj["darkImage"] as? String)
 
-        (obj["tintColor"] as? Long)?.let {
-            image = image?.withColor(color = it)
-        }
+        //        if let focusedImage = obj["focusedImage"] as? String {
+        //            self.focusedImage = UIImage.dynamicImage(lightImage: focusedImage)
+        //        }
     }
 
     /** Returns the underlying CPMapButton instance configured with the specified properties. */
     fun getTemplate(): CPMapButton {
         val action =
-            Action.Builder().setEnabled(isEnabled).setIcon(image!!)
-                .setOnClickListener {
-                    // Dispatch an event when the bar button is pressed.
-                    FCPStreamHandlerPlugin.sendEvent(
-                        type = FCPChannelTypes.onMapButtonPressed.name,
-                        data = mapOf("elementId" to elementId)
-                    )
-                }
+            Action.Builder().setEnabled(isEnabled).setIcon(image!!).setOnClickListener {
+                // Dispatch an event when the bar button is pressed.
+                FCPStreamHandlerPlugin.sendEvent(
+                    type = FCPChannelTypes.onMapButtonPressed.name,
+                    data = mapOf("elementId" to elementId)
+                )
+            }
 
         //        mapButton.isHidden = isHidden
         //        mapButton.isEnabled = isEnabled
