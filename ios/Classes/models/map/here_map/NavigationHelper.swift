@@ -39,14 +39,13 @@ class NavigationHelper: DynamicRoutingDelegate {
     var visualNavigatorCameraPoint: Anchor2D?
     var isNavigationInProgress = false
 
-    /// lastKnownLocation
     var lastKnownLocation: Location? {
         return herePositioningProvider.getLastKnownLocation()
     }
 
     /// FCP Map View Controller instance
     var fcpMapViewController: FCPMapViewController? {
-        return (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.fcpMapViewController
+        return (FlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.fcpMapViewController
     }
 
     init(mapView: MapView, messageTextView: UITextView) {
@@ -91,6 +90,7 @@ class NavigationHelper: DynamicRoutingDelegate {
     }
 
     /// Prefetches map data around the provided location
+    ///
     /// - Parameter currentGeoCoordinates: The current geo coordinates
     private func prefetchMapData(currentGeoCoordinates: GeoCoordinates) {
         // Prefetches map data around the provided location with a radius of 2 km into the map cache.
@@ -160,6 +160,7 @@ class NavigationHelper: DynamicRoutingDelegate {
     }
 
     /// Starts navigation with the given route
+    ///
     /// - Parameters:
     ///   - route: The route to be used for navigation.
     ///   - isSimulated: Whether to use simulated locations.
@@ -203,6 +204,7 @@ class NavigationHelper: DynamicRoutingDelegate {
     }
 
     /// Starts the dynamic search for better routes.
+    ///
     /// - Parameter route: The route to search for better routes.
     private func startDynamicSearchForBetterRoutes(_ route: Route) {
         do {
@@ -214,7 +216,7 @@ class NavigationHelper: DynamicRoutingDelegate {
         }
     }
 
-    /// Stop navigation.
+    /// Stops navigation.
     func stopNavigation() {
         // Switches to tracking mode when a route was set before, otherwise tracking mode is kept.
         // Without a route the navigator will only notify on the current map-matched location
@@ -268,6 +270,7 @@ class NavigationHelper: DynamicRoutingDelegate {
     }
 
     /// Set the normalized principal point of the VisualNavigator camera.
+    /// 
     /// - Parameter normalizedPrincipalPoint: The normalized principal point to set.
     func setVisualNavigatorCameraPoint(normalizedPrincipalPoint: heresdk.Anchor2D) {
         visualNavigatorCameraPoint = normalizedPrincipalPoint

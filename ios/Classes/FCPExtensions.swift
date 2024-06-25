@@ -34,7 +34,7 @@ extension UIImage {
     /// - Returns: A UIImage fetched from the Flutter asset or a system image if not found.
     @available(iOS 14.0, *)
     func fromFlutterAsset(name: String) -> UIImage {
-        guard let key = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: name),
+        guard let key = FlutterCarplayPlugin.registrar?.lookupKey(forAsset: name),
               let path = Bundle.main.path(forResource: key, ofType: nil),
               let image = UIImage(contentsOfFile: path)
         else {

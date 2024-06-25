@@ -61,7 +61,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
     /// The size of the marker pin.
     var markerPinSize: Double { 40 * mapView.pixelScale }
 
-    /// Rectenter map position to adjust the map camera
+    /// Recenter map position to adjust the map camera
     var recenterMapPosition = "initialMarker"
 
     /// Map coordinates to render marker on the map
@@ -77,7 +77,7 @@ class FCPMapViewController: UIViewController, CLLocationManagerDelegate {
 
     /// Whether the dashboard scene is active.
     var isPanningInterfaceVisible: Bool {
-        return (SwiftFlutterCarplayPlugin.rootTemplate as? CPMapTemplate)?.isPanningInterfaceVisible ?? false
+        return (FlutterCarplayPlugin.rootTemplate as? CPMapTemplate)?.isPanningInterfaceVisible ?? false
     }
 
     /// Should stop voice assistant

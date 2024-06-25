@@ -107,7 +107,7 @@ class FCPPointOfInterest {
         var pinImage: UIImage? = nil
 
         if let image = image,
-           let key = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: image)
+           let key = FlutterCarplayPlugin.registrar?.lookupKey(forAsset: image)
         {
             pinImage = UIImage(named: key)
             if let pImage = pinImage {

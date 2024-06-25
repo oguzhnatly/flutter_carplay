@@ -93,7 +93,7 @@ class FCPListItem {
             if self.isOnPressListenerActive == true {
                 DispatchQueue.main.async {
                     self.completeHandler = complete
-                    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onListItemSelected,
+                    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onFCPListItemSelected,
                                                      data: ["elementId": self.elementId])
                 }
             } else {

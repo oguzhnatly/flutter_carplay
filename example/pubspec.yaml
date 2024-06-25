@@ -27,6 +27,9 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
+  # add local path to here_sdk
+  # here_sdk:
+    # path: ../here_sdk
 
 dev_dependencies:
   # The "flutter_lints" package below contains a set of recommended lints to

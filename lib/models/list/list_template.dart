@@ -38,6 +38,11 @@ class CPListTemplate {
   /// of a tab bar, otherwise setting this property has no effect.
   final bool showsTabBadge;
 
+  /// A Boolean value that indicates whether the template is currently loading.
+  ///
+  /// Available only for Android Auto.
+  bool isLoading;
+
   /// A system icon which will be used in a image that represents the content of the tab.
   ///
   /// SF Symbols provides a set of over 3,100 consistent, highly configurable symbols you can
@@ -75,6 +80,7 @@ class CPListTemplate {
     this.title,
     this.systemIcon,
     this.backButton,
+    this.isLoading = false,
     this.showsTabBadge = false,
     this.emptyViewTitleVariants = const [],
     this.emptyViewSubtitleVariants = const [],
@@ -93,18 +99,23 @@ class CPListTemplate {
         'trailingNavigationBarButtons':
             trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
         'showsTabBadge': showsTabBadge,
+        'isLoading': isLoading,
         'systemIcon': systemIcon,
         'backButton': backButton?.toJson(),
       };
 
   /// Update the properties of the [CPListTemplate]
   void update({
+    bool? isLoading,
     List<CPListSection>? sections,
     List<String>? emptyViewTitleVariants,
     List<String>? emptyViewSubtitleVariants,
     List<CPBarButton>? leadingNavigationBarButtons,
     List<CPBarButton>? trailingNavigationBarButtons,
   }) {
+    // update isLoading
+    if (isLoading != null) this.isLoading = isLoading;
+
     // update sections
     if (sections != null) this.sections = sections;
 

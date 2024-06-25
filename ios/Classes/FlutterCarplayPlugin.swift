@@ -1,5 +1,5 @@
 //
-//  SwiftFlutterCarplayPlugin.swift
+//  FlutterCarplayPlugin.swift
 //  flutter_carplay
 //
 //  Created by Oğuzhan Atalay on 21.08.2021.
@@ -14,7 +14,7 @@ import heresdk
 /// This plugin provides a bridge between Flutter and CarPlay, allowing developers to create CarPlay-enabled Flutter apps.
 
 @available(iOS 14.0, *)
-public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
+public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
     /// The stream handler for CarPlay communication.
     private static var streamHandler: FCPStreamHandlerPlugin?
 
@@ -79,7 +79,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: makeFCPChannelId(event: ""),
                                            binaryMessenger: registrar.messenger())
-        let instance = SwiftFlutterCarplayPlugin()
+        let instance = FlutterCarplayPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
         self.registrar = registrar
 
@@ -102,7 +102,6 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
         switch call.method {
         case FCPChannelTypes.setRootTemplate:
-
             guard let args = call.arguments as? [String: Any],
                   let runtimeType = args["runtimeType"] as? String,
                   let rootTemplate = createRootTemplate(from: args, runtimeType: runtimeType)
@@ -112,10 +111,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             setRootTemplate(rootTemplate, args: args, result: result)
+
         case FCPChannelTypes.forceUpdateRootTemplate:
             FlutterCarplaySceneDelegate.forceUpdateRootTemplate(completion: { completed, _ in
                 result(completed)
             })
+
         case FCPChannelTypes.updateInformationTemplate:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -126,6 +127,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             updateInformationTemplate(elementId: elementId, args: args)
             result(true)
+
         case FCPChannelTypes.updateMapTemplate:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -136,6 +138,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             updateMapTemplate(elementId: elementId, args: args)
             result(true)
+
         case FCPChannelTypes.updateListTemplate:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,
@@ -147,6 +150,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
             updateListTemplate(elementId: elementId, sections: sections, args: args)
             result(true)
+
         case FCPChannelTypes.updateListItem:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -156,15 +160,17 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
             updateListItem(elementId: elementId, args: args)
             result(true)
-        case FCPChannelTypes.onListItemSelectedComplete:
+
+        case FCPChannelTypes.onFCPListItemSelectedComplete:
             guard let args = call.arguments as? String else {
                 result(false)
                 return
             }
-            SwiftFlutterCarplayPlugin.findListItem(elementId: args, actionWhenFound: { item in
+            FlutterCarplayPlugin.findListItem(elementId: args, actionWhenFound: { item in
                 item.stopHandler()
             })
             result(true)
+
         case FCPChannelTypes.onSearchTextUpdatedComplete:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -177,10 +183,11 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 FCPListItem(obj: $0)
             }
 
-            SwiftFlutterCarplayPlugin.findSearchTemplate(elementId: elementId, actionWhenFound: { template in
+            FlutterCarplayPlugin.findSearchTemplate(elementId: elementId, actionWhenFound: { template in
                 template.searchPerformed(searchResults)
             })
             result(true)
+
         case FCPChannelTypes.setAlert:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
@@ -208,6 +215,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                         result(completed)
                     })
             }
+
         case FCPChannelTypes.setActionSheet:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
@@ -247,6 +255,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 })
             }
             result(true)
+
         case FCPChannelTypes.closePresent:
             guard let animated = call.arguments as? Bool else {
                 result(false)
@@ -256,12 +265,14 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(completed)
             })
             fcpPresentTemplate = nil
+
         case FCPChannelTypes.pushTemplate:
             guard let args = call.arguments as? [String: Any] else {
                 result(false)
                 return
             }
             pushTemplate(args: args, result: result)
+
         case FCPChannelTypes.popToRootTemplate:
             guard let animated = call.arguments as? Bool else {
                 result(false)
@@ -271,6 +282,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 result(completed)
             })
             fcpPresentTemplate = nil
+
         case FCPChannelTypes.setVoiceControl:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
@@ -298,6 +310,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                     result(completed)
                 })
             }
+
         case FCPChannelTypes.activateVoiceControlState:
             guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
@@ -316,6 +329,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             } else {
                 result(false)
             }
+
         case FCPChannelTypes.getActiveVoiceControlStateIdentifier:
             guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
@@ -330,6 +344,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             } else {
                 result(nil)
             }
+
         case FCPChannelTypes.startVoiceControl:
             guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
@@ -343,6 +358,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             } else {
                 result(false)
             }
+
         case FCPChannelTypes.stopVoiceControl:
             guard fcpPresentTemplate != nil else {
                 result(FlutterError(code: "ERROR",
@@ -356,6 +372,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             } else {
                 result(false)
             }
+
         case FCPChannelTypes.speak:
             guard let args = call.arguments as? [String: Any],
                   let text = args["text"] as? String,
@@ -374,6 +391,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 }
             }
             result(true)
+
         case FCPChannelTypes.playAudio:
             guard let args = call.arguments as? [String: Any],
                   let soundPath = args["soundPath"] as? String,
@@ -385,12 +403,14 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             FCPSoundEffects.shared.prepare(sound: soundPath, volume: volume.floatValue)
             FCPSoundEffects.shared.play()
             result(true)
+
         case FCPChannelTypes.getConfig:
             let config = [
                 "maximumItemCount": CPListTemplate.maximumItemCount,
                 "maximumSectionCount": CPListTemplate.maximumSectionCount,
             ]
             result(config)
+
         case FCPChannelTypes.showTripPreviews:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,
@@ -404,7 +424,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             let textConfiguration = args["textConfiguration"] as? [String: Any]
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
 
                 let fcpTrips = trips.map { FCPTrip(obj: $0) }
                 let fcpSelectedTrip = selectedTrip == nil ? nil : FCPTrip(obj: selectedTrip!)
@@ -423,11 +443,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
                 return
             }
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.hideTripPreviews()
                 return result(true)
             }
             result(false)
+
         case FCPChannelTypes.showBanner:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,
@@ -439,11 +460,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.fcpMapViewController?.showBanner(message: message, color: color)
                 return result(true)
             }
             result(false)
+
         case FCPChannelTypes.hideBanner:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -453,11 +475,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.fcpMapViewController?.hideBanner()
                 return result(true)
             }
             result(false)
+
         case FCPChannelTypes.showToast:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String,
@@ -469,11 +492,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.fcpMapViewController?.showToast(message: message, duration: TimeInterval(duration))
                 return result(true)
             }
             result(false)
+
         case FCPChannelTypes.showOverlay:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -488,11 +512,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             let subtitle = args["subtitle"] as? String
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.fcpMapViewController?.showOverlay(primaryTitle: primaryTitle, secondaryTitle: secondaryTitle, subtitle: subtitle)
                 return result(true)
             }
             result(false)
+
         case FCPChannelTypes.hideOverlay:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -502,7 +527,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.fcpMapViewController?.hideOverlay()
                 return result(true)
             }
@@ -518,7 +543,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.showPanningInterface(animated: animated)
                 return result(true)
             }
@@ -534,7 +559,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.dismissPanningInterface(animated: animated)
                 return result(true)
             }
@@ -549,12 +574,13 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.fcpMapViewController?.zoomInMapView()
                 return result(true)
             }
 
             result(false)
+
         case FCPChannelTypes.zoomOutMapView:
             guard let args = call.arguments as? [String: Any],
                   let elementId = args["_elementId"] as? String
@@ -564,7 +590,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.fcpMapViewController?.zoomOutMapView()
                 return result(true)
             }
@@ -581,7 +607,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 let cpTrip = FCPTrip(obj: trip).get
                 mapTemplate.startNavigation(trip: cpTrip)
                 return result(true)
@@ -597,7 +623,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             // Find the map template based on the provided element ID
-            SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+            FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
                 mapTemplate.stopNavigation()
                 return result(true)
             }
@@ -711,14 +737,14 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     /// - Returns: A Flutter event channel for communication with Flutter.
     static func createEventChannel(event: String?) -> FlutterEventChannel {
         let eventChannel = FlutterEventChannel(name: makeFCPChannelId(event: event),
-                                               binaryMessenger: SwiftFlutterCarplayPlugin.registrar!.messenger())
+                                               binaryMessenger: FlutterCarplayPlugin.registrar!.messenger())
         return eventChannel
     }
 }
 
 // MARK: - Helper
 
-extension SwiftFlutterCarplayPlugin {
+extension FlutterCarplayPlugin {
     /// Creates an FCPRootTemplate based on the provided arguments and runtime type.
     /// - Parameters:
     ///   - args: A dictionary containing the root template arguments.
@@ -745,8 +771,7 @@ extension SwiftFlutterCarplayPlugin {
             return FCPPointOfInterestTemplate(obj: rootTemplateArgs)
 
         case String(describing: FCPMapTemplate.self):
-            let mapTemplate = FCPMapTemplate(obj: rootTemplateArgs)
-            return mapTemplate
+            return FCPMapTemplate(obj: rootTemplateArgs)
 
         case String(describing: FCPListTemplate.self):
             // For FCPListTemplate, set the template type to DEFAULT
@@ -793,7 +818,7 @@ extension SwiftFlutterCarplayPlugin {
             // For FCPMapTemplate, set the rootViewController and update the CarPlay window's rootViewController
             cpRootTemplate = mapTemplate.get
 
-            SwiftFlutterCarplayPlugin.rootViewController = mapTemplate.viewController
+            FlutterCarplayPlugin.rootViewController = mapTemplate.viewController
 
             if FlutterCarplayTemplateManager.shared.isDashboardSceneActive {
                 FlutterCarplayTemplateManager.shared.dashboardWindow?.rootViewController = mapTemplate.viewController
@@ -811,12 +836,12 @@ extension SwiftFlutterCarplayPlugin {
         }
 
         // If an FCPRootTemplate is successfully extracted, set it as the root template
-        SwiftFlutterCarplayPlugin.rootTemplate = cpRootTemplate
-        FlutterCarplayTemplateManager.shared.carplayInterfaceController?.setRootTemplate(cpRootTemplate, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
-        SwiftFlutterCarplayPlugin.fcpRootTemplate = rootTemplate
-        SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FlutterCarplayTemplateManager.shared.fcpConnectionStatus)
+        FlutterCarplayPlugin.rootTemplate = cpRootTemplate
+        FlutterCarplayTemplateManager.shared.carplayInterfaceController?.setRootTemplate(cpRootTemplate, animated: FlutterCarplayPlugin.animated, completion: nil)
+        FlutterCarplayPlugin.fcpRootTemplate = rootTemplate
+        FlutterCarplayPlugin.onCarplayConnectionChange(status: FlutterCarplayTemplateManager.shared.fcpConnectionStatus)
         let animated = args["animated"] as? Bool ?? false
-        SwiftFlutterCarplayPlugin.animated = animated
+        FlutterCarplayPlugin.animated = animated
         result(true)
     }
 
@@ -881,15 +906,15 @@ extension SwiftFlutterCarplayPlugin {
 
 // MARK: - Update FCPObjects
 
-extension SwiftFlutterCarplayPlugin {
+private extension FlutterCarplayPlugin {
     /// Updates a CarPlay information template identified by its element ID with new data.
     ///
     /// - Parameters:
     ///   - elementId: The unique identifier of the information template to be updated.
     ///   - args: Additional arguments for updating the information template.
-    private func updateInformationTemplate(elementId: String, args: [String: Any]) {
+    func updateInformationTemplate(elementId: String, args: [String: Any]) {
         // Find the information template based on the provided element ID
-        SwiftFlutterCarplayPlugin.findInformationTemplate(elementId: elementId) { infoTemplate in
+        FlutterCarplayPlugin.findInformationTemplate(elementId: elementId) { infoTemplate in
             // Map dictionary representations to FCPInformationItem instances for items
             let items = (args["informationItems"] as? [[String: Any]])?.map {
                 FCPInformationItem(obj: $0)
@@ -923,9 +948,9 @@ extension SwiftFlutterCarplayPlugin {
     /// - Parameters:
     ///   - elementId: The unique identifier of the list template to be updated.
     ///   - args: Additional arguments for updating the list template.
-    private func updateMapTemplate(elementId: String, args: [String: Any]) {
+    func updateMapTemplate(elementId: String, args: [String: Any]) {
         // Find the map template based on the provided element ID
-        SwiftFlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
+        FlutterCarplayPlugin.findMapTemplate(elementId: elementId) { mapTemplate in
             // Extract and handle the data for updating the map template
             let title = args["title"] as? String
             let hidesButtonsWithNavigationBar = args["hidesButtonsWithNavigationBar"] as? Bool
@@ -964,9 +989,9 @@ extension SwiftFlutterCarplayPlugin {
     ///   - elementId: The unique identifier of the list template to be updated.
     ///   - sections: An array of dictionaries representing the updated sections of the list template.
     ///   - args: Additional arguments for updating the list template.
-    private func updateListTemplate(elementId: String, sections: [[String: Any]], args: [String: Any]) {
+    func updateListTemplate(elementId: String, sections: [[String: Any]], args: [String: Any]) {
         // Find the list template based on the provided element ID
-        SwiftFlutterCarplayPlugin.findListTemplate(elementId: elementId) { listTemplate in
+        FlutterCarplayPlugin.findListTemplate(elementId: elementId) { listTemplate in
             // Extract and handle the data for updating the list template
             let emptyViewTitleVariants = args["emptyViewTitleVariants"] as? [String]
             let emptyViewSubtitleVariants = args["emptyViewSubtitleVariants"] as? [String]
@@ -995,9 +1020,9 @@ extension SwiftFlutterCarplayPlugin {
     /// - Parameters:
     ///   - elementId: The unique identifier of the list item to be updated.
     ///   - args: Additional arguments for updating the list item.
-    private func updateListItem(elementId: String, args: [String: Any]) {
+    func updateListItem(elementId: String, args: [String: Any]) {
         // Find the list item based on the provided element ID
-        SwiftFlutterCarplayPlugin.findListItem(elementId: elementId) { item in
+        FlutterCarplayPlugin.findListItem(elementId: elementId) { item in
             // Extract and handle the data for updating the list item
             let text = args["text"] as? String
             let detailText = args["detailText"] as? String
@@ -1031,7 +1056,7 @@ extension SwiftFlutterCarplayPlugin {
 
 // MARK: - Find FCPObjects
 
-private extension SwiftFlutterCarplayPlugin {
+private extension FlutterCarplayPlugin {
     /// Finds a CarPlay search template by element ID and performs an action when found.
     ///
     /// - Parameters:
@@ -1039,7 +1064,7 @@ private extension SwiftFlutterCarplayPlugin {
     ///   - actionWhenFound: The action to perform when the search template is found.
     static func findSearchTemplate(elementId: String, actionWhenFound: (_ searchTemplate: FCPSearchTemplate) -> Void) {
         // Filter the template history to include only FCPSearchTemplate instances.
-        let filteredTemplates = SwiftFlutterCarplayPlugin.cpTemplateHistory.filter { $0 is CPSearchTemplate }
+        let filteredTemplates = FlutterCarplayPlugin.cpTemplateHistory.filter { $0 is CPSearchTemplate }
 
         if let fcpTemplates = filteredTemplates as? [CPSearchTemplate] {
             let templates = fcpTemplates.compactMap { ($0.userInfo as? [String: Any])?["FCPObject"] as? FCPSearchTemplate }
@@ -1134,7 +1159,7 @@ private extension SwiftFlutterCarplayPlugin {
         var templates: [FCPInformationTemplate] = []
 
         // Filter the template history to include only FCPInformationTemplate instances.
-        for template in SwiftFlutterCarplayPlugin.cpTemplateHistory {
+        for template in FlutterCarplayPlugin.cpTemplateHistory {
             if let fcpTemplate = (((template as? CPInformationTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPInformationTemplate) {
                 templates.append(fcpTemplate)
             }
@@ -1152,7 +1177,7 @@ private extension SwiftFlutterCarplayPlugin {
         var templates: [FCPMapTemplate] = []
 
         // Filter the template history to include only FCPMapTemplate instances.
-        for template in SwiftFlutterCarplayPlugin.cpTemplateHistory {
+        for template in FlutterCarplayPlugin.cpTemplateHistory {
             if let fcpTemplate = (((template as? CPMapTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPMapTemplate) {
                 templates.append(fcpTemplate)
             }
@@ -1173,7 +1198,7 @@ private extension SwiftFlutterCarplayPlugin {
         var templates: [FCPListTemplate] = []
 
         // Filter the template history to include only FCPListTemplate instances.
-        for template in SwiftFlutterCarplayPlugin.cpTemplateHistory {
+        for template in FlutterCarplayPlugin.cpTemplateHistory {
             if let fcpTemplate = (((template as? CPListTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPListTemplate) {
                 templates.append(fcpTemplate)
             } else if let fcpTemplate = (((template as? CPTabBarTemplate)?.userInfo as? [String: Any])?["FCPObject"] as? FCPTabBarTemplate) {

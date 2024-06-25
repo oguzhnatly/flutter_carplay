@@ -36,7 +36,7 @@ class MapController: LongPressDelegate {
     private var mapMarkers = [MapMarker]()
     private var mapPolygons = [MapPolygon]()
     private var mapPolylineList = [MapPolyline]()
-    private var startingWaypoint: Waypoint?
+    private var startWaypoint: Waypoint?
     private var destinationWaypoint: Waypoint?
     private var isLongpressDestination = false
     private var messageTextView: UITextView
@@ -78,7 +78,7 @@ class MapController: LongPressDelegate {
         reroutingHandler = { [weak self] startWayPoint, completion in
             guard let self = self else { return }
 
-            let navigationSession = (SwiftFlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
+            let navigationSession = (FlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.navigationSession
 
             if #available(iOS 15.4, *) {
                 navigationSession?.pauseTrip(for: .rerouting, description: "", turnCardColor: .systemGreen)
@@ -86,10 +86,10 @@ class MapController: LongPressDelegate {
                 navigationSession?.pauseTrip(for: .rerouting, description: "")
             }
 
-            self.startingWaypoint = startWayPoint
+            self.startWaypoint = startWayPoint
 
             // Calculates a car route.
-            self.routeCalculator.calculateRoute(start: self.startingWaypoint!,
+            self.routeCalculator.calculateRoute(start: self.startWaypoint!,
                                                 destination: self.destinationWaypoint!)
             { routingError, routes in
                 if let error = routingError {
@@ -130,9 +130,12 @@ class MapController: LongPressDelegate {
     }
 
     /// Add a marker on the map.
+    ///
     /// - Parameters:
     ///   - coordinates: The coordinates of the marker
     ///   - markerImage: The image of the marker
+    ///   - markerSize: The size of the marker
+    ///   - metadata: The metadata of the marker
     func addMapMarker(coordinates: GeoCoordinates, markerImage: UIImage, markerSize: CGSize, metadata: heresdk.Metadata?) {
         let marker = mapMarkers.first(where: {
             $0.metadata?.getString(key: "marker") == metadata?.getString(key: "marker")
@@ -156,6 +159,7 @@ class MapController: LongPressDelegate {
     }
 
     /// Add a polygon on the map.
+    ///
     /// - Parameters:
     ///   - coordinate: The coordinates of the polygon
     ///   - accuracy: The accuracy of the polygon
@@ -187,7 +191,7 @@ class MapController: LongPressDelegate {
         }
 
         // Calculates a car route.
-        routeCalculator.calculateRoute(start: startingWaypoint!,
+        routeCalculator.calculateRoute(start: startWaypoint!,
                                        destination: destinationWaypoint!)
         { routingError, routes in
             if let error = routingError {
@@ -203,6 +207,7 @@ class MapController: LongPressDelegate {
     }
 
     /// Determines the starting and destination waypoints for the route calculation.
+    ///
     /// - Parameter isSimulated: Whether to use simulated locations.
     /// - Returns: True if waypoints are determined, false if not.
     private func determineRouteWaypoints(isSimulated: Bool) -> Bool {
@@ -211,26 +216,25 @@ class MapController: LongPressDelegate {
             onNavigationFailed(title: "Error", message: "No location found.")
             return false
         }
-        print("Last known location: \(location.coordinates)")
 
-        startingWaypoint = Waypoint(coordinates: location.coordinates)
+        startWaypoint = Waypoint(coordinates: location.coordinates)
 
         // If a driver is moving, the bearing value can help to improve the route calculation.
-        startingWaypoint?.headingInDegrees = location.bearingInDegrees
+        startWaypoint?.headingInDegrees = location.bearingInDegrees
 
         // Update the camera position.
         mapView.camera.lookAt(point: location.coordinates)
 
         // When using simulated locations, we set the destination to a random location around the map center.
-        if isSimulated {
-            if destinationWaypoint == nil {
-                destinationWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())
-            }
+        if isSimulated, destinationWaypoint == nil {
+            destinationWaypoint = Waypoint(coordinates: createRandomGeoCoordinatesAroundMapCenter())
         }
+
         return true
     }
 
     /// Shows the route details on the screen.
+    ///
     /// - Parameters:
     ///   - route: The route.
     private func showRouteDetails(route: Route) {
@@ -249,6 +253,7 @@ class MapController: LongPressDelegate {
     }
 
     /// Format time in minutes and seconds
+    ///
     /// - Parameter sec: Time in seconds
     /// - Returns: Time in minutes and seconds
     private func formatTime(sec: Double) -> String {
@@ -259,6 +264,7 @@ class MapController: LongPressDelegate {
     }
 
     /// Format length in kilometers and meters
+    ///
     /// - Parameter meters: Length in meters
     /// - Returns: Length in kilometers and meters
     private func formatLength(meters: Int32) -> String {
@@ -269,6 +275,7 @@ class MapController: LongPressDelegate {
     }
 
     /// Show route on the map
+    ///
     /// - Parameter route: Route
     private func showRouteOnMap(route: Route) {
         // Show route as polyline.
@@ -292,7 +299,8 @@ class MapController: LongPressDelegate {
         }
     }
 
-    /// Clear the map
+    /// Clears the map.
+    ///
     /// - Parameter clearInitialOnly: Whether to clear only the initial map marker
     func clearMap(clearInitialOnly: Bool = false) {
         if clearInitialOnly {
@@ -307,7 +315,7 @@ class MapController: LongPressDelegate {
         navigationHelper.stopNavigation()
     }
 
-    /// Clear the map markers
+    /// Clear the map markers.
     private func clearWaypointMapMarkers() {
         for mapMarker in mapMarkers {
             mapView.mapScene.removeMapMarker(mapMarker)
@@ -315,7 +323,7 @@ class MapController: LongPressDelegate {
         mapMarkers.removeAll()
     }
 
-    /// Clear the map polygons
+    /// Clear the map polygons.
     private func clearMapPolygons() {
         for mapPolygon in mapPolygons {
             mapView.mapScene.removeMapPolygon(mapPolygon)
@@ -352,8 +360,8 @@ class MapController: LongPressDelegate {
                 addCircleMapMarker(geoCoordinates: destinationWaypoint!.coordinates, imageName: "green_dot.png")
                 showMessage("New long press destination set.")
             } else {
-                startingWaypoint = Waypoint(coordinates: geoCoordinates)
-                addCircleMapMarker(geoCoordinates: startingWaypoint!.coordinates, imageName: "green_dot.png")
+                startWaypoint = Waypoint(coordinates: geoCoordinates)
+                addCircleMapMarker(geoCoordinates: startWaypoint!.coordinates, imageName: "green_dot.png")
                 showMessage("New long press starting point set.")
             }
             isLongpressDestination = !isLongpressDestination
@@ -361,6 +369,7 @@ class MapController: LongPressDelegate {
     }
 
     /// Create a random geo coordinates
+    ///
     /// - Returns: Random geo coordinates
     private func createRandomGeoCoordinatesAroundMapCenter() -> GeoCoordinates {
         let centerGeoCoordinates = getMapViewCenter()
@@ -373,6 +382,7 @@ class MapController: LongPressDelegate {
     }
 
     /// Get random number
+    ///
     /// - Parameters:
     ///   - min: Minimum number
     ///   - max: Maximum number
@@ -382,12 +392,14 @@ class MapController: LongPressDelegate {
     }
 
     /// Get the map view center
+    ///
     /// - Returns: Map view center
     private func getMapViewCenter() -> GeoCoordinates {
         return mapView.camera.state.targetCoordinates
     }
 
     /// Get the marker coordinates
+    ///
     /// - Parameter markerType: Map Marker type
     /// - Returns: Marker coordinates
     func getMarkerCoordinates(markerType: MapMarkerType) -> GeoCoordinates? {
@@ -395,14 +407,11 @@ class MapController: LongPressDelegate {
             $0.metadata?.getString(key: "marker") == markerType.rawValue
         })
 
-        if let existingMarker = marker {
-            return existingMarker.coordinates
-        }
-
-        return nil
+        return marker?.coordinates
     }
 
     /// Remove a marker
+    ///
     /// - Parameter markerType: Map Marker type
     func removeMarker(markerType: MapMarkerType) {
         let marker = mapMarkers.first(where: {
@@ -416,6 +425,7 @@ class MapController: LongPressDelegate {
     }
 
     /// Remove a polygon
+    ///
     /// - Parameter markerType: Map Marker type
     func removePolygon(markerType: MapMarkerType) {
         let polygon = mapPolygons.first(where: {
@@ -429,6 +439,7 @@ class MapController: LongPressDelegate {
     }
 
     /// Add a circle map marker
+    ///
     /// - Parameters:
     ///   - geoCoordinates: Geo coordinates
     ///   - imageName: Image name
@@ -449,6 +460,7 @@ class MapController: LongPressDelegate {
     }
 
     /// Show dialog with navigation options
+    ///
     /// - Parameters:
     ///   - title: Title of the dialog
     ///   - message: Message of the dialog
@@ -468,10 +480,11 @@ class MapController: LongPressDelegate {
         viewController.present(alertController, animated: true)
     }
 
-    /// Show dialog with title and message
+    /// Logs the given title and message, and sends an event with the message to the FCPStreamHandlerPlugin.
+    ///
     /// - Parameters:
-    ///   - title: Title of the dialog
-    ///   - message: Message of the dialog
+    ///   - title: Title of the error
+    ///   - message: Error message
     private func onNavigationFailed(title: String, message: String) {
         debugPrint("\(title) => \(message)")
 
@@ -485,6 +498,7 @@ class MapController: LongPressDelegate {
     }
 
     /// A permanent view to show log content.
+    ///
     /// - Parameter message: Log message to show in the view.
     private func showMessage(_ message: String) {
         messageTextView.text = message

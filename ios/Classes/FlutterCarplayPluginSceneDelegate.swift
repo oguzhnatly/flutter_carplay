@@ -125,8 +125,8 @@ extension FlutterCarplaySceneDelegate {
     /// Forces an update of the root template.
     /// - Parameter completion: A closure to be executed upon completion of the update.
     public static func forceUpdateRootTemplate(completion: ((Bool, Error?) -> Void)? = nil) {
-        if let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate {
-            let animated = SwiftFlutterCarplayPlugin.animated
+        if let rootTemplate = FlutterCarplayPlugin.rootTemplate {
+            let animated = FlutterCarplayPlugin.animated
             FlutterCarplayTemplateManager.shared.carplayInterfaceController?.setRootTemplate(rootTemplate, animated: animated, completion: completion)
         } else {
             completion?(false, nil)
