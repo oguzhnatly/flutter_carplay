@@ -49,8 +49,8 @@ class HEREPositioningSimulator {
 
     // Provides fake GPS signals based on the route geometry.
     private fun createLocationSimulator(
-            locationListener: LocationListener?,
-            route: Route?
+        locationListener: LocationListener?,
+        route: Route?,
     ): LocationSimulator {
         val locationSimulatorOptions = LocationSimulatorOptions()
         locationSimulatorOptions.speedFactor = 2.0

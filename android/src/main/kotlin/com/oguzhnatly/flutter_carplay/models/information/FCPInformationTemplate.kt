@@ -1,6 +1,5 @@
 package com.oguzhnatly.flutter_carplay.models.information
 
-import com.oguzhnatly.flutter_carplay.models.button.FCPTextButton
 import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.Pane
@@ -11,6 +10,7 @@ import com.oguzhnatly.flutter_carplay.CPInformationTemplate
 import com.oguzhnatly.flutter_carplay.CPTextButton
 import com.oguzhnatly.flutter_carplay.FCPRootTemplate
 import com.oguzhnatly.flutter_carplay.models.button.FCPBarButton
+import com.oguzhnatly.flutter_carplay.models.button.FCPTextButton
 
 /**
  * A wrapper class for FCPInformationTemplate with additional functionality.
@@ -140,7 +140,7 @@ class FCPInformationTemplate(obj: Map<String, Any>) : FCPRootTemplate() {
         items: List<FCPInformationItem>? = null,
         actions: List<FCPTextButton>? = null,
         leadingNavigationBarButtons: List<FCPBarButton>? = null,
-        trailingNavigationBarButtons: List<FCPBarButton>? = null
+        trailingNavigationBarButtons: List<FCPBarButton>? = null,
     ) {
         items?.let {
             objcInformationItems = it

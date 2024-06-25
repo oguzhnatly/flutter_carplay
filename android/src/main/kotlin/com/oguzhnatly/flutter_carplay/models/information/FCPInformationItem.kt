@@ -25,7 +25,7 @@ class FCPInformationItem(obj: Map<String, Any>) {
 
     init {
         val elementIdValue = obj["_elementId"] as? String
-        assert(elementIdValue!=null) {
+        assert(elementIdValue != null) {
             "Missing required key: _elementId"
         }
 

@@ -28,7 +28,8 @@ class FCPMapTemplate(obj: Map<String, Any>) : FCPRootTemplate() {
     lateinit var _super: CPMapTemplate
 
     /// The view controller associated with the map template.
-    private var viewController: SurfaceCallback
+    var viewController: SurfaceCallback
+        private set
 
     /// The title displayed on the map template.
     private var title: String?
@@ -122,6 +123,7 @@ class FCPMapTemplate(obj: Map<String, Any>) : FCPRootTemplate() {
             for (button in mapButtons) {
                 actionStrip.addAction(button.getTemplate())
             }
+            actionStrip.addAction(Action.PAN)
             mapTemplate.setMapActionStrip(actionStrip.build())
         }
 

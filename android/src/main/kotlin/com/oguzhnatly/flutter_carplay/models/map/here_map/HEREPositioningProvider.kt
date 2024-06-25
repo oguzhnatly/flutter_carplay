@@ -37,17 +37,17 @@ class HEREPositioningProvider {
     private var updateListener: LocationListener? = null
 
     private val locationStatusListener: LocationStatusListener =
-            object : LocationStatusListener {
-                override fun onStatusChanged(locationEngineStatus: LocationEngineStatus) {
-                    Log.d(LOG_TAG, "Location engine status: " + locationEngineStatus.name)
-                }
+        object : LocationStatusListener {
+            override fun onStatusChanged(locationEngineStatus: LocationEngineStatus) {
+                Log.d(LOG_TAG, "Location engine status: " + locationEngineStatus.name)
+            }
 
-                override fun onFeaturesNotAvailable(features: List<LocationFeature>) {
-                    for (feature in features) {
-                        Log.d(LOG_TAG, "Location feature not available: " + feature.name)
-                    }
+            override fun onFeaturesNotAvailable(features: List<LocationFeature>) {
+                for (feature in features) {
+                    Log.d(LOG_TAG, "Location feature not available: " + feature.name)
                 }
             }
+        }
 
     init {
         val consentEngine: ConsentEngine

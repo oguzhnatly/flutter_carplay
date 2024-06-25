@@ -230,7 +230,6 @@ class FCPMapViewController : SurfaceCallback {
      */
     override fun onFling(velocityX: Float, velocityY: Float) {
         /**
-         *
          * Fling event appears to have inverted axis compared to scroll event on desktop head unit.
          * This should not be the case according to
          * [androidx.car.app.navigation.model.NavigationTemplate]. To compensate inverted axis ,

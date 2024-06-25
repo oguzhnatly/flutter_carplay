@@ -1,6 +1,7 @@
 package com.oguzhnatly.flutter_carplay
 
 import android.content.Intent
+import androidx.car.app.AppManager
 import androidx.car.app.Screen
 import androidx.car.app.ScreenManager
 import androidx.car.app.Session
@@ -48,59 +49,63 @@ class AndroidAutoSession : Session() {
      */
     override fun onCreateScreen(intent: Intent): Screen {
         lifecycle.addObserver(
-                object : DefaultLifecycleObserver {
-                    override fun onCreate(owner: LifecycleOwner) {
-                        Logger.log("onCreate")
-                        flutterEngine = FlutterEngineCache.getInstance().get("SharedEngine")
-                        if (flutterEngine == null) {
-                            isStartRequired = true
-                            flutterEngine = FlutterEngine(carContext.applicationContext)
-                            FlutterEngineCache.getInstance().put("SharedEngine", flutterEngine)
-                        }
-
-                        super.onCreate(owner)
+            object : DefaultLifecycleObserver {
+                override fun onCreate(owner: LifecycleOwner) {
+                    Logger.log("onCreate")
+                    flutterEngine = FlutterEngineCache.getInstance().get("SharedEngine")
+                    if (flutterEngine == null) {
+                        isStartRequired = true
+                        flutterEngine = FlutterEngine(carContext.applicationContext)
+                        FlutterEngineCache.getInstance().put("SharedEngine", flutterEngine)
                     }
 
-                    override fun onStart(owner: LifecycleOwner) {
-                        Logger.log("onStart")
-                        if (isStartRequired) {
-                            flutterEngine!!.dartExecutor.executeDartEntrypoint(
-                                    DartExecutor.DartEntrypoint.createDefault()
-                            )
-                        }
-
-                        super.onStart(owner)
-                    }
-
-                    override fun onPause(owner: LifecycleOwner) {
-                        Logger.log("onPause")
-                        FlutterCarplayTemplateManager.fcpConnectionStatus =
-                                FCPConnectionTypes.BACKGROUND
-
-                        super.onPause(owner)
-                    }
-
-                    override fun onResume(owner: LifecycleOwner) {
-                        Logger.log("onResume")
-                        FlutterCarplayTemplateManager.fcpConnectionStatus =
-                                FCPConnectionTypes.CONNECTED
-
-                        super.onResume(owner)
-                    }
-
-                    override fun onStop(owner: LifecycleOwner) {
-                        Logger.log("onStop")
-                        FlutterCarplayTemplateManager.fcpConnectionStatus =
-                                FCPConnectionTypes.DISCONNECTED
-                        super.onStop(owner)
-                    }
-
-                    override fun onDestroy(owner: LifecycleOwner) {
-                        Logger.log("onDestroy")
-                        super.onDestroy(owner)
-                    }
+                    super.onCreate(owner)
                 }
+
+                override fun onStart(owner: LifecycleOwner) {
+                    Logger.log("onStart")
+                    if (isStartRequired) {
+                        flutterEngine!!.dartExecutor.executeDartEntrypoint(
+                            DartExecutor.DartEntrypoint.createDefault()
+                        )
+                    }
+
+                    super.onStart(owner)
+                }
+
+                override fun onPause(owner: LifecycleOwner) {
+                    Logger.log("onPause")
+                    FlutterCarplayTemplateManager.fcpConnectionStatus =
+                        FCPConnectionTypes.BACKGROUND
+
+                    super.onPause(owner)
+                }
+
+                override fun onResume(owner: LifecycleOwner) {
+                    Logger.log("onResume")
+                    FlutterCarplayTemplateManager.fcpConnectionStatus =
+                        FCPConnectionTypes.CONNECTED
+
+                    super.onResume(owner)
+                }
+
+                override fun onStop(owner: LifecycleOwner) {
+                    Logger.log("onStop")
+                    FlutterCarplayTemplateManager.fcpConnectionStatus =
+                        FCPConnectionTypes.DISCONNECTED
+                    super.onStop(owner)
+                }
+
+                override fun onDestroy(owner: LifecycleOwner) {
+                    Logger.log("onDestroy")
+                    super.onDestroy(owner)
+                }
+            }
         )
+
+        FlutterCarplayPlugin.rootViewController?.let {
+            carContext.getCarService(AppManager::class.java).setSurfaceCallback(it)
+        }
 
         return (FlutterCarplayPlugin.fcpRootTemplate ?: RootTemplate()).toScreen(carContext)
     }
@@ -130,7 +135,7 @@ class AndroidAutoSession : Session() {
                 }
                 result?.success(true)
             }
-                    ?: result?.success(false)
+                ?: result?.success(false)
         }
     }
 
@@ -148,9 +153,9 @@ class AndroidAutoSession : Session() {
         if (screenManager.stackSize >= 5) {
             Logger.log("Template navigation hierarchy exceeded")
             result?.error(
-                    "0",
-                    "Android Auto cannot have more than 5 templates on navigation hierarchy.",
-                    null
+                "0",
+                "Android Auto cannot have more than 5 templates on navigation hierarchy.",
+                null
             )
             return
         }
@@ -205,9 +210,9 @@ class AndroidAutoSession : Session() {
         if (screenManager.stackSize >= 5) {
             Logger.log("Template navigation hierarchy exceeded")
             result?.error(
-                    "0",
-                    "Android Auto cannot have more than 5 templates on navigation hierarchy.",
-                    null
+                "0",
+                "Android Auto cannot have more than 5 templates on navigation hierarchy.",
+                null
             )
             return
         }

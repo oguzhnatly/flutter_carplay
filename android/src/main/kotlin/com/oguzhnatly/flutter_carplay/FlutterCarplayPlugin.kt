@@ -1,9 +1,11 @@
 package com.oguzhnatly.flutter_carplay
 
-import com.oguzhnatly.flutter_carplay.models.button.FCPTextButton
+import androidx.car.app.SurfaceCallback
+import androidx.car.app.constraints.ConstraintManager
 import com.oguzhnatly.flutter_carplay.models.action_sheet.FCPActionSheetTemplate
 import com.oguzhnatly.flutter_carplay.models.alert.FCPAlertTemplate
 import com.oguzhnatly.flutter_carplay.models.button.FCPBarButton
+import com.oguzhnatly.flutter_carplay.models.button.FCPTextButton
 import com.oguzhnatly.flutter_carplay.models.grid.FCPGridTemplate
 import com.oguzhnatly.flutter_carplay.models.information.FCPInformationItem
 import com.oguzhnatly.flutter_carplay.models.information.FCPInformationTemplate
@@ -38,11 +40,12 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
         /// The root template to be displayed on CarPlay.
         var fcpRootTemplate: FCPRootTemplate? = null
 
-        //        /// The root view controller for CarPlay.
-        //        var rootViewController: UIViewController? = null
+        /// The root view controller for CarPlay.
+        var rootViewController: SurfaceCallback? = null
 
         /// The root template for CarPlay.
         var rootTemplate: CPTemplate? = null
+
 
         /// The present template object for CarPlay modals.
         var fcpPresentTemplate: FCPPresentTemplate? = null
@@ -190,6 +193,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             FCPChannelTypes.onFCPListItemSelectedComplete.name -> {}
+
             FCPChannelTypes.setAlert.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
@@ -241,6 +245,27 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
                 } else {
                     showActionSheet()
                 }
+            }
+
+            FCPChannelTypes.showOverlay.name -> {}
+
+            FCPChannelTypes.getConfig.name -> {
+                val carContext = AndroidAutoService.session?.carContext
+                if (carContext == null) {
+                    result.success(null)
+                    return
+                }
+
+                val listItemLimit =
+                    carContext.getCarService(ConstraintManager::class.java).getContentLimit(
+                        ConstraintManager.CONTENT_LIMIT_TYPE_LIST
+                    )
+
+                val config = mapOf(
+                    "maximumItemCount" to listItemLimit,
+                    "maximumSectionCount" to listItemLimit,
+                )
+                result.success(config)
             }
 
             else -> result.notImplemented()
@@ -329,8 +354,8 @@ private fun FlutterCarplayPlugin.Companion.setRootTemplate(
             // rootViewController
             cpRootTemplate = fcpRootTemplate.getTemplate()
 
-            //            rootViewController = viewController
-            //
+            rootViewController = fcpRootTemplate.viewController
+
             //            if (FlutterCarplayTemplateManager.isDashboardSceneActive) {
             //                FlutterCarplayTemplateManager.dashboardWindow?.rootViewController =
             //                    viewController
@@ -398,12 +423,12 @@ private fun FlutterCarplayPlugin.Companion.pushTemplate(
             //            obj = templateArgs
             //        )
 
-        FCPListTemplate::class.java.simpleName -> {
-            FCPListTemplate(obj = templateArgs, templateType = FCPListTemplateTypes.DEFAULT)
-        }
+            FCPListTemplate::class.java.simpleName -> {
+                FCPListTemplate(obj = templateArgs, templateType = FCPListTemplateTypes.DEFAULT)
+            }
 
-        else -> null
-    }
+            else -> null
+        }
     if (pushTemplate == null) {
         result.success(false)
         return

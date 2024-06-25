@@ -65,7 +65,7 @@ class NavigationHelper(val mapView: MapSurface) {
 
     var visualNavigatorCameraPoint: Anchor2D? = null
         private set
-    
+
     var isNavigationInProgress = false
 
     val lastKnownLocation: Location?
