@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
-import 'package:here_sdk/core.dart';
 
 import '../constants/private_constants.dart';
 import '../flutter_carplay.dart';
@@ -208,22 +207,6 @@ class FlutterCarplayController {
       FCPChannelTypes.recenterMapView.name,
       {'recenterMapPosition': recenterMapPosition},
     );
-  }
-
-  /// Updates the map coordinates on the [CPMapTemplate].
-  static void updateMapCoordinates(
-    GeoCoordinates? stationAddressCoordinates,
-    GeoCoordinates? incidentAddressCoordinates,
-    GeoCoordinates? destinationAddressCoordinates,
-  ) {
-    _methodChannel.invokeMethod(FCPChannelTypes.updateMapCoordinates.name, {
-      'stationAddressLatitude': stationAddressCoordinates?.latitude,
-      'stationAddressLongitude': stationAddressCoordinates?.longitude,
-      'incidentAddressLatitude': incidentAddressCoordinates?.latitude,
-      'incidentAddressLongitude': incidentAddressCoordinates?.longitude,
-      'destinationAddressLatitude': destinationAddressCoordinates?.latitude,
-      'destinationAddressLongitude': destinationAddressCoordinates?.longitude,
-    });
   }
 
   /// Hides the overlay card on [CPMapTemplate]

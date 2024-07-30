@@ -221,14 +221,3 @@ enum FCPListTemplateTypes {
     case DEFAULT
 }
 
-/// Enum defining different types of map marker in CarPlay.
-enum MapMarkerType: String {
-    /// Represents either the current location or the home station location marker in CarPlay.
-    case INITIAL
-
-    /// Represents an incident address marker in CarPlay.
-    case INCIDENT_ADDRESS
-
-    /// Represents a destination address marker in CarPlay.
-    case DESTINATION_ADDRESS
-}

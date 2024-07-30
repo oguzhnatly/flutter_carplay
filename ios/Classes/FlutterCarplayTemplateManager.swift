@@ -99,7 +99,7 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
     // MARK: Response to UISceneDelegate
 
     // Determine which map view controller's view is actively showing.
-    func setActiveMapViewController(with activeScene: UIScene) {
+    /*func setActiveMapViewController(with activeScene: UIScene) {
         MemoryLogger.shared.appendEvent("Set Active MapViewController to \(activeScene.session.configuration.name ?? "")")
 
         if activeScene is CPTemplateApplicationScene {
@@ -139,7 +139,7 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
                 rootViewController.hideSubviews()
             }
         }
-    }
+    }*/
 
     // MARK: CPTemplateApplicationDashboardSceneDelegate
 
@@ -155,10 +155,6 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
             // Remove the carWindow root view controller if the dashboard scene is active
             carWindow?.rootViewController = nil
             window.rootViewController = rootViewController
-        }
-
-        if let dashboardButtons = (FlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.dashboardButtons {
-            dashboardController.shortcutButtons = dashboardButtons.map { $0.get }
         }
 
         // save dashboard controller
@@ -197,20 +193,6 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
         // save interface controller
         carplayInterfaceController = interfaceController
         carplayInterfaceController?.delegate = self
-
-        // Set the root view controller for CarPlay if the scene is active
-        if let rootViewController = (FlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.viewController {
-            FlutterCarplayPlugin.rootViewController = rootViewController
-            // Remove the dashboard window's root view controller if the scene is active
-            dashboardWindow?.rootViewController = nil
-            window.rootViewController = rootViewController
-        }
-
-        // Update the root template
-        if let rootTemplate = (FlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate)?.get {
-            FlutterCarplayPlugin.rootTemplate = rootTemplate
-            carplayInterfaceController?.setRootTemplate(rootTemplate, animated: FlutterCarplayPlugin.animated, completion: nil)
-        }
     }
 
     /// CarPlay scene did disconnect
@@ -220,9 +202,6 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
     func interfaceController(_: CPInterfaceController, didDisconnectWith _: CPWindow) {
         MemoryLogger.shared.appendEvent("Disconnected from CarPlay window.")
 
-        if let mapTemplate = FlutterCarplayPlugin.fcpRootTemplate as? FCPMapTemplate {
-            mapTemplate.stopNavigation()
-        }
         carplayInterfaceController = nil
         carWindow?.rootViewController = nil
     }
