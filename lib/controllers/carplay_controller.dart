@@ -14,10 +14,10 @@ class FlutterCarplayController {
   static final EventChannel _eventChannel =
       EventChannel(_carplayHelper.makeFCPChannelId(event: '/event'));
 
-  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate], [CPMapTemplate], [CPSearchTemplate] in a List
+  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate], [CPSearchTemplate] in a List
   static List<dynamic> templateHistory = [];
 
-  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate], [CPMapTemplate]
+  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate]
   static dynamic currentRootTemplate;
 
   /// [CPAlertTemplate], [CPActionSheetTemplate], [CPVoiceControlTemplate]
@@ -34,187 +34,6 @@ class FlutterCarplayController {
   Future<bool> reactToNativeModule(FCPChannelTypes type, dynamic data) async {
     final value = await _methodChannel.invokeMethod(type.name, data);
     return value;
-  }
-
-  /// Displays a banner on [CPMapTemplate]
-  static void showBanner(String elementId, String message, int color) {
-    _methodChannel.invokeMethod(FCPChannelTypes.showBanner.name, {
-      '_elementId': elementId,
-      'message': message,
-      'color': color,
-    });
-  }
-
-  /// Hides the banner on [CPMapTemplate]
-  static void hideBanner(String elementId) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.hideBanner.name,
-      {'_elementId': elementId},
-    );
-  }
-
-  /// Displays a toast on [CPMapTemplate]
-  static void showToast(String elementId, String message, Duration duration) {
-    _methodChannel.invokeMethod(FCPChannelTypes.showToast.name, {
-      '_elementId': elementId,
-      'message': message,
-      'duration': duration.inSeconds.toDouble(),
-    });
-  }
-
-  /// Displays an overlay card on [CPMapTemplate]
-  static void showOverlay(
-    String elementId,
-    String? primaryTitle,
-    String? secondaryTitle,
-    String? subtitle,
-  ) {
-    _methodChannel.invokeMethod(FCPChannelTypes.showOverlay.name, {
-      '_elementId': elementId,
-      'primaryTitle': primaryTitle,
-      'secondaryTitle': secondaryTitle,
-      'subtitle': subtitle,
-    });
-  }
-
-  /// Show trip previews on the [CPMapTemplate]
-  static void showTripPreviews(
-    String elementId,
-    List<CPTrip> trips,
-    CPTrip? selectedTrip,
-    CPTripPreviewTextConfiguration? textConfiguration,
-  ) {
-    _methodChannel.invokeMethod(FCPChannelTypes.showTripPreviews.name, {
-      '_elementId': elementId,
-      'trips': trips.map((e) => e.toJson()).toList(),
-      'selectedTrip': selectedTrip?.toJson(),
-      'textConfiguration': textConfiguration?.toJson(),
-    });
-  }
-
-  /// Hides the trip previews from the [CPMapTemplate]
-  static void hideTripPreviews(String elementId) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.hideTripPreviews.name,
-      {'_elementId': elementId},
-    );
-  }
-
-  /// Show panning interface on the [CPMapTemplate]
-  static void showPanningInterface(String elementId, {bool animated = true}) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.showPanningInterface.name,
-      {
-        '_elementId': elementId,
-        'animated': animated,
-      },
-    );
-  }
-
-  /// Dismiss panning interface on the [CPMapTemplate]
-  static void dismissPanningInterface(
-    String elementId, {
-    bool animated = true,
-  }) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.dismissPanningInterface.name,
-      {
-        '_elementId': elementId,
-        'animated': animated,
-      },
-    );
-  }
-
-  /// Zoom in on the [CPMapTemplate]
-  static void zoomInMapView(String elementId) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.zoomInMapView.name,
-      {'_elementId': elementId},
-    );
-  }
-
-  /// Zoom out on the [CPMapTemplate]
-  static void zoomOutMapView(String elementId) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.zoomOutMapView.name,
-      {'_elementId': elementId},
-    );
-  }
-
-  /// Starts a navigation.
-  static void startNavigation(
-    String elementId,
-    CPTrip trip,
-  ) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.startNavigation.name,
-      {
-        '_elementId': elementId,
-        'trip': trip.toJson(),
-      },
-    );
-  }
-
-  /// Stops a navigation.
-  static void stopNavigation(String elementId) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.stopNavigation.name,
-      {'_elementId': elementId},
-    );
-  }
-
-  /// Sends back the action text for the next maneuver.
-  static void onManeuverActionTextRequestComplete(
-    String actionText, {
-    bool isPrimary = false,
-  }) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.onManeuverActionTextRequestComplete.name,
-      {
-        'actionText': actionText,
-        'isPrimary': isPrimary,
-      },
-    );
-  }
-
-  /// Toggles offline mode.
-  static void toggleOfflineMode({bool isOffline = false}) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.toggleOfflineMode.name,
-      {'isOffline': isOffline},
-    );
-  }
-
-  /// Mutes or un-mutes voice instructions.
-  static void toggleVoiceInstructions({bool isMuted = false}) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.toggleVoiceInstructions.name,
-      {'isMuted': isMuted},
-    );
-  }
-
-  /// Toggles the satellite view on the [CPMapTemplate].
-  static void toggleSatelliteView({bool showSatelliteView = false}) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.toggleSatelliteView.name,
-      {'showSatelliteView': showSatelliteView},
-    );
-  }
-
-  /// Re-centers the map view on the [CPMapTemplate].
-  static void recenterMapView(String recenterMapPosition) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.recenterMapView.name,
-      {'recenterMapPosition': recenterMapPosition},
-    );
-  }
-
-  /// Hides the overlay card on [CPMapTemplate]
-  static void hideOverlay(String elementId) {
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.hideOverlay.name,
-      {'_elementId': elementId},
-    );
   }
 
   /// Updates the [CPInformationTemplate]
@@ -240,58 +59,6 @@ class FlutterCarplayController {
             //   }
             case final CPInformationTemplate informationTemplate:
               if (informationTemplate.uniqueId == elementId) {
-                template = updatedTemplate;
-                return;
-              }
-            default:
-          }
-        }
-      }
-    });
-  }
-
-  /// Updates the [CPMapTemplate]
-  static void updateCPMapTemplate(CPMapTemplate updatedTemplate) {
-    final isPanningInterfaceVisible = updatedTemplate.isPanningInterfaceVisible;
-    _methodChannel.invokeMethod(
-      FCPChannelTypes.updateMapTemplate.name,
-      {
-        '_elementId': updatedTemplate.uniqueId,
-        'title': updatedTemplate.title,
-        'isPanningInterfaceVisible': isPanningInterfaceVisible,
-        'automaticallyHidesNavigationBar':
-            updatedTemplate.automaticallyHidesNavigationBar,
-        'hidesButtonsWithNavigationBar':
-            updatedTemplate.hidesButtonsWithNavigationBar,
-        'mapButtons': (isPanningInterfaceVisible
-                ? updatedTemplate.mapButtonsWhilePanningMode
-                : updatedTemplate.mapButtons)
-            .map((e) => e.toJson())
-            .toList(),
-        'leadingNavigationBarButtons': (isPanningInterfaceVisible
-                ? <CPBarButton>[]
-                : updatedTemplate.leadingNavigationBarButtons)
-            .map((e) => e.toJson())
-            .toList(),
-        'trailingNavigationBarButtons': (isPanningInterfaceVisible
-                ? updatedTemplate.barButtonsWhilePanningMode
-                : updatedTemplate.trailingNavigationBarButtons)
-            .map((e) => e.toJson())
-            .toList(),
-      },
-    ).then((value) {
-      if (value) {
-        for (var template in templateHistory) {
-          switch (template) {
-            // case final CPTabBarTemplate tabBarTemplate:
-            //   for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
-            //     if (tab.uniqueId == elementId) {
-            //       tabBarTemplate.templates[tabIndex] = updatedTemplate;
-            //       return;
-            //     }
-            //   }
-            case final CPMapTemplate mapTemplate:
-              if (mapTemplate.uniqueId == updatedTemplate.uniqueId) {
                 template = updatedTemplate;
                 return;
               }
@@ -376,7 +143,7 @@ class FlutterCarplayController {
 
   /// Adds the pushed [template] to the [templateHistory]
   void addTemplateToHistory(dynamic template) {
-    if (template is CPMapTemplate ||
+    if (
         template is CPListTemplate ||
         template is CPGridTemplate ||
         template is CPSearchTemplate ||
@@ -583,59 +350,6 @@ class FlutterCarplayController {
             template.trailingNavigationBarButtons.singleWhereOrNull(
               (e) => e.uniqueId == elementId,
             );
-        if (button != null) {
-          button.onPressed();
-          return;
-        }
-      } else if (template is CPMapTemplate) {
-        final button = template.leadingNavigationBarButtons.singleWhereOrNull(
-              (e) => e.uniqueId == elementId,
-            ) ??
-            template.trailingNavigationBarButtons.singleWhereOrNull(
-              (e) => e.uniqueId == elementId,
-            ) ??
-            template.barButtonsWhilePanningMode.singleWhereOrNull(
-              (e) => e.uniqueId == elementId,
-            );
-        if (button != null) {
-          button.onPressed();
-          return;
-        }
-      }
-    }
-  }
-
-  /// Processes the FCPMapButtonPressedChannel
-  ///
-  /// Parameters:
-  /// - elementId: The id of the [CPMapButton]
-  void processFCPMapButtonPressed(String elementId) {
-    for (final template in templateHistory) {
-      if (template is CPMapTemplate) {
-        final button = template.mapButtons.singleWhereOrNull(
-              (e) => e.uniqueId == elementId,
-            ) ??
-            template.mapButtonsWhilePanningMode.singleWhereOrNull(
-              (e) => e.uniqueId == elementId,
-            );
-        if (button != null) {
-          button.onPressed();
-          return;
-        }
-      }
-    }
-  }
-
-  /// Processes the FCPDashboardButtonPressedChannel
-  ///
-  /// Parameters:
-  /// - elementId: The id of the [CPMapButton]
-  void processFCPDashboardButtonPressed(String elementId) {
-    for (final template in templateHistory) {
-      if (template is CPMapTemplate) {
-        final button = template.dashboardButtons.singleWhereOrNull(
-          (e) => e.uniqueId == elementId,
-        );
         if (button != null) {
           button.onPressed();
           return;
