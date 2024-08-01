@@ -43,11 +43,11 @@ class FlutterCarplaySceneDelegate: NSObject {
         if scene.session.configuration.name == "CarPlayConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect application scene did become active.")
             carplayConnectionStatus = FCPConnectionTypes.connected
-            FlutterCarplayTemplateManager.shared.setActiveMapViewController(with: scene)
+           FlutterCarplayTemplateManager.shared.setActiveViewController(with: scene)
         } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect application dashboard scene did become active.")
             dashboardConnectionStatus = FCPConnectionTypes.connected
-            FlutterCarplayTemplateManager.shared.setActiveMapViewController(with: scene)
+            FlutterCarplayTemplateManager.shared.setActiveViewController(with: scene)
         }
 
         if carplayConnectionStatus == FCPConnectionTypes.connected || dashboardConnectionStatus == FCPConnectionTypes.connected {
@@ -84,19 +84,21 @@ class FlutterCarplaySceneDelegate: NSObject {
 // MARK: CPTemplateApplicationSceneDelegate
 
 extension FlutterCarplaySceneDelegate: CPTemplateApplicationSceneDelegate {
-    func templateApplicationScene(_: CPTemplateApplicationScene,
-                                  didConnect interfaceController: CPInterfaceController, to window: CPWindow)
-    {
-        MemoryLogger.shared.appendEvent("Connected to CarPlay.")
-        FlutterCarplayTemplateManager.shared.interfaceController(interfaceController, didConnectWith: window)
-    }
+    func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
+                                    didConnect interfaceController: CPInterfaceController) {
+        FlutterCarplayTemplateManager.shared.interfaceController(interfaceController)
+        FlutterCarplayTemplateManager.shared.carplayInterfaceController = interfaceController
 
-    func templateApplicationScene(_: CPTemplateApplicationScene,
-                                  didDisconnect interfaceController: CPInterfaceController, from window: CPWindow)
-    {
+        FlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
+        FlutterCarplaySceneDelegate.forceUpdateRootTemplate()
+      }
+      
+      func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
+                                    didDisconnect interfaceController: CPInterfaceController, from window: CPWindow) {
         FlutterCarplayTemplateManager.shared.interfaceController(interfaceController, didDisconnectWith: window)
-        MemoryLogger.shared.appendEvent("Disconnected from CarPlay.")
-    }
+          
+        FlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.disconnected)
+      }
 }
 
 extension FlutterCarplaySceneDelegate: CPTemplateApplicationDashboardSceneDelegate {
