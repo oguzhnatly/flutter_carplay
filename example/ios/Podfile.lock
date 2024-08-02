@@ -2,33 +2,20 @@ PODS:
   - Flutter (1.0.0)
   - flutter_carplay (1.0.3):
     - Flutter
-    - here_sdk
-  - here_sdk (4.18.2.0.105808.release):
-    - Flutter
-  - url_launcher_ios (0.0.1):
-    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_carplay (from `.symlinks/plugins/flutter_carplay/ios`)
-  - here_sdk (from `.symlinks/plugins/here_sdk/ios`)
-  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
   flutter_carplay:
     :path: ".symlinks/plugins/flutter_carplay/ios"
-  here_sdk:
-    :path: ".symlinks/plugins/here_sdk/ios"
-  url_launcher_ios:
-    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_carplay: 1d0d179b5bcadcf098626c4ce1f7dab71796f908
-  here_sdk: a108cb8a5cc4c855a79b59d756189befe0ff0f11
-  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
+  flutter_carplay: fe777eed6b4b159fcc4be4eada9e6465641202a2
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 

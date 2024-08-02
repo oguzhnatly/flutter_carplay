@@ -15,9 +15,6 @@ enum FCPChannelTypes {
   /// Event to update the content of a list template in CarPlay.
   updateListTemplate,
 
-  /// Event to update the content of a map template in CarPlay.
-  updateMapTemplate,
-
   /// Event to update the content of an information template in CarPlay.
   updateInformationTemplate,
 
@@ -68,12 +65,6 @@ enum FCPChannelTypes {
 
   /// Event triggered when a bar button is pressed in CarPlay.
   onBarButtonPressed,
-
-  /// Event triggered when a map button is pressed in CarPlay.
-  onMapButtonPressed,
-
-  /// Event triggered when a dashboard button is pressed in CarPlay.
-  onDashboardButtonPressed,
 
   /// Event triggered when a text button is pressed in CarPlay.
   onTextButtonPressed,
@@ -128,58 +119,4 @@ enum FCPChannelTypes {
 
   /// Event for hiding an overlay in CarPlay.
   hideOverlay,
-
-  /// Event for showing a trip preview in CarPlay.
-  showTripPreviews,
-
-  /// Event for hiding a trip preview in CarPlay.
-  hideTripPreviews,
-
-  /// Event for showing the panning interface in CarPlay.
-  showPanningInterface,
-
-  /// Event for dismissing the panning interface in CarPlay.
-  dismissPanningInterface,
-
-  /// Event for starting a navigation in CarPlay.
-  startNavigation,
-
-  /// Event for stopping a navigation in CarPlay.
-  stopNavigation,
-
-  /// Event for updating the map coordinates in CarPlay.
-  updateMapCoordinates,
-
-  /// Event for requesting a maneuver action text in CarPlay.
-  onManeuverActionTextRequested,
-
-  /// Event triggered when the maneuver action text request is complete in CarPlay.
-  onManeuverActionTextRequestComplete,
-
-  /// Event for toggling offline mode in CarPlay.
-  toggleOfflineMode,
-
-  /// Event for toggling a voice instruction in CarPlay.
-  toggleVoiceInstructions,
-
-  /// Event for toggling satellite view in CarPlay.
-  toggleSatelliteView,
-
-  /// Event for recentering the map view in CarPlay.
-  recenterMapView,
-
-  /// Event for starting the navigation from CarPlay.
-  onNavigationStartedFromCarplay,
-
-  /// Event for failed the navigation from CarPlay.
-  onNavigationFailedFromCarplay,
-
-  /// Event for completed navigation from CarPlay.
-  onNavigationCompletedFromCarplay,
-
-  /// Event for zooming in the map view in CarPlay.
-  zoomInMapView,
-
-  /// Event for zooming out the map view in CarPlay.
-  zoomOutMapView,
 }

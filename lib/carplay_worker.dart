@@ -45,31 +45,6 @@ class FlutterCarplay {
   /// A listener function that will be triggered when an information template is popped.
   static Function()? _onInformationTemplatePopped;
 
-  /// A listener function that will be triggered when maneuver action text is requested.
-  static Function(
-    String action,
-    String roadName,
-    String nextRoadName, {
-    bool isPrimary,
-  })? _onManeuverActionTextRequested;
-
-  /// A listener function that will be triggered when
-  /// navigation is started from CarPlay.
-  static Function(
-    double sourceLatitude,
-    double sourceLongitude,
-    double destinationLatitude,
-    double destinationLongitude,
-  )? _onNavigationStartedFromCarplay;
-
-  /// A listener function that will be triggered when
-  /// navigation is failed from CarPlay.
-  static Function(String message)? _onNavigationFailedFromCarplay;
-
-  /// A listener function that will be triggered when
-  /// navigation is completed from CarPlay.
-  static Function()? _onNavigationCompletedFromCarplay;
-
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
     _eventBroadcast = _carPlayController.eventChannel
@@ -122,12 +97,6 @@ class FlutterCarplay {
         case FCPChannelTypes.onBarButtonPressed:
           _carPlayController
               .processFCPBarButtonPressed(event['data']['elementId']);
-        case FCPChannelTypes.onMapButtonPressed:
-          _carPlayController
-              .processFCPMapButtonPressed(event['data']['elementId']);
-        case FCPChannelTypes.onDashboardButtonPressed:
-          _carPlayController
-              .processFCPDashboardButtonPressed(event['data']['elementId']);
         case FCPChannelTypes.onTextButtonPressed:
           _carPlayController
               .processFCPTextButtonPressed(event['data']['elementId']);
@@ -142,26 +111,6 @@ class FlutterCarplay {
         case FCPChannelTypes.onSpeechCompleted:
           _carPlayController
               .processFCPSpeakerOnComplete(event['data']['elementId']);
-        case FCPChannelTypes.onManeuverActionTextRequested:
-          final data = event['data'];
-          _onManeuverActionTextRequested?.call(
-            data['action'],
-            data['roadName'],
-            data['nextRoadName'],
-            isPrimary: data['isPrimary'],
-          );
-        case FCPChannelTypes.onNavigationStartedFromCarplay:
-          final data = event['data'];
-          _onNavigationStartedFromCarplay?.call(
-            data['sourceLatitude'],
-            data['sourceLongitude'],
-            data['destinationLatitude'],
-            data['destinationLongitude'],
-          );
-        case FCPChannelTypes.onNavigationFailedFromCarplay:
-          _onNavigationFailedFromCarplay?.call(event['data']['message']);
-        case FCPChannelTypes.onNavigationCompletedFromCarplay:
-          _onNavigationCompletedFromCarplay?.call();
         default:
           break;
       }
@@ -224,7 +173,7 @@ class FlutterCarplay {
     required dynamic rootTemplate,
     bool animated = true,
   }) async {
-    if (rootTemplate is CPMapTemplate ||
+    if (
         rootTemplate is CPGridTemplate ||
         rootTemplate is CPListTemplate ||
         rootTemplate is CPTabBarTemplate ||
@@ -405,68 +354,6 @@ class FlutterCarplay {
     _onInformationTemplatePopped = null;
   }
 
-  /// Callback function will be fired when maneuver action text is requested.
-  static void addListenerOnManeuverActionTextRequested({
-    Function(
-      String action,
-      String roadName,
-      String nextRoadName, {
-      bool isPrimary,
-    })? onManeuverActionTextRequested,
-  }) {
-    _onManeuverActionTextRequested = onManeuverActionTextRequested;
-  }
-
-  /// Removes the callback function that has been set before in order to listen
-  /// on maneuver action text requests.
-  static void removeListenerOnManeuverActionTextRequested() {
-    _onManeuverActionTextRequested = null;
-  }
-
-  /// Callback function will be fired when navigation started from CarPlay.
-  static void addListenerOnNavigationStartedFromCarplay({
-    Function(
-      double sourceLatitude,
-      double sourceLongitude,
-      double destinationLatitude,
-      double destinationLongitude,
-    )? onNavigationStartedFromCarplay,
-  }) {
-    _onNavigationStartedFromCarplay = onNavigationStartedFromCarplay;
-  }
-
-  /// Removes the callback function that has been set before in order to listen
-  /// on navigation started from CarPlay.
-  static void removeListenerOnNavigationStartedFromCarplay() {
-    _onNavigationStartedFromCarplay = null;
-  }
-
-  /// Callback function will be fired when navigation failed from CarPlay.
-  static void addListenerOnNavigationFailedFromCarplay({
-    Function(String message)? onNavigationFailedFromCarplay,
-  }) {
-    _onNavigationFailedFromCarplay = onNavigationFailedFromCarplay;
-  }
-
-  /// Removes the callback function that has been set before in order to listen
-  /// on navigation failed from CarPlay.
-  static void removeListenerOnNavigationFailedFromCarplay() {
-    _onNavigationFailedFromCarplay = null;
-  }
-
-  /// Callback function will be fired when navigation completed from CarPlay.
-  static void addListenerOnNavigationCompletedFromCarplay({
-    Function()? onNavigationCompletedFromCarplay,
-  }) {
-    _onNavigationCompletedFromCarplay = onNavigationCompletedFromCarplay;
-  }
-
-  /// Removes the callback function that has been set before in order to listen
-  /// on navigation completed from CarPlay.
-  static void removeListenerOnNavigationCompletedFromCarplay() {
-    _onNavigationCompletedFromCarplay = null;
-  }
-
   /// Adds the specified [CPSpeaker] utterance to the queue of the speech synthesizer in CarPlay.
   static void speak(CPSpeaker speakerController) {
     if (speakerController.onCompleted != null) {
@@ -576,7 +463,7 @@ class FlutterCarplay {
     required dynamic template,
     bool animated = true,
   }) async {
-    if (template is CPMapTemplate ||
+    if (
         template is CPGridTemplate ||
         template is CPListTemplate ||
         template is CPSearchTemplate ||
