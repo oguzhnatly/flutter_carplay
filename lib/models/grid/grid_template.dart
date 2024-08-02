@@ -1,9 +1,11 @@
 import 'package:uuid/uuid.dart';
 
+import '../template.dart';
 import 'grid_button.dart';
 
+
 /// A template object that displays and manages a grid of items.
-class CPGridTemplate {
+class CPGridTemplate extends CPTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -18,12 +20,14 @@ class CPGridTemplate {
   /// Each button must contain a title that is shown in the grid template's navigation bar.
   CPGridTemplate({required this.title, required this.buttons});
 
+  @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'title': title,
         'buttons': buttons.map((e) => e.toJson()).toList(),
       };
 
+  @override
   String get uniqueId {
     return _elementId;
   }

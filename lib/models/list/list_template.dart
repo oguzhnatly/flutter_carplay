@@ -2,10 +2,11 @@ import 'package:uuid/uuid.dart';
 
 import '../../controllers/carplay_controller.dart';
 import '../button/bar_button.dart';
+import '../template.dart';
 import 'list_section.dart';
 
 /// A template object that displays and manages a list of items.
-class CPListTemplate {
+class CPListTemplate extends CPTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -88,6 +89,7 @@ class CPListTemplate {
     this.trailingNavigationBarButtons = const [],
   });
 
+  @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'title': title,
@@ -142,6 +144,7 @@ class CPListTemplate {
     FlutterCarplayController.updateCPListTemplate(this);
   }
 
+  @override
   String get uniqueId {
     return _elementId;
   }

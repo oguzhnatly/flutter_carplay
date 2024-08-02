@@ -105,7 +105,7 @@ class FlutterCarplay {
               ?.call(event['data']['transcript']);
         case FCPChannelTypes.onVoiceControlTemplatePopped:
           _onCancelVoiceControl?.call();
-          _carPlayController.proessFCPVoiceControlTemplatePoppedChannel(
+          _carPlayController.processFCPVoiceControlTemplatePoppedChannel(
             event['data']['elementId'],
           );
         case FCPChannelTypes.onSpeechCompleted:
@@ -170,7 +170,7 @@ class FlutterCarplay {
   ///
   /// [!] CarPlay cannot have more than 5 templates on one screen.
   static Future<void> setRootTemplate({
-    required dynamic rootTemplate,
+    required CPTemplate rootTemplate,
     bool animated = true,
   }) async {
     if (
@@ -202,7 +202,7 @@ class FlutterCarplay {
 
   /// Getter for current root template.
   /// Return one of type [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate]
-  static dynamic get rootTemplate {
+  static CPTemplate? get rootTemplate {
     return FlutterCarplayController.currentRootTemplate;
   }
 
@@ -460,7 +460,7 @@ class FlutterCarplay {
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
   static Future<bool> push({
-    required dynamic template,
+    required CPTemplate template,
     bool animated = true,
   }) async {
     if (

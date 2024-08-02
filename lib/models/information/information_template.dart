@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 import '../../controllers/carplay_controller.dart';
 import '../button/bar_button.dart';
 import '../button/text_button.dart';
+import '../template.dart';
 import 'information_item.dart';
 
 /// Enum defining different layouts of information templates.
@@ -15,7 +16,7 @@ enum CPInformationTemplateLayout {
 }
 
 /// A template object that displays and manages information items and text buttons.
-class CPInformationTemplate {
+class CPInformationTemplate extends CPTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -51,6 +52,7 @@ class CPInformationTemplate {
     this.backButton,
   });
 
+  @override
   Map<String, dynamic> toJson() => {
         'title': title,
         'layout': layout.name,
@@ -90,6 +92,7 @@ class CPInformationTemplate {
     FlutterCarplayController.updateCPInformationTemplate(this);
   }
 
+  @override
   String get uniqueId {
     return _elementId;
   }
