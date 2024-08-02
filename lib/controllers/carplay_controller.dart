@@ -15,10 +15,10 @@ class FlutterCarplayController {
       EventChannel(_carplayHelper.makeFCPChannelId(event: '/event'));
 
   /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate], [CPSearchTemplate] in a List
-  static List<dynamic> templateHistory = [];
+  static List<CPTemplate?> templateHistory = [];
 
   /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate]
-  static dynamic currentRootTemplate;
+  static CPTemplate? currentRootTemplate;
 
   /// [CPAlertTemplate], [CPActionSheetTemplate], [CPVoiceControlTemplate]
   static CPPresentTemplate? currentPresentTemplate;
@@ -50,13 +50,6 @@ class FlutterCarplayController {
       if (value) {
         for (var template in templateHistory) {
           switch (template) {
-            // case final CPTabBarTemplate tabBarTemplate:
-            //   for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
-            //     if (tab.uniqueId == elementId) {
-            //       tabBarTemplate.templates[tabIndex] = updatedTemplate;
-            //       return;
-            //     }
-            //   }
             case final CPInformationTemplate informationTemplate:
               if (informationTemplate.uniqueId == elementId) {
                 template = updatedTemplate;
@@ -142,7 +135,7 @@ class FlutterCarplayController {
   }
 
   /// Adds the pushed [template] to the [templateHistory]
-  void addTemplateToHistory(dynamic template) {
+  void addTemplateToHistory(CPTemplate template) {
     if (
         template is CPListTemplate ||
         template is CPGridTemplate ||
@@ -164,10 +157,11 @@ class FlutterCarplayController {
   void processFCPSearchTextUpdatedChannel(String elementId, String query) {
     for (final template in templateHistory) {
       if (template is CPSearchTemplate && template.uniqueId == elementId) {
-        template.onSearchTextUpdated(
+        final searchTemplate = template;
+        searchTemplate.onSearchTextUpdated(
           query,
           (searchResults) {
-            template.searchResults = searchResults;
+            searchTemplate.searchResults = searchResults;
             reactToNativeModule(
               FCPChannelTypes.onSearchTextUpdatedComplete,
               {
@@ -234,7 +228,7 @@ class FlutterCarplayController {
   ///
   /// Parameters:
   /// - elementId: The id of the [CPVoiceControlTemplate]
-  Future<void> proessFCPVoiceControlTemplatePoppedChannel(
+  Future<void> processFCPVoiceControlTemplatePoppedChannel(
     String elementId,
   ) async {
     final topTemplate = FlutterCarplayController.currentPresentTemplate;
