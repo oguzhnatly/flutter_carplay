@@ -1,9 +1,10 @@
 import 'package:uuid/uuid.dart';
 
 import '../list/list_item.dart';
+import '../template.dart';
 
 /// A template object that displays search template.
-class CPSearchTemplate {
+class CPSearchTemplate extends CPTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -17,8 +18,10 @@ class CPSearchTemplate {
   /// Creates [CPSearchTemplate]
   CPSearchTemplate({required this.onSearchTextUpdated});
 
+  @override
   Map<String, dynamic> toJson() => {'_elementId': _elementId};
 
+  @override
   String get uniqueId {
     return _elementId;
   }
