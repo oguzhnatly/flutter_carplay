@@ -18,7 +18,7 @@ class CPGridTemplate extends CPTemplate {
   /// Creates [CPGridTemplate] in order to display a grid of items as buttons.
   /// When creating the grid template, provide an array of [CPGridButton] objects.
   /// Each button must contain a title that is shown in the grid template's navigation bar.
-  CPGridTemplate({this.title, required this.buttons});
+  CPGridTemplate({this.title, this.buttons = const []});
 
   @override
   Map<String, dynamic> toJson() => {

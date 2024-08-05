@@ -19,9 +19,6 @@ enum class FCPChannelTypes {
     /// Event to update the content of a list template in Android Auto.
     updateListTemplate,
 
-    /// Event to update the content of a map template in Android Auto.
-    updateMapTemplate,
-
     /// Event to update the content of an information template in Android Auto.
     updateInformationTemplate,
 
@@ -72,9 +69,6 @@ enum class FCPChannelTypes {
 
     /// Event triggered when a bar button is pressed in Android Auto.
     onBarButtonPressed,
-
-    /// Event triggered when a map button is pressed in Android Auto.
-    onMapButtonPressed,
 
     /// Event triggered when a dashboard button is pressed in Android Auto.
     onDashboardButtonPressed,
@@ -132,60 +126,6 @@ enum class FCPChannelTypes {
 
     /// Event for hiding an overlay in Android Auto.
     hideOverlay,
-
-    /// Event for showing a trip preview in Android Auto.
-    showTripPreviews,
-
-    /// Event for hiding a trip preview in Android Auto.
-    hideTripPreviews,
-
-    /// Event for showing the panning interface in Android Auto.
-    showPanningInterface,
-
-    /// Event for dismissing the panning interface in Android Auto.
-    dismissPanningInterface,
-
-    /// Event for starting a navigation in Android Auto.
-    startNavigation,
-
-    /// Event for stopping a navigation in Android Auto.
-    stopNavigation,
-
-    /// Event for updating the map coordinates in Android Auto.
-    updateMapCoordinates,
-
-    /// Event for requesting a maneuver action text in Android Auto.
-    onManeuverActionTextRequested,
-
-    /// Event triggered when the maneuver action text request is complete in Android Auto.
-    onManeuverActionTextRequestComplete,
-
-    /// Event for toggling offline mode in Android Auto.
-    toggleOfflineMode,
-
-    /// Event for toggling a voice instruction in Android Auto.
-    toggleVoiceInstructions,
-
-    /// Event for toggling satellite view in Android Auto.
-    toggleSatelliteView,
-
-    /// Event for recentering the map view in Android Auto.
-    recenterMapView,
-
-    /// Event for starting the navigation from Android Auto.
-    onNavigationStartedFromCarplay,
-
-    /// Event for failed the navigation from Android Auto.
-    onNavigationFailedFromCarplay,
-
-    /// Event for completed navigation from Android Auto.
-    onNavigationCompletedFromCarplay,
-
-    /// Event for zooming in the map view in Android Auto.
-    zoomInMapView,
-
-    /// Event for zooming out the map view in Android Auto.
-    zoomOutMapView,
 }
 
 /** Enum defining different accessory types. */

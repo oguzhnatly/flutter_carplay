@@ -14,7 +14,7 @@ class CPPointOfInterestTemplate extends CPTemplate {
   final List<CPPointOfInterest> poi;
 
   /// Creates [CPPointOfInterestTemplate]
-  CPPointOfInterestTemplate({required this.title, required this.poi});
+  CPPointOfInterestTemplate({required this.title, this.poi = const []});
 
   @override
   Map<String, dynamic> toJson() => {

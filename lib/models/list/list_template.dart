@@ -77,7 +77,7 @@ class CPListTemplate extends CPTemplate {
   ///
   /// **Consider that some vehicles limit the number of items that [CPListTemplate] displays.**
   CPListTemplate({
-    required this.sections,
+    this.sections = const [],
     this.title,
     this.systemIcon,
     this.backButton,
