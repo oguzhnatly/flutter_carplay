@@ -44,8 +44,8 @@ class CPInformationTemplate extends CPTemplate {
   /// Creates [CPInformationTemplate]
   CPInformationTemplate({
     required this.title,
-    required this.layout,
-    required this.informationItems,
+    this.layout = CPInformationTemplateLayout.leading,
+    this.informationItems = const [],
     this.actions = const [],
     this.leadingNavigationBarButtons = const [],
     this.trailingNavigationBarButtons = const [],
