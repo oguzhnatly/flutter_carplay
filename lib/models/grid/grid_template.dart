@@ -10,7 +10,7 @@ class CPGridTemplate extends CPTemplate {
   final String _elementId = const Uuid().v4();
 
   /// A title will be shown in the navigation bar.
-  final String title;
+  final String? title;
 
   /// The array of grid buttons as [CPGridButton] displayed on the template.
   final List<CPGridButton> buttons;
@@ -18,7 +18,7 @@ class CPGridTemplate extends CPTemplate {
   /// Creates [CPGridTemplate] in order to display a grid of items as buttons.
   /// When creating the grid template, provide an array of [CPGridButton] objects.
   /// Each button must contain a title that is shown in the grid template's navigation bar.
-  CPGridTemplate({required this.title, required this.buttons});
+  CPGridTemplate({this.title, required this.buttons});
 
   @override
   Map<String, dynamic> toJson() => {
