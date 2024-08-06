@@ -45,13 +45,11 @@ class FlutterCarplayController {
       updatedTemplate.toJson(),
     );
     if (isSuccess) {
-      for (final template in templateHistory) {
-        switch (template) {
-          case final CPInformationTemplate informationTemplate:
-            if (informationTemplate.uniqueId == elementId) {
-              return updatedTemplate;
-            }
-          default:
+      for (var i = 0; i < templateHistory.length; i++) {
+        final template = templateHistory[i];
+        if (template is CPInformationTemplate && template.uniqueId == elementId) {
+          templateHistory[i] = updatedTemplate;
+          return updatedTemplate;
         }
       }
     }
@@ -67,7 +65,8 @@ class FlutterCarplayController {
       updatedTemplate.toJson(),
     );
     if (isSuccess) {
-      for (final template in templateHistory) {
+      for (var i = 0; i < templateHistory.length; i++) {
+        final template = templateHistory[i];
         switch (template) {
           case final CPTabBarTemplate tabBarTemplate:
             for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
@@ -78,9 +77,9 @@ class FlutterCarplayController {
             }
           case final CPListTemplate listTemplate:
             if (listTemplate.uniqueId == elementId) {
+              templateHistory[i] = updatedTemplate;
               return updatedTemplate;
             }
-          default:
         }
       }
     }
@@ -115,7 +114,6 @@ class FlutterCarplayController {
                 }
               }
             }
-          default:
         }
       }
     }
