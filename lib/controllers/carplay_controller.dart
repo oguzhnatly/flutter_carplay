@@ -9,10 +9,8 @@ import '../helpers/carplay_helper.dart';
 /// system with the Apple CarPlay and native functions.
 class FlutterCarplayController {
   static final FlutterCarplayHelper _carplayHelper = FlutterCarplayHelper();
-  static final MethodChannel _methodChannel =
-      MethodChannel(_carplayHelper.makeFCPChannelId());
-  static final EventChannel _eventChannel =
-      EventChannel(_carplayHelper.makeFCPChannelId(event: '/event'));
+  static final MethodChannel _methodChannel = MethodChannel(_carplayHelper.makeFCPChannelId());
+  static final EventChannel _eventChannel = EventChannel(_carplayHelper.makeFCPChannelId(event: '/event'));
 
   /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate], [CPPointOfInterestTemplate], [CPSearchTemplate] in a List
   static List<CPTemplate?> templateHistory = [];
@@ -37,107 +35,96 @@ class FlutterCarplayController {
   }
 
   /// Updates the [CPInformationTemplate]
-  static void updateCPInformationTemplate(
+  /// If invoked method on native level is not successful an exception is thrown
+  static Future<CPInformationTemplate> updateCPInformationTemplate(
     CPInformationTemplate updatedTemplate,
-  ) {
+  ) async {
     final elementId = updatedTemplate.uniqueId;
-    _methodChannel
-        .invokeMethod(
+    final bool isSuccess = await _methodChannel.invokeMethod(
       FCPChannelTypes.updateInformationTemplate.name,
       updatedTemplate.toJson(),
-    )
-        .then((value) {
-      if (value) {
-        for (var template in templateHistory) {
-          switch (template) {
-            case final CPInformationTemplate informationTemplate:
-              if (informationTemplate.uniqueId == elementId) {
-                template = updatedTemplate;
-                return;
-              }
-            default:
-          }
+    );
+    if (isSuccess) {
+      for (final template in templateHistory) {
+        switch (template) {
+          case final CPInformationTemplate informationTemplate:
+            if (informationTemplate.uniqueId == elementId) {
+              return updatedTemplate;
+            }
+          default:
         }
       }
-    });
+    }
+    throw Exception('Updating CPInformationTemplate failed on native level');
   }
 
   /// Updates the [CPListTemplate]
-  static void updateCPListTemplate(CPListTemplate updatedTemplate) {
+  /// If invoked method on native level is not successful an exception is thrown
+  static Future<CPListTemplate> updateCPListTemplate(CPListTemplate updatedTemplate) async {
     final elementId = updatedTemplate.uniqueId;
-    _methodChannel
-        .invokeMethod(
+    final bool isSuccess = await _methodChannel.invokeMethod(
       FCPChannelTypes.updateListTemplate.name,
       updatedTemplate.toJson(),
-    )
-        .then((value) {
-      if (value) {
-        for (var template in templateHistory) {
-          switch (template) {
-            case final CPTabBarTemplate tabBarTemplate:
-              for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
-                if (tab.uniqueId == elementId) {
-                  tabBarTemplate.templates[tabIndex] = updatedTemplate;
-                  return;
-                }
+    );
+    if (isSuccess) {
+      for (final template in templateHistory) {
+        switch (template) {
+          case final CPTabBarTemplate tabBarTemplate:
+            for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
+              if (tab.uniqueId == elementId) {
+                tabBarTemplate.templates[tabIndex] = updatedTemplate;
+                return tabBarTemplate.templates[tabIndex];
               }
-            case final CPListTemplate listTemplate:
-              if (listTemplate.uniqueId == elementId) {
-                template = updatedTemplate;
-                return;
-              }
-            default:
-          }
+            }
+          case final CPListTemplate listTemplate:
+            if (listTemplate.uniqueId == elementId) {
+              return updatedTemplate;
+            }
+          default:
         }
       }
-    });
+    }
+    throw Exception('Updating CPListTemplate failed on native level');
   }
 
   /// Updates the [CPListItem]
-  static void updateCPListItem(CPListItem updatedListItem) {
-    _methodChannel
-        .invokeMethod(
+  /// If invoked method on native level is not successful an exception is thrown
+  static Future<CPListItem> updateCPListItem(CPListItem updatedListItem) async {
+    final isSuccess = await _methodChannel.invokeMethod(
       FCPChannelTypes.updateListItem.name,
       updatedListItem.toJson(),
-    )
-        .then((value) {
-      if (value) {
-        for (final template in templateHistory) {
-          switch (template) {
-            case final CPTabBarTemplate tabBarTemplate:
-              for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
-                for (final (sectionIndex, section) in tab.sections.indexed) {
-                  for (final (itemIndex, item) in section.items.indexed) {
-                    if (item.uniqueId == updatedListItem.uniqueId) {
-                      tabBarTemplate.templates[tabIndex].sections[sectionIndex]
-                          .items[itemIndex] = updatedListItem;
-                      return;
-                    }
-                  }
-                }
-              }
-            case final CPListTemplate listTemplate:
-              for (final (sectionIndex, section)
-                  in listTemplate.sections.indexed) {
+    );
+    if (isSuccess) {
+      for (final template in templateHistory) {
+        switch (template) {
+          case final CPTabBarTemplate tabBarTemplate:
+            for (final (tabIndex, tab) in tabBarTemplate.templates.indexed) {
+              for (final (sectionIndex, section) in tab.sections.indexed) {
                 for (final (itemIndex, item) in section.items.indexed) {
                   if (item.uniqueId == updatedListItem.uniqueId) {
-                    listTemplate.sections[sectionIndex].items[itemIndex] =
-                        updatedListItem;
-                    return;
+                    return tabBarTemplate.templates[tabIndex].sections[sectionIndex].items[itemIndex] = updatedListItem;
                   }
                 }
               }
-            default:
-          }
+            }
+          case final CPListTemplate listTemplate:
+            for (final (sectionIndex, section) in listTemplate.sections.indexed) {
+              for (final (itemIndex, item) in section.items.indexed) {
+                if (item.uniqueId == updatedListItem.uniqueId) {
+                  return listTemplate.sections[sectionIndex].items[itemIndex] = updatedListItem;
+                }
+              }
+            }
+          default:
         }
       }
-    });
+    }
+    throw Exception('Updating CPListItem failed on native level');
   }
 
   /// Adds the pushed [template] to the [templateHistory]
   void addTemplateToHistory(CPTemplate template) {
-    if (
-        template is CPListTemplate ||
+    if (template is CPListTemplate ||
         template is CPGridTemplate ||
         template is CPSearchTemplate ||
         template is CPTabBarTemplate ||
@@ -218,8 +205,7 @@ class FlutterCarplayController {
   /// - elementId: The id of the [CPInformationTemplate]
   void processFCPInformationTemplatePoppedChannel(String elementId) {
     final topTemplate = templateHistory.lastOrNull;
-    if (topTemplate is CPInformationTemplate &&
-        topTemplate.uniqueId == elementId) {
+    if (topTemplate is CPInformationTemplate && topTemplate.uniqueId == elementId) {
       templateHistory.removeLast();
     }
   }
@@ -232,8 +218,7 @@ class FlutterCarplayController {
     String elementId,
   ) async {
     final topTemplate = FlutterCarplayController.currentPresentTemplate;
-    if (topTemplate is CPVoiceControlTemplate &&
-        topTemplate.uniqueId == elementId) {
+    if (topTemplate is CPVoiceControlTemplate && topTemplate.uniqueId == elementId) {
       await FlutterCarplay.stopVoiceControl();
       FlutterCarplay.removeListenerOnSpeechRecognitionTranscriptChange();
       FlutterCarplayController.currentPresentTemplate = null;
@@ -267,14 +252,11 @@ class FlutterCarplayController {
   /// Parameters:
   /// - elementId: The id of the [CPAlertAction]
   void processFCPAlertActionPressed(String elementId) {
-    if (currentPresentTemplate is! CPActionSheetTemplate &&
-        currentPresentTemplate is! CPAlertTemplate) return;
+    if (currentPresentTemplate is! CPActionSheetTemplate && currentPresentTemplate is! CPAlertTemplate) return;
 
     final selectedAlertAction = switch (currentPresentTemplate) {
-      final CPAlertTemplate template =>
-        template.actions.singleWhereOrNull((e) => e.uniqueId == elementId),
-      final CPActionSheetTemplate template =>
-        template.actions.singleWhereOrNull((e) => e.uniqueId == elementId),
+      final CPAlertTemplate template => template.actions.singleWhereOrNull((e) => e.uniqueId == elementId),
+      final CPActionSheetTemplate template => template.actions.singleWhereOrNull((e) => e.uniqueId == elementId),
       _ => null,
     };
 
@@ -361,13 +343,11 @@ class FlutterCarplayController {
     for (final template in templateHistory) {
       if (template is CPPointOfInterestTemplate) {
         for (final p in template.poi) {
-          if (p.primaryButton != null &&
-              p.primaryButton!.uniqueId == elementId) {
+          if (p.primaryButton != null && p.primaryButton!.uniqueId == elementId) {
             p.primaryButton!.onPressed();
             break l1;
           }
-          if (p.secondaryButton != null &&
-              p.secondaryButton!.uniqueId == elementId) {
+          if (p.secondaryButton != null && p.secondaryButton!.uniqueId == elementId) {
             p.secondaryButton!.onPressed();
             break l1;
           }

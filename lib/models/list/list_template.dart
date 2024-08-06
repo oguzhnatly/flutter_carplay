@@ -8,28 +8,28 @@ import 'list_section.dart';
 /// A template object that displays and manages a list of items.
 class CPListTemplate extends CPTemplate {
   /// Unique id of the object.
-  final String _elementId = const Uuid().v4();
+  final String _elementId;
 
   /// A title displayed in the navigation bar.
   /// It will be displayed when only the list template is visible.
   final String? title;
 
   /// An array of list sections as [CPListSection], each can contain zero or more list items.
-  List<CPListSection> sections;
+  final List<CPListSection> sections;
 
   /// An optional array of title variants for the template’s empty view.
   /// Provide the strings as localized displayable content and order from most- to
   /// least- preferred. When there are no items in the list, the template displays
   /// an empty view with a title and a subtitle in place of the items. If you update
   /// the list and provide items, the template automatically removes the empty view.
-  List<String> emptyViewTitleVariants;
+  final List<String> emptyViewTitleVariants;
 
   /// An optional array of subtitle variants for the template’s empty view.
   /// Provide the strings as localized displayable content and order from most- to
   /// least- preferred. When there are no items in the list, the template displays
   /// an empty view with a title and a subtitle in place of the items. If you update
   /// the list and provide items, the template automatically removes the empty view.
-  List<String> emptyViewSubtitleVariants;
+  final List<String> emptyViewSubtitleVariants;
 
   /// An indicator you use to call attention to the tab. When it is true, a small
   /// red indicator will be displayed on the tab in order to show user that it requires
@@ -67,10 +67,10 @@ class CPListTemplate extends CPTemplate {
   final CPBarButton? backButton;
 
   /// An array of bar buttons to be displayed on the leading side of the navigation bar.
-  List<CPBarButton> leadingNavigationBarButtons;
+  final List<CPBarButton> leadingNavigationBarButtons;
 
   /// An array of bar buttons to be displayed on the trailing side of the navigation bar.
-  List<CPBarButton> trailingNavigationBarButtons;
+  final List<CPBarButton> trailingNavigationBarButtons;
 
   /// Creates [CPListTemplate] to display a list of items, grouped into one or more sections.
   /// Each section contains an array of list items — objects that is [CPListItem]
@@ -87,7 +87,50 @@ class CPListTemplate extends CPTemplate {
     this.emptyViewSubtitleVariants = const [],
     this.leadingNavigationBarButtons = const [],
     this.trailingNavigationBarButtons = const [],
+  }) : _elementId = const Uuid().v4();
+
+  /// Private named constructor used internally for copying instances.
+  CPListTemplate._internal(
+    this._elementId, {
+    this.title,
+    this.sections = const [],
+    this.systemIcon,
+    this.backButton,
+    this.isLoading = false,
+    this.showsTabBadge = false,
+    this.emptyViewTitleVariants = const [],
+    this.emptyViewSubtitleVariants = const [],
+    this.leadingNavigationBarButtons = const [],
+    this.trailingNavigationBarButtons = const [],
   });
+
+  /// Creates a copy of the current [CPListTemplate] instance with updated properties.
+  CPListTemplate _copyWith({
+    String? title,
+    List<CPListSection>? sections,
+    List<String>? emptyViewTitleVariants,
+    List<String>? emptyViewSubtitleVariants,
+    List<CPBarButton>? leadingNavigationBarButtons,
+    List<CPBarButton>? trailingNavigationBarButtons,
+    bool? showsTabBadge,
+    bool? isLoading,
+    String? systemIcon,
+    CPBarButton? backButton,
+  }) {
+    return CPListTemplate._internal(
+      _elementId,
+      title: title ?? this.title,
+      sections: sections ?? this.sections,
+      emptyViewTitleVariants: emptyViewTitleVariants ?? this.emptyViewTitleVariants,
+      emptyViewSubtitleVariants: emptyViewSubtitleVariants ?? this.emptyViewSubtitleVariants,
+      leadingNavigationBarButtons: leadingNavigationBarButtons ?? this.leadingNavigationBarButtons,
+      trailingNavigationBarButtons: trailingNavigationBarButtons ?? this.trailingNavigationBarButtons,
+      showsTabBadge: showsTabBadge ?? this.showsTabBadge,
+      isLoading: isLoading ?? this.isLoading,
+      systemIcon: systemIcon ?? this.systemIcon,
+      backButton: backButton ?? this.backButton,
+    );
+  }
 
   @override
   Map<String, dynamic> toJson() => {
@@ -96,10 +139,8 @@ class CPListTemplate extends CPTemplate {
         'sections': sections.map((e) => e.toJson()).toList(),
         'emptyViewTitleVariants': emptyViewTitleVariants,
         'emptyViewSubtitleVariants': emptyViewSubtitleVariants,
-        'leadingNavigationBarButtons':
-            leadingNavigationBarButtons.map((e) => e.toJson()).toList(),
-        'trailingNavigationBarButtons':
-            trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
+        'leadingNavigationBarButtons': leadingNavigationBarButtons.map((e) => e.toJson()).toList(),
+        'trailingNavigationBarButtons': trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
         'showsTabBadge': showsTabBadge,
         'isLoading': isLoading,
         'systemIcon': systemIcon,
@@ -107,41 +148,28 @@ class CPListTemplate extends CPTemplate {
       };
 
   /// Update the properties of the [CPListTemplate]
-  void update({
+  Future<CPListTemplate> update({
     bool? isLoading,
     List<CPListSection>? sections,
     List<String>? emptyViewTitleVariants,
     List<String>? emptyViewSubtitleVariants,
     List<CPBarButton>? leadingNavigationBarButtons,
     List<CPBarButton>? trailingNavigationBarButtons,
-  }) {
-    // update isLoading
-    if (isLoading != null) this.isLoading = isLoading;
+  }) async {
+    final updatedListTemplate = _copyWith(
+      isLoading: isLoading,
+      sections: sections,
+      emptyViewTitleVariants: emptyViewTitleVariants,
+      emptyViewSubtitleVariants: emptyViewSubtitleVariants,
+      leadingNavigationBarButtons: leadingNavigationBarButtons,
+      trailingNavigationBarButtons: trailingNavigationBarButtons,
+    );
 
-    // update sections
-    if (sections != null) this.sections = sections;
-
-    // update emptyViewTitleVariants
-    if (emptyViewTitleVariants != null) {
-      this.emptyViewTitleVariants = emptyViewTitleVariants;
+    try {
+      return FlutterCarplayController.updateCPListTemplate(updatedListTemplate);
+    } catch (e) {
+      return this;
     }
-
-    // update emptyViewSubtitleVariants
-    if (emptyViewSubtitleVariants != null) {
-      this.emptyViewSubtitleVariants = emptyViewSubtitleVariants;
-    }
-
-    // update leadingNavigationBarButtons
-    if (leadingNavigationBarButtons != null) {
-      this.leadingNavigationBarButtons = leadingNavigationBarButtons;
-    }
-
-    // update trailingNavigationBarButtons
-    if (trailingNavigationBarButtons != null) {
-      this.trailingNavigationBarButtons = trailingNavigationBarButtons;
-    }
-
-    FlutterCarplayController.updateCPListTemplate(this);
   }
 
   @override
