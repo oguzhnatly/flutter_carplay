@@ -18,7 +18,7 @@ enum CPInformationTemplateLayout {
 /// A template object that displays and manages information items and text buttons.
 class CPInformationTemplate extends CPTemplate {
   /// Unique id of the object.
-  final String _elementId = const Uuid().v4();
+  final String _elementId;
 
   /// A title will be shown in the navigation bar.
   final String title;
@@ -27,19 +27,19 @@ class CPInformationTemplate extends CPTemplate {
   final CPInformationTemplateLayout layout;
 
   /// The array of actions as [CPTextButton] displayed on the template.
-  List<CPTextButton> actions;
+  final List<CPTextButton> actions;
 
   /// The array of information items  as [CPInformationItem] displayed on the template.
-  List<CPInformationItem> informationItems;
+  final List<CPInformationItem> informationItems;
 
   /// Back button object.
   final CPBarButton? backButton;
 
   /// An array of bar buttons to be displayed on the leading side of the navigation bar.
-  List<CPBarButton> leadingNavigationBarButtons;
+  final List<CPBarButton> leadingNavigationBarButtons;
 
   /// An array of bar buttons to be displayed on the trailing side of the navigation bar.
-  List<CPBarButton> trailingNavigationBarButtons;
+  final List<CPBarButton> trailingNavigationBarButtons;
 
   /// Creates [CPInformationTemplate]
   CPInformationTemplate({
@@ -50,7 +50,40 @@ class CPInformationTemplate extends CPTemplate {
     this.leadingNavigationBarButtons = const [],
     this.trailingNavigationBarButtons = const [],
     this.backButton,
+  }) : _elementId = const Uuid().v4();
+
+  CPInformationTemplate._internal(
+    this._elementId, {
+    required this.title,
+    required this.layout,
+    required this.informationItems,
+    required this.actions,
+    required this.leadingNavigationBarButtons,
+    required this.trailingNavigationBarButtons,
+    required this.backButton,
   });
+
+  /// Creates a copy of the current [CPInformationTemplate] instance with updated properties.
+  CPInformationTemplate _copyWith({
+    String? title,
+    CPInformationTemplateLayout? layout,
+    List<CPTextButton>? actions,
+    List<CPInformationItem>? informationItems,
+    List<CPBarButton>? leadingNavigationBarButtons,
+    List<CPBarButton>? trailingNavigationBarButtons,
+    CPBarButton? backButton,
+  }) {
+    return CPInformationTemplate._internal(
+      _elementId,
+      title: title ?? this.title,
+      layout: layout ?? this.layout,
+      informationItems: informationItems ?? this.informationItems,
+      actions: actions ?? this.actions,
+      leadingNavigationBarButtons: leadingNavigationBarButtons ?? this.leadingNavigationBarButtons,
+      trailingNavigationBarButtons: trailingNavigationBarButtons ?? this.trailingNavigationBarButtons,
+      backButton: backButton ?? this.backButton,
+    );
+  }
 
   @override
   Map<String, dynamic> toJson() => {
@@ -60,36 +93,32 @@ class CPInformationTemplate extends CPTemplate {
         'backButton': backButton?.toJson(),
         'actions': actions.map((e) => e.toJson()).toList(),
         'informationItems': informationItems.map((e) => e.toJson()).toList(),
-        'leadingNavigationBarButtons':
-            leadingNavigationBarButtons.map((e) => e.toJson()).toList(),
-        'trailingNavigationBarButtons':
-            trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
+        'leadingNavigationBarButtons': leadingNavigationBarButtons.map((e) => e.toJson()).toList(),
+        'trailingNavigationBarButtons': trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
       };
 
   /// Update the properties of the [CPInformationTemplate]
-  void update({
+  Future<CPInformationTemplate> update({
     List<CPTextButton>? actions,
-    List<CPInformationItem>? items,
+    List<CPInformationItem>? informationItems,
     List<CPBarButton>? leadingNavigationBarButtons,
     List<CPBarButton>? trailingNavigationBarButtons,
-  }) {
-    // update items
-    if (items != null) informationItems = items;
+  }) async {
+    final updatedTemplate = _copyWith(
+      title: title,
+      layout: layout,
+      actions: actions ?? this.actions,
+      informationItems: informationItems ?? this.informationItems,
+      leadingNavigationBarButtons: leadingNavigationBarButtons ?? this.leadingNavigationBarButtons,
+      trailingNavigationBarButtons: trailingNavigationBarButtons ?? this.trailingNavigationBarButtons,
+      backButton: backButton,
+    );
 
-    // update actions
-    if (actions != null) this.actions = actions;
-
-    // update leadingNavigationBarButtons
-    if (leadingNavigationBarButtons != null) {
-      this.leadingNavigationBarButtons = leadingNavigationBarButtons;
+    try {
+      return FlutterCarplayController.updateCPInformationTemplate(updatedTemplate);
+    } catch (e) {
+      return this;
     }
-
-    // update trailingNavigationBarButtons
-    if (trailingNavigationBarButtons != null) {
-      this.trailingNavigationBarButtons = trailingNavigationBarButtons;
-    }
-
-    FlutterCarplayController.updateCPInformationTemplate(this);
   }
 
   @override

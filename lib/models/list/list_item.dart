@@ -27,22 +27,22 @@ enum CPListItemAccessoryTypes {
 /// A selectable list item object that appears in a list template.
 class CPListItem {
   /// Unique id of the object.
-  final String _elementId = const Uuid().v4();
+  final String _elementId;
 
   /// Text displayed in the list item cell.
-  String text;
+  final String text;
 
   /// Secondary text displayed below the primary text in the list item cell.
-  String? detailText;
+  final String? detailText;
 
   /// An optional callback function that CarPlay invokes when the user selects the list item.
   final Function(VoidCallback complete, CPListItem item)? onPressed;
 
   /// Displays an image on the leading edge of the list item cell.
-  String? image;
+  final String? image;
 
   /// Displays an dark image on the leading edge of the list item cell.
-  String? darkImage;
+  final String? darkImage;
 
   /// Playback progress status for the content that the list item represents.
   double? playbackProgress;
@@ -57,13 +57,13 @@ class CPListItem {
   CPListItemPlayingIndicatorLocations? playingIndicatorLocation;
 
   /// An accessory that the list item displays in its trailing region.
-  CPListItemAccessoryTypes? accessoryType;
+  final CPListItemAccessoryTypes? accessoryType;
 
   /// An accessory image that the list item displays in its trailing region.
-  String? accessoryImage;
+  final String? accessoryImage;
 
   /// An accessory dark image that the list item displays in its trailing region.
-  String? accessoryDarkImage;
+  final String? accessoryDarkImage;
 
   /// Creates [CPListItem] that manages the content of a single row in a [CPListTemplate].
   /// CarPlay manages the layout of a list item and may adjust its layout to allow for
@@ -83,7 +83,55 @@ class CPListItem {
     this.isEnabled = true,
     this.darkImage,
     this.accessoryDarkImage,
+  }) : _elementId = const Uuid().v4();
+
+  CPListItem._internal(
+    this._elementId, {
+    required this.text,
+    this.detailText,
+    this.onPressed,
+    this.image,
+    this.playbackProgress,
+    this.isPlaying,
+    this.playingIndicatorLocation,
+    this.accessoryType,
+    this.accessoryImage,
+    this.isEnabled = true,
+    this.darkImage,
+    this.accessoryDarkImage,
   });
+
+  /// Creates a copy of the current [CPInformationTemplate] instance with updated properties.
+  CPListItem _copyWith({
+    String? text,
+    String? detailText,
+    Function(VoidCallback complete, CPListItem item)? onPressed,
+    String? image,
+    double? playbackProgress,
+    CPListItemPlayingIndicatorLocations? playingIndicatorLocation,
+    CPListItemAccessoryTypes? accessoryType,
+    String? accessoryImage,
+    bool? isPlaying,
+    bool? isEnabled,
+    String? darkImage,
+    String? accessoryDarkImage,
+  }) {
+    return CPListItem._internal(
+      _elementId,
+      text: text ?? this.text,
+      detailText: detailText ?? this.detailText,
+      onPressed: onPressed ?? this.onPressed,
+      image: image ?? this.image,
+      playbackProgress: playbackProgress ?? this.playbackProgress,
+      playingIndicatorLocation: playingIndicatorLocation ?? this.playingIndicatorLocation,
+      accessoryType: accessoryType ?? this.accessoryType,
+      accessoryImage: accessoryImage ?? this.accessoryImage,
+      isPlaying: isPlaying ?? this.isPlaying,
+      isEnabled: isEnabled ?? this.isEnabled,
+      darkImage: darkImage ?? this.darkImage,
+      accessoryDarkImage: accessoryDarkImage ?? this.accessoryDarkImage,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
@@ -104,7 +152,7 @@ class CPListItem {
   /// Updates the properties of the [CPListItem].
   ///
   /// Available only on Apple CarPlay and has no effect on Android Auto.
-  void update({
+  Future<CPListItem> update({
     String? text,
     String? detailText,
     String? image,
@@ -116,55 +164,37 @@ class CPListItem {
     bool? isEnabled,
     String? darkImage,
     String? accessoryDarkImage,
-  }) {
-    // Updating the list item's primary text.
-    if (text != null) this.text = text;
-
-    // Updating the list item's secondary text.
-    if (detailText != null) this.detailText = detailText;
-
-    // Updating the image which will be displayed on the leading edge of the list item cell.
-    // Image asset path in pubspec.yaml file.
-    // For example: images/flutter_logo.png
-    if (image != null) this.image = image;
-
-    // Updating the list item's dark image.
-    if (darkImage != null) this.darkImage = darkImage;
-
-    // Updating the list item's playback status.
-    if (isPlaying != null) this.isPlaying = isPlaying;
-
-    // Updating the list item's enabled status.
-    if (isEnabled != null) this.isEnabled = isEnabled;
-
-    // Updating the list item's playing indicator location.
-    if (accessoryType != null) this.accessoryType = accessoryType;
-
-    // Updating the list item's accessory image.
-    if (accessoryImage != null) this.accessoryImage = accessoryImage;
-
-    // Updating the list item's dark accessory image.
-    if (accessoryDarkImage != null) {
-      this.accessoryDarkImage = accessoryDarkImage;
-    }
-
-    // Updating the list item's playing indicator location.
-    if (playingIndicatorLocation != null) {
-      this.playingIndicatorLocation = playingIndicatorLocation;
-    }
+  }) async {
+    final updatedListItem = _copyWith(
+      text: text ?? this.text,
+      detailText: detailText ?? this.detailText,
+      image: image ?? this.image,
+      playbackProgress: playbackProgress ?? this.playbackProgress,
+      playingIndicatorLocation: playingIndicatorLocation ?? this.playingIndicatorLocation,
+      accessoryType: accessoryType ?? this.accessoryType,
+      accessoryImage: accessoryImage ?? this.accessoryImage,
+      isPlaying: isPlaying ?? this.isPlaying,
+      isEnabled: isEnabled ?? this.isEnabled,
+      darkImage: darkImage ?? this.darkImage,
+      accessoryDarkImage: accessoryDarkImage ?? this.accessoryDarkImage,
+    );
 
     // Updating the list item's playback progress.
     // When the given value is not between 0.0 and 1.0, throws [RangeError]
     if (playbackProgress != null) {
       if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
         this.playbackProgress = playbackProgress;
-        FlutterCarplayController.updateCPListItem(this);
+        return FlutterCarplayController.updateCPListItem(updatedListItem);
       } else {
         throw RangeError('playbackProgress must be between 0.0 and 1.0');
       }
     }
-
-    FlutterCarplayController.updateCPListItem(this);
+    try {
+      // Updating the list item's properties.
+      return FlutterCarplayController.updateCPListItem(updatedListItem);
+    } catch (e) {
+      return this;
+    }
   }
 
   String get uniqueId {
