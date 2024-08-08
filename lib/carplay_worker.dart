@@ -478,4 +478,10 @@ class FlutterCarplay {
       'maximumSectionCount': config['maximumSectionCount'],
     };
   }
+
+  static Future<void> openUrl(String url) async {
+    await _carPlayController.methodChannel.invokeMethod(FCPChannelTypes.openUrl.name, <String, dynamic>{
+      'url': url,
+    });
+  }
 }

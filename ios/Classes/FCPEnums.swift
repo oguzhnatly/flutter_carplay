@@ -201,6 +201,9 @@ enum FCPChannelTypes {
 
     /// Event for zooming out the map view in CarPlay.
     static let zoomOutMapView = "zoomOutMapView"
+
+    // Event for opening a URL in CarPlay.
+    static let openUrl = "openUrl"
 }
 
 /// Enum defining different types of alert actions in CarPlay.
