@@ -20,6 +20,8 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
     var carplayInterfaceController: CPInterfaceController?
     var carplayDashboardController: CPDashboardController?
 
+    var carplayScene: CPTemplateApplicationScene?
+
     // CarPlay connection status (either CarPlay or Dashboard)
     var fcpConnectionStatus = FCPConnectionTypes.disconnected {
         didSet {
@@ -104,6 +106,8 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
 
         if activeScene is CPTemplateApplicationScene {
             isDashboardSceneActive = false
+            carplayScene = activeScene as? CPTemplateApplicationScene
+
 
             // Set the root view controller for CarPlay
             if let rootViewController = FlutterCarplayPlugin.rootViewController {

@@ -7,6 +7,7 @@
 
 import CarPlay
 import Flutter
+import Foundation
 
 /// A Swift Flutter plugin for CarPlay integration.
 ///
@@ -34,6 +35,9 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
 
     /// The present template object for CarPlay modals.
     private var fcpPresentTemplate: FCPPresentTemplate?
+
+    /// The template application scene of car play
+    private var carplayScene: CPTemplateApplicationScene?
 
     /// The root template to be displayed on CarPlay.
     public static var rootTemplate: CPTemplate? {
@@ -500,6 +504,17 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             }
 
             result(false)
+
+        case FCPChannelTypes.openUrl:
+            guard let args = call.arguments as? [String: Any],
+                  let url = args["url"] as? String
+            else {
+                result(false)
+                return
+            }
+            if let formattedUrl = URL(string: url) {
+               FlutterCarplayTemplateManager.shared.carplayScene?.open(formattedUrl, options: nil, completionHandler: { completed in result(completed) })
+            }
 
         default:
             result(false)

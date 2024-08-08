@@ -119,4 +119,7 @@ enum FCPChannelTypes {
 
   /// Event for hiding an overlay in CarPlay.
   hideOverlay,
+
+  /// Event for opening an url.
+  openUrl,
 }

@@ -88,6 +88,7 @@ extension FlutterCarplaySceneDelegate: CPTemplateApplicationSceneDelegate {
                                     didConnect interfaceController: CPInterfaceController) {
         FlutterCarplayTemplateManager.shared.interfaceController(interfaceController)
         FlutterCarplayTemplateManager.shared.carplayInterfaceController = interfaceController
+        FlutterCarplayTemplateManager.shared.carplayScene = templateApplicationScene
 
         FlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
         FlutterCarplaySceneDelegate.forceUpdateRootTemplate()
