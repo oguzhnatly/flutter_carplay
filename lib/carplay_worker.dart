@@ -20,8 +20,7 @@ import 'flutter_carplay.dart';
 /// - [Learn more about MFi Program](https://mfi.apple.com)
 class FlutterCarplay {
   /// A main Flutter CarPlay Controller to manage the system.
-  static final FlutterCarplayController _carPlayController =
-      FlutterCarplayController();
+  static final FlutterCarplayController _carPlayController = FlutterCarplayController();
 
   /// CarPlay main bridge as a listener from CarPlay and native side.
   late final StreamSubscription<dynamic>? _eventBroadcast;
@@ -47,9 +46,7 @@ class FlutterCarplay {
 
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
-    _eventBroadcast = _carPlayController.eventChannel
-        .receiveBroadcastStream()
-        .listen((event) {
+    _eventBroadcast = _carPlayController.eventChannel.receiveBroadcastStream().listen((event) {
       final receivedChannelType = CPEnumUtils.enumFromString(
         FCPChannelTypes.values,
         event['type'],
@@ -82,35 +79,28 @@ class FlutterCarplay {
             event['data']['elementId'],
           );
         case FCPChannelTypes.onFCPListItemSelected:
-          _carPlayController
-              .processFCPListItemSelectedChannel(event['data']['elementId']);
+          _carPlayController.processFCPListItemSelectedChannel(event['data']['elementId']);
         case FCPChannelTypes.onFCPAlertActionPressed:
-          _carPlayController
-              .processFCPAlertActionPressed(event['data']['elementId']);
+          _carPlayController.processFCPAlertActionPressed(event['data']['elementId']);
         case FCPChannelTypes.onPresentStateChanged:
           _carPlayController.processFCPAlertTemplateCompleted(
             completed: event['data']['completed'],
           );
         case FCPChannelTypes.onGridButtonPressed:
-          _carPlayController
-              .processFCPGridButtonPressed(event['data']['elementId']);
+          _carPlayController.processFCPGridButtonPressed(event['data']['elementId']);
         case FCPChannelTypes.onBarButtonPressed:
-          _carPlayController
-              .processFCPBarButtonPressed(event['data']['elementId']);
+          _carPlayController.processFCPBarButtonPressed(event['data']['elementId']);
         case FCPChannelTypes.onTextButtonPressed:
-          _carPlayController
-              .processFCPTextButtonPressed(event['data']['elementId']);
+          _carPlayController.processFCPTextButtonPressed(event['data']['elementId']);
         case FCPChannelTypes.onVoiceControlTranscriptChanged:
-          _onSpeechRecognitionTranscriptChange
-              ?.call(event['data']['transcript']);
+          _onSpeechRecognitionTranscriptChange?.call(event['data']['transcript']);
         case FCPChannelTypes.onVoiceControlTemplatePopped:
           _onCancelVoiceControl?.call();
           _carPlayController.processFCPVoiceControlTemplatePoppedChannel(
             event['data']['elementId'],
           );
         case FCPChannelTypes.onSpeechCompleted:
-          _carPlayController
-              .processFCPSpeakerOnComplete(event['data']['elementId']);
+          _carPlayController.processFCPSpeakerOnComplete(event['data']['elementId']);
         default:
           break;
       }
@@ -173,14 +163,12 @@ class FlutterCarplay {
     required CPTemplate rootTemplate,
     bool animated = true,
   }) async {
-    if (
-        rootTemplate is CPGridTemplate ||
+    if (rootTemplate is CPGridTemplate ||
         rootTemplate is CPListTemplate ||
         rootTemplate is CPTabBarTemplate ||
         rootTemplate is CPInformationTemplate ||
         rootTemplate is CPPointOfInterestTemplate) {
-      final isSuccess = await _carPlayController.methodChannel
-          .invokeMethod('setRootTemplate', <String, dynamic>{
+      final isSuccess = await _carPlayController.methodChannel.invokeMethod('setRootTemplate', <String, dynamic>{
         'animated': animated,
         'rootTemplate': rootTemplate.toJson(),
         'runtimeType': 'F${rootTemplate.runtimeType}',
@@ -216,8 +204,8 @@ class FlutterCarplay {
     required CPAlertTemplate template,
     bool animated = true,
   }) async {
-    final isSuccess = await _carPlayController.methodChannel
-        .invokeMethod(FCPChannelTypes.setAlert.name, <String, dynamic>{
+    final isSuccess =
+        await _carPlayController.methodChannel.invokeMethod(FCPChannelTypes.setAlert.name, <String, dynamic>{
       'animated': animated,
       'rootTemplate': template.toJson(),
       'onPresent': template.onPresent != null,
@@ -236,8 +224,8 @@ class FlutterCarplay {
     required CPActionSheetTemplate template,
     bool animated = true,
   }) async {
-    final isSuccess = await _carPlayController.methodChannel
-        .invokeMethod(FCPChannelTypes.setActionSheet.name, <String, dynamic>{
+    final isSuccess =
+        await _carPlayController.methodChannel.invokeMethod(FCPChannelTypes.setActionSheet.name, <String, dynamic>{
       'rootTemplate': template.toJson(),
       'animated': animated,
     });
@@ -366,8 +354,7 @@ class FlutterCarplay {
     )
         .then((value) {
       if (value == false && speakerController.onCompleted != null) {
-        FlutterCarplayController.callbackObjects
-            .removeWhere((e) => e.uniqueId == speakerController.uniqueId);
+        FlutterCarplayController.callbackObjects.removeWhere((e) => e.uniqueId == speakerController.uniqueId);
       }
     });
   }
@@ -463,14 +450,12 @@ class FlutterCarplay {
     required CPTemplate template,
     bool animated = true,
   }) async {
-    if (
-        template is CPGridTemplate ||
+    if (template is CPGridTemplate ||
         template is CPListTemplate ||
         template is CPSearchTemplate ||
         template is CPInformationTemplate ||
         template is CPPointOfInterestTemplate) {
-      final isSuccess = await _carPlayController
-          .reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
+      final isSuccess = await _carPlayController.reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
         'template': template.toJson(),
         'animated': animated,
         'runtimeType': 'F${template.runtimeType}',
