@@ -134,6 +134,11 @@ class FlutterCarplayController {
     }
   }
 
+  /// Resets [templateHistory]
+  void resetTemplateHistory() {
+    templateHistory.clear();
+  }
+
   /// Processes the FCPSearchTextUpdatedChannel
   ///
   /// Parameters:

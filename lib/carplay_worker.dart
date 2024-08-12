@@ -176,7 +176,9 @@ class FlutterCarplay {
 
       if (isSuccess) {
         FlutterCarplayController.currentRootTemplate = rootTemplate;
-        _carPlayController.addTemplateToHistory(rootTemplate);
+        _carPlayController
+          ..resetTemplateHistory()
+          ..addTemplateToHistory(rootTemplate);
       }
     }
   }
