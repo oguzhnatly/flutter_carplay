@@ -34,6 +34,17 @@ class FlutterCarplayHelper {
   /// Generates a Flutter CarPlay (FCP) channel ID based on the specified event.
   /// - Parameter event: The event associated with the channel.
   /// - Returns: The FCP channel ID combining the base identifier and the provided event.
-  String makeFCPChannelId({String? event = ''}) =>
-      'com.oguzhnatly.flutter_carplay${event ?? ''}';
+  String makeFCPChannelId({String? event = ''}) => 'com.oguzhnatly.flutter_carplay${event ?? ''}';
+
+  /// Compares two lists with a compare function.
+  bool compareLists<T>(List<T> list1, List<T> list2, bool Function(T, T) compareFunction) {
+    if (list1.length != list2.length) return false;
+
+    for (var i = 0; i < list1.length; i++) {
+      if (!compareFunction(list1[i], list2[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
