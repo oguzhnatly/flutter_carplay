@@ -1,8 +1,8 @@
 import 'package:uuid/uuid.dart';
 
+import '../../helpers/carplay_helper.dart';
 import '../template.dart';
 import 'grid_button.dart';
-
 
 /// A template object that displays and manages a grid of items.
 class CPGridTemplate extends CPTemplate {
@@ -30,5 +30,14 @@ class CPGridTemplate extends CPTemplate {
   @override
   String get uniqueId {
     return _elementId;
+  }
+
+  @override
+  bool hasSameValues(CPTemplate other) {
+    if (runtimeType != other.runtimeType) return false;
+    other as CPGridTemplate;
+
+    return title == other.title &&
+        FlutterCarplayHelper().compareLists(buttons, other.buttons, (a, b) => a.hasSameValues(b));
   }
 }

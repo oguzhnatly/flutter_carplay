@@ -44,4 +44,8 @@ class CPAlertAction {
   String get uniqueId {
     return _elementId;
   }
+
+  bool hasSameValues(CPAlertAction other) {
+    return title == other.title && style == other.style;
+  }
 }

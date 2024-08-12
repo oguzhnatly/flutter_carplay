@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import '../../controllers/carplay_controller.dart';
+import '../../helpers/carplay_helper.dart';
 import '../button/bar_button.dart';
 import '../button/text_button.dart';
 import '../template.dart';
@@ -124,5 +125,28 @@ class CPInformationTemplate extends CPTemplate {
   @override
   String get uniqueId {
     return _elementId;
+  }
+
+  @override
+  bool hasSameValues(CPTemplate other) {
+    if (runtimeType != other.runtimeType) return false;
+    other as CPInformationTemplate;
+
+    return title == other.title &&
+        layout == other.layout &&
+        FlutterCarplayHelper().compareLists(informationItems, other.informationItems, (a, b) => a.hasSameValues(b)) &&
+        FlutterCarplayHelper().compareLists(actions, other.actions, (a, b) => a.hasSameValues(b)) &&
+        _compareButton(backButton, other.backButton) &&
+        FlutterCarplayHelper().compareLists(
+            other.leadingNavigationBarButtons, leadingNavigationBarButtons, (a, b) => a.hasSameValues(b)) &&
+        FlutterCarplayHelper().compareLists(
+            other.trailingNavigationBarButtons, trailingNavigationBarButtons, (a, b) => a.hasSameValues(b));
+  }
+
+  bool _compareButton(CPBarButton? button, CPBarButton? otherButton) {
+    if (otherButton == null && button == null) return true;
+    if (otherButton == null || button == null) return false;
+
+    return otherButton.hasSameValues(button);
   }
 }

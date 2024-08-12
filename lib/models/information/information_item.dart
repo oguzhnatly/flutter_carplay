@@ -23,4 +23,8 @@ class CPInformationItem {
   String get uniqueId {
     return _elementId;
   }
+
+  bool hasSameValues(CPInformationItem other) {
+    return title == other.title && detail == other.detail;
+  }
 }

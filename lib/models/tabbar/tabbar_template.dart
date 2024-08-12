@@ -1,3 +1,4 @@
+import 'package:flutter_carplay/helpers/carplay_helper.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../flutter_carplay.dart';
@@ -37,5 +38,14 @@ class CPTabBarTemplate extends CPTemplate {
   @override
   String get uniqueId {
     return _elementId;
+  }
+
+  @override
+  bool hasSameValues(CPTemplate other) {
+    if (runtimeType != other.runtimeType) return false;
+    other as CPTabBarTemplate;
+
+    return title == other.title &&
+        FlutterCarplayHelper().compareLists(templates, other.templates, (a, b) => a.hasSameValues(b));
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../helpers/carplay_helper.dart';
+
 /// A grid button object displayed on a grid template.
 class CPGridButton {
   /// Unique id of the object.
@@ -38,5 +40,10 @@ class CPGridButton {
 
   String get uniqueId {
     return _elementId;
+  }
+
+  bool hasSameValues(CPGridButton other) {
+    return FlutterCarplayHelper().compareLists(titleVariants, other.titleVariants, (a, b) => a == b) &&
+        image == other.image;
   }
 }
