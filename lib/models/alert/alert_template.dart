@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/helpers/carplay_helper.dart';
 import 'package:uuid/uuid.dart';
 
 import '../present_template.dart';
@@ -44,5 +45,10 @@ class CPAlertTemplate extends CPPresentTemplate {
 
   String get uniqueId {
     return _elementId;
+  }
+
+  bool hasSameValues(CPAlertTemplate other) {
+    return FlutterCarplayHelper().compareLists(titleVariants, other.titleVariants, (a, b) => a == b) &&
+        FlutterCarplayHelper().compareLists(actions, other.actions, (a, b) => a.hasSameValues(b));
   }
 }

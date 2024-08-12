@@ -200,4 +200,18 @@ class CPListItem {
   String get uniqueId {
     return _elementId;
   }
+
+  bool hasSameValues(CPListItem other) {
+    return text == other.text &&
+        detailText == other.detailText &&
+        image == other.image &&
+        playbackProgress == other.playbackProgress &&
+        playingIndicatorLocation == other.playingIndicatorLocation &&
+        accessoryType == other.accessoryType &&
+        accessoryImage == other.accessoryImage &&
+        isPlaying == other.isPlaying &&
+        isEnabled == other.isEnabled &&
+        darkImage == other.darkImage &&
+        accessoryDarkImage == other.accessoryDarkImage;
+  }
 }

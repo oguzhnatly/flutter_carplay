@@ -1,5 +1,7 @@
 import 'package:uuid/uuid.dart';
 
+import '../../helpers/carplay_helper.dart';
+
 /// A voice control state that contains title variants and images
 /// that will be used by a voice control template.
 class CPVoiceControlState {
@@ -48,5 +50,12 @@ class CPVoiceControlState {
 
   String get uniqueId {
     return _elementId;
+  }
+
+  bool hasSameValues(CPVoiceControlState other) {
+    return identifier == other.identifier &&
+        repeats == other.repeats &&
+        image == other.image &&
+        FlutterCarplayHelper().compareLists(titleVariants, other.titleVariants, (a, b) => a == b);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import '../../helpers/carplay_helper.dart';
 import '../template.dart';
 import 'poi.dart';
 
@@ -26,5 +27,13 @@ class CPPointOfInterestTemplate extends CPTemplate {
   @override
   String get uniqueId {
     return _elementId;
+  }
+
+  @override
+  bool hasSameValues(CPTemplate other) {
+    if (runtimeType != other.runtimeType) return false;
+    other as CPPointOfInterestTemplate;
+
+    return title == other.title && FlutterCarplayHelper().compareLists(poi, other.poi, (a, b) => a.hasSameValues(b));
   }
 }

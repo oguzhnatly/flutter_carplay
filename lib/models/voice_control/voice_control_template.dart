@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_carplay/helpers/carplay_helper.dart';
 import 'package:uuid/uuid.dart';
 
 import '../present_template.dart';
@@ -47,11 +48,15 @@ class CPVoiceControlTemplate extends CPPresentTemplate {
         '_elementId': _elementId,
         'onPresent': onPresent != null,
         'locale': locale.toLanguageTag(),
-        'voiceControlStates':
-            voiceControlStates.map((e) => e.toJson()).toList(),
+        'voiceControlStates': voiceControlStates.map((e) => e.toJson()).toList(),
       };
 
   String get uniqueId {
     return _elementId;
+  }
+
+  bool hasSameValues(CPVoiceControlTemplate other) {
+    return locale == other.locale &&
+        FlutterCarplayHelper().compareLists(voiceControlStates, other.voiceControlStates, (a, b) => a.hasSameValues(b));
   }
 }

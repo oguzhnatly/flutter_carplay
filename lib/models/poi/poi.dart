@@ -73,4 +73,25 @@ class CPPointOfInterest {
   String get uniqueId {
     return _elementId;
   }
+
+  bool hasSameValues(CPPointOfInterest other) {
+    return latitude == other.latitude &&
+        longitude == other.longitude &&
+        title == other.title &&
+        subtitle == other.subtitle &&
+        summary == other.summary &&
+        detailTitle == other.detailTitle &&
+        detailSubtitle == other.detailSubtitle &&
+        detailSummary == other.detailSummary &&
+        image == other.image &&
+        _compareButton(primaryButton, other.primaryButton) &&
+        _compareButton(secondaryButton, other.secondaryButton);
+  }
+
+  bool _compareButton(CPTextButton? button, CPTextButton? otherButton) {
+    if (otherButton == null && button == null) return true;
+    if (otherButton == null || button == null) return false;
+
+    return otherButton.hasSameValues(button);
+  }
 }

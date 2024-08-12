@@ -1,9 +1,8 @@
 import 'package:uuid/uuid.dart';
 
 import '../../controllers/carplay_controller.dart';
-import '../button/bar_button.dart';
-import '../template.dart';
-import 'list_section.dart';
+import '../../flutter_carplay.dart';
+import '../../helpers/carplay_helper.dart';
 
 /// A template object that displays and manages a list of items.
 class CPListTemplate extends CPTemplate {
@@ -42,7 +41,7 @@ class CPListTemplate extends CPTemplate {
   /// A Boolean value that indicates whether the template is currently loading.
   ///
   /// Available only for Android Auto.
-  bool isLoading;
+  final bool isLoading;
 
   /// A system icon which will be used in a image that represents the content of the tab.
   ///
@@ -175,5 +174,32 @@ class CPListTemplate extends CPTemplate {
   @override
   String get uniqueId {
     return _elementId;
+  }
+
+  @override
+  bool hasSameValues(CPTemplate other) {
+    if (runtimeType != other.runtimeType) return false;
+    other as CPListTemplate;
+
+    return title == other.title &&
+        FlutterCarplayHelper().compareLists(other.sections, sections, (a, b) => a.hasSameValues(b)) &&
+        FlutterCarplayHelper().compareLists(other.emptyViewTitleVariants, emptyViewTitleVariants, (a, b) => a == b) &&
+        FlutterCarplayHelper()
+            .compareLists(other.emptyViewSubtitleVariants, emptyViewSubtitleVariants, (a, b) => a == b) &&
+        showsTabBadge == other.showsTabBadge &&
+        isLoading == other.isLoading &&
+        systemIcon == other.systemIcon &&
+        _compareButton(backButton, other.backButton) &&
+        FlutterCarplayHelper().compareLists(
+            other.leadingNavigationBarButtons, leadingNavigationBarButtons, (a, b) => a.hasSameValues(b)) &&
+        FlutterCarplayHelper().compareLists(
+            other.trailingNavigationBarButtons, trailingNavigationBarButtons, (a, b) => a.hasSameValues(b));
+  }
+
+  bool _compareButton(CPBarButton? button, CPBarButton? otherButton) {
+    if (otherButton == null && button == null) return true;
+    if (otherButton == null || button == null) return false;
+
+    return otherButton.hasSameValues(button);
   }
 }

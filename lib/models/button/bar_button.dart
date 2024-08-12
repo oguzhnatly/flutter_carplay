@@ -75,4 +75,8 @@ class CPBarButton {
   String get uniqueId {
     return _elementId;
   }
+
+  bool hasSameValues(CPBarButton other) {
+    return title == other.title && image == other.image && isEnabled == other.isEnabled && style == other.style;
+  }
 }

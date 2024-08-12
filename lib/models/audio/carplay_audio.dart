@@ -27,4 +27,8 @@ class CPAudio {
   String get uniqueId {
     return _elementId;
   }
+
+  bool hasSameValues(CPAudio other) {
+    return soundPath == other.soundPath && volume == other.volume;
+  }
 }

@@ -43,4 +43,8 @@ class CPSpeaker {
   String get uniqueId {
     return _elementId;
   }
+
+  bool hasSameValues(CPSpeaker other) {
+    return text == other.text && language == other.language;
+  }
 }

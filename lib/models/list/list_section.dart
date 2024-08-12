@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 
+import '../../helpers/carplay_helper.dart';
 import 'list_item.dart';
 
 /// A section object of list items that appear in a list template.
@@ -25,5 +26,10 @@ class CPListSection {
 
   String get uniqueId {
     return _elementId;
+  }
+
+  bool hasSameValues(CPListSection other) {
+    return header == other.header &&
+        FlutterCarplayHelper().compareLists(items, other.items, (a, b) => a.hasSameValues(b));
   }
 }

@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 
+import '../../helpers/carplay_helper.dart';
 import '../alert/alert_action.dart';
 import '../present_template.dart';
 
@@ -35,5 +36,11 @@ class CPActionSheetTemplate extends CPPresentTemplate {
 
   String get uniqueId {
     return _elementId;
+  }
+
+  bool hasSameValues(CPActionSheetTemplate other) {
+    return title == other.title &&
+        message == other.message &&
+        FlutterCarplayHelper().compareLists(actions, other.actions, (a, b) => a.hasSameValues(b));
   }
 }
