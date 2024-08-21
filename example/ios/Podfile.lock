@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_carplay (1.2.5):
+  - flutter_carplay (1.3.3):
     - Flutter
 
 DEPENDENCIES:
@@ -15,7 +15,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_carplay: 866f9263ad94ec78e7e2c963029d40b24232ed36
+  flutter_carplay: c1bdb33b3805f25d00df43a866fcebec4cf38b96
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 
