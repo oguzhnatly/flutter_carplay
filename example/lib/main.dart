@@ -30,66 +30,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    final section1Items = <CPListSection>[
-      CPListSection(
-        items: [
-          CPListItem(
-            text: 'Item 1',
-            detailText: 'Detail Text',
-            onPressed: (complete, item) {
-              item.update(
-                detailText: 'You can change the detail text.. 🚀',
-                accessoryType: CPListItemAccessoryTypes.cloud,
-              );
-              Future.delayed(const Duration(seconds: 1), () {
-                item.update(detailText: 'Customizable Detail Text');
-                complete();
-              });
-            },
-            image: 'images/logo_flutter_1080px_clr.png',
-          ),
-          CPListItem(
-            text: 'Updated Item 2',
-            detailText: 'Start progress bar',
-            isPlaying: false,
-            playbackProgress: 0,
-            image: 'images/logo_flutter_1080px_clr.png',
-            onPressed: (complete, self) {
-              print('Item list updated');
-              // for (var i = 1; i <= 100; i++) {
-              //   sleep(const Duration(milliseconds: 10));
-              //   self.update(playbackProgress: i / 100);
-              //   if (i == 100) complete();
-              // }
-            },
-          ),
-        ],
-        header: 'First Section',
-      ),
-      CPListSection(
-        items: [
-          CPListItem(
-            text: 'Item 3',
-            detailText: 'Detail Text',
-            onPressed: (complete, item) {
-              item.update(
-                text: 'You can also change the title',
-                detailText: 'and detail text while loading',
-                accessoryType: CPListItemAccessoryTypes.none,
-              );
-              Future.delayed(const Duration(seconds: 1), () {
-                complete();
-              });
-            },
-            accessoryType: CPListItemAccessoryTypes.disclosureIndicator,
-          ),
-          CPListItem(text: 'Item 4', detailText: 'Detail Text'),
-          CPListItem(text: 'Item 5', detailText: 'Detail Text'),
-        ],
-        header: 'Second Section',
-      ),
-    ];
-
     rootTemplate = CPListTemplate(
       sections: [
         CPListSection(
@@ -108,8 +48,7 @@ class _MyAppState extends State<MyApp> {
               accessoryType: CPListItemAccessoryTypes.disclosureIndicator,
               onPressed: (onCompleted, item) {
                 log('Item 2 clicked');
-                // item.update(text: 'ABC', detailText: 'New ABC');
-                rootTemplate.update(sections: section1Items);
+                item.update(text: 'ABC', detailText: 'New ABC');
                 onCompleted();
               },
             ),
@@ -327,10 +266,9 @@ class _MyAppState extends State<MyApp> {
   void addNewTemplate(CPListTemplate newTemplate) {
     final currentRootTemplate = FlutterCarplay.rootTemplate!;
 
-    if(currentRootTemplate is CPTabBarTemplate) {
+    if (currentRootTemplate is CPTabBarTemplate) {
       currentRootTemplate.templates.add(newTemplate);
     }
-
 
     FlutterCarplay.setRootTemplate(
       rootTemplate: currentRootTemplate,
@@ -340,7 +278,7 @@ class _MyAppState extends State<MyApp> {
 
   void removeLastTemplate() {
     final currentRootTemplate = FlutterCarplay.rootTemplate!;
-    if(currentRootTemplate is CPTabBarTemplate) {
+    if (currentRootTemplate is CPTabBarTemplate) {
       currentRootTemplate.templates.remove(currentRootTemplate.templates.last);
     }
 
@@ -548,8 +486,7 @@ class _MyAppState extends State<MyApp> {
     /// Greet the user with a localized speech from a text.
     FlutterCarplay.speak(
       CPSpeaker(
-        text:
-            'Welcome to voice control. To stop, you can say stop the voice control.',
+        text: 'Welcome to voice control. To stop, you can say stop the voice control.',
       ),
     );
 
@@ -581,9 +518,8 @@ class _MyAppState extends State<MyApp> {
                       ),
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 15),
-                      child: voiceControlTranscript != ''
-                          ? Text('Transcript: $voiceControlTranscript')
-                          : const SizedBox(),
+                      child:
+                          voiceControlTranscript != '' ? Text('Transcript: $voiceControlTranscript') : const SizedBox(),
                     ),
                     if (voiceControlStatus == false)
                       TextButton(
@@ -602,8 +538,7 @@ class _MyAppState extends State<MyApp> {
                             voiceControlStatus = false;
                           });
                           FlutterCarplay.stopVoiceControl();
-                          FlutterCarplay
-                              .removeListenerOnSpeechRecognitionTranscriptChange();
+                          FlutterCarplay.removeListenerOnSpeechRecognitionTranscriptChange();
                         }
                         setState(() {
                           voiceControlTranscript = '';
