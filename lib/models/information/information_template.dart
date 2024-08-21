@@ -65,7 +65,7 @@ class CPInformationTemplate extends CPTemplate {
   });
 
   /// Creates a copy of the current [CPInformationTemplate] instance with updated properties.
-  CPInformationTemplate _copyWith({
+  CPInformationTemplate copyWith({
     String? title,
     CPInformationTemplateLayout? layout,
     List<CPTextButton>? actions,
@@ -98,29 +98,6 @@ class CPInformationTemplate extends CPTemplate {
         'trailingNavigationBarButtons': trailingNavigationBarButtons.map((e) => e.toJson()).toList(),
       };
 
-  /// Update the properties of the [CPInformationTemplate]
-  Future<CPInformationTemplate> update({
-    List<CPTextButton>? actions,
-    List<CPInformationItem>? informationItems,
-    List<CPBarButton>? leadingNavigationBarButtons,
-    List<CPBarButton>? trailingNavigationBarButtons,
-  }) async {
-    final updatedTemplate = _copyWith(
-      title: title,
-      layout: layout,
-      actions: actions ?? this.actions,
-      informationItems: informationItems ?? this.informationItems,
-      leadingNavigationBarButtons: leadingNavigationBarButtons ?? this.leadingNavigationBarButtons,
-      trailingNavigationBarButtons: trailingNavigationBarButtons ?? this.trailingNavigationBarButtons,
-      backButton: backButton,
-    );
-
-    try {
-      return FlutterCarplayController.updateCPInformationTemplate(updatedTemplate);
-    } catch (e) {
-      return this;
-    }
-  }
 
   @override
   String get uniqueId {

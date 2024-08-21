@@ -104,7 +104,7 @@ class CPListTemplate extends CPTemplate {
   });
 
   /// Creates a copy of the current [CPListTemplate] instance with updated properties.
-  CPListTemplate _copyWith({
+  CPListTemplate copyWith({
     String? title,
     List<CPListSection>? sections,
     List<String>? emptyViewTitleVariants,
@@ -146,30 +146,6 @@ class CPListTemplate extends CPTemplate {
         'backButton': backButton?.toJson(),
       };
 
-  /// Update the properties of the [CPListTemplate]
-  Future<CPListTemplate> update({
-    bool? isLoading,
-    List<CPListSection>? sections,
-    List<String>? emptyViewTitleVariants,
-    List<String>? emptyViewSubtitleVariants,
-    List<CPBarButton>? leadingNavigationBarButtons,
-    List<CPBarButton>? trailingNavigationBarButtons,
-  }) async {
-    final updatedListTemplate = _copyWith(
-      isLoading: isLoading,
-      sections: sections,
-      emptyViewTitleVariants: emptyViewTitleVariants,
-      emptyViewSubtitleVariants: emptyViewSubtitleVariants,
-      leadingNavigationBarButtons: leadingNavigationBarButtons,
-      trailingNavigationBarButtons: trailingNavigationBarButtons,
-    );
-
-    try {
-      return FlutterCarplayController.updateCPListTemplate(updatedListTemplate);
-    } catch (e) {
-      return this;
-    }
-  }
 
   @override
   String get uniqueId {
