@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_carplay/helpers/carplay_helper.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../helpers/carplay_helper.dart';
 import '../present_template.dart';
 import 'voice_control_state.dart';
 

@@ -1,7 +1,7 @@
-import 'package:flutter_carplay/helpers/carplay_helper.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../flutter_carplay.dart';
+import '../../helpers/carplay_helper.dart';
 
 /// A template object that contains a collection of [CPListTemplate] templates,
 /// each of which occupies one tab in the tab bar.
