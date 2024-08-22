@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -36,7 +38,7 @@ class CPListItem {
   final String? detailText;
 
   /// An optional callback function that CarPlay invokes when the user selects the list item.
-  final Function(VoidCallback complete, CPListItem item)? onPressed;
+  final FutureOr<void> Function(VoidCallback complete, CPListItem item)? onPressed;
 
   /// Displays an image on the leading edge of the list item cell.
   final String? image;

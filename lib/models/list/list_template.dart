@@ -1,6 +1,5 @@
 import 'package:uuid/uuid.dart';
 
-import '../../controllers/carplay_controller.dart';
 import '../../flutter_carplay.dart';
 import '../../helpers/carplay_helper.dart';
 
@@ -146,7 +145,6 @@ class CPListTemplate extends CPTemplate {
         'backButton': backButton?.toJson(),
       };
 
-
   @override
   String get uniqueId {
     return _elementId;
@@ -167,9 +165,15 @@ class CPListTemplate extends CPTemplate {
         systemIcon == other.systemIcon &&
         _compareButton(backButton, other.backButton) &&
         FlutterCarplayHelper().compareLists(
-            other.leadingNavigationBarButtons, leadingNavigationBarButtons, (a, b) => a.hasSameValues(b)) &&
+          other.leadingNavigationBarButtons,
+          leadingNavigationBarButtons,
+          (a, b) => a.hasSameValues(b),
+        ) &&
         FlutterCarplayHelper().compareLists(
-            other.trailingNavigationBarButtons, trailingNavigationBarButtons, (a, b) => a.hasSameValues(b));
+          other.trailingNavigationBarButtons,
+          trailingNavigationBarButtons,
+          (a, b) => a.hasSameValues(b),
+        );
   }
 
   bool _compareButton(CPBarButton? button, CPBarButton? otherButton) {
