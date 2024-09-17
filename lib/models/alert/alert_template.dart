@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../flutter_carplay.dart';
 import '../../helpers/carplay_helper.dart';
-import '../present_template.dart';
-import 'alert_action.dart';
 
 /// A template object that displays a modal alert.
 class CPAlertTemplate extends CPPresentTemplate {
@@ -36,6 +35,7 @@ class CPAlertTemplate extends CPPresentTemplate {
     this.onPresent,
   });
 
+  @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'onPresent': onPresent != null,
@@ -43,12 +43,20 @@ class CPAlertTemplate extends CPPresentTemplate {
         'actions': actions.map((e) => e.toJson()).toList(),
       };
 
+  @override
   String get uniqueId {
     return _elementId;
   }
 
-  bool hasSameValues(CPAlertTemplate other) {
-    return FlutterCarplayHelper().compareLists(titleVariants, other.titleVariants, (a, b) => a == b) &&
-        FlutterCarplayHelper().compareLists(actions, other.actions, (a, b) => a.hasSameValues(b));
+  @override
+  bool hasSameValues(CPTemplate other) {
+    return other is CPAlertTemplate &&
+        FlutterCarplayHelper().compareLists(
+          titleVariants,
+          other.titleVariants,
+          (a, b) => a == b,
+        ) &&
+        FlutterCarplayHelper()
+            .compareLists(actions, other.actions, (a, b) => a.hasSameValues(b));
   }
 }

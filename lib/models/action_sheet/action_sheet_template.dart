@@ -1,8 +1,7 @@
 import 'package:uuid/uuid.dart';
 
+import '../../flutter_carplay.dart';
 import '../../helpers/carplay_helper.dart';
-import '../alert/alert_action.dart';
-import '../present_template.dart';
 
 /// A template object that displays a modal action sheet.
 class CPActionSheetTemplate extends CPPresentTemplate {
@@ -27,6 +26,7 @@ class CPActionSheetTemplate extends CPPresentTemplate {
     this.title,
   });
 
+  @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'title': title,
@@ -34,12 +34,14 @@ class CPActionSheetTemplate extends CPPresentTemplate {
         'actions': actions.map((e) => e.toJson()).toList(),
       };
 
+  @override
   String get uniqueId {
     return _elementId;
   }
 
-  bool hasSameValues(CPActionSheetTemplate other) {
-    return title == other.title &&
+  @override
+  bool hasSameValues(CPTemplate other) {
+    return other is CPActionSheetTemplate && title == other.title &&
         message == other.message &&
         FlutterCarplayHelper().compareLists(actions, other.actions, (a, b) => a.hasSameValues(b));
   }

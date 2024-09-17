@@ -1,7 +1,9 @@
+import '../flutter_carplay.dart';
+
 /// A template object that represents a base present template.
-class CPPresentTemplate {
+abstract class CPPresentTemplate extends CPTemplate {
   final bool isDismissible;
   final String? routeName;
 
-  const CPPresentTemplate({this.isDismissible = true, this.routeName});
+  CPPresentTemplate({this.isDismissible = true, this.routeName});
 }
