@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../flutter_carplay.dart';
 import '../../helpers/carplay_helper.dart';
-import '../present_template.dart';
-import 'voice_control_state.dart';
 
 /// A voice control template with a list of voice control states [CPVoiceControlState].
 class CPVoiceControlTemplate extends CPPresentTemplate {
@@ -44,19 +43,28 @@ class CPVoiceControlTemplate extends CPPresentTemplate {
     this.onPresent,
   });
 
+  @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'onPresent': onPresent != null,
         'locale': locale.toLanguageTag(),
-        'voiceControlStates': voiceControlStates.map((e) => e.toJson()).toList(),
+        'voiceControlStates':
+            voiceControlStates.map((e) => e.toJson()).toList(),
       };
 
+  @override
   String get uniqueId {
     return _elementId;
   }
 
-  bool hasSameValues(CPVoiceControlTemplate other) {
-    return locale == other.locale &&
-        FlutterCarplayHelper().compareLists(voiceControlStates, other.voiceControlStates, (a, b) => a.hasSameValues(b));
+  @override
+  bool hasSameValues(CPTemplate other) {
+    return other is CPVoiceControlTemplate &&
+        locale == other.locale &&
+        FlutterCarplayHelper().compareLists(
+          voiceControlStates,
+          other.voiceControlStates,
+          (a, b) => a.hasSameValues(b),
+        );
   }
 }
