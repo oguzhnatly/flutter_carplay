@@ -13,6 +13,9 @@ enum FCPConnectionTypes {
     /// Represents a background state in CarPlay.
     static let background = "BACKGROUND"
 
+    /// Represents a background state in CarPlay.
+    static let foreground = "FOREGROUND"
+
     /// Represents a disconnected state from CarPlay.
     static let disconnected = "DISCONNECTED"
 }
