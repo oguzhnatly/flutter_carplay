@@ -14,69 +14,39 @@ class FlutterCarplaySceneDelegate: NSObject {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options _: UIScene.ConnectionOptions) {
         if scene is CPTemplateApplicationScene, session.configuration.name == "CarPlayConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect application scene will connect.")
-        } else if scene is CPTemplateApplicationDashboardScene, session.configuration.name == "CarPlayDashboardConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect application dashboard scene will connect.")
-        }
-    }
-
-    func sceneDidDisconnect(_ scene: UIScene) {
-        var carplayConnectionStatus = FlutterCarplayTemplateManager.shared.carplayConnectionStatus
-        var dashboardConnectionStatus = FlutterCarplayTemplateManager.shared.dashboardConnectionStatus
-
-        if scene.session.configuration.name == "CarPlayConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect application scene did disconnect.")
-            carplayConnectionStatus = FCPConnectionTypes.disconnected
-        } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect application dashboard scene did disconnect.")
-            dashboardConnectionStatus = FCPConnectionTypes.disconnected
-        }
-
-        if carplayConnectionStatus == FCPConnectionTypes.disconnected, dashboardConnectionStatus == FCPConnectionTypes.disconnected {
-            FlutterCarplayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.disconnected
-        }
-    }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        var carplayConnectionStatus = FlutterCarplayTemplateManager.shared.carplayConnectionStatus
-        var dashboardConnectionStatus = FlutterCarplayTemplateManager.shared.dashboardConnectionStatus
-
-        if scene.session.configuration.name == "CarPlayConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect application scene did become active.")
-            carplayConnectionStatus = FCPConnectionTypes.connected
-           FlutterCarplayTemplateManager.shared.setActiveViewController(with: scene)
-        } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect application dashboard scene did become active.")
-            dashboardConnectionStatus = FCPConnectionTypes.connected
             FlutterCarplayTemplateManager.shared.setActiveViewController(with: scene)
-        }
-
-        if carplayConnectionStatus == FCPConnectionTypes.connected || dashboardConnectionStatus == FCPConnectionTypes.connected {
             FlutterCarplayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.connected
         }
     }
 
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        var carplayConnectionStatus = FlutterCarplayTemplateManager.shared.carplayConnectionStatus
-        var dashboardConnectionStatus = FlutterCarplayTemplateManager.shared.dashboardConnectionStatus
+    func sceneDidDisconnect(_ scene: UIScene) {
+        if scene.session.configuration.name == "CarPlayConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect application scene did disconnect.")
+            FlutterCarplayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.disconnected
+        }
 
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        if scene.session.configuration.name == "CarPlayConfiguration" {
+            MemoryLogger.shared.appendEvent("STEMConnect application scene did become active.")
+            FlutterCarplayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.foreground
+
+        }
+
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
         if scene.session.configuration.name == "CarPlayConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect application scene did enter background.")
-            carplayConnectionStatus = FCPConnectionTypes.background
-        } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect application Dashboard scene did enter background.")
-            dashboardConnectionStatus = FCPConnectionTypes.background
-        }
-
-        if carplayConnectionStatus == FCPConnectionTypes.background, dashboardConnectionStatus == FCPConnectionTypes.background {
             FlutterCarplayTemplateManager.shared.fcpConnectionStatus = FCPConnectionTypes.background
         }
+
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
         if scene.session.configuration.name == "CarPlayConfiguration" {
             MemoryLogger.shared.appendEvent("STEMConnect application scene will resign active.")
-        } else if scene.session.configuration.name == "CarPlayDashboardConfiguration" {
-            MemoryLogger.shared.appendEvent("STEMConnect application dashboard scene will resign active.")
         }
     }
 }
@@ -93,11 +63,11 @@ extension FlutterCarplaySceneDelegate: CPTemplateApplicationSceneDelegate {
         FlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
         FlutterCarplaySceneDelegate.forceUpdateRootTemplate()
       }
-      
+
       func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
                                     didDisconnect interfaceController: CPInterfaceController, from window: CPWindow) {
         FlutterCarplayTemplateManager.shared.interfaceController(interfaceController, didDisconnectWith: window)
-          
+
         FlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.disconnected)
       }
 }
