@@ -9,6 +9,9 @@ enum CPConnectionStatusTypes {
   /// Represents a disconnected state from CarPlay.
   disconnected,
 
+  /// Represents a foreground state from CarPlay.
+  foreground,
+
   /// Represents an unknown value for connection state from CarPlay.
   unknown,
 }
