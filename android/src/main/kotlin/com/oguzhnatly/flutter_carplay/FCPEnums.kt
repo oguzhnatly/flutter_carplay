@@ -181,6 +181,9 @@ enum class FCPConnectionTypes {
     /// Represents a background state in Android Auto.
     BACKGROUND,
 
+    /// Represents a foreground state in Android Auto.
+    FOREGROUND,
+
     /// Represents a disconnected state from Android Auto.
     DISCONNECTED,
 }

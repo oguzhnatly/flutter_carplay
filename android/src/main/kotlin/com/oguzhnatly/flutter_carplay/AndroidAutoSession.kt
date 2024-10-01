@@ -69,7 +69,8 @@ class AndroidAutoSession : Session() {
                             DartExecutor.DartEntrypoint.createDefault()
                         )
                     }
-
+                    FlutterCarplayTemplateManager.fcpConnectionStatus =
+                        FCPConnectionTypes.CONNECTED
                     super.onStart(owner)
                 }
 
@@ -84,7 +85,7 @@ class AndroidAutoSession : Session() {
                 override fun onResume(owner: LifecycleOwner) {
                     Logger.log("onResume")
                     FlutterCarplayTemplateManager.fcpConnectionStatus =
-                        FCPConnectionTypes.CONNECTED
+                        FCPConnectionTypes.FOREGROUND
 
                     super.onResume(owner)
                 }
