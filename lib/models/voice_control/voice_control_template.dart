@@ -14,13 +14,6 @@ class CPVoiceControlTemplate extends CPPresentTemplate {
   /// any states after the first five in the array.
   final List<CPVoiceControlState> voiceControlStates;
 
-  /// Fired when the template presented to CarPlay. With this callback function, it can be
-  /// determined whether an error was encountered while presenting, or if it was successfully opened,
-  /// with the [bool] completed data in it.
-  ///
-  /// If completed is true, the template successfully presented. If not, you may want to show an error to the user.
-  final ValueChanged<bool>? onPresent;
-
   /// A BCP 47 code that identifies the language and locale for a voice
   /// by defining [Locale](https://api.flutter.dev/flutter/dart-ui/Locale-class.html).
   ///
@@ -40,16 +33,17 @@ class CPVoiceControlTemplate extends CPPresentTemplate {
     super.isDismissible,
     super.routeName,
     this.locale = const Locale('en', 'US'),
-    this.onPresent,
+    super.onPresent,
+    super.onPop,
   });
 
   @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'onPresent': onPresent != null,
+        'onPop': onPop != null,
         'locale': locale.toLanguageTag(),
-        'voiceControlStates':
-            voiceControlStates.map((e) => e.toJson()).toList(),
+        'voiceControlStates': voiceControlStates.map((e) => e.toJson()).toList(),
       };
 
   @override

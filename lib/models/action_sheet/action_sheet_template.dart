@@ -24,6 +24,8 @@ class CPActionSheetTemplate extends CPPresentTemplate {
     super.routeName,
     this.message,
     this.title,
+    super.onPresent,
+    super.onPop,
   });
 
   @override
@@ -31,6 +33,8 @@ class CPActionSheetTemplate extends CPPresentTemplate {
         '_elementId': _elementId,
         'title': title,
         'message': message,
+        'onPresent': onPresent != null,
+        'onPop': onPop != null,
         'actions': actions.map((e) => e.toJson()).toList(),
       };
 
@@ -41,7 +45,8 @@ class CPActionSheetTemplate extends CPPresentTemplate {
 
   @override
   bool hasSameValues(CPTemplate other) {
-    return other is CPActionSheetTemplate && title == other.title &&
+    return other is CPActionSheetTemplate &&
+        title == other.title &&
         message == other.message &&
         FlutterCarplayHelper().compareLists(actions, other.actions, (a, b) => a.hasSameValues(b));
   }
