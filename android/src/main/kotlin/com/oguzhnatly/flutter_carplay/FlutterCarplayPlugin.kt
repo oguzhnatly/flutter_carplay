@@ -183,7 +183,8 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             FCPChannelTypes.setAlert.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
-                if (args == null || rootTemplateArgs == null) {
+                val elementId = rootTemplateArgs["_elementId"];
+                if (args == null || rootTemplateArgs == null || elementId == null) {
                     result.success(false)
                     return
                 }
@@ -194,7 +195,9 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
                     AndroidAutoService.session?.presentTemplate(template = alertTemplate)
                     FCPStreamHandlerPlugin.sendEvent(
                         type = FCPChannelTypes.onPresentStateChanged.name,
-                        data = mapOf("completed" to true)
+                        data = mapOf(
+                            "elementId" to elementId, "presented" to true
+                        )
                     )
                     result.success(true)
                 }
@@ -211,7 +214,9 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             FCPChannelTypes.setActionSheet.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
-                if (args == null || rootTemplateArgs == null) {
+                val elementId = rootTemplateArgs["_elementId"]
+
+                if (args == null || rootTemplateArgs == null || elementId == null) {
                     result.success(false)
                     return
                 }
@@ -221,6 +226,12 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
                     fcpPresentTemplate = actionSheetTemplate
                     AndroidAutoService.session?.presentTemplate(
                         template = actionSheetTemplate, result = result
+                    )
+                    FCPStreamHandlerPlugin.sendEvent(
+                        type = FCPChannelTypes.onPresentStateChanged.name,
+                        data = mapOf(
+                            "elementId" to elementId, "presented" to true
+                        )
                     )
                 }
 

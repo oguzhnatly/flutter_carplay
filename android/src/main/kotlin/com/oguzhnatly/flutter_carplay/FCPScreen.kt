@@ -21,10 +21,10 @@ class FCPScreen(carContext: CarContext, val fcpTemplate: FCPTemplate) : Screen(c
             when (fcpTemplate) {
                 is FCPInformationTemplate -> {
                     AndroidAutoService.session?.pop()
-                    FCPStreamHandlerPlugin.sendEvent(
-                        type = FCPChannelTypes.onInformationTemplatePopped.name,
-                        data = mapOf("elementId" to fcpTemplate.elementId)
-                    )
+                }
+
+                is FCPPresentTemplate -> {
+                    AndroidAutoService.session?.pop()
                 }
 
                 else -> {

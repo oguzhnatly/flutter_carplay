@@ -4,9 +4,6 @@ import androidx.car.app.CarContext
 
 /** Protocol representing a generic template in the Flutter CarPlay (FCP) framework. */
 abstract class FCPTemplate {
-    /// The unique identifier for the template.
-    lateinit var elementId: String
-
     /// The unique identifier for the template's back button.
     var backButtonElementId: String? = null
 
@@ -21,7 +18,10 @@ abstract class FCPTemplate {
 abstract class FCPRootTemplate : FCPTemplate()
 
 /** Protocol representing a template that can be presented in the Flutter CarPlay (FCP) framework. */
-abstract class FCPPresentTemplate : FCPTemplate()
+abstract class FCPPresentTemplate : FCPTemplate(){
+    /// The unique identifier for the template.
+    lateinit var elementId: String
+}
 
 /**
  * Converts the FCPTemplate to a FCPScreen.
