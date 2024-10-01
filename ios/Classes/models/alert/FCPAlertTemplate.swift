@@ -9,14 +9,13 @@ import CarPlay
 
 /// A wrapper class for CPAlertTemplate with additional functionality.
 @available(iOS 14.0, *)
-class FCPAlertTemplate {
+class FCPAlertTemplate : FCPPresentTemplate {
     // MARK: Properties
 
     /// The underlying CPAlertTemplate instance.
     private(set) var _super: CPAlertTemplate?
 
-    /// The unique identifier for the alert template.
-    private(set) var elementId: String
+    var elementId: String
 
     /// An array of title variants for the alert template.
     private var titleVariants: [String]
@@ -58,11 +57,3 @@ class FCPAlertTemplate {
         return alertTemplate
     }
 }
-
-// MARK: Extensions
-
-@available(iOS 14.0, *)
-extension FCPAlertTemplate: FCPPresentTemplate {}
-
-@available(iOS 14.0, *)
-extension FCPAlertTemplate: FCPTemplate {}

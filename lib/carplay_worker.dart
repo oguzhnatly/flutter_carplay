@@ -83,8 +83,10 @@ class FlutterCarplay {
         case FCPChannelTypes.onFCPAlertActionPressed:
           _carPlayController.processFCPAlertActionPressed(event['data']['elementId']);
         case FCPChannelTypes.onPresentStateChanged:
-          _carPlayController.processFCPAlertTemplateCompleted(
-            completed: event['data']['completed'],
+          _carPlayController.processFCPPresentTemplateChangedState(
+            event['data']['elementId'],
+            presented: event['data']['presented'],
+            popped: event['data']['popped'],
           );
         case FCPChannelTypes.onGridButtonPressed:
           _carPlayController.processFCPGridButtonPressed(event['data']['elementId']);
@@ -206,6 +208,8 @@ class FlutterCarplay {
     required CPAlertTemplate template,
     bool animated = true,
   }) async {
+    FlutterCarplayController.currentPresentTemplate = template;
+
     final isSuccess =
         await _carPlayController.methodChannel.invokeMethod(FCPChannelTypes.setAlert.name, <String, dynamic>{
       'animated': animated,
@@ -213,7 +217,9 @@ class FlutterCarplay {
       'onPresent': template.onPresent != null,
     });
 
-    if (isSuccess) FlutterCarplayController.currentPresentTemplate = template;
+    if (!isSuccess) {
+      FlutterCarplayController.currentPresentTemplate = null;
+    }
   }
 
   /// It will present [CPActionSheetTemplate] modally.
@@ -226,13 +232,17 @@ class FlutterCarplay {
     required CPActionSheetTemplate template,
     bool animated = true,
   }) async {
+    FlutterCarplayController.currentPresentTemplate = template;
+
     final isSuccess =
         await _carPlayController.methodChannel.invokeMethod(FCPChannelTypes.setActionSheet.name, <String, dynamic>{
       'rootTemplate': template.toJson(),
       'animated': animated,
     });
 
-    if (isSuccess) FlutterCarplayController.currentPresentTemplate = template;
+    if (!isSuccess) {
+      FlutterCarplayController.currentPresentTemplate = null;
+    }
   }
 
   /// It will present [CPVoiceControlTemplate] modally.
@@ -245,6 +255,8 @@ class FlutterCarplay {
     required CPVoiceControlTemplate template,
     bool animated = true,
   }) async {
+    FlutterCarplayController.currentPresentTemplate = template;
+
     final isSuccess = await _carPlayController.methodChannel.invokeMethod(
       FCPChannelTypes.setVoiceControl.name,
       <String, dynamic>{
@@ -253,7 +265,9 @@ class FlutterCarplay {
       },
     );
 
-    if (isSuccess) FlutterCarplayController.currentPresentTemplate = template;
+    if (!isSuccess) {
+      FlutterCarplayController.currentPresentTemplate = null;
+    }
   }
 
   /// Changes the [CPVoiceControlTemplate]'s state to the one matching the specified
@@ -438,7 +452,6 @@ class FlutterCarplay {
       animated,
     );
 
-    if (isSuccess) FlutterCarplayController.currentPresentTemplate = null;
     return isSuccess;
   }
 

@@ -9,14 +9,13 @@ import CarPlay
 
 /// A custom template for voice control on CarPlay.
 @available(iOS 14.0, *)
-class FCPVoiceControlTemplate {
+class FCPVoiceControlTemplate : FCPPresentTemplate{
     // MARK: Properties
 
     /// The underlying CPVoiceControlTemplate instance.
     private(set) var _super: CPVoiceControlTemplate?
 
-    /// The unique identifier for the voice control template.
-    private(set) var elementId: String
+     var elementId: String
 
     /// The speech recognizer associated with the voice control template.
     private var speechRecognizer: FCPSpeechRecognizer = .init()
@@ -89,9 +88,3 @@ class FCPVoiceControlTemplate {
         speechRecognizer.stopRecording()
     }
 }
-
-@available(iOS 14.0, *)
-extension FCPVoiceControlTemplate: FCPPresentTemplate {}
-
-@available(iOS 14.0, *)
-extension FCPVoiceControlTemplate: FCPTemplate {}

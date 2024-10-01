@@ -183,7 +183,8 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
         case FCPChannelTypes.setAlert:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
-                  let rootTemplateArgs = args["rootTemplate"] as? [String: Any]
+                  let rootTemplateArgs = args["rootTemplate"] as? [String: Any],
+                  let elementId = rootTemplateArgs["_elementId"] as? String
             else {
                 result(false)
                 return
@@ -203,7 +204,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 FlutterCarplaySceneDelegate
                     .presentTemplate(template: alertTemplate.get, animated: animated, completion: { completed, _ in
                         FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
-                                                         data: ["completed": completed])
+                                                         data: ["elementId": elementId, "presented": completed])
                         result(completed)
                     })
             }
@@ -211,7 +212,8 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
         case FCPChannelTypes.setActionSheet:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
-                  let rootTemplateArgs = args["rootTemplate"] as? [String: Any]
+                  let rootTemplateArgs = args["rootTemplate"] as? [String: Any],
+                  let elementId = args["_elementId"] as? [String: Any]
             else {
                 result(false)
                 return
@@ -230,6 +232,8 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 let actionSheetTemplate = FCPActionSheetTemplate(obj: rootTemplateArgs)
                 fcpPresentTemplate = actionSheetTemplate
                 FlutterCarplaySceneDelegate.presentTemplate(template: actionSheetTemplate.get, animated: animated, completion: { completed, _ in
+                    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
+                                                     data: ["elementId": elementId, "presented": completed])
                     result(completed)
                 })
             }
@@ -278,7 +282,8 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
         case FCPChannelTypes.setVoiceControl:
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
-                  let rootTemplateArgs = args["rootTemplate"] as? [String: Any]
+                  let rootTemplateArgs = args["rootTemplate"] as? [String: Any],
+                  let elementId = args["_elementId"] as? String
             else {
                 result(false)
                 return
@@ -298,7 +303,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
                 fcpPresentTemplate = voiceControlTemplate
                 FlutterCarplaySceneDelegate.presentTemplate(template: voiceControlTemplate.get, animated: animated, completion: { completed, _ in
                     FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
-                                                     data: ["completed": completed])
+                                                     data: ["elementId": elementId, "presented": completed])
                     result(completed)
                 })
             }

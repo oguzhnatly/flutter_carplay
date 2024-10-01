@@ -6,7 +6,10 @@
 //
 
 /// Protocol representing a template that can be presented in the Flutter CarPlay (FCP) framework.
-protocol FCPPresentTemplate {}
+protocol FCPPresentTemplate : FCPTemplate{
+    /// The unique identifier for the present template.
+    var elementId: String{get set}
+}
 
 /// Protocol representing a root template in the Flutter CarPlay (FCP) framework.
 protocol FCPRootTemplate {}

@@ -88,6 +88,17 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
                 }
             }
         }
+
+        if aTemplate is CPAlertTemplate || aTemplate is CPActionSheetTemplate || aTemplate is CPVoiceControlTemplate  {
+
+            if let elementId = ((aTemplate.userInfo as? [String: Any])?["FCPObject"] as? FCPPresentTemplate)?.elementId {
+                    DispatchQueue.main.async {
+                        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
+                                                         data: ["elementId": elementId, "popped": true])
+                    }
+                }
+        }
+
     }
 
     // MARK: CPSessionConfigurationDelegate

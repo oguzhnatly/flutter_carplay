@@ -69,7 +69,8 @@ class AndroidAutoSession : Session() {
                             DartExecutor.DartEntrypoint.createDefault()
                         )
                     }
-
+                    FlutterCarplayTemplateManager.fcpConnectionStatus =
+                        FCPConnectionTypes.CONNECTED
                     super.onStart(owner)
                 }
 
@@ -84,7 +85,7 @@ class AndroidAutoSession : Session() {
                 override fun onResume(owner: LifecycleOwner) {
                     Logger.log("onResume")
                     FlutterCarplayTemplateManager.fcpConnectionStatus =
-                        FCPConnectionTypes.CONNECTED
+                        FCPConnectionTypes.FOREGROUND
 
                     super.onResume(owner)
                 }
@@ -173,7 +174,22 @@ class AndroidAutoSession : Session() {
      */
     fun pop(result: MethodChannel.Result? = null) {
         Logger.log("Pop Template.")
+        val currentTemplate = (screenManager.top as? FCPScreen)?.fcpTemplate
         screenManager.pop()
+
+        // pop is also called on back button events
+        if (currentTemplate is FCPPresentTemplate) {
+            val template = (topScreen as FCPScreen).fcpTemplate;
+            FCPStreamHandlerPlugin.sendEvent(
+                type = FCPChannelTypes.onPresentStateChanged.name,
+                data = mapOf("elementId" to fcpTemplate.elementId, "popped" to true)
+            )
+        } else if (currentTemplate is FCPInformationTemplate) {
+            FCPStreamHandlerPlugin.sendEvent(
+                type = FCPChannelTypes.onInformationTemplatePopped.name,
+                data = mapOf("elementId" to fcpTemplate.elementId)
+            )
+        }
         result?.success(true)
     }
 

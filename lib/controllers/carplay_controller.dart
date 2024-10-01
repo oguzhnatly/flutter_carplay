@@ -270,9 +270,17 @@ class FlutterCarplayController {
   ///
   /// Parameters:
   /// - completed: Whether the alert was successfully presented
-  void processFCPAlertTemplateCompleted({bool completed = false}) {
-    if (currentPresentTemplate is! CPAlertTemplate) return;
-    (currentPresentTemplate as CPAlertTemplate).onPresent?.call(completed);
+  void processFCPPresentTemplateChangedState(String elementId, {bool? presented, bool? popped}) {
+    if (currentPresentTemplate?.uniqueId == elementId) {
+      if (presented != null && presented) {
+        currentPresentTemplate!.onPresent?.call(presented);
+      }
+
+      if (popped != null && popped) {
+        currentPresentTemplate?.onPop?.call();
+        currentPresentTemplate = null;
+      }
+    }
   }
 
   /// Processes the FCPGridButtonPressedChannel
