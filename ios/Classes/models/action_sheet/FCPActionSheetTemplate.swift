@@ -9,14 +9,13 @@ import CarPlay
 
 /// A wrapper class for CPActionSheetTemplate with additional functionality.
 @available(iOS 14.0, *)
-class FCPActionSheetTemplate {
+class FCPActionSheetTemplate : FCPPresentTemplate {
     // MARK: Properties
 
     /// The underlying CPActionSheetTemplate instance.
     private(set) var _super: CPActionSheetTemplate?
 
-    /// The unique identifier for the action sheet template.
-    private(set) var elementId: String
+    var elementId: String
 
     /// The title of the action sheet template (optional).
     private var title: String?
@@ -69,10 +68,3 @@ class FCPActionSheetTemplate {
     }
 }
 
-// MARK: Extensions
-
-@available(iOS 14.0, *)
-extension FCPActionSheetTemplate: FCPPresentTemplate {}
-
-@available(iOS 14.0, *)
-extension FCPActionSheetTemplate: FCPTemplate {}
