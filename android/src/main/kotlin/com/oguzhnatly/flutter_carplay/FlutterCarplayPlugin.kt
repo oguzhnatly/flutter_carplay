@@ -183,7 +183,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             FCPChannelTypes.setAlert.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
-                val elementId = rootTemplateArgs["_elementId"];
+                val elementId = rootTemplateArgs?.get("_elementId");
                 if (args == null || rootTemplateArgs == null || elementId == null) {
                     result.success(false)
                     return
@@ -214,7 +214,7 @@ class FlutterCarplayPlugin : FlutterPlugin, MethodCallHandler {
             FCPChannelTypes.setActionSheet.name -> {
                 val args = call.arguments as? Map<String, Any>
                 val rootTemplateArgs = args?.get("rootTemplate") as? Map<String, Any>
-                val elementId = rootTemplateArgs["_elementId"]
+                val elementId = rootTemplateArgs?.get("_elementId")
 
                 if (args == null || rootTemplateArgs == null || elementId == null) {
                     result.success(false)

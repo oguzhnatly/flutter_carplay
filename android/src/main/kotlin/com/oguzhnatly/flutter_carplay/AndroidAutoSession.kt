@@ -7,6 +7,7 @@ import androidx.car.app.ScreenManager
 import androidx.car.app.Session
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.oguzhnatly.flutter_carplay.models.information.FCPInformationTemplate
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
@@ -179,15 +180,14 @@ class AndroidAutoSession : Session() {
 
         // pop is also called on back button events
         if (currentTemplate is FCPPresentTemplate) {
-            val template = (topScreen as FCPScreen).fcpTemplate;
             FCPStreamHandlerPlugin.sendEvent(
                 type = FCPChannelTypes.onPresentStateChanged.name,
-                data = mapOf("elementId" to fcpTemplate.elementId, "popped" to true)
+                data = mapOf("elementId" to currentTemplate.elementId, "popped" to true)
             )
         } else if (currentTemplate is FCPInformationTemplate) {
             FCPStreamHandlerPlugin.sendEvent(
                 type = FCPChannelTypes.onInformationTemplatePopped.name,
-                data = mapOf("elementId" to fcpTemplate.elementId)
+                data = mapOf("elementId" to currentTemplate.elementId)
             )
         }
         result?.success(true)
