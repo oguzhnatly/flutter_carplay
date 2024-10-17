@@ -278,7 +278,9 @@ class FlutterCarplayController {
 
       if (popped != null && popped) {
         currentPresentTemplate?.onPop?.call();
-        currentPresentTemplate = null;
+        // Since action sheets and alert templates are closed when an alert action is pressed, and since the pop
+        // callback is called before alert action handlers are called, it's important to not set currentPresentTemplate
+        // to null here. Not setting it to null does not have any drawbacks.
       }
     }
   }
