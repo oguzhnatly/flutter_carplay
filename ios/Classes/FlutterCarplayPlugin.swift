@@ -213,7 +213,7 @@ public class FlutterCarplayPlugin: NSObject, FlutterPlugin {
             guard let args = call.arguments as? [String: Any],
                   let animated = args["animated"] as? Bool,
                   let rootTemplateArgs = args["rootTemplate"] as? [String: Any],
-                  let elementId = args["_elementId"] as? [String: Any]
+                  let elementId = rootTemplateArgs["_elementId"] as? String
             else {
                 result(false)
                 return
