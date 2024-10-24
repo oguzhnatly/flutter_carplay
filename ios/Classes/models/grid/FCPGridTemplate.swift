@@ -9,14 +9,14 @@ import CarPlay
 
 /// A wrapper class for CPGridTemplate with additional functionality.
 @available(iOS 14.0, *)
-class FCPGridTemplate {
+class FCPGridTemplate : FCPTemplate{
     // MARK: Properties
 
     /// The underlying CPGridTemplate instance.
     private(set) var _super: CPGridTemplate?
 
     /// The unique identifier for the grid template.
-    private(set) var elementId: String
+    var elementId: String
 
     /// The title of the grid template.
     private var title: String
@@ -65,6 +65,3 @@ class FCPGridTemplate {
 
 @available(iOS 14.0, *)
 extension FCPGridTemplate: FCPRootTemplate {}
-
-@available(iOS 14.0, *)
-extension FCPGridTemplate: FCPTemplate {}

@@ -34,8 +34,8 @@ enum class FCPChannelTypes {
     /// Event triggered when the search is cancelled in Android Auto.
     onSearchCancelled,
 
-    /// Event triggered when the information template is popped in Android Auto.
-    onInformationTemplatePopped,
+    /// Event triggered when a template is popped in Android Auto.
+    onTemplatePopped,
 
     /// Event triggered when a list item is selected in Android Auto.
     onFCPListItemSelected,
@@ -96,9 +96,6 @@ enum class FCPChannelTypes {
 
     /// Event triggered when the voice control transcript changes in Android Auto.
     onVoiceControlTranscriptChanged,
-
-    // Event triggered when the voice control template is popped in Android Auto.
-    onVoiceControlTemplatePopped,
 
     /// Event for speaking text in Android Auto.
     speak,

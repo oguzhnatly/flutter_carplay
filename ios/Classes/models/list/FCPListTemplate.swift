@@ -9,14 +9,14 @@ import CarPlay
 
 /// A wrapper class for CPListTemplate with additional functionality.
 @available(iOS 14.0, *)
-class FCPListTemplate {
+class FCPListTemplate : FCPTemplate {
     // MARK: Properties
 
     /// The underlying CPListTemplate instance.
     private(set) var _super: CPListTemplate?
 
     /// The unique identifier for the list template.
-    private(set) var elementId: String
+    var elementId: String
 
     /// The title text for the list template (optional).
     private var title: String?
@@ -179,6 +179,3 @@ class FCPListTemplate {
 
 @available(iOS 14.0, *)
 extension FCPListTemplate: FCPRootTemplate {}
-
-@available(iOS 14.0, *)
-extension FCPListTemplate: FCPTemplate {}

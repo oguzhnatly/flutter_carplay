@@ -27,11 +27,8 @@ enum FCPChannelTypes {
   /// Event triggered when a search result is selected in CarPlay.
   onSearchResultSelected,
 
-  /// Event triggered when the search is cancelled in CarPlay.
-  onSearchCancelled,
-
-  /// Event triggered when the information template is popped in CarPlay.
-  onInformationTemplatePopped,
+  /// Event triggered when a template disappears in CarPlay.
+  onTemplatePopped,
 
   /// Event triggered when a list item is selected in CarPlay.
   onFCPListItemSelected,
@@ -89,9 +86,6 @@ enum FCPChannelTypes {
 
   /// Event triggered when the voice control transcript changes in CarPlay.
   onVoiceControlTranscriptChanged,
-
-  // Event triggered when the voice control template is popped in CarPlay.
-  onVoiceControlTemplatePopped,
 
   /// Event for speaking text in CarPlay.
   speak,

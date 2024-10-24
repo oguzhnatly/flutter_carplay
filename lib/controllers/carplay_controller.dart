@@ -191,40 +191,27 @@ class FlutterCarplayController {
     }
   }
 
-  /// Processes the FCPSearchCancelledChannel
+  /// Processes the FCPTemplatePoppedChannel
   ///
   /// Parameters:
-  /// - elementId: The id of the [CPSearchTemplate]
-  void processFCPSearchCancelledChannel(String elementId) {
+  /// - elementId: The id of the [CPTemplate]
+  /// This is supported for: [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate],
+  /// [CPPointOfInterestTemplate], and [CPSearchTemplate]
+  void processFCPTemplatePoppedChannel(String elementId) {
     final topTemplate = templateHistory.lastOrNull;
-    if (topTemplate is CPSearchTemplate && topTemplate.uniqueId == elementId) {
-      templateHistory.removeLast();
-    }
-  }
-
-  /// Processes the FCPInformationTemplatePoppedChannel
-  ///
-  /// Parameters:
-  /// - elementId: The id of the [CPInformationTemplate]
-  void processFCPInformationTemplatePoppedChannel(String elementId) {
-    final topTemplate = templateHistory.lastOrNull;
-    if (topTemplate is CPInformationTemplate && topTemplate.uniqueId == elementId) {
-      templateHistory.removeLast();
-    }
-  }
-
-  /// Processes the FCPVoiceControlTemplatePoppedChannel
-  ///
-  /// Parameters:
-  /// - elementId: The id of the [CPVoiceControlTemplate]
-  Future<void> processFCPVoiceControlTemplatePoppedChannel(
-    String elementId,
-  ) async {
-    final topTemplate = FlutterCarplayController.currentPresentTemplate;
-    if (topTemplate is CPVoiceControlTemplate && topTemplate.uniqueId == elementId) {
-      await FlutterCarplay.stopVoiceControl();
-      FlutterCarplay.removeListenerOnSpeechRecognitionTranscriptChange();
-      FlutterCarplayController.currentPresentTemplate = null;
+    if (topTemplate is CPListTemplate ||
+        topTemplate is CPGridTemplate ||
+        topTemplate is CPSearchTemplate ||
+        topTemplate is CPTabBarTemplate ||
+        topTemplate is CPInformationTemplate ||
+        topTemplate is CPPointOfInterestTemplate) {
+      if (topTemplate?.uniqueId == elementId) {
+        if (templateHistory.isNotEmpty) {
+          templateHistory.removeLast();
+        }
+      }
+    } else {
+      throw Exception('Template cannot process pop event.');
     }
   }
 
