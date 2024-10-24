@@ -38,11 +38,8 @@ class FlutterCarplay {
   /// recognition transcript.
   static Function(String transcript)? _onSpeechRecognitionTranscriptChange;
 
-  /// A listener function that will be triggered when the voice control is cancelled.
-  static Function()? _onCancelVoiceControl;
-
-  /// A listener function that will be triggered when an information template is popped.
-  static Function()? _onInformationTemplatePopped;
+  /// A listener function that will be triggered when a template is popped.
+  static FutureOr<void> Function()? _onTemplatePopped;
 
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
@@ -69,15 +66,12 @@ class FlutterCarplay {
             event['data']['elementId'],
             event['data']['itemElementId'],
           );
-        case FCPChannelTypes.onSearchCancelled:
-          _carPlayController.processFCPSearchCancelledChannel(
+        case FCPChannelTypes.onTemplatePopped:
+          _carPlayController.processFCPTemplatePoppedChannel(
             event['data']['elementId'],
           );
-        case FCPChannelTypes.onInformationTemplatePopped:
-          _onInformationTemplatePopped?.call();
-          _carPlayController.processFCPInformationTemplatePoppedChannel(
-            event['data']['elementId'],
-          );
+          _onTemplatePopped?.call();
+
         case FCPChannelTypes.onFCPListItemSelected:
           _carPlayController.processFCPListItemSelectedChannel(event['data']['elementId']);
         case FCPChannelTypes.onFCPAlertActionPressed:
@@ -96,11 +90,6 @@ class FlutterCarplay {
           _carPlayController.processFCPTextButtonPressed(event['data']['elementId']);
         case FCPChannelTypes.onVoiceControlTranscriptChanged:
           _onSpeechRecognitionTranscriptChange?.call(event['data']['transcript']);
-        case FCPChannelTypes.onVoiceControlTemplatePopped:
-          _onCancelVoiceControl?.call();
-          _carPlayController.processFCPVoiceControlTemplatePoppedChannel(
-            event['data']['elementId'],
-          );
         case FCPChannelTypes.onSpeechCompleted:
           _carPlayController.processFCPSpeakerOnComplete(event['data']['elementId']);
         default:
@@ -332,30 +321,17 @@ class FlutterCarplay {
     _onSpeechRecognitionTranscriptChange = null;
   }
 
-  /// Callback function will be fired when user cancels voice control.
-  static void addListenerOnCancelVoiceControl({
-    Function()? onCancelVoiceControl,
+  /// Callback function will be fired when user pops a template.
+  static void addListenerOnTemplatePopped({
+    FutureOr<void> Function()? onTemplatePopped,
   }) {
-    _onCancelVoiceControl = onCancelVoiceControl;
+    _onTemplatePopped = onTemplatePopped;
   }
 
   /// Removes the callback function that has been set before in order to listen
-  /// on user cancels voice control.
-  static void removeListenerOnCancelVoiceControl() {
-    _onCancelVoiceControl = null;
-  }
-
-  /// Callback function will be fired when user pops information template.
-  static void addListenerOnInformationTemplatePopped({
-    Function()? onInformationTemplatePopped,
-  }) {
-    _onInformationTemplatePopped = onInformationTemplatePopped;
-  }
-
-  /// Removes the callback function that has been set before in order to listen
-  /// on user pops information template.
-  static void removeListenerOnInformationTemplatePopped() {
-    _onInformationTemplatePopped = null;
+  /// on user pops a template.
+  static void removeListenerOnTemplatePopped() {
+    _onTemplatePopped = null;
   }
 
   /// Adds the specified [CPSpeaker] utterance to the queue of the speech synthesizer in CarPlay.
@@ -396,16 +372,6 @@ class FlutterCarplay {
       },
     );
 
-    if (isSuccess) {
-      final templateHistory = FlutterCarplayController.templateHistory;
-      for (final _ in Iterable<int>.generate(count)) {
-        if (templateHistory.isNotEmpty) {
-          templateHistory.removeLast();
-        } else {
-          break;
-        }
-      }
-    }
     return isSuccess;
   }
 
