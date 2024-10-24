@@ -9,14 +9,14 @@ import CarPlay
 
 /// A wrapper class for CPInformationTemplate with additional functionality.
 @available(iOS 14.0, *)
-class FCPInformationTemplate {
+class FCPInformationTemplate : FCPTemplate {
     // MARK: Properties
 
     /// The underlying CPInformationTemplate instance.
     private(set) var _super: CPInformationTemplate?
 
     /// The unique identifier for the information template.
-    private(set) var elementId: String
+    var elementId: String
 
     /// The layout style of the information template.
     private var layout: CPInformationTemplateLayout
@@ -159,6 +159,3 @@ class FCPInformationTemplate {
 
 @available(iOS 14.0, *)
 extension FCPInformationTemplate: FCPRootTemplate {}
-
-@available(iOS 14.0, *)
-extension FCPInformationTemplate: FCPTemplate {}

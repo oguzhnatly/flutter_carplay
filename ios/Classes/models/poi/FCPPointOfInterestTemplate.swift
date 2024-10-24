@@ -9,14 +9,14 @@ import CarPlay
 
 /// A custom template for displaying points of interest on CarPlay maps.
 @available(iOS 14.0, *)
-class FCPPointOfInterestTemplate {
+class FCPPointOfInterestTemplate : FCPTemplate{
     // MARK: Properties
 
     /// The underlying CPPointOfInterestTemplate instance.
     private(set) var _super: CPPointOfInterestTemplate?
 
     /// The unique identifier for the point of interest template.
-    private(set) var elementId: String
+    var elementId: String
 
     /// The title of the point of interest template.
     private var title: String
@@ -63,6 +63,3 @@ class FCPPointOfInterestTemplate {
 
 @available(iOS 14.0, *)
 extension FCPPointOfInterestTemplate: FCPRootTemplate {}
-
-@available(iOS 14.0, *)
-extension FCPPointOfInterestTemplate: FCPTemplate {}

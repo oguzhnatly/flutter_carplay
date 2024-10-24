@@ -9,11 +9,11 @@ import CarPlay
 
 /// A custom template representing a tab bar on CarPlay.
 @available(iOS 14.0, *)
-class FCPTabBarTemplate {
+class FCPTabBarTemplate : FCPTemplate {
     // MARK: Properties
 
     /// The unique identifier for the tab bar template.
-    private(set) var elementId: String
+    var elementId: String
 
     /// The title of the tab bar.
     private var title: String?
@@ -64,6 +64,3 @@ class FCPTabBarTemplate {
 
 @available(iOS 14.0, *)
 extension FCPTabBarTemplate: FCPRootTemplate {}
-
-@available(iOS 14.0, *)
-extension FCPTabBarTemplate: FCPTemplate {}

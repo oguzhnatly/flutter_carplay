@@ -9,14 +9,14 @@ import CarPlay
 
 /// A custom template for performing searches on CarPlay.
 @available(iOS 14.0, *)
-class FCPSearchTemplate: NSObject {
+class FCPSearchTemplate: NSObject, FCPTemplate {
     // MARK: Properties
 
     /// The underlying FCPSearchTemplate instance.
     private(set) var _super: CPSearchTemplate?
 
     /// The unique identifier for the search template.
-    private(set) var elementId: String
+    var elementId: String
 
     /// A closure that is called when the search text is updated, providing search results.
     private var searchPerformedHandler: (([CPListItem]) -> Void)?
@@ -50,9 +50,6 @@ class FCPSearchTemplate: NSObject {
         return template
     }
 }
-
-@available(iOS 14.0, *)
-extension FCPSearchTemplate: FCPTemplate {}
 
 extension FCPSearchTemplate: CPSearchTemplateDelegate {
     func searchTemplate(_: CPSearchTemplate, updatedSearchText searchText: String, completionHandler: @escaping ([CPListItem]) -> Void) {
