@@ -184,9 +184,9 @@ class AndroidAutoSession : Session() {
                 type = FCPChannelTypes.onPresentStateChanged.name,
                 data = mapOf("elementId" to currentTemplate.elementId, "popped" to true)
             )
-        } else if (currentTemplate is FCPInformationTemplate) {
+        } else if (currentTemplate is FCPTemplate) {
             FCPStreamHandlerPlugin.sendEvent(
-                type = FCPChannelTypes.onInformationTemplatePopped.name,
+                type = FCPChannelTypes.onTemplatePopped.name,
                 data = mapOf("elementId" to currentTemplate.elementId)
             )
         }
