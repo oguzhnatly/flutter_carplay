@@ -66,7 +66,7 @@ class FlutterCarplay {
             event['data']['elementId'],
             event['data']['itemElementId'],
           );
-        case FCPChannelTypes.onActiveTemplateChanges:
+        case FCPChannelTypes.onActiveTemplateChanged:
           _carPlayController.processFCPActiveTemplateChangedChannel(
             event['data']['elementId'],
           );
