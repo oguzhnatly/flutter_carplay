@@ -28,7 +28,7 @@ enum FCPChannelTypes {
   onSearchResultSelected,
 
   /// Event triggered when the active template changes.
-  onActiveTemplateChanges,
+  onActiveTemplateChanged,
 
   /// Event triggered when a list item is selected in CarPlay.
   onFCPListItemSelected,
