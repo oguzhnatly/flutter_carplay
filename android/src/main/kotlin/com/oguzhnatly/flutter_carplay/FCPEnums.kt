@@ -35,7 +35,7 @@ enum class FCPChannelTypes {
     onSearchCancelled,
 
     /// Event triggered when a template is popped in Android Auto.
-    onTemplatePopped,
+    onActiveTemplateChanged,
 
     /// Event triggered when a list item is selected in Android Auto.
     onFCPListItemSelected,
