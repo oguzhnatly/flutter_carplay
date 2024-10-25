@@ -191,13 +191,16 @@ class FlutterCarplayController {
     }
   }
 
-  /// Processes the FCPTemplatePoppedChannel
+  /// Processes the FCPActiveTemplateChangedChannel
   ///
   /// Parameters:
   /// - elementId: The id of the [CPTemplate]
   /// This is supported for: [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPInformationTemplate],
   /// [CPPointOfInterestTemplate], and [CPSearchTemplate]
-  void processFCPTemplatePoppedChannel(String elementId) {
+  ///
+  /// NOTE: If this is called due to a push event, this must be called after the push is finished, to not have
+  /// [newTemplateId] the same as the [topTemplate];
+  void processFCPActiveTemplateChangedChannel(String newTemplateId) {
     final topTemplate = templateHistory.lastOrNull;
     if (topTemplate is CPListTemplate ||
         topTemplate is CPGridTemplate ||
@@ -205,7 +208,7 @@ class FlutterCarplayController {
         topTemplate is CPTabBarTemplate ||
         topTemplate is CPInformationTemplate ||
         topTemplate is CPPointOfInterestTemplate) {
-      if (topTemplate?.uniqueId == elementId) {
+      if (topTemplate?.uniqueId == newTemplateId) {
         if (templateHistory.isNotEmpty) {
           templateHistory.removeLast();
         }

@@ -70,7 +70,7 @@ class FlutterCarplayTemplateManager: NSObject, CPInterfaceControllerDelegate, CP
                     
                     if(elementId != nil){
                         DispatchQueue.main.async {
-                            FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onTemplatePopped,
+                            FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onActiveTemplateChanged,
                                                              data: ["elementId": elementId!])
                     }
                     }

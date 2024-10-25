@@ -38,8 +38,8 @@ class FlutterCarplay {
   /// recognition transcript.
   static Function(String transcript)? _onSpeechRecognitionTranscriptChange;
 
-  /// A listener function that will be triggered when a template is popped.
-  static FutureOr<void> Function()? _onTemplatePopped;
+  /// A listener function that will be triggered when the active template changes.
+  static FutureOr<void> Function()? _onActiveTemplateChanged;
 
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
@@ -66,11 +66,11 @@ class FlutterCarplay {
             event['data']['elementId'],
             event['data']['itemElementId'],
           );
-        case FCPChannelTypes.onTemplatePopped:
-          _carPlayController.processFCPTemplatePoppedChannel(
+        case FCPChannelTypes.onActiveTemplateChanges:
+          _carPlayController.processFCPActiveTemplateChangedChannel(
             event['data']['elementId'],
           );
-          _onTemplatePopped?.call();
+          _onActiveTemplateChanged?.call();
 
         case FCPChannelTypes.onFCPListItemSelected:
           _carPlayController.processFCPListItemSelectedChannel(event['data']['elementId']);
@@ -321,17 +321,19 @@ class FlutterCarplay {
     _onSpeechRecognitionTranscriptChange = null;
   }
 
-  /// Callback function will be fired when user pops a template.
-  static void addListenerOnTemplatePopped({
-    FutureOr<void> Function()? onTemplatePopped,
+  /// Callback function will be fired when the active template changes due to pop or push.
+  ///
+  /// On Android this is only called when the active template is popped
+  static void addListenerOnActiveTemplateChanged({
+    FutureOr<void> Function()? onActiveTemplateChanged,
   }) {
-    _onTemplatePopped = onTemplatePopped;
+    _onActiveTemplateChanged = onActiveTemplateChanged;
   }
 
   /// Removes the callback function that has been set before in order to listen
-  /// on user pops a template.
-  static void removeListenerOnTemplatePopped() {
-    _onTemplatePopped = null;
+  /// on user pops or pushes a template.
+  static void removeListenerOnActiveTemplateChanged() {
+    _onActiveTemplateChanged = null;
   }
 
   /// Adds the specified [CPSpeaker] utterance to the queue of the speech synthesizer in CarPlay.

@@ -53,7 +53,7 @@ enum FCPChannelTypes {
     static let onSearchResultSelected = "onSearchResultSelected"
 
     /// Event triggered when a template is popped in CarPlay.
-    static let onTemplatePopped = "onTemplatePopped"
+    static let onActiveTemplateChanged = "onActiveTemplateChanged"
 
     /// Event triggered when a list item is selected in CarPlay.
     static let onFCPListItemSelected = "onFCPListItemSelected"
