@@ -209,7 +209,9 @@ class FlutterCarplayController {
         topTemplate is CPInformationTemplate ||
         topTemplate is CPPointOfInterestTemplate) {
       if (topTemplate?.uniqueId == newTemplateId) {
-        if (templateHistory.isNotEmpty) {
+        // Removing the only available element would lead to a broken UI, so we must
+        // check if there are at least two elements.
+        if (templateHistory.length >= 2) {
           templateHistory.removeLast();
         }
       }
