@@ -7,32 +7,78 @@
 
 import CarPlay
 
+/// A wrapper class for CPBarButton with additional functionality.
 @available(iOS 14.0, *)
 class FCPBarButton {
-  private(set) var _super: CPBarButton?
-  private(set) var elementId: String
-  private var title: String
-  private var style: CPBarButtonStyle
-  
-  init(obj: [String : Any]) {
-    self.elementId = obj["_elementId"] as! String
-    self.title = obj["title"] as! String
-    let style = obj["style"] as? String
-    if style == nil || style == "rounded" {
-      self.style = CPBarButtonStyle.rounded
-    } else {
-      self.style = CPBarButtonStyle.none
+    // MARK: Properties
+
+    /// The underlying CPBarButton instance.
+    private(set) var _super: CPBarButton?
+
+    /// The unique identifier for the bar button.
+    private(set) var elementId: String
+
+    /// The image associated with the bar button (optional).
+    private var image: UIImage?
+
+    /// The title associated with the bar button (optional).
+    private var title: String?
+
+    /// The style of the bar button.
+    private var style: CPBarButtonStyle
+
+    /// The enabled state of the bar button.
+    private var isEnabled: Bool = true
+
+    // MARK: Initializer
+
+    /// Initializes an instance of FCPBarButton with the provided parameters.
+    ///
+    /// - Parameter obj: A dictionary containing information about the bar button.
+    init(obj: [String: Any]) {
+        guard let elementIdValue = obj["_elementId"] as? String else {
+            fatalError("Missing required key: _elementId")
+        }
+        elementId = elementIdValue
+
+        title = obj["title"] as? String
+
+        if let imageName = obj["image"] as? String {
+            image = UIImage.dynamicImage(lightImage: imageName)
+        }
+
+        isEnabled = obj["isEnabled"] as? Bool ?? true
+
+        style = (obj["style"] as? String == "none") ? .none : .rounded
     }
-  }
-  
-  var get: CPBarButton {
-    let barButton = CPBarButton.init(title: title, handler: { _ in
-      DispatchQueue.main.async {
-        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onBarButtonPressed, data: ["elementId": self.elementId])
-      }
-    })
-    barButton.buttonStyle = self.style
-    self._super = barButton
-    return barButton
-  }
+
+    // MARK: Computed Property
+
+    /// Returns the underlying CPBarButton instance configured with the specified properties.
+    var get: CPBarButton {
+        var barButton: CPBarButton
+
+        if let barTitle = title {
+            barButton = CPBarButton(title: barTitle, handler: { _ in
+                DispatchQueue.main.async {
+                    // Dispatch an event when the bar button is pressed.
+                    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onBarButtonPressed, data: ["elementId": self.elementId])
+                }
+            })
+        } else if let barImage = image {
+            barButton = CPBarButton(image: barImage, handler: { _ in
+                DispatchQueue.main.async {
+                    // Dispatch an event when the bar button is pressed.
+                    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onBarButtonPressed, data: ["elementId": self.elementId])
+                }
+            })
+        } else {
+            barButton = CPBarButton(title: "", handler: { _ in })
+        }
+
+        barButton.isEnabled = isEnabled
+        barButton.buttonStyle = style
+        _super = barButton
+        return barButton
+    }
 }

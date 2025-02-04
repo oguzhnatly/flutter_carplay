@@ -7,31 +7,53 @@
 
 import CarPlay
 
+/// A wrapper class for CPAlertTemplate with additional functionality.
 @available(iOS 14.0, *)
-class FCPAlertTemplate {
-  private(set) var _super: CPAlertTemplate?
-  private(set) var elementId: String
-  private var titleVariants: [String]
-  private var actions: [CPAlertAction]
-  private var objcActions: [FCPAlertAction]
-  
-  init(obj: [String : Any]) {
-    self.elementId = obj["_elementId"] as! String
-    self.titleVariants = obj["titleVariants"] as! [String]
-    self.objcActions = (obj["actions"] as! Array<[String : Any]>).map {
-      FCPAlertAction(obj: $0, type: FCPAlertActionTypes.ALERT)
-    }
-    self.actions = self.objcActions.map {
-      $0.get
-    }
-  }
-  
-  var get: CPAlertTemplate {
-    let alertTemplate = CPAlertTemplate.init(titleVariants: titleVariants, actions: actions)
-    self._super = alertTemplate
-    return alertTemplate
-  }
-}
+class FCPAlertTemplate : FCPPresentTemplate {
+    // MARK: Properties
 
-@available(iOS 14.0, *)
-extension FCPAlertTemplate: FCPPresentTemplate { }
+    /// The underlying CPAlertTemplate instance.
+    private(set) var _super: CPAlertTemplate?
+
+    var elementId: String
+
+    /// An array of title variants for the alert template.
+    private var titleVariants: [String]
+
+    /// An array of CPAlertAction instances associated with the alert template.
+    private var actions: [CPAlertAction]
+
+    /// An array of FCPAlertAction instances associated with the alert template.
+    private var objcActions: [FCPAlertAction]
+
+    // MARK: Initializer
+
+    /// Initializes an instance of FCPAlertTemplate with the provided parameters.
+    ///
+    /// - Parameter obj: A dictionary containing information about the alert template.
+    init(obj: [String: Any]) {
+        guard let elementIdValue = obj["_elementId"] as? String else {
+            fatalError("Missing required key: _elementId")
+        }
+        elementId = elementIdValue
+
+        titleVariants = obj["titleVariants"] as? [String] ?? []
+
+        objcActions = (obj["actions"] as? [[String: Any]] ?? []).map {
+            FCPAlertAction(obj: $0, type: FCPAlertActionTypes.ALERT)
+        }
+        actions = objcActions.map {
+            $0.get
+        }
+    }
+
+    // MARK: Computed Property
+
+    /// Returns the underlying CPAlertTemplate instance configured with the specified properties.
+    var get: CPAlertTemplate {
+        let alertTemplate = CPAlertTemplate(titleVariants: titleVariants, actions: actions)
+        alertTemplate.setFCPObject(self)
+        _super = alertTemplate
+        return alertTemplate
+    }
+}

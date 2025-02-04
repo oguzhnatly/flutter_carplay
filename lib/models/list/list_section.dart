@@ -1,5 +1,7 @@
-import 'package:flutter_carplay/models/list/list_item.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../helpers/carplay_helper.dart';
+import 'list_item.dart';
 
 /// A section object of list items that appear in a list template.
 class CPListSection {
@@ -14,18 +16,20 @@ class CPListSection {
 
   /// Creates [CPListSection] that contains zero or more list items. You can configure
   /// a section to display a header, which CarPlay displays on the trailing edge of the screen.
-  CPListSection({
-    this.header,
-    required this.items,
-  });
+  CPListSection({required this.items, this.header});
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "header": header,
-        "items": items.map((e) => e.toJson()).toList(),
+        '_elementId': _elementId,
+        'header': header,
+        'items': items.map((e) => e.toJson()).toList(),
       };
 
   String get uniqueId {
     return _elementId;
+  }
+
+  bool hasSameValues(CPListSection other) {
+    return header == other.header &&
+        FlutterCarplayHelper().compareLists(items, other.items, (a, b) => a.hasSameValues(b));
   }
 }

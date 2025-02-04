@@ -7,41 +7,63 @@
 
 import CarPlay
 
+/// A wrapper class for CPTextButton with additional functionality.
 @available(iOS 14.0, *)
 class FCPTextButton {
+    // MARK: Properties
+
+    /// The underlying CPTextButton instance.
     private(set) var _super: CPTextButton?
+
+    /// The unique identifier for the text button.
     private(set) var elementId: String
+
+    /// The title associated with the text button.
     private var title: String
+
+    /// The style of the text button.
     private var style: CPTextButtonStyle
-    
-    init(obj: [String : Any]) {
-        self.elementId = obj["_elementId"] as! String
-        self.title = obj["title"] as! String
-        let style = obj["style"] as? String
-        if style == nil || style == "normal" {
-            self.style = CPTextButtonStyle.normal
-        } else {
-            if style == "cancel"{
-                self.style = CPTextButtonStyle.cancel
-            }
-            else {
-                if style == "confirm"{
-                    self.style = CPTextButtonStyle.confirm
-                }
-                else {
-                    self.style = CPTextButtonStyle.normal
-                }
-            }
+
+    // MARK: Initializer
+
+    /// Initializes an instance of FCPTextButton with the provided parameters.
+    ///
+    /// - Parameter obj: A dictionary containing information about the text button.
+    init(obj: [String: Any]) {
+        guard let elementIdValue = obj["_elementId"] as? String,
+              let titleValue = obj["title"] as? String
+        else {
+            fatalError("Missing required key: _elementId or title")
+        }
+
+        elementId = elementIdValue
+        title = titleValue
+
+        let styleString = obj["style"] as? String ?? "normal"
+
+        switch styleString {
+        case "normal":
+            style = .normal
+        case "cancel":
+            style = .cancel
+        case "confirm":
+            style = .confirm
+        default:
+            style = .normal
         }
     }
-    
+
+    // MARK: Computed Property
+
+    /// Returns the underlying CPTextButton instance configured with the specified properties.
     var get: CPTextButton {
-        let textButton = CPTextButton.init(title: title, textStyle:self.style, handler: { _ in
+        let textButton = CPTextButton(title: title, textStyle: style, handler: { _ in
             DispatchQueue.main.async {
+                // Dispatch an event when the text button is pressed.
                 FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onTextButtonPressed, data: ["elementId": self.elementId])
             }
         })
-        self._super = textButton
+        _super = textButton
         return textButton
     }
 }

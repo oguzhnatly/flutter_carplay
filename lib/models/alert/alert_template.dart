@@ -1,8 +1,10 @@
-import 'package:flutter_carplay/models/alert/alert_action.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../flutter_carplay.dart';
+import '../../helpers/carplay_helper.dart';
+
 /// A template object that displays a modal alert.
-class CPAlertTemplate {
+class CPAlertTemplate extends CPPresentTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -16,28 +18,38 @@ class CPAlertTemplate {
   /// The array of actions as [CPAlertAction] will be available on the alert.
   final List<CPAlertAction> actions;
 
-  /// Fired when the alert presented to CarPlay. With this callback function, it can be
-  /// determined whether an error was encountered while presenting, or if it was successfully opened,
-  /// with the [bool] completed data in it.
-  ///
-  /// If completed is true, the alert successfully presented. If not, you may want to show an error to the user.
-  final Function(bool completed)? onPresent;
-
   /// Creates [CPAlertTemplate]
   CPAlertTemplate({
     required this.titleVariants,
     required this.actions,
-    this.onPresent,
+    super.isDismissible,
+    super.routeName,
+    super.onPresent,
+    super.onPop,
   });
 
+  @override
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "titleVariants": titleVariants,
-        "actions": actions.map((e) => e.toJson()).toList(),
-        "onPresent": onPresent != null ? true : false,
+        '_elementId': _elementId,
+        'onPresent': onPresent != null,
+        'onPop': onPop != null,
+        'titleVariants': titleVariants,
+        'actions': actions.map((e) => e.toJson()).toList(),
       };
 
+  @override
   String get uniqueId {
     return _elementId;
+  }
+
+  @override
+  bool hasSameValues(CPTemplate other) {
+    return other is CPAlertTemplate &&
+        FlutterCarplayHelper().compareLists(
+          titleVariants,
+          other.titleVariants,
+          (a, b) => a == b,
+        ) &&
+        FlutterCarplayHelper().compareLists(actions, other.actions, (a, b) => a.hasSameValues(b));
   }
 }

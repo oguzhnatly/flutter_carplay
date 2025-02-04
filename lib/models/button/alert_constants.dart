@@ -1,4 +1,0 @@
-enum CPBarButtonStyles {
-  none,
-  rounded,
-}

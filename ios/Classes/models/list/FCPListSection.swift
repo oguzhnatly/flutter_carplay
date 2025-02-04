@@ -7,32 +7,61 @@
 
 import CarPlay
 
+/// A wrapper class for CPListSection with additional functionality.
 @available(iOS 14.0, *)
 class FCPListSection {
-  private(set) var _super: CPListSection?
-  private(set) var elementId: String
-  private var header: String?
-  private var items: [CPListTemplateItem]
-  private var objcItems: [FCPListItem]
-  
-  init(obj: [String : Any]) {
-    self.elementId = obj["_elementId"] as! String
-    self.header = obj["header"] as? String
-    self.objcItems = (obj["items"] as! Array<[String : Any]>).map {
-      FCPListItem(obj: $0)
+    // MARK: Properties
+
+    /// The underlying CPListSection instance.
+    private(set) var _super: CPListSection?
+
+    /// The unique identifier for the list section.
+    private(set) var elementId: String
+
+    /// The header text for the list section (optional).
+    private var header: String?
+
+    /// An array of CPListTemplateItem instances associated with the list section.
+    private var items: [CPListTemplateItem]
+
+    /// An array of FCPListItem instances associated with the list section.
+    private var objcItems: [FCPListItem]
+
+    // MARK: Initializer
+
+    /// Initializes an instance of FCPListSection with the provided parameters.
+    ///
+    /// - Parameter obj: A dictionary containing information about the list section.
+    init(obj: [String: Any]) {
+        guard let elementIdValue = obj["_elementId"] as? String else {
+            fatalError("Missing required keys in dictionary for FCPListSection initialization.")
+        }
+
+        elementId = elementIdValue
+        header = obj["header"] as? String
+        objcItems = (obj["items"] as? [[String: Any]] ?? []).map {
+            FCPListItem(obj: $0)
+        }
+        items = objcItems.map {
+            $0.get
+        }
     }
-    self.items = self.objcItems.map {
-      $0.get
+
+    // MARK: Computed Property
+
+    /// Returns the underlying CPListSection instance configured with the specified properties.
+    var get: CPListSection {
+        let listSection = CPListSection(items: items, header: header, sectionIndexTitle: header)
+        _super = listSection
+        return listSection
     }
-  }
-  
-  var get: CPListSection {
-    let listSection = CPListSection.init(items: items, header: header, sectionIndexTitle: header)
-    self._super = listSection
-    return listSection
-  }
-  
-  public func getItems() -> [FCPListItem] {
-    return objcItems 
-  }
+
+    // MARK: Public Methods
+
+    /// Retrieves an array of FCPListItem instances associated with the list section.
+    ///
+    /// - Returns: An array of FCPListItem instances.
+    public func getItems() -> [FCPListItem] {
+        return objcItems
+    }
 }

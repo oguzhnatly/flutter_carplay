@@ -1,29 +1,72 @@
-# This file configures the analyzer, which statically analyzes Dart code to
-# check for errors, warnings, and lints.
-#
-# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
-# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
-# invoked from the command line by running `flutter analyze`.
-
-# The following line activates a set of recommended lints for Flutter apps,
-# packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.chopper.dart"
+    - "lib/generated_plugin_registrant.dart"
+
 linter:
-  # The lint rules applied to this project can be customized in the
-  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
-  # included above or to enable additional rules. A list of all available lints
-  # and their documentation is published at
-  # https://dart-lang.github.io/linter/lints/index.html.
-  #
-  # Instead of disabling a lint rule for the entire project in the
-  # section below, it can also be suppressed for a single line of code
-  # or a specific dart file by using the `// ignore: name_of_lint` and
-  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
-  # producing the lint.
   rules:
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
-
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+    use_enums: true
+    close_sinks: true
+    use_colored_box: true
+    use_raw_strings: true
+    unnecessary_late: true
+    avoid_void_async: true
+    throw_in_finally: true
+    use_decorated_box: true
+    use_named_constants: true
+    prefer_final_locals: true
+    cascade_invocations: true
+    directives_ordering: true
+    flutter_style_todos: true
+    unnecessary_lambdas: true
+    secure_pubspec_urls: true
+    use_super_parameters: true
+    cancel_subscriptions: true
+    prefer_single_quotes: true
+    sort_pub_dependencies: true
+    parameter_assignments: true
+    do_not_use_environment: true
+    avoid_final_parameters: true
+    unnecessary_statements: true
+    sized_box_shrink_expand: true
+    unnecessary_parenthesis: true
+    prefer_relative_imports: true
+    unnecessary_raw_strings: true
+    require_trailing_commas: true
+    prefer_if_null_operators: true
+    prefer_final_in_for_each: true
+    use_test_throws_matchers: true
+    type_annotate_public_apis: true
+    omit_local_variable_types: true
+    use_to_and_as_if_applicable: true
+    prefer_asserts_with_message: true
+    avoid_escaping_inner_quotes: true
+    join_return_with_assignment: true
+    no_adjacent_strings_in_list: true
+    unnecessary_await_in_return: true
+    avoid_double_and_int_checks: true
+    depend_on_referenced_packages: false
+    conditional_uri_does_not_exist: true
+    use_is_even_rather_than_modulo: true
+    prefer_null_aware_method_calls: true
+    avoid_redundant_argument_values: true
+    literal_only_boolean_expressions: true
+    use_setters_to_change_properties: true
+    avoid_types_on_closure_parameters: true
+    prefer_asserts_in_initializer_lists: true
+    avoid_positional_boolean_parameters: true
+    avoid_unused_constructor_parameters: true
+    use_if_null_to_convert_nulls_to_bools: true
+    prefer_constructors_over_static_methods: true
+    use_late_for_private_fields_and_variables: true
+    avoid_field_initializers_in_const_classes: true
+    no_leading_underscores_for_library_prefixes: true
+    prefer_function_declarations_over_variables: true
+    no_leading_underscores_for_local_identifiers: true
+    avoid_equals_and_hash_code_on_mutable_classes: true
+    prefer_if_elements_to_conditional_expressions: true
+    avoid_bool_literals_in_conditional_expressions: true

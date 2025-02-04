@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../helpers/carplay_helper.dart';
 
 /// A grid button object displayed on a grid template.
 class CPGridButton {
@@ -20,21 +23,27 @@ class CPGridButton {
   final String image;
 
   /// Fired after the user taps the button.
-  final Function() onPress;
+  final VoidCallback onPressed;
 
+  /// Creates [CPGridButton]
   CPGridButton({
     required this.titleVariants,
+    required this.onPressed,
     required this.image,
-    required this.onPress,
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "titleVariants": titleVariants,
-        "image": image,
+        '_elementId': _elementId,
+        'titleVariants': titleVariants,
+        'image': image,
       };
 
   String get uniqueId {
     return _elementId;
+  }
+
+  bool hasSameValues(CPGridButton other) {
+    return FlutterCarplayHelper().compareLists(titleVariants, other.titleVariants, (a, b) => a == b) &&
+        image == other.image;
   }
 }

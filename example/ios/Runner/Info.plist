@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>You must grant access to the microphone usage permission to use voice control in CarPlay.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>You must grant access to the speech recognition permission to use voice control in CarPlay.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -38,7 +42,7 @@
 					<key>UISceneConfigurationName</key>
 					<string>CarPlay Configuration</string>
 					<key>UISceneDelegateClassName</key>
-					<string>flutter_carplay.FlutterCarPlaySceneDelegate</string>
+					<string>flutter_carplay.FlutterCarplaySceneDelegate</string>
 				</dict>
 			</array>
 			<key>UIWindowSceneSessionRoleApplication</key>
@@ -73,5 +77,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 </dict>
 </plist>

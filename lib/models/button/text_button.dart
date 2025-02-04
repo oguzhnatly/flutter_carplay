@@ -1,14 +1,17 @@
-import 'package:flutter_carplay/helpers/enum_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
-
+/// Enum defining different styles of text buttons in CarPlay.
 enum CPTextButtonStyles {
+  /// The default style for a text button.
   normal,
+
+  /// The style for a text button that indicates a cancel action.
   cancel,
+
+  /// The style for a text button that indicates a confirm action.
   confirm,
-
 }
-
 
 /// A button object for placement in a point of interest or information template.
 class CPTextButton {
@@ -23,22 +26,26 @@ class CPTextButton {
   final CPTextButtonStyles style;
 
   /// Fired when the user taps a text button.
-  final Function() onPress;
+  final VoidCallback onPressed;
 
-  /// Creates [CPTextButton] with a title, style and handler.
+  /// Creates [CPTextButton]
   CPTextButton({
     required this.title,
+    required this.onPressed,
     this.style = CPTextButtonStyles.normal,
-    required this.onPress,
   });
 
   Map<String, dynamic> toJson() => {
-    "_elementId": _elementId,
-    "title": title,
-    "style": CPEnumUtils.stringFromEnum(style.toString()),
-  };
+        '_elementId': _elementId,
+        'title': title,
+        'style': style.name,
+      };
 
   String get uniqueId {
     return _elementId;
+  }
+
+  bool hasSameValues(CPTextButton other) {
+    return title == other.title && style == other.style;
   }
 }
