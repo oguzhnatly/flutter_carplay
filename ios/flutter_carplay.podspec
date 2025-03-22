@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 Flutter Apps are now on Apple CarPlay. This package aims to make it safe to use iPhone apps made with Flutter in the car by integrating with CarPlay.
                        DESC
-  s.homepage         = 'https://github.com/oguzhnatly/flutter_carplay'
+  s.homepage         = 'https://github.com/jorditoda/flutter_carplay'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Oğuzhan Atalay' => 'info@oguzhanatalay.com' }
   s.source           = { :path => '.' }
