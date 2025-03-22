@@ -659,9 +659,9 @@ The map section is determined by the points of interest.
 
 # LICENSE
 
-[**MIT License**](https://github.com/oguzhnatly/flutter_carplay/blob/master/LICENSE)
+[**MIT License**](https://github.com/jorditoda/flutter_carplay/blob/master/LICENSE)
 
-Copyright (c) 2021 Oğuzhan Atalay
+Copyright (c) 2025 Jordi Toda
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
