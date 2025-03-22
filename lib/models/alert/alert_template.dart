@@ -1,4 +1,4 @@
-import 'package:flutter_carplay/models/alert/alert_action.dart';
+import 'package:car_play/models/alert/alert_action.dart';
 import 'package:uuid/uuid.dart';
 
 /// A template object that displays a modal alert.

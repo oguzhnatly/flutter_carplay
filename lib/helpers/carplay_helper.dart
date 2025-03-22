@@ -1,4 +1,4 @@
-import 'package:flutter_carplay/flutter_carplay.dart';
+import 'package:car_play/car_play.dart';
 
 class FlutterCarplayHelper {
   CPListItem? findCPListItem({
@@ -33,5 +33,5 @@ class FlutterCarplayHelper {
   }
 
   String makeFCPChannelId({String? event = ""}) =>
-      'com.jorditoda.flutter_carplay' + event!;
+      'com.yapplic.flutter_car_play' + event!;
 }

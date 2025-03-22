@@ -3,7 +3,7 @@
 # Run `pod lib lint flutter_carplay.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'flutter_carplay'
+  s.name             = 'flutter_car_play'
   s.version          = '1.0.3'
   s.summary          = 'Flutter Apps are now on Apple CarPlay.'
   s.description      = <<-DESC
@@ -11,7 +11,7 @@ Flutter Apps are now on Apple CarPlay. This package aims to make it safe to use 
                        DESC
   s.homepage         = 'https://github.com/jorditoda/flutter_carplay'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Oğuzhan Atalay' => 'info@oguzhanatalay.com' }
+  s.author           = { 'Jordi Toda' => 'jordi.toda@yapplic.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'

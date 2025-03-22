@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>flutter_carplay_example</string>
+	<string>flutter_car_play_example</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -38,7 +38,7 @@
 					<key>UISceneConfigurationName</key>
 					<string>CarPlay Configuration</string>
 					<key>UISceneDelegateClassName</key>
-					<string>flutter_carplay.FlutterCarPlaySceneDelegate</string>
+					<string>flutter_car_play.FlutterCarPlaySceneDelegate</string>
 				</dict>
 			</array>
 			<key>UIWindowSceneSessionRoleApplication</key>

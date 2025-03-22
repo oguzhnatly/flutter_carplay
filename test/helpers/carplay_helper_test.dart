@@ -1,5 +1,5 @@
-import 'package:flutter_carplay/flutter_carplay.dart';
-import 'package:flutter_carplay/helpers/carplay_helper.dart';
+import 'package:car_play/car_play.dart';
+import 'package:car_play/helpers/carplay_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -38,7 +38,7 @@ void main() {
     test('make FCP channel id', () {
       String channelId = flutterCarplayHelper.makeFCPChannelId(event: '/event');
 
-      expect(channelId, 'com.jorditoda.flutter_carplay/event');
+      expect(channelId, 'com.yapplic.flutter_car_play/event');
     });
   });
 }

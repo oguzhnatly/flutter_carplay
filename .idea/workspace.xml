@@ -5,8 +5,42 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f5fb0b89-71c7-4b2b-a91d-dc73570843de" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/example/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/ios/Podfile" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Podfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/ios/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Podfile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/test/widget_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Classes/FCPHelpers.swift" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Classes/FCPHelpers.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Classes/FlutterCarplayPlugin.m" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Classes/FlutterCarplayPlugin.m" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Classes/SwiftFlutterCarplayPlugin.swift" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Classes/SwiftFlutterCarplayPlugin.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/flutter_carplay.podspec" beforeDir="false" afterPath="$PROJECT_DIR$/ios/flutter_car_play.podspec" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/carplay_worker.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/carplay_worker.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/controllers/carplay_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/controllers/carplay_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/flutter_carplay.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_car_play.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/helpers/carplay_helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/helpers/carplay_helper.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/action_sheet/action_sheet_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/action_sheet/action_sheet_template.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/alert/alert_action.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/alert/alert_action.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/alert/alert_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/alert/alert_template.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/button/bar_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/button/bar_button.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/button/text_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/button/text_button.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/grid/grid_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/grid/grid_template.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/information/information_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/information/information_template.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/list/list_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/list/list_item.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/list/list_section.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/list/list_section.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/list/list_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/list/list_template.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/tabbar/tabbar_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/tabbar/tabbar_template.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/flutter_carplay_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/flutter_carplay_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/helpers/carplay_helper_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/helpers/carplay_helper_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/helpers/enum_utils_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/helpers/enum_utils_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,25 +48,64 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "jorditoda"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/jorditoda/flutter_carplay",
+    "accountId": "fa469dbe-8c49-4503-beb9-6bd1f2a0b9da"
+  },
+  "recentNewPullRequestHead": {
+    "server": {
+      "useHttp": false,
+      "host": "github.com",
+      "port": null,
+      "suffix": null
+    },
+    "owner": "jorditoda",
+    "repository": "flutter_carplay"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 0
+}]]></component>
   <component name="ProjectId" id="26VWmYfFUInsfIxxOnCG9ojj7U7" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="dart.analysis.tool.window.force.activate" value="true" />
-    <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="show.migrate.to.gradle.popup" value="false" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.example/lib/main.dart.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/previews" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SwiftWorkspaceSettings">
+    <option name="detectedToolchain" value="true" />
+    <option name="toolchainPathValue" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain" />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="f5fb0b89-71c7-4b2b-a91d-dc73570843de" name="Default Changelist" comment="" />
@@ -41,20 +114,19 @@
       <option name="presentableId" value="Default" />
       <updated>1647509393608</updated>
     </task>
+    <task id="LOCAL-00001" summary="Renaming and update uuid library">
+      <option name="closed" value="true" />
+      <created>1742659735023</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1742659735023</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
-  <component name="WindowStateProjectService">
-    <state x="100" y="125" width="1592" height="826" key="DiffContextDialog" timestamp="1647512568282">
-      <screen x="0" y="25" width="1792" height="1026" />
-    </state>
-    <state x="100" y="125" width="1592" height="826" key="DiffContextDialog/0.25.1792.1026@0.25.1792.1026" timestamp="1647512568282" />
-    <state x="656" y="243" key="RollbackChangesDialog" timestamp="1647512264399">
-      <screen x="0" y="25" width="1792" height="1026" />
-    </state>
-    <state x="656" y="243" key="RollbackChangesDialog/0.25.1792.1026@0.25.1792.1026" timestamp="1647512264399" />
-    <state x="596" y="293" width="599" height="490" key="find.popup" timestamp="1647518855664">
-      <screen x="0" y="25" width="1792" height="1026" />
-    </state>
-    <state x="596" y="293" width="599" height="490" key="find.popup/0.25.1792.1026@0.25.1792.1026" timestamp="1647518855664" />
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Renaming and update uuid library" />
+    <option name="LAST_COMMIT_MESSAGE" value="Renaming and update uuid library" />
   </component>
 </project>

@@ -1,4 +1,4 @@
-import 'package:flutter_carplay/helpers/enum_utils.dart';
+import 'package:car_play/helpers/enum_utils.dart';
 import 'package:uuid/uuid.dart';
 
 

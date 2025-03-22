@@ -1,4 +1,4 @@
-import 'package:flutter_carplay/models/list/list_template.dart';
+import 'package:car_play/models/list/list_template.dart';
 import 'package:uuid/uuid.dart';
 
 /// A template object that contains a collection of [CPListTemplate] templates,

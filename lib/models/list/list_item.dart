@@ -1,6 +1,6 @@
-import 'package:flutter_carplay/controllers/carplay_controller.dart';
-import 'package:flutter_carplay/helpers/enum_utils.dart';
-import 'package:flutter_carplay/models/list/list_constants.dart';
+import 'package:car_play/controllers/carplay_controller.dart';
+import 'package:car_play/helpers/enum_utils.dart';
+import 'package:car_play/models/list/list_constants.dart';
 import 'package:uuid/uuid.dart';
 
 /// A selectable list item object that appears in a list template.

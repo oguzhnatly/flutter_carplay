@@ -1,5 +1,5 @@
-import 'package:flutter_carplay/models/button/bar_button.dart';
-import 'package:flutter_carplay/models/list/list_section.dart';
+import 'package:car_play/models/button/bar_button.dart';
+import 'package:car_play/models/list/list_section.dart';
 import 'package:uuid/uuid.dart';
 
 /// A template object that displays and manages a list of items.

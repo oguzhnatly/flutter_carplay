@@ -1,4 +1,4 @@
-import 'package:flutter_carplay/models/grid/grid_button.dart';
+import 'package:car_play/models/grid/grid_button.dart';
 import 'package:uuid/uuid.dart';
 
 /// A template object that displays and manages a grid of items.

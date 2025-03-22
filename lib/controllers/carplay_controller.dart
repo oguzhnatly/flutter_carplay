@@ -1,18 +1,18 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_carplay/flutter_carplay.dart';
-import 'package:flutter_carplay/helpers/carplay_helper.dart';
-import 'package:flutter_carplay/helpers/enum_utils.dart';
-import 'package:flutter_carplay/models/alert/alert_action.dart';
-import 'package:flutter_carplay/models/button/bar_button.dart';
-import 'package:flutter_carplay/models/button/text_button.dart';
-import 'package:flutter_carplay/models/grid/grid_button.dart';
-import 'package:flutter_carplay/models/grid/grid_template.dart';
-import 'package:flutter_carplay/models/list/list_template.dart';
-import 'package:flutter_carplay/models/information/information_template.dart';
-import 'package:flutter_carplay/models/poi/poi.dart';
-import 'package:flutter_carplay/models/poi/poi_template.dart';
-import 'package:flutter_carplay/models/tabbar/tabbar_template.dart';
-import 'package:flutter_carplay/constants/private_constants.dart';
+import 'package:car_play/car_play.dart';
+import 'package:car_play/helpers/carplay_helper.dart';
+import 'package:car_play/helpers/enum_utils.dart';
+import 'package:car_play/models/alert/alert_action.dart';
+import 'package:car_play/models/button/bar_button.dart';
+import 'package:car_play/models/button/text_button.dart';
+import 'package:car_play/models/grid/grid_button.dart';
+import 'package:car_play/models/grid/grid_template.dart';
+import 'package:car_play/models/list/list_template.dart';
+import 'package:car_play/models/information/information_template.dart';
+import 'package:car_play/models/poi/poi.dart';
+import 'package:car_play/models/poi/poi_template.dart';
+import 'package:car_play/models/tabbar/tabbar_template.dart';
+import 'package:car_play/constants/private_constants.dart';
 
 /// [FlutterCarPlayController] is an root object in order to control and communication
 /// system with the Apple CarPlay and native functions.

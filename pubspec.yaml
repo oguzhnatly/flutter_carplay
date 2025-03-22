@@ -1,12 +1,12 @@
-name: flutter_car_play
+name: car_play
 description: Flutter Apps are now on Apple CarPlay. This package aims to make it safe to use iPhone apps made with Flutter in the car by integrating with CarPlay.
-version: 1.0.3
+version: 1.0.4
 homepage: https://github.com/jorditoda/flutter_carplay#readme
 repository: https://github.com/jorditoda/flutter_carplay
 issue_tracker: https://github.com/jorditoda/flutter_carplay/issues
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: '>=2.12.0 <4.0.0'
   flutter: ">=1.20.0"
 
 dependencies:

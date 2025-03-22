@@ -1,4 +1,4 @@
-import 'package:flutter_carplay/models/list/list_item.dart';
+import 'package:car_play/models/list/list_item.dart';
 import 'package:uuid/uuid.dart';
 
 /// A section object of list items that appear in a list template.
