@@ -1,21 +1,21 @@
 PODS:
-  - Flutter (1.0.0)
-  - flutter_car_play (1.0.3):
+  - car_play (1.0.3):
     - Flutter
+  - Flutter (1.0.0)
 
 DEPENDENCIES:
+  - car_play (from `.symlinks/plugins/car_play/ios`)
   - Flutter (from `Flutter`)
-  - flutter_car_play (from `.symlinks/plugins/flutter_car_play/ios`)
 
 EXTERNAL SOURCES:
+  car_play:
+    :path: ".symlinks/plugins/car_play/ios"
   Flutter:
     :path: Flutter
-  flutter_car_play:
-    :path: ".symlinks/plugins/flutter_car_play/ios"
 
 SPEC CHECKSUMS:
+  car_play: ab050d059814a5baa2044308338df7759d5d2aef
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_car_play: dbb385b89d24e3f595fb247673ea07e62a2c7230
 
 PODFILE CHECKSUM: 8a1940628b81389d4af7ba4fac6ed1cc8374cca0
 

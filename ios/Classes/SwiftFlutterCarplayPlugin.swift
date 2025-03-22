@@ -224,7 +224,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   }
   
   static func findItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {
-    let objcRootTemplateType = String(describing: SwiftFlutterCarplayPlugin.objcRootTemplate).match(#"(.*flutter_car_play\.(.*)\))"#)[0][2]
+    let objcRootTemplateType = String(describing: SwiftFlutterCarplayPlugin.objcRootTemplate).match(#"(.*car_play\.(.*)\))"#)[0][2]
     var templates: [FCPListTemplate] = []
     if (objcRootTemplateType.elementsEqual(String(describing: FCPListTemplate.self))) {
       templates.append(SwiftFlutterCarplayPlugin.objcRootTemplate as! FCPListTemplate)

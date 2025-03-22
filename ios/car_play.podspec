@@ -3,7 +3,7 @@
 # Run `pod lib lint flutter_carplay.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'flutter_car_play'
+  s.name             = 'car_play'
   s.version          = '1.0.3'
   s.summary          = 'Flutter Apps are now on Apple CarPlay.'
   s.description      = <<-DESC

@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Solve a bug on example project
+
 ## 1.0.4
 
 - Fork from original repository to be able to maintain the library

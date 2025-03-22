@@ -5,42 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f5fb0b89-71c7-4b2b-a91d-dc73570843de" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/example/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Podfile" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Podfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/ios/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Podfile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner/Info.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/test/widget_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ios/Classes/FCPHelpers.swift" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Classes/FCPHelpers.swift" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ios/Classes/FlutterCarplayPlugin.m" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Classes/FlutterCarplayPlugin.m" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ios/Classes/SwiftFlutterCarplayPlugin.swift" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Classes/SwiftFlutterCarplayPlugin.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/flutter_carplay.podspec" beforeDir="false" afterPath="$PROJECT_DIR$/ios/flutter_car_play.podspec" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/carplay_worker.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/carplay_worker.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/controllers/carplay_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/controllers/carplay_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/flutter_carplay.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_car_play.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/flutter_car_play.podspec" beforeDir="false" afterPath="$PROJECT_DIR$/ios/car_play.podspec" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/helpers/carplay_helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/helpers/carplay_helper.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/action_sheet/action_sheet_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/action_sheet/action_sheet_template.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/alert/alert_action.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/alert/alert_action.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/alert/alert_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/alert/alert_template.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/button/bar_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/button/bar_button.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/button/text_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/button/text_button.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/grid/grid_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/grid/grid_template.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/information/information_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/information/information_template.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/list/list_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/list/list_item.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/list/list_section.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/list/list_section.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/list/list_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/list/list_template.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/tabbar/tabbar_template.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/tabbar/tabbar_template.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/flutter_carplay_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/flutter_carplay_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/helpers/carplay_helper_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/helpers/carplay_helper_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/helpers/enum_utils_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/helpers/enum_utils_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,47 +34,48 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "jorditoda"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;jorditoda&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/jorditoda/flutter_carplay",
-    "accountId": "fa469dbe-8c49-4503-beb9-6bd1f2a0b9da"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/jorditoda/flutter_carplay&quot;,
+    &quot;accountId&quot;: &quot;fa469dbe-8c49-4503-beb9-6bd1f2a0b9da&quot;
   },
-  "recentNewPullRequestHead": {
-    "server": {
-      "useHttp": false,
-      "host": "github.com",
-      "port": null,
-      "suffix": null
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
     },
-    "owner": "jorditoda",
-    "repository": "flutter_carplay"
+    &quot;owner&quot;: &quot;jorditoda&quot;,
+    &quot;repository&quot;: &quot;flutter_carplay&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="26VWmYfFUInsfIxxOnCG9ojj7U7" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Flutter.example/lib/main.dart.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "io.flutter.reload.alreadyRun": "true",
-    "kotlin-language-version-configured": "true",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Flutter.example/lib/main.dart.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/previews" />
@@ -124,6 +104,17 @@
     </task>
     <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Renaming and update uuid library" />

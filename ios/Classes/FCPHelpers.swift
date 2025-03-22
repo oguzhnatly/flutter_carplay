@@ -6,5 +6,5 @@
 //
 
 func makeFCPChannelId(event: String?) -> String {
-  return "com.yapplic.flutter_car_play" + event!
+  return "com.yapplic.car_play" + event!
 }

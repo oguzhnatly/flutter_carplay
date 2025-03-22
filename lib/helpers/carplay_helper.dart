@@ -33,5 +33,5 @@ class FlutterCarplayHelper {
   }
 
   String makeFCPChannelId({String? event = ""}) =>
-      'com.yapplic.flutter_car_play' + event!;
+      'com.yapplic.car_play' + event!;
 }

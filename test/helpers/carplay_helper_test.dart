@@ -38,7 +38,7 @@ void main() {
     test('make FCP channel id', () {
       String channelId = flutterCarplayHelper.makeFCPChannelId(event: '/event');
 
-      expect(channelId, 'com.yapplic.flutter_car_play/event');
+      expect(channelId, 'com.yapplic.car_play/event');
     });
   });
 }
