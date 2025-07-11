@@ -40,52 +40,47 @@ class FlutterCarPlayController {
   }
 
   static void updateCPListItem(CPListItem updatedListItem) {
-    _methodChannel
-        .invokeMethod('updateListItem', <String, dynamic>{
-          ...updatedListItem.toJson(),
-        })
-        .then((value) {
-          if (value) {
-            l1:
-            for (var h in templateHistory) {
-              switch (h.runtimeType) {
-                case CPTabBarTemplate _:
-                  for (var t in (h as CPTabBarTemplate).templates) {
-                    for (var s in t.sections) {
-                      for (var i in s.items) {
-                        if (i.uniqueId == updatedListItem.uniqueId) {
-                          currentRootTemplate!
-                                  .templates[currentRootTemplate!.templates
-                                      .indexOf(t)]
-                                  .sections[t.sections.indexOf(s)]
-                                  .items[s.items.indexOf(i)] =
-                              updatedListItem;
-                          break l1;
-                        }
-                      }
+    _methodChannel.invokeMethod('updateListItem', <String, dynamic>{
+      ...updatedListItem.toJson(),
+    }).then((value) {
+      if (value) {
+        l1:
+        for (var h in templateHistory) {
+          switch (h.runtimeType) {
+            case CPTabBarTemplate _:
+              for (var t in (h as CPTabBarTemplate).templates) {
+                for (var s in t.sections) {
+                  for (var i in s.items) {
+                    if (i.uniqueId == updatedListItem.uniqueId) {
+                      currentRootTemplate!
+                          .templates[currentRootTemplate!.templates.indexOf(t)]
+                          .sections[t.sections.indexOf(s)]
+                          .items[s.items.indexOf(i)] = updatedListItem;
+                      break l1;
                     }
                   }
-                  break;
-                case CPListTemplate _:
-                  for (var s in (h as CPListTemplate).sections) {
-                    for (var i in s.items) {
-                      if (i.uniqueId == updatedListItem.uniqueId) {
-                        currentRootTemplate!
-                                .sections[currentRootTemplate!.sections.indexOf(
-                                  s,
-                                )]
-                                .items[s.items.indexOf(i)] =
-                            updatedListItem;
-                        break l1;
-                      }
-                    }
-                  }
-                  break;
-                default:
+                }
               }
-            }
+              break;
+            case CPListTemplate _:
+              for (var s in (h as CPListTemplate).sections) {
+                for (var i in s.items) {
+                  if (i.uniqueId == updatedListItem.uniqueId) {
+                    currentRootTemplate!
+                        .sections[currentRootTemplate!.sections.indexOf(
+                      s,
+                    )]
+                        .items[s.items.indexOf(i)] = updatedListItem;
+                    break l1;
+                  }
+                }
+              }
+              break;
+            default:
           }
-        });
+        }
+      }
+    });
   }
 
   void addTemplateToHistory(dynamic template) {

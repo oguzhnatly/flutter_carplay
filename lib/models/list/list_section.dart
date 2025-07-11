@@ -17,10 +17,10 @@ class CPListSection {
   CPListSection({this.header, required this.items});
 
   Map<String, dynamic> toJson() => {
-    "_elementId": _elementId,
-    "header": header,
-    "items": items.map((e) => e.toJson()).toList(),
-  };
+        "_elementId": _elementId,
+        "header": header,
+        "items": items.map((e) => e.toJson()).toList(),
+      };
 
   String get uniqueId {
     return _elementId;

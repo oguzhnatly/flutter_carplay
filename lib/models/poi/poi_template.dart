@@ -14,10 +14,10 @@ class CPPointOfInterestTemplate {
   CPPointOfInterestTemplate({required this.title, required this.poi});
 
   Map<String, dynamic> toJson() => {
-    "_elementId": _elementId,
-    "title": title,
-    "poi": poi.map((e) => e.toJson()).toList(),
-  };
+        "_elementId": _elementId,
+        "title": title,
+        "poi": poi.map((e) => e.toJson()).toList(),
+      };
 
   String get uniqueId {
     return _elementId;

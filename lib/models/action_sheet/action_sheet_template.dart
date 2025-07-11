@@ -19,11 +19,11 @@ class CPActionSheetTemplate {
   CPActionSheetTemplate({this.title, this.message, required this.actions});
 
   Map<String, dynamic> toJson() => {
-    "_elementId": _elementId,
-    "title": title,
-    "message": message,
-    "actions": actions.map((e) => e.toJson()).toList(),
-  };
+        "_elementId": _elementId,
+        "title": title,
+        "message": message,
+        "actions": actions.map((e) => e.toJson()).toList(),
+      };
 
   String get uniqueId {
     return _elementId;

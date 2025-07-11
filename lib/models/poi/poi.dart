@@ -36,19 +36,19 @@ class CPPointOfInterest {
   });
 
   Map<String, dynamic> toJson() => {
-    "_elementId": _elementId,
-    "latitude": latitude,
-    "longitude": longitude,
-    "title": title,
-    "subtitle": subtitle,
-    "summary": summary,
-    "detailTitle": detailTitle,
-    "detailSubtitle": detailSubtitle,
-    "detailSummary": detailSummary,
-    "image": image,
-    "primaryButton": primaryButton?.toJson(),
-    "secondaryButton": secondaryButton?.toJson(),
-  };
+        "_elementId": _elementId,
+        "latitude": latitude,
+        "longitude": longitude,
+        "title": title,
+        "subtitle": subtitle,
+        "summary": summary,
+        "detailTitle": detailTitle,
+        "detailSubtitle": detailSubtitle,
+        "detailSummary": detailSummary,
+        "image": image,
+        "primaryButton": primaryButton?.toJson(),
+        "secondaryButton": secondaryButton?.toJson(),
+      };
 
   String get uniqueId {
     return _elementId;

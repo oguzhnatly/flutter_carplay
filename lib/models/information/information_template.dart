@@ -31,12 +31,12 @@ class CPInformationTemplate {
   });
 
   Map<String, dynamic> toJson() => {
-    "_elementId": _elementId,
-    "layout": CPEnumUtils.stringFromEnum(layout.toString()),
-    "title": title,
-    "actions": actions.map((e) => e.toJson()).toList(),
-    "informationItems": informationItems.map((e) => e.toJson()).toList(),
-  };
+        "_elementId": _elementId,
+        "layout": CPEnumUtils.stringFromEnum(layout.toString()),
+        "title": title,
+        "actions": actions.map((e) => e.toJson()).toList(),
+        "informationItems": informationItems.map((e) => e.toJson()).toList(),
+      };
 
   String get uniqueId {
     return _elementId;
