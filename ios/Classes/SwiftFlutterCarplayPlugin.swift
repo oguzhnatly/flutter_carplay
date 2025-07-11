@@ -180,7 +180,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       }
       let template = FCPSharedNowPlayingTemplate()
       SwiftFlutterCarplayPlugin.templateStack.append(template)
-      FlutterCarPlaySceneDelegate.push(template: template.get, animated: animated)
+      FlutterCarPlaySceneDelegate.pushIfNotExist(template: template.get as CPTemplate, animated: animated)
       result(true)
       break
     case FCPChannelTypes.pushTemplate:

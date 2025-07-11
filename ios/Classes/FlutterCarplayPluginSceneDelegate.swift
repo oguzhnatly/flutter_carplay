@@ -39,6 +39,17 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   static public func push(template: CPTemplate, animated: Bool) {
     self.interfaceController?.pushTemplate(template, animated: animated)
   }
+
+  static public func pushIfNotExist(template: CPTemplate, animated: Bool) {
+    guard let interfaceController = self.interfaceController else { return }
+
+    let isAlreadyPushed = interfaceController.templates.contains { $0 === template }
+    let isTopSameInstance = interfaceController.topTemplate === template
+
+    if !isAlreadyPushed && !isTopSameInstance {
+        interfaceController.pushTemplate(template, animated: animated)
+    }
+  }
   
   static public func closePresent(animated: Bool) {
     self.interfaceController?.dismissTemplate(animated: animated)
