@@ -143,16 +143,16 @@ class FlutterCarplay {
   /// this flag when there isn’t an existing navigation hierarchy to replace.
   ///
   /// [!] CarPlay cannot have more than 5 templates on one screen.
-  static void setRootTemplate({
+  static Future<void> setRootTemplate({
     required dynamic rootTemplate,
     bool animated = true,
-  }) {
+  }) async {
     if (rootTemplate.runtimeType == CPTabBarTemplate ||
         rootTemplate.runtimeType == CPGridTemplate ||
         rootTemplate.runtimeType == CPListTemplate ||
         rootTemplate.runtimeType == CPInformationTemplate ||
         rootTemplate.runtimeType == CPPointOfInterestTemplate) {
-      _carPlayController.methodChannel
+      return _carPlayController.methodChannel
           .invokeMethod('setRootTemplate', <String, dynamic>{
         'rootTemplate': rootTemplate.toJson(),
         'animated': animated,
@@ -167,8 +167,8 @@ class FlutterCarplay {
   }
 
   /// It will set the current root template again.
-  void forceUpdateRootTemplate() {
-    _carPlayController.methodChannel.invokeMethod('forceUpdateRootTemplate');
+  Future<void> forceUpdateRootTemplate() {
+    return _carPlayController.methodChannel.invokeMethod('forceUpdateRootTemplate');
   }
 
   /// Getter for current root template.
@@ -183,11 +183,11 @@ class FlutterCarplay {
   /// - If animated is true, CarPlay animates the presentation of the template.
   ///
   /// [!] CarPlay can only present one modal template at a time.
-  static void showAlert({
+  static Future<void> showAlert({
     required CPAlertTemplate template,
     bool animated = true,
   }) {
-    _carPlayController.methodChannel.invokeMethod(
+    return _carPlayController.methodChannel.invokeMethod(
       CPEnumUtils.stringFromEnum(FCPChannelTypes.setAlert.toString()),
       <String, dynamic>{
         'rootTemplate': template.toJson(),
@@ -207,11 +207,11 @@ class FlutterCarplay {
   /// - If animated is true, CarPlay animates the presentation of the template.
   ///
   /// [!] CarPlay can only present one modal template at a time.
-  static void showActionSheet({
+  static Future<void> showActionSheet({
     required CPActionSheetTemplate template,
     bool animated = true,
   }) {
-    _carPlayController.methodChannel.invokeMethod(
+    return _carPlayController.methodChannel.invokeMethod(
       CPEnumUtils.stringFromEnum(FCPChannelTypes.setActionSheet.toString()),
       <String, dynamic>{
         'rootTemplate': template.toJson(),
