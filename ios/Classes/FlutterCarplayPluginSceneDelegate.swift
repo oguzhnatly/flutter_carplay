@@ -82,13 +82,13 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
                                 didDisconnect interfaceController: CPInterfaceController, from window: CPWindow) {
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.disconnected)
     
-    //FlutterCarPlaySceneDelegate.interfaceController = nil
+    FlutterCarPlaySceneDelegate.interfaceController = nil
   }
   
   func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
                                 didDisconnectInterfaceController interfaceController: CPInterfaceController) {
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.disconnected)
     
-    //FlutterCarPlaySceneDelegate.interfaceController = nil
+    FlutterCarPlaySceneDelegate.interfaceController = nil
   }
 }
