@@ -146,6 +146,7 @@ override func application( _ application: UIApplication,
            window = UIWindow(windowScene: windowScene)
 
            let controller = FlutterViewController.init(engine: flutterEngine, nibName: nil, bundle: nil)
+           controller.loadDefaultSplashScreenView()
            window?.rootViewController = controller
            window?.makeKeyAndVisible()
        }

@@ -18,6 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         flutterEngine.run()
         GeneratedPluginRegistrant.register(with: flutterEngine)
         let controller = FlutterViewController.init(engine: flutterEngine, nibName: nil, bundle: nil)
+        controller.loadDefaultSplashScreenView()
         window?.rootViewController = controller
         window?.makeKeyAndVisible()
     }
