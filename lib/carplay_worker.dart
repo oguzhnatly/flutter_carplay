@@ -168,7 +168,8 @@ class FlutterCarplay {
 
   /// It will set the current root template again.
   Future<void> forceUpdateRootTemplate() {
-    return _carPlayController.methodChannel.invokeMethod('forceUpdateRootTemplate');
+    return _carPlayController.methodChannel
+        .invokeMethod('forceUpdateRootTemplate');
   }
 
   /// Getter for current root template.
