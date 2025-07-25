@@ -10,7 +10,7 @@ import CarPlay
 @available(iOS 14.0, *)
 class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
   static private var interfaceController: CPInterfaceController?
-  
+
   static public func forceUpdateRootTemplate() {
     let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
     let animated = SwiftFlutterCarplayPlugin.animated
@@ -37,11 +37,14 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   }
   
   static public func push(template: CPTemplate, animated: Bool) {
+    guard self.interfaceController?.rootTemplate != nil else { return }
+
     self.interfaceController?.pushTemplate(template, animated: animated)
   }
 
   static public func pushIfNotExist(template: CPTemplate, animated: Bool) {
     guard let interfaceController = self.interfaceController else { return }
+    guard interfaceController.rootTemplate != nil else { return }
 
     let isAlreadyPushed = interfaceController.templates.contains { $0 === template }
     let isTopSameInstance = interfaceController.topTemplate === template
