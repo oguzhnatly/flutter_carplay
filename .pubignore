@@ -6,3 +6,4 @@ RELEASE_TEMPLATE.md
 *.iml
 .vscode/
 .idea/
+example/pubspec.lock
