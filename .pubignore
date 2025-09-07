@@ -1,0 +1,8 @@
+# Files to exclude from pub.dev publishing
+.github/
+flutter_carplay-v*.tar.gz
+flutter_carplay-v*.zip
+RELEASE_TEMPLATE.md
+*.iml
+.vscode/
+.idea/
