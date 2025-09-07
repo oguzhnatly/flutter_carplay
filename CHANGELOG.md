@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Add automated publishing support to pub.dev
+
 ## 1.1.0
 
 - Add showNowPlaying, it can be called multiple times safely ([#33](https://github.com/oguzhnatly/flutter_carplay/issues/33)) (ty @vanlooverenkoen, @EArminjon)
