@@ -22,7 +22,7 @@ class FCPGridButton {
   
   var get: CPGridButton {
     let gridButton = CPGridButton.init(titleVariants: self.titleVariants,
-                                       image: UIImage().fromFlutterAsset(name: self.image),
+                                       image: UIImage().fromCorrectSource(name: self.image),
                                        handler: { _ in
       DispatchQueue.main.async {
         FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onGridButtonPressed,

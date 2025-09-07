@@ -14,10 +14,7 @@ class CPListSection {
 
   /// Creates [CPListSection] that contains zero or more list items. You can configure
   /// a section to display a header, which CarPlay displays on the trailing edge of the screen.
-  CPListSection({
-    this.header,
-    required this.items,
-  });
+  CPListSection({this.header, required this.items});
 
   Map<String, dynamic> toJson() => {
         "_elementId": _elementId,

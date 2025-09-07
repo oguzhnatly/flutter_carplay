@@ -1,3 +1,10 @@
+## 1.1.0
+
+- Add showNowPlaying, it can be called multiple times safely ([#33](https://github.com/oguzhnatly/flutter_carplay/issues/33)) (ty @vanlooverenkoen, @EArminjon)
+- Add support for HTTP(s) images (ty @vanlooverenkoen)
+- Add support to launch CarPlay without manually launch the iOS app ([#25](https://github.com/oguzhnatly/flutter_carplay/pull/25)) (ty @vanlooverenkoen)
+- Update the iOS integration and its doc to fix various issues ([#17](https://github.com/oguzhnatly/flutter_carplay/issues/17), [#35](https://github.com/oguzhnatly/flutter_carplay/issues/35), [#38](https://github.com/oguzhnatly/flutter_carplay/issues/38), [#61](https://github.com/oguzhnatly/flutter_carplay/issues/61), [#67](https://github.com/oguzhnatly/flutter_carplay/issues/67)) (ty @EArminjon, @snipd-mikel)
+
 ## 1.0.3
 
 - Build fix for the issue [#7](https://github.com/oguzhnatly/flutter_carplay/issues/7)

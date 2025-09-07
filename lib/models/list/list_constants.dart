@@ -1,10 +1,3 @@
-enum CPListItemPlayingIndicatorLocations {
-  trailing,
-  leading,
-}
+enum CPListItemPlayingIndicatorLocations { trailing, leading }
 
-enum CPListItemAccessoryTypes {
-  none,
-  cloud,
-  disclosureIndicator,
-}
+enum CPListItemAccessoryTypes { none, cloud, disclosureIndicator }

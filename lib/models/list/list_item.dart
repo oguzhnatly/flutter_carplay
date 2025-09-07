@@ -58,8 +58,9 @@ class CPListItem {
         "image": image,
         "playbackProgress": playbackProgress,
         "isPlaying": isPlaying,
-        "playingIndicatorLocation":
-            CPEnumUtils.stringFromEnum(playingIndicatorLocation.toString()),
+        "playingIndicatorLocation": CPEnumUtils.stringFromEnum(
+          playingIndicatorLocation.toString(),
+        ),
         "accessoryType": CPEnumUtils.stringFromEnum(accessoryType.toString()),
       };
 
@@ -109,7 +110,8 @@ class CPListItem {
 
   /// Setter for playingIndicatorLocation
   void setPlayingIndicatorLocation(
-      CPListItemPlayingIndicatorLocations playingIndicatorLocation) {
+    CPListItemPlayingIndicatorLocations playingIndicatorLocation,
+  ) {
     this.playingIndicatorLocation = playingIndicatorLocation;
     FlutterCarPlayController.updateCPListItem(this);
   }

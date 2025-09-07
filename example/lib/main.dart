@@ -10,7 +10,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -363,8 +363,8 @@ class _MyAppState extends State<MyApp> {
               }),
         ],
             informationItems: [
-              CPInformationItem(title: "Item title 1", detail: "detail 1"),
-              CPInformationItem(title: "Item title 2", detail: "detail 2"),
+          CPInformationItem(title: "Item title 1", detail: "detail 1"),
+          CPInformationItem(title: "Item title 2", detail: "detail 2"),
         ]));
   }
 
@@ -453,8 +453,7 @@ class _MyAppState extends State<MyApp> {
             ),
             Center(
               child: Text(
-                'Carplay Status: ' +
-                    CPEnumUtils.stringFromEnum(connectionStatus),
+                'Carplay Status: ${CPEnumUtils.stringFromEnum(connectionStatus)}',
               ),
             ),
             Row(
@@ -556,7 +555,8 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 textStyle: const TextStyle(fontSize: 15),
-                primary: Colors.red,
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   vertical: 12,
                   horizontal: 24,

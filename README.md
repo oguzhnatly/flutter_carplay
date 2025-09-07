@@ -120,13 +120,15 @@ $ cd ios && pod install --repo-update
 import UIKit
 import Flutter
 
+let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadlessExecution: true)
+
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
 override func application( _ application: UIApplication,
                         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
--   GeneratedPluginRegistrant.register(with: self)
--   return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-+   return true
++  flutterEngine.run()
+   GeneratedPluginRegistrant.register(with: self)
+   return super.application(application, didFinishLaunchingWithOptions: launchOptions)
 }
 }
 ```
@@ -143,10 +145,8 @@ override func application( _ application: UIApplication,
 
            window = UIWindow(windowScene: windowScene)
 
-           let flutterEngine = FlutterEngine(name: "SceneDelegateEngine")
-           flutterEngine.run()
-           GeneratedPluginRegistrant.register(with: flutterEngine)
            let controller = FlutterViewController.init(engine: flutterEngine, nibName: nil, bundle: nil)
+           controller.loadDefaultSplashScreenView()
            window?.rootViewController = controller
            window?.makeKeyAndVisible()
        }
@@ -161,7 +161,7 @@ override func application( _ application: UIApplication,
    <key>UIApplicationSceneManifest</key>
    <dict>
      <key>UIApplicationSupportsMultipleScenes</key>
-     <true />
+     <false />
      <key>UISceneConfigurations</key>
      <dict>
        <key>CPTemplateApplicationSceneSessionRoleApplication</key>
