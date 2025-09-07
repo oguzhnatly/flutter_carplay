@@ -8,7 +8,9 @@
 ![Dart Pub Multi-Platform](https://badgen.net/pub/flutter-platform/flutter_carplay)
 ![DartPub Dart SDK](https://badgen.net/pub/sdk-version/flutter_carplay)
 
-Flutter Apps now on Apple CarPlay! `flutter_carplay` aims to make it safe to use iPhone apps made with Flutter in the car by integrating with CarPlay. CarPlay takes the things you want to do while driving and puts them on the car’s built-in display.
+Flutter Apps now on Apple CarPlay! `flutter_carplay` aims to make it safe to use iPhone apps made with Flutter in the car by integrating with CarPlay. CarPlay takes the things you want to do while driving and puts them on the car's built-in display.
+
+**✨ New in v1.1.0**: CarPlay apps can now launch automatically without requiring the Flutter app to be opened first, supporting true background launch capabilities.
 
 > Apple announced some great features in iOS 14, one of which is users download CarPlay apps from the App Store and use them on iPhone like any other app. When an iPhone with a CarPlay app is connected to a CarPlay vehicle, the app icon appears on the CarPlay home screen. CarPlay apps are not separate apps—you add CarPlay support to an existing app.
 >
@@ -40,8 +42,19 @@ CarPlay apps are built from a fixed set of user interface templates that iOS ren
 - [x] Tab Bar Template
 - [x] Information Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
 - [x] Point of Interest Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
+- [x] Now Playing Template (v1.1.0)
 
 By evaluating this information, you can request for the relevant entitlement from Apple.
+
+## What's New in v1.1.0
+
+- **🚀 Background Launch Support**: CarPlay apps can now start automatically without requiring the Flutter app to be opened first (Thanks to [@vanlooverenkoen](https://github.com/vanlooverenkoen) and [@EArminjon](https://github.com/EArminjon))
+- **🎵 Now Playing Template**: Navigate to the shared instance of the Now Playing Template with `FlutterCarplay.showSharedNowPlaying()`
+- **🌐 HTTP(s) Image Support**: Load images from URLs in addition to local assets (Thanks to [@vanlooverenkoen](https://github.com/vanlooverenkoen))
+- **🔧 Improved Completion Handlers**: Better reliability for list item interactions and template transitions
+- **📱 Flutter 3.32.x Compatibility**: Updated for the latest Flutter versions
+
+Special thanks to [@EArminjon](https://github.com/EArminjon), [@vanlooverenkoen](https://github.com/vanlooverenkoen), [@snipd-mikel](https://github.com/snipd-mikel), and all contributors who made this release possible!
 
 ## Road Map
 
@@ -51,7 +64,6 @@ Other templates will be supported in the future releases by `flutter_carplay`.
 - [ ] Search
 - [ ] Voice Control & "Hey Siri" for hands-free voice activation
 - [ ] Contact
-- [ ] Now Playing
 
 ## Contributing
 
@@ -338,6 +350,16 @@ Removes a modal template. Since **CPAlertTemplate** and **CPActionSheetTemplate*
 FlutterCarplay.popModal(animated: true);
 ```
 
+### **CarPlay.showSharedNowPlaying**
+
+Navigate to the shared instance of the Now Playing Template. This allows users to control media playback directly from CarPlay.
+
+- If animated is true, CarPlay animates the transition to the Now Playing template.
+
+```dart
+FlutterCarplay.showSharedNowPlaying(animated: true);
+```
+
 ### **CarPlay.connectionStatus**
 
 Getter for current CarPlay connection status. It will return one of **CPConnectionStatusTypes** as String.
@@ -375,7 +397,9 @@ final CPTabBarTemplate tabBarTemplate = CPTabBarTemplate(
                 // complete function stops the loading
                 complete();
               },
+              // You can use local assets or HTTP(s) URLs (v1.1.0+)
               image: 'images/logo_flutter_1080px_clr.png',
+              // Or use a URL: image: 'https://example.com/image.png',
             ),
             CPListItem(
               text: "Item 2",
@@ -656,6 +680,19 @@ The map section is determined by the points of interest.
     // OR
     FlutterCarplay.setRootTemplate(rootTemplate: pointOfInterestTemplate, animated: true);
 ```
+
+## Now Playing Template
+
+The Now Playing template provides a standardized interface for media playback controls in CarPlay. It uses the system's shared instance and integrates with your app's media session.
+
+```dart
+// Navigate to the Now Playing template
+FlutterCarplay.showSharedNowPlaying(animated: true);
+```
+
+> **Note**: The Now Playing template displays information from your app's active media session. Make sure your app is properly configured with AVAudioSession and media playback controls for the best experience.
+
+> **Multiple Calls Safe**: The `showSharedNowPlaying()` method can be called multiple times safely without causing issues.
 
 # LICENSE
 
