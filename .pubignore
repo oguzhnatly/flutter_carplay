@@ -4,6 +4,7 @@ flutter_carplay-v*.tar.gz
 flutter_carplay-v*.zip
 RELEASE_TEMPLATE.md
 *.iml
+flutter_carplay.iml
 .vscode/
 .idea/
 example/pubspec.lock

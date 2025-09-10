@@ -1,3 +1,8 @@
+## 1.1.3
+
+- Documentation and packaging improvements
+- Automated publishing setup with GitHub Actions
+
 ## 1.1.1
 
 - Add automated publishing support to pub.dev
