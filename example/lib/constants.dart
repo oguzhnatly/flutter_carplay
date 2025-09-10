@@ -1,4 +1,0 @@
-enum CarplayConnectionStatus {
-  connected,
-  disconnected,
-}

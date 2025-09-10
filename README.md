@@ -139,7 +139,7 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
 override func application( _ application: UIApplication,
                         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 +  flutterEngine.run()
-   GeneratedPluginRegistrant.register(with: self)
+   GeneratedPluginRegistrant.register(with: flutterEngine)
    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
 }
 }
