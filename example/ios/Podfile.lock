@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_carplay (1.0.1):
+  - flutter_carplay (1.1.0):
     - Flutter
 
 DEPENDENCIES:
@@ -14,9 +14,9 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_carplay/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_carplay: 4f7937e9df3a9e38cf526ed5ba77f21d0e1fa256
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_carplay: 0e3f943484e00399dac7f599715ae6761288f0db
 
-PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+PODFILE CHECKSUM: 775997f741c536251164e3eacf6e34abf2eb7a17
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.16.2
