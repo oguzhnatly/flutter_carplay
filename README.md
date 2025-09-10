@@ -139,7 +139,7 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
 override func application( _ application: UIApplication,
                         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 +  flutterEngine.run()
-   GeneratedPluginRegistrant.register(with: flutterEngine)
+*  GeneratedPluginRegistrant.register(with: flutterEngine)
    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
 }
 }
@@ -218,12 +218,12 @@ Take a look at [this detailed issue reply](https://github.com/oguzhnatly/flutter
 import 'package:flutter_carplay/flutter_carplay.dart';
 ```
 
-- Initialize the CarPlay Controllers and set a root template for the CarPlay view hierarchy:
+- Initialize the CarPlay Controllers, set a root template for the CarPlay view hierarchy and ensure to well update the root template :
 
 ```dart
 final FlutterCarplay _flutterCarplay = FlutterCarplay();
 
-FlutterCarplay.setRootTemplate(
+await FlutterCarplay.setRootTemplate(
   rootTemplate: CPTabBarTemplate(
     templates: [
       CPListTemplate(
@@ -253,6 +253,7 @@ FlutterCarplay.setRootTemplate(
   ),
   animated: true,
 );
+_flutterCarplay.forceUpdateRootTemplate();
 ```
 
 > You can set a root template without initializing the CarPlay Controllers, but some callback functions may not work or most likely you will get an error.
@@ -299,6 +300,7 @@ FlutterCarplay.setRootTemplate(
   rootTemplate: /* CPTabBarTemplate, CPGridTemplate or CPListTemplate */,
   animated: true,
 );
+// You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
 ### **CarPlay.push**
@@ -462,6 +464,7 @@ final CPGridTemplate gridTemplate = CPGridTemplate(
 FlutterCarplay.push(template: gridTemplate, animated: true);
 // OR
 FlutterCarplay.setRootTemplate(rootTemplate: gridTemplate, animated: true);
+// You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
 ## Alert Template
@@ -603,6 +606,7 @@ final CPListTemplate listTemplate = CPListTemplate(
 FlutterCarplay.push(template: listTemplate, animated: true);
 // OR
 FlutterCarplay.setRootTemplate(rootTemplate: listTemplate, animated: true);
+// You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
 ## Information Template
@@ -639,6 +643,7 @@ final CPInformationTemplate informationTemplate = CPInformationTemplate(
 FlutterCarplay.push(template: informationTemplate, animated: true);
 // OR
 FlutterCarplay.setRootTemplate(rootTemplate: informationTemplate, animated: true);
+// You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
 ## Point Of Interest Template
@@ -679,6 +684,7 @@ The map section is determined by the points of interest.
     FlutterCarplay.push(template: pointOfInterestTemplate, animated: true);
     // OR
     FlutterCarplay.setRootTemplate(rootTemplate: pointOfInterestTemplate, animated: true);
+    // You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
 ## Now Playing Template
