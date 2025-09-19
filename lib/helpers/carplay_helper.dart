@@ -8,7 +8,7 @@ class FlutterCarplayHelper {
     CPListItem? listItem;
     l1:
     for (var t in templates) {
-      List<CPListTemplate> listTemplates = [];
+      final List<CPListTemplate> listTemplates = [];
       if (t.runtimeType.toString() == (CPTabBarTemplate).toString()) {
         for (var template in t.templates) {
           listTemplates.add(template);
@@ -32,6 +32,6 @@ class FlutterCarplayHelper {
     return listItem;
   }
 
-  String makeFCPChannelId({String? event = ""}) =>
+  String makeFCPChannelId({String? event = ''}) =>
       'com.oguzhnatly.flutter_carplay${event!}';
 }

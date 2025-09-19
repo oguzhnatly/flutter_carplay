@@ -18,3 +18,15 @@ enum FCPChannelTypes {
   onTextButtonPressed,
   popToRootTemplate,
 }
+
+enum FAAChannelTypes {
+  onAndroidAutoConnectionChange,
+  setRootTemplate,
+  forceUpdateRootTemplate,
+  pushTemplate,
+  popTemplate,
+  popToRootTemplate,
+  onListItemSelected,
+  onListItemSelectedComplete,
+  onScreenBackButtonPressed,
+}

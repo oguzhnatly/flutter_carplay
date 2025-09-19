@@ -31,10 +31,10 @@ class CPAlertTemplate {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "titleVariants": titleVariants,
-        "actions": actions.map((e) => e.toJson()).toList(),
-        "onPresent": onPresent != null ? true : false,
+        '_elementId': _elementId,
+        'titleVariants': titleVariants,
+        'actions': actions.map((e) => e.toJson()).toList(),
+        'onPresent': onPresent != null ? true : false,
       };
 
   String get uniqueId {

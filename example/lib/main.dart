@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_carplay/controllers/android_auto_controller.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 
 void main() {
@@ -17,32 +18,46 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  CPConnectionStatusTypes connectionStatus = CPConnectionStatusTypes.unknown;
+  ConnectionStatusTypes connectionStatus = ConnectionStatusTypes.unknown;
   final FlutterCarplay _flutterCarplay = FlutterCarplay();
+  final FlutterAndroidAuto _flutterAndroidAuto = FlutterAndroidAuto();
 
   @override
   void initState() {
     super.initState();
 
+    if (Platform.isIOS) {
+      setupCarplay();
+    } else if (Platform.isAndroid) {
+      setupAndroidAuto();
+    }
+  }
+
+  void setupCarplay() {
+    _flutterCarplay.addListenerOnConnectionChange(onConnectionChange);
+    setInitialCarplayRootTemplate();
+  }
+
+  void setInitialCarplayRootTemplate() {
     final List<CPListSection> section1Items = [];
     section1Items.add(CPListSection(
       items: [
         CPListItem(
-          text: "Item 1",
-          detailText: "Detail Text",
+          text: 'Item 1',
+          detailText: 'Detail Text',
           onPress: (complete, self) {
-            self.setDetailText("You can change the detail text.. 🚀");
+            self.setDetailText('You can change the detail text.. 🚀');
             self.setAccessoryType(CPListItemAccessoryTypes.cloud);
             Future.delayed(const Duration(seconds: 1), () {
-              self.setDetailText("Customizable Detail Text");
+              self.setDetailText('Customizable Detail Text');
               complete();
             });
           },
           image: 'images/logo_flutter_1080px_clr.png',
         ),
         CPListItem(
-          text: "Item 2",
-          detailText: "Start progress bar",
+          text: 'Item 2',
+          detailText: 'Start progress bar',
           isPlaying: false,
           playbackProgress: 0,
           image: 'images/logo_flutter_1080px_clr.png',
@@ -57,17 +72,17 @@ class _MyAppState extends State<MyApp> {
           },
         ),
       ],
-      header: "First Section",
+      header: 'First Section',
     ));
     section1Items.add(CPListSection(
       items: [
         CPListItem(
-          text: "Item 3",
-          detailText: "Detail Text",
+          text: 'Item 3',
+          detailText: 'Detail Text',
           onPress: (complete, self) {
             self.updateTexts(
-              text: "You can also change the title",
-              detailText: "and detail text while loading",
+              text: 'You can also change the title',
+              detailText: 'and detail text while loading',
             );
             self.setAccessoryType(CPListItemAccessoryTypes.none);
             Future.delayed(const Duration(seconds: 1), () {
@@ -76,65 +91,65 @@ class _MyAppState extends State<MyApp> {
           },
           accessoryType: CPListItemAccessoryTypes.disclosureIndicator,
         ),
-        CPListItem(text: "Item 4", detailText: "Detail Text"),
-        CPListItem(text: "Item 5", detailText: "Detail Text"),
+        CPListItem(text: 'Item 4', detailText: 'Detail Text'),
+        CPListItem(text: 'Item 5', detailText: 'Detail Text'),
       ],
-      header: "Second Section",
+      header: 'Second Section',
     ));
 
     final List<CPListSection> section2Items = [];
     section2Items.add(CPListSection(
       items: [
         CPListItem(
-          text: "Alert",
-          detailText: "Action template that the user can perform on an alert",
+          text: 'Alert',
+          detailText: 'Action template that the user can perform on an alert',
           onPress: (complete, self) {
             showAlert();
             complete();
           },
         ),
         CPListItem(
-          text: "Grid Template",
-          detailText: "A template that displays and manages a grid of items",
+          text: 'Grid Template',
+          detailText: 'A template that displays and manages a grid of items',
           onPress: (complete, self) {
             openGridTemplate();
             complete();
           },
         ),
         CPListItem(
-          text: "Action Sheet",
-          detailText: "A template that displays a modal action sheet",
+          text: 'Action Sheet',
+          detailText: 'A template that displays a modal action sheet',
           onPress: (complete, self) {
             showActionSheet();
             complete();
           },
         ),
         CPListItem(
-          text: "List Template",
-          detailText: "Displays and manages a list of items",
+          text: 'List Template',
+          detailText: 'Displays and manages a list of items',
           onPress: (complete, self) {
             openListTemplate();
             complete();
           },
         ),
         CPListItem(
-          text: "Information Template",
-          detailText: "Displays a list of items and up to three actions",
+          text: 'Information Template',
+          detailText: 'Displays a list of items and up to three actions',
           onPress: (complete, self) {
             openInformationTemplate();
             complete();
           },
         ),
         CPListItem(
-          text: "Point Of Interest Template",
-          detailText: "Displays a Map with points of interest.",
+          text: 'Point Of Interest Template',
+          detailText: 'Displays a Map with points of interest.',
           onPress: (complete, self) {
             openPoiTemplate();
             complete();
           },
         ),
       ],
-      header: "Features",
+      header: 'Features',
     ));
 
     FlutterCarplay.setRootTemplate(
@@ -142,33 +157,29 @@ class _MyAppState extends State<MyApp> {
         templates: [
           CPListTemplate(
             sections: section1Items,
-            title: "Home",
-            showsTabBadge: false,
-            systemIcon: "house.fill",
+            title: 'Home',
+            systemIcon: 'house.fill',
           ),
           CPListTemplate(
             sections: section2Items,
-            title: "Features",
+            title: 'Features',
             showsTabBadge: true,
-            systemIcon: "star.circle.fill",
+            systemIcon: 'star.circle.fill',
           ),
           CPListTemplate(
             sections: [],
-            title: "Settings",
-            emptyViewTitleVariants: ["Settings"],
+            title: 'Settings',
+            emptyViewTitleVariants: ['Settings'],
             emptyViewSubtitleVariants: [
-              "No settings have been added here yet. You can start adding right away"
+              'No settings have been added here yet. You can start adding right away'
             ],
-            showsTabBadge: false,
-            systemIcon: "gear",
+            systemIcon: 'gear',
           ),
         ],
       ),
-      animated: true,
     );
 
     _flutterCarplay.forceUpdateRootTemplate();
-    _flutterCarplay.addListenerOnConnectionChange(onCarplayConnectionChange);
   }
 
   @override
@@ -177,40 +188,144 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  void onCarplayConnectionChange(CPConnectionStatusTypes status) {
-    // Do things when carplay state is connected, background or disconnected
+  void onConnectionChange(ConnectionStatusTypes status) {
+    // Do things when carplay/android auto state is connected, background or disconnected
     setState(() {
       connectionStatus = status;
     });
   }
 
+  void setupAndroidAuto() {
+    _flutterAndroidAuto.addListenerOnConnectionChange(onConnectionChange);
+    setInitialAndroidAutoRootTemplate();
+  }
+
+  void setInitialAndroidAutoRootTemplate() {
+    FlutterAndroidAuto.setRootTemplate(
+      template: AAListTemplate(
+        title: 'Home',
+        sections: [
+          AAListSection(
+            title: 'First Section',
+            items: [
+              AAListItem(
+                title: 'Page 1',
+                subtitle: 'Click to open page 1',
+                onPress: (complete, AAListItem item) {
+                  print('Item for Page 1 pressed');
+                  FlutterAndroidAuto.push(
+                    template: AAListTemplate(
+                      title: 'Page 1',
+                      sections: [
+                        AAListSection(
+                          items: [
+                            AAListItem(
+                              title: 'Item 1',
+                              subtitle: 'Click to pop',
+                              imageUrl:
+                                  'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
+                              onPress: (complete, AAListItem item) {
+                                FlutterAndroidAuto.pop();
+                                complete();
+                              },
+                            ),
+                            AAListItem(
+                              title: 'Page 2',
+                              subtitle: 'Click to open page 2',
+                              imageUrl:
+                                  'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
+                              onPress: (complete, AAListItem item) {
+                                print('Item for Page 2 pressed');
+                                FlutterAndroidAuto.push(
+                                  template: AAListTemplate(
+                                    title: 'Page 2',
+                                    sections: [
+                                      AAListSection(
+                                        items: [
+                                          AAListItem(
+                                            title: 'Item 1',
+                                            subtitle: 'Click to pop',
+                                            imageUrl:
+                                                'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
+                                            onPress:
+                                                (complete, AAListItem item) {
+                                              FlutterAndroidAuto.pop();
+                                              complete();
+                                            },
+                                          ),
+                                          AAListItem(
+                                            title: 'Page 2',
+                                            subtitle:
+                                                'Click to open pop to root',
+                                            imageUrl:
+                                                'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
+                                            onPress:
+                                                (complete, AAListItem item) {
+                                              FlutterAndroidAuto.popToRoot();
+                                              complete();
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                complete();
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                  complete();
+                },
+              ),
+            ],
+          ),
+          AAListSection(
+            title: 'Second Section',
+            items: [
+              AAListItem(title: 'Test'),
+            ],
+          ),
+        ],
+      ),
+    );
+    _flutterAndroidAuto.forceUpdateRootTemplate();
+  }
+
   void showAlert() {
+    if (!Platform.isIOS) {
+      print('This example has not been yet updated for Android');
+      return;
+    }
+
     FlutterCarplay.showAlert(
       template: CPAlertTemplate(
-        titleVariants: ["Alert Title"],
+        titleVariants: ['Alert Title'],
         actions: [
           CPAlertAction(
-            title: "Okay",
-            style: CPAlertActionStyles.normal,
+            title: 'Okay',
             onPress: () {
-              FlutterCarplay.popModal(animated: true);
-              print("Okay pressed");
+              FlutterCarplay.popModal();
+              print('Okay pressed');
             },
           ),
           CPAlertAction(
-            title: "Cancel",
+            title: 'Cancel',
             style: CPAlertActionStyles.cancel,
             onPress: () {
-              FlutterCarplay.popModal(animated: true);
-              print("Cancel pressed");
+              FlutterCarplay.popModal();
+              print('Cancel pressed');
             },
           ),
           CPAlertAction(
-            title: "Remove",
+            title: 'Remove',
             style: CPAlertActionStyles.destructive,
             onPress: () {
-              FlutterCarplay.popModal(animated: true);
-              print("Remove pressed");
+              FlutterCarplay.popModal();
+              print('Remove pressed');
             },
           ),
         ],
@@ -219,33 +334,37 @@ class _MyAppState extends State<MyApp> {
   }
 
   void showActionSheet() {
+    if (!Platform.isIOS) {
+      print('This example has not been yet updated for Android');
+      return;
+    }
+
     FlutterCarplay.showActionSheet(
       template: CPActionSheetTemplate(
-        title: "Action Sheet Template",
-        message: "This is an example message.",
+        title: 'Action Sheet Template',
+        message: 'This is an example message.',
         actions: [
           CPAlertAction(
-            title: "Cancel",
+            title: 'Cancel',
             style: CPAlertActionStyles.cancel,
             onPress: () {
-              print("Cancel pressed in action sheet");
-              FlutterCarplay.popModal(animated: true);
+              print('Cancel pressed in action sheet');
+              FlutterCarplay.popModal();
             },
           ),
           CPAlertAction(
-            title: "Dismiss",
+            title: 'Dismiss',
             style: CPAlertActionStyles.destructive,
             onPress: () {
-              print("Dismiss pressed in action sheet");
-              FlutterCarplay.popModal(animated: true);
+              print('Dismiss pressed in action sheet');
+              FlutterCarplay.popModal();
             },
           ),
           CPAlertAction(
-            title: "Ok",
-            style: CPAlertActionStyles.normal,
+            title: 'Ok',
             onPress: () {
-              print("Ok pressed in action sheet");
-              FlutterCarplay.popModal(animated: true);
+              print('Ok pressed in action sheet');
+              FlutterCarplay.popModal();
             },
           ),
         ],
@@ -254,37 +373,76 @@ class _MyAppState extends State<MyApp> {
   }
 
   void addNewTemplate(CPListTemplate newTemplate) {
+    if (!Platform.isIOS) {
+      print('This example has not been yet updated for Android');
+      return;
+    }
+
     final currentRootTemplate = FlutterCarplay.rootTemplate!;
 
     currentRootTemplate.templates.add(newTemplate);
 
     FlutterCarplay.setRootTemplate(
       rootTemplate: currentRootTemplate,
-      animated: true,
     );
     _flutterCarplay.forceUpdateRootTemplate();
   }
 
+  void setBlankRootTemplate() {
+    if (Platform.isIOS) {
+      FlutterCarplay.setRootTemplate(
+        rootTemplate: CPListTemplate(
+          sections: [],
+          title: 'Blank Screen',
+          emptyViewTitleVariants: ['Blank Screen Example'],
+          emptyViewSubtitleVariants: [
+            "You've just added a blank screen to carplay from your iphone.",
+          ],
+          showsTabBadge: true,
+          systemIcon: 'airpods',
+        ),
+      );
+      _flutterCarplay.forceUpdateRootTemplate();
+    } else {
+      FlutterAndroidAuto.setRootTemplate(
+        template: AAListTemplate(
+          title: 'Blank Screen',
+          sections: [],
+        ),
+      );
+      _flutterAndroidAuto.forceUpdateRootTemplate();
+    }
+  }
+
   void removeLastTemplate() {
+    if (!Platform.isIOS) {
+      print('This example has not been yet updated for Android');
+      return;
+    }
+
     final currentRootTemplate = FlutterCarplay.rootTemplate!;
 
     currentRootTemplate.templates.remove(currentRootTemplate.templates.last);
 
     FlutterCarplay.setRootTemplate(
       rootTemplate: currentRootTemplate,
-      animated: true,
     );
     _flutterCarplay.forceUpdateRootTemplate();
   }
 
   void openGridTemplate() {
+    if (!Platform.isIOS) {
+      print('This example has not been yet updated for Android');
+      return;
+    }
+
     FlutterCarplay.push(
       template: CPGridTemplate(
-        title: "Grid Template",
+        title: 'Grid Template',
         buttons: [
           for (var i = 1; i < 9; i++)
             CPGridButton(
-              titleVariants: ["Item $i"],
+              titleVariants: ['Item $i'],
               // ----- TRADEMARKS RIGHTS INFORMATION BEGIN -----
               // The official Flutter logo is used from the link below.
               // For more information, please visit and read
@@ -295,106 +453,136 @@ class _MyAppState extends State<MyApp> {
               // ----- TRADEMARKS RIGHTS INFORMATION END -----
               image: 'images/logo_flutter_1080px_clr.png',
               onPress: () {
-                print("Grid Button $i pressed");
+                print('Grid Button $i pressed');
               },
             ),
         ],
       ),
-      animated: true,
     );
   }
 
   void openListTemplate() {
-    FlutterCarplay.push(
-      template: CPListTemplate(
-        sections: [
-          CPListSection(
-            header: "A Section",
-            items: [
-              CPListItem(text: "Item 1"),
-              CPListItem(text: "Item 2"),
-              CPListItem(text: "Item 3"),
-              CPListItem(text: "Item 4"),
-            ],
+    if (Platform.isIOS) {
+      FlutterCarplay.push(
+        template: CPListTemplate(
+          sections: [
+            CPListSection(
+              header: 'A Section',
+              items: [
+                CPListItem(text: 'Item 1'),
+                CPListItem(text: 'Item 2'),
+                CPListItem(text: 'Item 3'),
+                CPListItem(text: 'Item 4'),
+              ],
+            ),
+            CPListSection(
+              header: 'B Section',
+              items: [
+                CPListItem(text: 'Item 5'),
+                CPListItem(text: 'Item 6'),
+              ],
+            ),
+            CPListSection(
+              header: 'C Section',
+              items: [
+                CPListItem(text: 'Item 7'),
+                CPListItem(text: 'Item 8'),
+              ],
+            ),
+          ],
+          systemIcon: 'systemIcon',
+          title: 'List Template',
+          backButton: CPBarButton(
+            title: 'Back',
+            style: CPBarButtonStyles.none,
+            onPress: () {
+              FlutterCarplay.pop();
+            },
           ),
-          CPListSection(
-            header: "B Section",
-            items: [
-              CPListItem(text: "Item 5"),
-              CPListItem(text: "Item 6"),
-            ],
-          ),
-          CPListSection(
-            header: "C Section",
-            items: [
-              CPListItem(text: "Item 7"),
-              CPListItem(text: "Item 8"),
-            ],
-          ),
-        ],
-        systemIcon: "systemIcon",
-        title: "List Template",
-        backButton: CPBarButton(
-          title: "Back",
-          style: CPBarButtonStyles.none,
-          onPress: () {
-            FlutterCarplay.pop(animated: true);
-          },
         ),
-      ),
-      animated: true,
-    );
+      );
+    } else if (Platform.isAndroid) {
+      FlutterAndroidAuto.push(
+        template: AAListTemplate(
+          title: 'List Template',
+          sections: [
+            AAListSection(
+              title: 'A Section',
+              items: [
+                AAListItem(title: 'Item 1'),
+                AAListItem(title: 'Item 2'),
+                AAListItem(title: 'Item 3'),
+                AAListItem(title: 'Item 4'),
+              ],
+            ),
+            AAListSection(
+              title: 'B Section',
+              items: [
+                AAListItem(title: 'Item 5'),
+                AAListItem(title: 'Item 6'),
+              ],
+            ),
+            AAListSection(
+              title: 'C Section',
+              items: [
+                AAListItem(title: 'Item 7'),
+                AAListItem(title: 'Item 8'),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   void openInformationTemplate() {
     FlutterCarplay.push(
         template: CPInformationTemplate(
-            title: "Title",
+            title: 'Title',
             layout: CPInformationTemplateLayout.twoColumn,
             actions: [
           CPTextButton(
-              title: "Button Title 1",
+              title: 'Button Title 1',
               onPress: () {
-                print("Button 1");
+                print('Button 1');
               }),
           CPTextButton(
-              title: "Button Title 2",
+              title: 'Button Title 2',
               onPress: () {
-                print("Button 2");
+                print('Button 2');
               }),
         ],
             informationItems: [
-          CPInformationItem(title: "Item title 1", detail: "detail 1"),
-          CPInformationItem(title: "Item title 2", detail: "detail 2"),
+          CPInformationItem(title: 'Item title 1', detail: 'detail 1'),
+          CPInformationItem(title: 'Item title 2', detail: 'detail 2'),
         ]));
   }
 
   void openPoiTemplate() {
     FlutterCarplay.push(
-        template: CPPointOfInterestTemplate(title: "Title", poi: [
-          CPPointOfInterest(
-            latitude: 51.5052,
-            longitude: 7.4938,
-            title: "Title",
-            subtitle: "Subtitle",
-            summary: "Summary",
-            detailTitle: "DetailTitle",
-            detailSubtitle: "detailSubtitle",
-            detailSummary: "detailSummary",
-            image: "images/logo_flutter_1080px_clr.png",
-            primaryButton: CPTextButton(
-                title: "Primary",
-                onPress: () {
-                  print("Primary button pressed");
-                }),
-            secondaryButton: CPTextButton(
-                title: "Secondary",
-                onPress: () {
-                  print("Secondary button pressed");
-                }),
-          ),
-        ]),
-        animated: true);
+        template: CPPointOfInterestTemplate(title: 'Title', poi: [
+      CPPointOfInterest(
+        latitude: 51.5052,
+        longitude: 7.4938,
+        title: 'Title',
+        subtitle: 'Subtitle',
+        summary: 'Summary',
+        detailTitle: 'DetailTitle',
+        detailSubtitle: 'detailSubtitle',
+        detailSummary: 'detailSummary',
+        image: 'images/logo_flutter_1080px_clr.png',
+        primaryButton: CPTextButton(
+            title: 'Primary',
+            onPress: () {
+              print('Primary button pressed');
+            }),
+        secondaryButton: CPTextButton(
+            title: 'Secondary',
+            onPress: () {
+              print('Secondary button pressed');
+            }),
+      ),
+    ]));
   }
 
   @override
@@ -407,8 +595,10 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 20,
+              runSpacing: 20,
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -421,21 +611,20 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () => addNewTemplate(
                     CPListTemplate(
                       sections: [],
-                      title: "Blank Screen",
-                      emptyViewTitleVariants: ["Blank Screen Example"],
+                      title: 'Blank Screen',
+                      emptyViewTitleVariants: ['Blank Screen Example'],
                       emptyViewSubtitleVariants: [
                         "You've just added a blank screen to carplay from your iphone.",
                       ],
                       showsTabBadge: true,
-                      systemIcon: "airpods",
+                      systemIcon: 'airpods',
                     ),
                   ),
                   child: const Text(
-                    'Add blank\nscreen',
+                    'Add blank screen',
                     textAlign: TextAlign.center,
                   ),
                 ),
-                const SizedBox(width: 20, height: 0),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),
@@ -446,7 +635,41 @@ class _MyAppState extends State<MyApp> {
                   ),
                   onPressed: () => removeLastTemplate(),
                   child: const Text(
-                    'Remove last\nscreen',
+                    'Remove last screen',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 15),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 24,
+                    ),
+                  ),
+                  onPressed: () => setBlankRootTemplate(),
+                  child: const Text(
+                    'Set blank rootTemplate',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 15),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 24,
+                    ),
+                  ),
+                  onPressed: () {
+                    if (Platform.isIOS) {
+                      setInitialCarplayRootTemplate();
+                    } else if (Platform.isAndroid) {
+                      setInitialAndroidAutoRootTemplate();
+                    }
+                  },
+                  child: const Text(
+                    'Set initial rootTemplate',
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -454,7 +677,7 @@ class _MyAppState extends State<MyApp> {
             ),
             Center(
               child: Text(
-                'Carplay Status: ${CPEnumUtils.stringFromEnum(connectionStatus)}',
+                'Connection Status: ${EnumUtils.stringFromEnum(connectionStatus)}',
               ),
             ),
             Row(
@@ -471,7 +694,7 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () => showAlert(),
                   child: const Text('Alert'),
                 ),
-                const SizedBox(width: 15, height: 0),
+                const SizedBox(width: 15),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),
@@ -483,7 +706,7 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () => showActionSheet(),
                   child: const Text('Action Sheet'),
                 ),
-                const SizedBox(width: 15, height: 0),
+                const SizedBox(width: 15),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),
@@ -492,7 +715,14 @@ class _MyAppState extends State<MyApp> {
                       horizontal: 24,
                     ),
                   ),
-                  onPressed: () => FlutterCarplay.popModal(animated: true),
+                  onPressed: () {
+                    if (!Platform.isIOS) {
+                      print(
+                          'This example has not been yet updated for Android');
+                      return;
+                    }
+                    FlutterCarplay.popModal();
+                  },
                   child: const Text('Close Modal'),
                 ),
               ],
@@ -508,10 +738,16 @@ class _MyAppState extends State<MyApp> {
                       horizontal: 24,
                     ),
                   ),
-                  onPressed: () => FlutterCarplay.pop(animated: true),
+                  onPressed: () {
+                    if (Platform.isIOS) {
+                      FlutterCarplay.pop();
+                    } else if (Platform.isAndroid) {
+                      FlutterAndroidAuto.pop();
+                    }
+                  },
                   child: const Text('Pop Screen'),
                 ),
-                const SizedBox(width: 20, height: 0),
+                const SizedBox(width: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),
@@ -520,7 +756,13 @@ class _MyAppState extends State<MyApp> {
                       horizontal: 24,
                     ),
                   ),
-                  onPressed: () => FlutterCarplay.popToRoot(animated: true),
+                  onPressed: () {
+                    if (Platform.isIOS) {
+                      FlutterCarplay.popToRoot();
+                    } else if (Platform.isAndroid) {
+                      FlutterAndroidAuto.popToRoot();
+                    }
+                  },
                   child: const Text('Pop To Root'),
                 ),
               ],
@@ -537,9 +779,9 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   onPressed: () => openListTemplate(),
-                  child: const Text('Open List\nTemplate'),
+                  child: const Text('Open ¬List\nTemplate'),
                 ),
-                const SizedBox(width: 20, height: 0),
+                const SizedBox(width: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),
@@ -563,10 +805,38 @@ class _MyAppState extends State<MyApp> {
                   horizontal: 24,
                 ),
               ),
-              onPressed: () => _flutterCarplay.forceUpdateRootTemplate(),
+              onPressed: () {
+                if (Platform.isIOS) {
+                  _flutterCarplay.forceUpdateRootTemplate();
+                } else if (Platform.isAndroid) {
+                  _flutterAndroidAuto.forceUpdateRootTemplate();
+                }
+              },
               child: const Text('Force Update Carplay'),
             ),
-            const SizedBox(width: 50, height: 0),
+            const SizedBox(width: 50),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                textStyle: const TextStyle(fontSize: 15),
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 24,
+                ),
+              ),
+              onPressed: () {
+                if (Platform.isIOS) {
+                  // TODO
+                } else if (Platform.isAndroid) {
+                  print(FlutterAndroidAutoController.templateHistory.length);
+                  print(FlutterAndroidAutoController.templateHistory.hashCode);
+                  print(FlutterAndroidAutoController.templateHistory);
+                }
+              },
+              child: const Text('Load history'),
+            ),
+            const SizedBox(width: 50),
           ],
         ),
       ),

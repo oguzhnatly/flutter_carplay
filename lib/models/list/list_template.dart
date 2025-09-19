@@ -73,14 +73,14 @@ class CPListTemplate {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "sections": sections.map((e) => e.toJson()).toList(),
-        "emptyViewTitleVariants": emptyViewTitleVariants,
-        "emptyViewSubtitleVariants": emptyViewSubtitleVariants,
-        "showsTabBadge": showsTabBadge,
-        "systemIcon": systemIcon,
-        "backButton": backButton?.toJson(),
+        '_elementId': _elementId,
+        'title': title,
+        'sections': sections.map((e) => e.toJson()).toList(),
+        'emptyViewTitleVariants': emptyViewTitleVariants,
+        'emptyViewSubtitleVariants': emptyViewSubtitleVariants,
+        'showsTabBadge': showsTabBadge,
+        'systemIcon': systemIcon,
+        'backButton': backButton?.toJson(),
       };
 
   String get uniqueId {

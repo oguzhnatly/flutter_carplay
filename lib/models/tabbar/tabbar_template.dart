@@ -27,9 +27,9 @@ class CPTabBarTemplate {
   CPTabBarTemplate({this.title, required this.templates});
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "templates": templates.map((e) => e.toJson()).toList(),
+        '_elementId': _elementId,
+        'title': title,
+        'templates': templates.map((e) => e.toJson()).toList(),
       };
 
   String get uniqueId {

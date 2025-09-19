@@ -1,4 +1,6 @@
-class CPEnumUtils {
+class EnumUtils {
+  const EnumUtils();
+
   static T enumFromString<T>(Iterable<T> values, String string) {
     return values.firstWhere(
       (f) =>
@@ -11,7 +13,7 @@ class CPEnumUtils {
     );
   }
 
-  static String stringFromEnum(dynamic value) {
+  static String stringFromEnum(Object value) {
     return value.toString().split('.').last;
   }
 }

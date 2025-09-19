@@ -1,3 +1,10 @@
+## 1.2.0
+
+- Add early support for Android Auto under a new controller `FlutterAndroidAuto`. Not all features are supported yet, see the README for more details. ([#71](https://github.com/oguzhnatly/flutter_carplay/pull/71)) (ty @EArminjon).
+- Rename some classes to avoid confusion between Android Auto and CarPlay (breaking change)
+  - `CPConnectionStatusTypes` -> `ConnectionStatusTypes`
+  - `CPEnumUtils` -> `EnumUtils`
+
 ## 1.1.3
 
 - Documentation and packaging improvements
