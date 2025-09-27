@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_carplay/controllers/android_auto_controller.dart';
+import 'package:flutter_carplay/controllers/carplay_controller.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 
 void main() {
@@ -827,7 +828,9 @@ class _MyAppState extends State<MyApp> {
               ),
               onPressed: () {
                 if (Platform.isIOS) {
-                  // TODO
+                  print(FlutterCarPlayController.templateHistory.length);
+                  print(FlutterCarPlayController.templateHistory.hashCode);
+                  print(FlutterCarPlayController.templateHistory);
                 } else if (Platform.isAndroid) {
                   print(FlutterAndroidAutoController.templateHistory.length);
                   print(FlutterAndroidAutoController.templateHistory.hashCode);

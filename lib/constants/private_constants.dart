@@ -17,6 +17,7 @@ enum FCPChannelTypes {
   onBarButtonPressed,
   onTextButtonPressed,
   popToRootTemplate,
+  onScreenBackButtonPressed,
 }
 
 enum FAAChannelTypes {

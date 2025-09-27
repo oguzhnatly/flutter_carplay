@@ -1,8 +1,10 @@
 import 'package:flutter_carplay/models/alert/alert_action.dart';
 import 'package:uuid/uuid.dart';
 
+import '../template.dart';
+
 /// A template object that displays a modal action sheet.
-class CPActionSheetTemplate {
+class CPActionSheetTemplate implements CPTemplate, CPActionsTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -13,11 +15,13 @@ class CPActionSheetTemplate {
   final String? message;
 
   /// The list of actions as [CPAlertAction] available on the action sheet.
+  @override
   final List<CPAlertAction> actions;
 
   /// Creates [CPActionSheetTemplate] with a title, a message and a list of actions available on the action sheet.
   CPActionSheetTemplate({this.title, this.message, required this.actions});
 
+  @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'title': title,
@@ -25,6 +29,7 @@ class CPActionSheetTemplate {
         'actions': actions.map((e) => e.toJson()).toList(),
       };
 
+  @override
   String get uniqueId {
     return _elementId;
   }

@@ -5,6 +5,8 @@ import 'package:flutter_carplay/constants/private_constants.dart';
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 
+import 'models/template.dart';
+
 /// An object in order to integrate Apple CarPlay in navigation and
 /// manage all user interface elements appearing on your screens displayed on
 /// the CarPlay screen.
@@ -86,6 +88,11 @@ class FlutterCarplay {
         case FCPChannelTypes.onTextButtonPressed:
           _carPlayController.processFCPTextButtonPressed(
             event['data']['elementId'],
+          );
+          break;
+        case FCPChannelTypes.onScreenBackButtonPressed:
+          FlutterCarPlayController.templateHistory.removeWhere(
+            (CPTemplate item) => item.uniqueId == event['data']['elementId'],
           );
           break;
         default:
@@ -234,7 +241,7 @@ class FlutterCarplay {
   /// - count represents how many times this function will occur.
   static Future<bool> pop({bool animated = true, int count = 1}) async {
     FlutterCarPlayController.templateHistory.removeLast();
-    return await _carPlayController.reactToNativeModule(
+    return await _carPlayController.flutterToNativeModule(
       FCPChannelTypes.popTemplate,
       <String, dynamic>{'count': count, 'animated': animated},
     );
@@ -244,9 +251,9 @@ class FlutterCarplay {
   /// If animated is true, CarPlay animates the presentation of the template.
   static Future<bool> popToRoot({bool animated = true}) async {
     FlutterCarPlayController.templateHistory = [
-      FlutterCarPlayController.currentRootTemplate,
+      FlutterCarPlayController.currentRootTemplate!,
     ];
-    return await _carPlayController.reactToNativeModule(
+    return await _carPlayController.flutterToNativeModule(
       FCPChannelTypes.popToRootTemplate,
       animated,
     );
@@ -256,7 +263,7 @@ class FlutterCarplay {
   /// modals, they can be removed. If animated is true, CarPlay animates the transition between templates.
   static Future<bool> popModal({bool animated = true}) async {
     FlutterCarPlayController.currentPresentTemplate = null;
-    return await _carPlayController.reactToNativeModule(
+    return await _carPlayController.flutterToNativeModule(
       FCPChannelTypes.closePresent,
       animated,
     );
@@ -276,8 +283,8 @@ class FlutterCarplay {
         template.runtimeType == CPListTemplate ||
         template.runtimeType == CPInformationTemplate ||
         template.runtimeType == CPPointOfInterestTemplate) {
-      final bool isCompleted = await _carPlayController
-          .reactToNativeModule(FCPChannelTypes.pushTemplate, <String, dynamic>{
+      final bool isCompleted = await _carPlayController.flutterToNativeModule(
+          FCPChannelTypes.pushTemplate, <String, dynamic>{
         'template': template.toJson(),
         'animated': animated,
         'runtimeType': 'F${template.runtimeType}',
@@ -295,7 +302,7 @@ class FlutterCarplay {
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
   static Future<bool> showSharedNowPlaying({bool animated = true}) async {
-    final bool isCompleted = await _carPlayController.reactToNativeModule(
+    final bool isCompleted = await _carPlayController.flutterToNativeModule(
       FCPChannelTypes.showNowPlaying,
       animated,
     );

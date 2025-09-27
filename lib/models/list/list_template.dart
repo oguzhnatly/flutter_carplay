@@ -2,8 +2,10 @@ import 'package:flutter_carplay/models/button/bar_button.dart';
 import 'package:flutter_carplay/models/list/list_section.dart';
 import 'package:uuid/uuid.dart';
 
+import '../template.dart';
+
 /// A template object that displays and manages a list of items.
-class CPListTemplate {
+class CPListTemplate implements CPTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -72,6 +74,7 @@ class CPListTemplate {
     this.backButton,
   });
 
+  @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'title': title,
@@ -83,6 +86,7 @@ class CPListTemplate {
         'backButton': backButton?.toJson(),
       };
 
+  @override
   String get uniqueId {
     return _elementId;
   }

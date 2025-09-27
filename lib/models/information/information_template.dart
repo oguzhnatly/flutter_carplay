@@ -2,11 +2,12 @@ import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'package:flutter_carplay/models/button/text_button.dart';
 import 'package:uuid/uuid.dart';
 
+import '../template.dart';
 import 'information_constants.dart';
 import 'information_item.dart';
 
 /// A template object that displays and manages information items and text buttons.
-class CPInformationTemplate {
+class CPInformationTemplate implements CPTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -30,6 +31,7 @@ class CPInformationTemplate {
     required this.informationItems,
   });
 
+  @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'layout': EnumUtils.stringFromEnum(layout.toString()),
@@ -38,6 +40,7 @@ class CPInformationTemplate {
         'informationItems': informationItems.map((e) => e.toJson()).toList(),
       };
 
+  @override
   String get uniqueId {
     return _elementId;
   }
