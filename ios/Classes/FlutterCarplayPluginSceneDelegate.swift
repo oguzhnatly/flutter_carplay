@@ -7,9 +7,23 @@
 
 import CarPlay
 
+extension CPTemplate {
+  private static var elementIdKey: UInt8 = 0
+
+  var elementId: String? {
+    get {
+      return objc_getAssociatedObject(self, &CPTemplate.elementIdKey) as? String
+    }
+    set {
+      objc_setAssociatedObject(self, &CPTemplate.elementIdKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+  }
+}
+
 @available(iOS 14.0, *)
-class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
+class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate, CPInterfaceControllerDelegate {
   static private var interfaceController: CPInterfaceController?
+  static private var templateStack: [CPTemplate] = []
 
   static public func forceUpdateRootTemplate() {
     let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
@@ -39,6 +53,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   static public func push(template: CPTemplate, animated: Bool) {
     guard self.interfaceController?.rootTemplate != nil else { return }
 
+    self.templateStack.append(template)
     self.interfaceController?.pushTemplate(template, animated: animated)
   }
 
@@ -50,10 +65,21 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     let isTopSameInstance = interfaceController.topTemplate === template
 
     if !isAlreadyPushed && !isTopSameInstance {
+        self.templateStack.append(template)
         interfaceController.pushTemplate(template, animated: animated)
     }
   }
-  
+
+  func templateDidDisappear(_ template: CPTemplate, animated: Bool) {
+    // Only treat it as a pop if it was the top of the stack
+    if FlutterCarPlaySceneDelegate.templateStack.last === template {
+      FlutterCarPlaySceneDelegate.templateStack.removeLast()
+      if let elementId = template.elementId {
+        SwiftFlutterCarplayPlugin.sendOnScreenBackButtonPressed(elementId: elementId)
+      }
+    }
+  }
+
   static public func closePresent(animated: Bool) {
     self.interfaceController?.dismissTemplate(animated: animated)
   }
@@ -72,6 +98,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
                                 didConnect interfaceController: CPInterfaceController) {
     FlutterCarPlaySceneDelegate.interfaceController = interfaceController
+    interfaceController.delegate = self
     
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
     let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
@@ -84,14 +111,16 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
                                 didDisconnect interfaceController: CPInterfaceController, from window: CPWindow) {
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.disconnected)
-    
+
+    interfaceController.delegate = nil
     FlutterCarPlaySceneDelegate.interfaceController = nil
   }
   
   func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
                                 didDisconnectInterfaceController interfaceController: CPInterfaceController) {
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.disconnected)
-    
+
+    interfaceController.delegate = nil
     FlutterCarPlaySceneDelegate.interfaceController = nil
   }
 }

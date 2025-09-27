@@ -37,6 +37,10 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     self.streamHandler = FCPStreamHandlerPlugin(registrar: registrar)
   }
 
+  public static func sendOnScreenBackButtonPressed(elementId: String) {
+    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onScreenBackButtonPressed, data: ["elementId": elementId])
+  }
+
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case FCPChannelTypes.setRootTemplate:

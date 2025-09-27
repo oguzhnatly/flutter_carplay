@@ -28,6 +28,7 @@ class FCPGridTemplate {
   
   var get: CPGridTemplate {
     let gridTemplate = CPGridTemplate.init(title: self.title, gridButtons: self.buttons)
+    gridTemplate.elementId = self.elementId
     self._super = gridTemplate
     return gridTemplate
   }

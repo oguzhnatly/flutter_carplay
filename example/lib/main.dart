@@ -780,7 +780,7 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   onPressed: () => openListTemplate(),
-                  child: const Text('Open ¬List\nTemplate'),
+                  child: const Text('Open List\nTemplate'),
                 ),
                 const SizedBox(width: 20),
                 ElevatedButton(

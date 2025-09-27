@@ -28,6 +28,7 @@ class FCPTabBarTemplate {
   var get: CPTabBarTemplate {
     let tabBarTemplate = CPTabBarTemplate.init(templates: templates)
     tabBarTemplate.tabTitle = title
+    tabBarTemplate.elementId = self.elementId
     return tabBarTemplate
   }
   

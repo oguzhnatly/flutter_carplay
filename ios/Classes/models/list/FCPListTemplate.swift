@@ -52,6 +52,7 @@ class FCPListTemplate {
     if (templateType == FCPListTemplateTypes.DEFAULT) {
       listTemplate.backButton = self.backButton
     }
+    listTemplate.elementId = self.elementId
     self._super = listTemplate
     return listTemplate
   }
