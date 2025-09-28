@@ -169,7 +169,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         pluginScope.launch {
             val template = when (runtimeType) {
-                FAAListTemplate::class.java.simpleName -> getListTemplate(
+                "FAAListTemplate" -> getListTemplate(
                     call, result, data
                 )
 
@@ -221,7 +221,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         pluginScope.launch {
             val template = when (runtimeType) {
-                FAAListTemplate::class.java.simpleName -> getListTemplate(
+                "FAAListTemplate" -> getListTemplate(
                     call, result, data, false
                 )
 
