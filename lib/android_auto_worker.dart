@@ -126,8 +126,11 @@ class FlutterAndroidAuto {
     });
 
     if (isCompleted == true) {
-      FlutterAndroidAutoController.currentRootTemplate = template;
-      FlutterAndroidAutoController.templateHistory.add(template);
+      if (FlutterAndroidAutoController.templateHistory.isEmpty) {
+        FlutterAndroidAutoController.templateHistory.add(template);
+      } else {
+        FlutterAndroidAutoController.templateHistory[0] = template;
+      }
     }
   }
 
@@ -140,9 +143,9 @@ class FlutterAndroidAuto {
 
   /// Getter for current root template.
   /// Return one of type [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate]
-/*static dynamic get rootTemplate {
-    return FlutterCarPlayController.currentRootTemplate;
-  }*/
+  static dynamic get rootTemplate {
+    return FlutterAndroidAutoController.currentRootTemplate;
+  }
 
   /// It will present [CPAlertTemplate] modally.
   ///

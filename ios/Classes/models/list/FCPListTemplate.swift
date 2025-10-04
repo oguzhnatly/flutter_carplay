@@ -43,7 +43,7 @@ class FCPListTemplate {
     }
   }
   
-  var get: CPListTemplate {
+  var get: CPTemplate {
     let listTemplate = CPListTemplate.init(title: title, sections: sections)
     listTemplate.emptyViewTitleVariants = emptyViewTitleVariants
     listTemplate.emptyViewSubtitleVariants = emptyViewSubtitleVariants

@@ -169,8 +169,11 @@ class FlutterCarplay {
         'runtimeType': 'F${rootTemplate.runtimeType}',
       }).then((value) {
         if (value) {
-          FlutterCarPlayController.currentRootTemplate = rootTemplate;
-          _carPlayController.addTemplateToHistory(rootTemplate);
+          if (FlutterCarPlayController.templateHistory.isEmpty) {
+            FlutterCarPlayController.templateHistory.add(rootTemplate);
+          } else {
+            FlutterCarPlayController.templateHistory[0] = rootTemplate;
+          }
         }
       });
     }

@@ -22,7 +22,7 @@ class FCPPointOfInterestTemplate {
         }
     }
     
-    var get: CPPointOfInterestTemplate {
+    var get: CPTemplate {
         var pois: [CPPointOfInterest] = []
         
         for p in poi{

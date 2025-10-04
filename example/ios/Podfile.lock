@@ -14,8 +14,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_carplay/ios"
 
 SPEC CHECKSUMS:
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_carplay: 0e3f943484e00399dac7f599715ae6761288f0db
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_carplay: 7326e72d693f7540711bf2d80be7e5aee4fe22b5
 
 PODFILE CHECKSUM: 775997f741c536251164e3eacf6e34abf2eb7a17
 

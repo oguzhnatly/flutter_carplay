@@ -22,7 +22,7 @@ class FlutterAndroidAutoController {
   static List<AATemplate> templateHistory = [];
 
   /// [AATabBarTemplate], [AAGridTemplate], [AAListTemplate], [AAIInformationTemplate], [AAPointOfInterestTemplate]
-  static AATemplate? currentRootTemplate;
+  static AATemplate? get currentRootTemplate => templateHistory.firstOrNull;
 
   /// [AAAlertTemplate], [AAActionSheetTemplate]
   static AATemplate? currentPresentTemplate;

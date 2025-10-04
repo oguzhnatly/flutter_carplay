@@ -23,15 +23,14 @@ extension CPTemplate {
 @available(iOS 14.0, *)
 class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate, CPInterfaceControllerDelegate {
   static private var interfaceController: CPInterfaceController?
-  static private var templateStack: [CPTemplate] = []
 
   static public func forceUpdateRootTemplate() {
     let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
     let animated = SwiftFlutterCarplayPlugin.animated
-    
+
     self.interfaceController?.setRootTemplate(rootTemplate!, animated: animated)
   }
-  
+
   // Fired when just before the carplay become active
   func sceneDidBecomeActive(_ scene: UIScene) {
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
@@ -50,40 +49,49 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     self.interfaceController?.popToRootTemplate(animated: animated)
   }
   
-  static public func push(template: CPTemplate, animated: Bool) {
-    guard self.interfaceController?.rootTemplate != nil else { return }
+  static public func push(template: CPTemplate, animated: Bool) -> Bool {
+    guard let interfaceController = self.interfaceController else { return false }
+    guard interfaceController.rootTemplate != nil else { return false }
 
-    self.templateStack.append(template)
-    self.interfaceController?.pushTemplate(template, animated: animated)
+    interfaceController.pushTemplate(template, animated: animated)
+    return true
   }
 
-  static public func pushIfNotExist(template: CPTemplate, animated: Bool) {
-    guard let interfaceController = self.interfaceController else { return }
-    guard interfaceController.rootTemplate != nil else { return }
+  static public func pushIfNotExist(template: CPTemplate, animated: Bool) -> Bool {
+    guard let interfaceController = self.interfaceController else { return false }
+    guard interfaceController.rootTemplate != nil else { return false }
 
     let isAlreadyPushed = interfaceController.templates.contains { $0 === template }
     let isTopSameInstance = interfaceController.topTemplate === template
 
     if !isAlreadyPushed && !isTopSameInstance {
-        self.templateStack.append(template)
         interfaceController.pushTemplate(template, animated: animated)
+        return true
     }
+    return false
   }
 
   func templateDidDisappear(_ template: CPTemplate, animated: Bool) {
-    // Only treat it as a pop if it was the top of the stack
-    if FlutterCarPlaySceneDelegate.templateStack.last === template {
-      FlutterCarPlaySceneDelegate.templateStack.removeLast()
-      if let elementId = template.elementId {
-        SwiftFlutterCarplayPlugin.sendOnScreenBackButtonPressed(elementId: elementId)
+      guard let interfaceController = FlutterCarPlaySceneDelegate.interfaceController else { return }
+
+      let currentTemplates = interfaceController.templates
+
+      SwiftFlutterCarplayPlugin.templateStack.removeAll { stackTemplate in
+          let cpTemplate = stackTemplate.get
+          if !currentTemplates.contains(where: { $0.elementId == cpTemplate.elementId }) {
+              if let elementId = cpTemplate.elementId {
+                  SwiftFlutterCarplayPlugin.sendOnScreenBackButtonPressed(elementId: elementId)
+              }
+              return true
+          }
+          return false
       }
-    }
   }
 
   static public func closePresent(animated: Bool) {
     self.interfaceController?.dismissTemplate(animated: animated)
   }
-  
+
   static public func presentTemplate(template: CPTemplate, animated: Bool,
                                      onPresent: @escaping (_ completed: Bool) -> Void) {
     self.interfaceController?.presentTemplate(template, animated: animated, completion: { completed, error in

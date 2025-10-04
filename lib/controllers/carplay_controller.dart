@@ -20,7 +20,7 @@ class FlutterCarPlayController {
   static List<CPTemplate> templateHistory = [];
 
   /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate]
-  static CPTemplate? currentRootTemplate;
+  static CPTemplate? get currentRootTemplate => templateHistory.firstOrNull;
 
   /// [CPAlertTemplate], [CPActionSheetTemplate]
   static CPTemplate? currentPresentTemplate;
