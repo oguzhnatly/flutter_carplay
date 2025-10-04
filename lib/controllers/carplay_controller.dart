@@ -33,8 +33,11 @@ class FlutterCarPlayController {
     return _eventChannel;
   }
 
-  Future<bool> flutterToNativeModule(FCPChannelTypes type, dynamic data) async {
-    final value = await _methodChannel.invokeMethod(
+  Future<bool?> flutterToNativeModule(
+    FCPChannelTypes type,
+    dynamic data,
+  ) async {
+    final value = await _methodChannel.invokeMethod<bool>(
       EnumUtils.stringFromEnum(type.toString()),
       data,
     );

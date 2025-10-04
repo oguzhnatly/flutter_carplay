@@ -240,33 +240,35 @@ class FlutterCarplay {
   /// - If animated is true, CarPlay animates the transition between templates.
   /// - count represents how many times this function will occur.
   static Future<bool> pop({bool animated = true, int count = 1}) async {
-    FlutterCarPlayController.templateHistory.removeLast();
-    return await _carPlayController.flutterToNativeModule(
+    final bool? isCompleted = await _carPlayController.flutterToNativeModule(
       FCPChannelTypes.popTemplate,
       <String, dynamic>{'count': count, 'animated': animated},
     );
+
+    return isCompleted ?? false;
   }
 
   /// Removes all of the templates from the navigation hierarchy except the root template.
   /// If animated is true, CarPlay animates the presentation of the template.
   static Future<bool> popToRoot({bool animated = true}) async {
-    FlutterCarPlayController.templateHistory = [
-      FlutterCarPlayController.currentRootTemplate!,
-    ];
-    return await _carPlayController.flutterToNativeModule(
+    final bool? isCompleted = await _carPlayController.flutterToNativeModule(
       FCPChannelTypes.popToRootTemplate,
       animated,
     );
+
+    return isCompleted ?? false;
   }
 
   /// Removes a modal template. Since [CPAlertTemplate] and [CPActionSheetTemplate] are both
   /// modals, they can be removed. If animated is true, CarPlay animates the transition between templates.
   static Future<bool> popModal({bool animated = true}) async {
     FlutterCarPlayController.currentPresentTemplate = null;
-    return await _carPlayController.flutterToNativeModule(
+    final bool? isCompleted = await _carPlayController.flutterToNativeModule(
       FCPChannelTypes.closePresent,
       animated,
     );
+
+    return isCompleted ?? false;
   }
 
   /// Adds a template to the navigation hierarchy and displays it.
@@ -283,16 +285,16 @@ class FlutterCarplay {
         template.runtimeType == CPListTemplate ||
         template.runtimeType == CPInformationTemplate ||
         template.runtimeType == CPPointOfInterestTemplate) {
-      final bool isCompleted = await _carPlayController.flutterToNativeModule(
+      final bool? isCompleted = await _carPlayController.flutterToNativeModule(
           FCPChannelTypes.pushTemplate, <String, dynamic>{
         'template': template.toJson(),
         'animated': animated,
         'runtimeType': 'F${template.runtimeType}',
       });
-      if (isCompleted) {
+      if (isCompleted == true) {
         _carPlayController.addTemplateToHistory(template);
       }
-      return isCompleted;
+      return isCompleted ?? false;
     } else {
       throw TypeError();
     }
@@ -302,10 +304,10 @@ class FlutterCarplay {
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
   static Future<bool> showSharedNowPlaying({bool animated = true}) async {
-    final bool isCompleted = await _carPlayController.flutterToNativeModule(
+    final bool? isCompleted = await _carPlayController.flutterToNativeModule(
       FCPChannelTypes.showNowPlaying,
       animated,
     );
-    return isCompleted;
+    return isCompleted ?? false;
   }
 }
