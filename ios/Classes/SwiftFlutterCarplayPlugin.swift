@@ -88,6 +88,18 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       FlutterCarPlaySceneDelegate.forceUpdateRootTemplate()
       result(true)
       break
+    case FCPChannelTypes.updateListTemplateSections:
+      guard let args = call.arguments as? [String : Any] else {
+        result(false)
+        return
+      }
+      let elementId = args["elementId"] as! String
+      let sections = (args["sections"] as! Array<[String: Any]>).map {
+        FCPListSection(obj: $0)
+      }
+      FlutterCarPlaySceneDelegate.updateListTemplateSections(elementId: elementId, sections: sections)
+      result(true)
+      break
     case FCPChannelTypes.updateListItem:
       guard let args = call.arguments as? [String : Any] else {
         result(false)

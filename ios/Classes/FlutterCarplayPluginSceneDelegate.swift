@@ -31,6 +31,15 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     self.interfaceController?.setRootTemplate(rootTemplate!, animated: animated)
   }
 
+  static public func updateListTemplateSections(elementId: String, sections: [FCPListSection]) {
+    guard let interfaceController = self.interfaceController else { return }
+    guard let template = interfaceController.templates.first(where: { $0.elementId == elementId }) as? CPListTemplate else { return }
+
+    let templateSections = sections.map { $0.get }
+
+    template.updateSections(templateSections)
+  }
+
   // Fired when just before the carplay become active
   func sceneDidBecomeActive(_ scene: UIScene) {
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)

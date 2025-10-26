@@ -185,6 +185,18 @@ class FlutterCarplay {
         .invokeMethod('forceUpdateRootTemplate');
   }
 
+  Future<void> updateListTemplateSections({
+    required String elementId,
+    required List<CPListSection> sections,
+  }) {
+    return _carPlayController.methodChannel
+        .invokeMethod('updateListTemplateSections', <String, dynamic>{
+      'elementId': elementId,
+      'sections':
+          sections.map((CPListSection section) => section.toJson()).toList(),
+    });
+  }
+
   /// Getter for current root template.
   /// Return one of type [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate]
   static dynamic get rootTemplate {
