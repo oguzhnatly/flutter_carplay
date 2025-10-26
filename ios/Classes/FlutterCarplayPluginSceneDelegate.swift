@@ -33,7 +33,11 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 
   static public func updateListTemplateSections(elementId: String, sections: [FCPListSection]) {
     guard let interfaceController = self.interfaceController else { return }
-    guard let template = interfaceController.templates.first(where: { $0.elementId == elementId }) as? CPListTemplate else { return }
+
+    guard let template = interfaceController.templates.first(where: { $0.elementId == elementId }) as? CPListTemplate ??
+        interfaceController.templates.compactMap({ $0 as? CPTabBarTemplate }).flatMap({ $0.templates }).first(where: { $0.elementId == elementId }) as? CPListTemplate else {
+      return
+    }
 
     let templateSections = sections.map { $0.get }
 
