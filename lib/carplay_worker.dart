@@ -185,6 +185,7 @@ class FlutterCarplay {
         .invokeMethod('forceUpdateRootTemplate');
   }
 
+  /// It will update the sections of the [CPListTemplate] which has the given [elementId].
   Future<void> updateListTemplateSections({
     required String elementId,
     required List<CPListSection> sections,
