@@ -52,11 +52,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       switch args["runtimeType"] as! String {
       case String(describing: FCPTabBarTemplate.self):
         rootTemplate = FCPTabBarTemplate(obj: args["rootTemplate"] as! [String : Any])
-        if ((rootTemplate as! FCPTabBarTemplate).getTemplates().count > 5) {
-          result(FlutterError(code: "ERROR",
-                              message: "CarPlay cannot have more than 5 templates on one screen.",
-                              details: nil))
-          return
+        let tabBarTemplate = rootTemplate as! FCPTabBarTemplate
+        if tabBarTemplate.getTemplates().count > CPTabBarTemplate.maximumTabCount {
+            result(FlutterError(code: "ERROR",
+                                message: "CarPlay cannot have more than \(CPTabBarTemplate.maximumTabCount) templates on one screen.",
+                                details: nil))
+            return
         }
         break
       case String(describing: FCPGridTemplate.self):
