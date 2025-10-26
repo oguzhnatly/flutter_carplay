@@ -90,12 +90,12 @@ class FlutterCarPlayController {
     });
   }
 
-  void addTemplateToHistory(dynamic template) {
-    if (template.runtimeType == CPTabBarTemplate ||
-        template.runtimeType == CPGridTemplate ||
-        template.runtimeType == CPInformationTemplate ||
-        template.runtimeType == CPPointOfInterestTemplate ||
-        template.runtimeType == CPListTemplate) {
+  void addTemplateToHistory(CPTemplate template) {
+    if (template is CPTabBarTemplate ||
+        template is CPGridTemplate ||
+        template is CPInformationTemplate ||
+        template is CPPointOfInterestTemplate ||
+        template is CPListTemplate) {
       templateHistory.add(template);
     } else {
       throw TypeError();

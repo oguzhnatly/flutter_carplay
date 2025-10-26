@@ -154,14 +154,14 @@ class FlutterCarplay {
   ///
   /// [!] CarPlay cannot have more than 5 templates on one screen.
   static Future<void> setRootTemplate({
-    required dynamic rootTemplate,
+    required CPTemplate rootTemplate,
     bool animated = true,
   }) async {
-    if (rootTemplate.runtimeType == CPTabBarTemplate ||
-        rootTemplate.runtimeType == CPGridTemplate ||
-        rootTemplate.runtimeType == CPListTemplate ||
-        rootTemplate.runtimeType == CPInformationTemplate ||
-        rootTemplate.runtimeType == CPPointOfInterestTemplate) {
+    if (rootTemplate is CPTabBarTemplate ||
+        rootTemplate is CPGridTemplate ||
+        rootTemplate is CPListTemplate ||
+        rootTemplate is CPInformationTemplate ||
+        rootTemplate is CPPointOfInterestTemplate) {
       return _carPlayController.methodChannel
           .invokeMethod('setRootTemplate', <String, dynamic>{
         'rootTemplate': rootTemplate.toJson(),
@@ -302,13 +302,13 @@ class FlutterCarplay {
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
   static Future<bool> push({
-    required dynamic template,
+    required CPTemplate template,
     bool animated = true,
   }) async {
-    if (template.runtimeType == CPGridTemplate ||
-        template.runtimeType == CPListTemplate ||
-        template.runtimeType == CPInformationTemplate ||
-        template.runtimeType == CPPointOfInterestTemplate) {
+    if (template is CPGridTemplate ||
+        template is CPListTemplate ||
+        template is CPInformationTemplate ||
+        template is CPPointOfInterestTemplate) {
       final bool? isCompleted = await _carPlayController.flutterToNativeModule(
           FCPChannelTypes.pushTemplate, <String, dynamic>{
         'template': template.toJson(),
