@@ -60,6 +60,17 @@ class FCPListTemplate {
   public func getSections() -> [FCPListSection] {
     return objcSections
   }
+
+  public func getRawSections() -> [CPListSection] {
+    return sections
+  }
+
+  public func updateSections(sections: [FCPListSection]) {
+    self.objcSections = sections
+    self.sections = self.objcSections.map {
+      $0.get
+    }
+  }
 }
 
 @available(iOS 14.0, *)

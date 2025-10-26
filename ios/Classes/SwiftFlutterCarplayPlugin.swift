@@ -263,19 +263,16 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   }
   
   static func findItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {
-    let objcRootTemplateType = String(describing: SwiftFlutterCarplayPlugin.objcRootTemplate).match(#"(.*flutter_carplay\.(.*)\))"#)[0][2]
     var templates: [FCPListTemplate] = []
-    if (objcRootTemplateType.elementsEqual(String(describing: FCPListTemplate.self))) {
-      templates.append(SwiftFlutterCarplayPlugin.objcRootTemplate as! FCPListTemplate)
-      NSLog("FCP: FCPListTemplate")
-    } else if (objcRootTemplateType.elementsEqual(String(describing: FCPTabBarTemplate.self))) {
-      templates = (SwiftFlutterCarplayPlugin.objcRootTemplate as! FCPTabBarTemplate).getTemplates()
-      NSLog("FCP: FCPTabBarTemplate")
-    } else {
-      NSLog("FCP: No Template")
-      return
-    }
+
     for t in SwiftFlutterCarplayPlugin.templateStack {
+      if (t is FCPTabBarTemplate) {
+        guard let tabBar = t as? FCPTabBarTemplate,
+              var templates = tabBar.getTemplates() as? [FCPListTemplate] else {
+            break;
+        }
+        templates.append(contentsOf: templates)
+      }
       if (t is FCPListTemplate) {
         guard let template = t as? FCPListTemplate else {
           break;
@@ -294,5 +291,24 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         }
       }
     }
+    NSLog("FCP: Item not found with elementId: \(elementId)")
+  }
+
+  static public func getTemplateFromHistory(elementId: String) -> FCPRootTemplate? {
+      for i in 0..<SwiftFlutterCarplayPlugin.templateStack.count {
+          if SwiftFlutterCarplayPlugin.templateStack[i].elementId == elementId {
+              return SwiftFlutterCarplayPlugin.templateStack[i]
+          }
+
+          if let tabBar = SwiftFlutterCarplayPlugin.templateStack[i] as? FCPTabBarTemplate {
+              let subTemplates = tabBar.getTemplates()
+              for j in 0..<subTemplates.count {
+                  if subTemplates[j].elementId == elementId {
+                      return subTemplates[j]
+                  }
+              }
+          }
+      }
+      return nil
   }
 }

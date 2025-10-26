@@ -6,8 +6,9 @@
 //
 import CarPlay
 
-protocol FCPPresentTemplate: AnyObject {}
+public protocol FCPPresentTemplate: AnyObject {}
 
-protocol FCPRootTemplate: AnyObject {
+public protocol FCPRootTemplate: AnyObject {
   var get: CPTemplate { get }
+  var elementId: String { get }
 }

@@ -189,4 +189,17 @@ class FlutterCarPlayController {
       }
     }
   }
+
+  static T? getTemplateFromHistory<T extends CPTemplate>(String elementId) {
+    for (final template in templateHistory) {
+      if (template is T && template.uniqueId == elementId) return template;
+
+      if (template is CPTabBarTemplate) {
+        for (final t in template.templates) {
+          if (t is T && t.uniqueId == elementId) return t as T;
+        }
+      }
+    }
+    return null;
+  }
 }

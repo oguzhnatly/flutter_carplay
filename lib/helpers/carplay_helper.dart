@@ -9,11 +9,11 @@ class FlutterCarplayHelper {
     l1:
     for (var t in templates) {
       final List<CPListTemplate> listTemplates = [];
-      if (t.runtimeType.toString() == (CPTabBarTemplate).toString()) {
+      if (t is CPTabBarTemplate) {
         for (var template in t.templates) {
           listTemplates.add(template);
         }
-      } else if (t.runtimeType.toString() == (CPListTemplate).toString()) {
+      } else if (t is CPListTemplate) {
         listTemplates.add(t);
       }
       if (listTemplates.isNotEmpty) {

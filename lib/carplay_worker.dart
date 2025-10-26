@@ -189,13 +189,21 @@ class FlutterCarplay {
   Future<void> updateListTemplateSections({
     required String elementId,
     required List<CPListSection> sections,
-  }) {
-    return _carPlayController.methodChannel
+  }) async {
+    final bool? isCompleted = await _carPlayController.methodChannel
         .invokeMethod('updateListTemplateSections', <String, dynamic>{
       'elementId': elementId,
       'sections':
           sections.map((CPListSection section) => section.toJson()).toList(),
     });
+
+    if (isCompleted == true) {
+      final template =
+          FlutterCarPlayController.getTemplateFromHistory<CPListTemplate>(
+              elementId);
+      template?.updateSections(sections);
+    }
+    return;
   }
 
   /// Getter for current root template.

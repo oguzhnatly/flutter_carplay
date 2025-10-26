@@ -36,12 +36,17 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 
     guard let template = interfaceController.templates.first(where: { $0.elementId == elementId }) as? CPListTemplate ??
         interfaceController.templates.compactMap({ $0 as? CPTabBarTemplate }).flatMap({ $0.templates }).first(where: { $0.elementId == elementId }) as? CPListTemplate else {
-      return
+        NSLog("FlutterCarPlaySceneDelegate - updateListTemplateSections: Template with elementId \(elementId) not found.")
+        return
     }
 
-    let templateSections = sections.map { $0.get }
+    guard let templateFromHistory = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: elementId) as? FCPListTemplate  else {
+        NSLog("FlutterCarPlaySceneDelegate - updateListTemplateSections: Template from history with elementId \(elementId) not found.")
+        return
+    }
 
-    template.updateSections(templateSections)
+    templateFromHistory.updateSections(sections: sections)
+    template.updateSections(templateFromHistory.getRawSections())
   }
 
   // Fired when just before the carplay become active

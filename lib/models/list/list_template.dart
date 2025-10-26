@@ -90,4 +90,10 @@ class CPListTemplate implements CPTemplate {
   String get uniqueId {
     return _elementId;
   }
+
+  void updateSections(List<CPListSection> newSections) {
+    sections
+      ..clear()
+      ..addAll(newSections);
+  }
 }
