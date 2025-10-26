@@ -50,31 +50,31 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       }
       var rootTemplate: FCPRootTemplate?
       switch args["runtimeType"] as! String {
-      case String(describing: FCPTabBarTemplate.self):
-        rootTemplate = FCPTabBarTemplate(obj: args["rootTemplate"] as! [String : Any])
-        let tabBarTemplate = rootTemplate as! FCPTabBarTemplate
-        if tabBarTemplate.getTemplates().count > CPTabBarTemplate.maximumTabCount {
-            result(FlutterError(code: "ERROR",
-                                message: "CarPlay cannot have more than \(CPTabBarTemplate.maximumTabCount) templates on one screen.",
-                                details: nil))
+          case String(describing: FCPTabBarTemplate.self):
+            rootTemplate = FCPTabBarTemplate(obj: args["rootTemplate"] as! [String : Any])
+            let tabBarTemplate = rootTemplate as! FCPTabBarTemplate
+            if tabBarTemplate.getTemplates().count > CPTabBarTemplate.maximumTabCount {
+                result(FlutterError(code: "ERROR",
+                                    message: "CarPlay cannot have more than \(CPTabBarTemplate.maximumTabCount) templates on one screen.",
+                                    details: nil))
+                return
+            }
+            break
+          case String(describing: FCPGridTemplate.self):
+            rootTemplate = FCPGridTemplate(obj: args["rootTemplate"] as! [String : Any])
+            break
+          case String(describing: FCPInformationTemplate.self):
+            rootTemplate = FCPInformationTemplate(obj: args["rootTemplate"] as! [String : Any])
+            break
+          case String(describing: FCPPointOfInterestTemplate.self):
+            rootTemplate = FCPPointOfInterestTemplate(obj: args["rootTemplate"] as! [String : Any])
+            break
+          case String(describing: FCPListTemplate.self):
+            rootTemplate = FCPListTemplate(obj: args["rootTemplate"] as! [String : Any], templateType: FCPListTemplateTypes.DEFAULT)
+            break
+          default:
+            result(false)
             return
-        }
-        break
-      case String(describing: FCPGridTemplate.self):
-        rootTemplate = FCPGridTemplate(obj: args["rootTemplate"] as! [String : Any])
-        break
-      case String(describing: FCPInformationTemplate.self):
-        rootTemplate = FCPInformationTemplate(obj: args["rootTemplate"] as! [String : Any])
-        break
-      case String(describing: FCPPointOfInterestTemplate.self):
-        rootTemplate = FCPPointOfInterestTemplate(obj: args["rootTemplate"] as! [String : Any])
-        break
-      case String(describing: FCPListTemplate.self):
-        rootTemplate = FCPListTemplate(obj: args["rootTemplate"] as! [String : Any], templateType: FCPListTemplateTypes.DEFAULT)
-        break
-      default:
-        result(false)
-        return
       }
 
       SwiftFlutterCarplayPlugin.rootTemplate = rootTemplate!.get
@@ -263,25 +263,18 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   }
   
   static func findItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {
-    var templates: [FCPListTemplate] = []
+    var collected: [FCPListTemplate] = []
 
-    for t in SwiftFlutterCarplayPlugin.templateStack {
-      if (t is FCPTabBarTemplate) {
-        guard let tabBar = t as? FCPTabBarTemplate,
-              var templates = tabBar.getTemplates() as? [FCPListTemplate] else {
-            break;
-        }
-        templates.append(contentsOf: templates)
-      }
-      if (t is FCPListTemplate) {
-        guard let template = t as? FCPListTemplate else {
-          break;
-        }
-        templates.append(template)
-      }
+    for template in SwiftFlutterCarplayPlugin.templateStack {
+       if let tabBar = template as? FCPTabBarTemplate,
+             let tabs = tabBar.getTemplates() as? [FCPListTemplate] {
+              collected.append(contentsOf: tabs)
+          } else if let list = template as? FCPListTemplate {
+              collected.append(list)
+          }
     }
 
-    for t in templates {
+    for t in collected {
       for s in t.getSections() {
         for i in s.getItems() {
           if (i.elementId == elementId) {
