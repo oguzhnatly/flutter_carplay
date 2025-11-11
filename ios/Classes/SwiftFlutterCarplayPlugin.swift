@@ -104,6 +104,18 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       FlutterCarPlaySceneDelegate.updateListTemplateSections(elementId: elementId, sections: sections)
       result(true)
       break
+    case FCPChannelTypes.updateTabBarTemplates:
+      guard let args = call.arguments as? [String : Any] else {
+        result(false)
+        return
+      }
+      let elementId = args["elementId"] as! String
+      let templates = (args["templates"] as! Array<[String: Any]>).map {
+        FCPListTemplate(obj: $0, templateType: FCPListTemplateTypes.PART_OF_GRID_TEMPLATE)
+      }
+      FlutterCarPlaySceneDelegate.updateTabBarTemplates(elementId: elementId, templates: templates)
+      result(true)
+      break
     case FCPChannelTypes.updateListItem:
       guard let args = call.arguments as? [String : Any] else {
         result(false)

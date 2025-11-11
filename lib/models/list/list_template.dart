@@ -92,8 +92,9 @@ class CPListTemplate implements CPTemplate {
   }
 
   void updateSections(List<CPListSection> newSections) {
+    final copy = List<CPListSection>.from(newSections);
     sections
       ..clear()
-      ..addAll(newSections);
+      ..addAll(copy);
   }
 }

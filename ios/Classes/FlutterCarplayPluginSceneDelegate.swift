@@ -31,6 +31,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     self.interfaceController?.setRootTemplate(rootTemplate!, animated: animated)
   }
 
+  // https://developer.apple.com/documentation/carplay/cplisttemplate/updatesections(_:)
   static public func updateListTemplateSections(elementId: String, sections: [FCPListSection]) {
     guard let interfaceController = self.interfaceController else { return }
 
@@ -47,6 +48,24 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 
     templateFromHistory.updateSections(sections: sections)
     template.updateSections(templateFromHistory.getRawSections())
+  }
+
+  // https://developer.apple.com/documentation/carplay/cptabbartemplate/updatetemplates(_:)
+  static public func updateTabBarTemplates(elementId: String, templates: [FCPListTemplate]) {
+    guard let interfaceController = self.interfaceController else { return }
+
+    guard let template = interfaceController.templates.first(where: { $0.elementId == elementId }) as? CPTabBarTemplate else {
+        NSLog("FlutterCarPlaySceneDelegate - updateTabBarTemplates: TabBar template with elementId \(elementId) not found.")
+        return
+    }
+
+    guard let templateFromHistory = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: elementId) as? FCPTabBarTemplate  else {
+        NSLog("FlutterCarPlaySceneDelegate - updateTabBarTemplates: TabBar template from history with elementId \(elementId) not found.")
+        return
+    }
+
+    templateFromHistory.updateTemplates(templates: templates)
+    template.updateTemplates(templateFromHistory.getRawTemplates())
   }
 
   // Fired when just before the carplay become active

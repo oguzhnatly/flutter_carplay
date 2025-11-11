@@ -66,9 +66,15 @@ class FCPListTemplate {
   }
 
   public func updateSections(sections: [FCPListSection]) {
+    let existingMap = Dictionary(uniqueKeysWithValues: zip(self.objcSections.map { $0.elementId }, self.sections))
+
     self.objcSections = sections
-    self.sections = self.objcSections.map {
-      $0.get
+    self.sections = sections.map { section in
+      if let existing = existingMap[section.elementId] {
+        return existing // reuse existing CPListSection
+      } else {
+        return section.get // create new
+      }
     }
   }
 }

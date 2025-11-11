@@ -35,6 +35,23 @@ class FCPTabBarTemplate {
   public func getTemplates() -> [FCPListTemplate] {
     return objcTemplates
   }
+
+  public func getRawTemplates() -> [CPTemplate] {
+    return templates
+  }
+
+  public func updateTemplates(templates: [FCPListTemplate]) {
+    var existingMap = Dictionary(uniqueKeysWithValues: zip(self.objcTemplates.map { $0.elementId }, self.templates))
+
+    self.objcTemplates = templates
+    self.templates = templates.map { template in
+      if let existing = existingMap[template.elementId] {
+        return existing // reuse existing template
+      } else {
+        return template.get // create new template
+      }
+    }
+  }
 }
 
 @available(iOS 14.0, *)
