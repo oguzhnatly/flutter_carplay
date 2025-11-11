@@ -51,17 +51,17 @@ class CPListItem {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "text": text,
-        "detailText": detailText,
-        "onPress": onPress != null ? true : false,
-        "image": image,
-        "playbackProgress": playbackProgress,
-        "isPlaying": isPlaying,
-        "playingIndicatorLocation": CPEnumUtils.stringFromEnum(
+        '_elementId': _elementId,
+        'text': text,
+        'detailText': detailText,
+        'onPress': onPress != null ? true : false,
+        'image': image,
+        'playbackProgress': playbackProgress,
+        'isPlaying': isPlaying,
+        'playingIndicatorLocation': EnumUtils.stringFromEnum(
           playingIndicatorLocation.toString(),
         ),
-        "accessoryType": CPEnumUtils.stringFromEnum(accessoryType.toString()),
+        'accessoryType': EnumUtils.stringFromEnum(accessoryType.toString()),
       };
 
   /// Updating the list item's primary text.

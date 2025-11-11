@@ -15,6 +15,7 @@ enum FCPChannelTypes {
   static let onCarplayConnectionChange = "onCarplayConnectionChange"
   static let setRootTemplate = "setRootTemplate"
   static let forceUpdateRootTemplate = "forceUpdateRootTemplate"
+  static let updateListTemplateSections = "updateListTemplateSections"
   static let updateListItem = "updateListItem"
   static let onListItemSelected = "onFCPListItemSelected"
   static let onListItemSelectedComplete = "onFCPListItemSelectedComplete"
@@ -30,6 +31,7 @@ enum FCPChannelTypes {
   static let onBarButtonPressed = "onBarButtonPressed"
   static let onTextButtonPressed = "onTextButtonPressed"
   static let popToRootTemplate = "popToRootTemplate"
+  static let onScreenBackButtonPressed = "onScreenBackButtonPressed"
 }
 
 enum FCPAlertActionTypes {

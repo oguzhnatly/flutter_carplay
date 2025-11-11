@@ -11,9 +11,9 @@ class CPInformationItem {
   CPInformationItem({this.title, this.detail});
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "detail": detail,
+        '_elementId': _elementId,
+        'title': title,
+        'detail': detail,
       };
 
   String get uniqueId {

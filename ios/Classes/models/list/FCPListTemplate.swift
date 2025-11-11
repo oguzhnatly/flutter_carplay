@@ -43,7 +43,7 @@ class FCPListTemplate {
     }
   }
   
-  var get: CPListTemplate {
+  var get: CPTemplate {
     let listTemplate = CPListTemplate.init(title: title, sections: sections)
     listTemplate.emptyViewTitleVariants = emptyViewTitleVariants
     listTemplate.emptyViewSubtitleVariants = emptyViewSubtitleVariants
@@ -52,12 +52,24 @@ class FCPListTemplate {
     if (templateType == FCPListTemplateTypes.DEFAULT) {
       listTemplate.backButton = self.backButton
     }
+    listTemplate.elementId = self.elementId
     self._super = listTemplate
     return listTemplate
   }
   
   public func getSections() -> [FCPListSection] {
     return objcSections
+  }
+
+  public func getRawSections() -> [CPListSection] {
+    return sections
+  }
+
+  public func updateSections(sections: [FCPListSection]) {
+    self.objcSections = sections
+    self.sections = self.objcSections.map {
+      $0.get
+    }
   }
 }
 

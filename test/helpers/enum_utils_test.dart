@@ -2,16 +2,16 @@ import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('CPEnumUtils', () {
+  group('EnumUtils', () {
     test('convert string into any type of enum', () {
-      final cpListItemAccessoryType = CPEnumUtils.enumFromString(
+      final cpListItemAccessoryType = EnumUtils.enumFromString(
         CPListItemAccessoryTypes.values,
         'cloud',
       );
 
       expect(cpListItemAccessoryType, CPListItemAccessoryTypes.cloud);
 
-      final cpListItemPlayingIndicatorLocation = CPEnumUtils.enumFromString(
+      final cpListItemPlayingIndicatorLocation = EnumUtils.enumFromString(
         CPListItemPlayingIndicatorLocations.values,
         'trailing',
       );
@@ -23,13 +23,13 @@ void main() {
     });
 
     test('convert dynamic type into string after the `.`', () {
-      final cpAlertActionStylesString = CPEnumUtils.stringFromEnum(
+      final cpAlertActionStylesString = EnumUtils.stringFromEnum(
         CPAlertActionStyles.normal.toString(),
       );
 
       expect(cpAlertActionStylesString, 'normal');
 
-      final fcpChannelTypesString = CPEnumUtils.stringFromEnum('car.setAlert');
+      final fcpChannelTypesString = EnumUtils.stringFromEnum('car.setAlert');
 
       expect(fcpChannelTypesString, 'setAlert');
     });

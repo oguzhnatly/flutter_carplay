@@ -25,9 +25,9 @@ class CPBarButton {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "title": title,
-        "style": CPEnumUtils.stringFromEnum(style.toString()),
+        '_elementId': _elementId,
+        'title': title,
+        'style': EnumUtils.stringFromEnum(style.toString()),
       };
 
   String get uniqueId {

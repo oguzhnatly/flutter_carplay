@@ -9,7 +9,7 @@ import CarPlay
 
 @available(iOS 14.0, *)
 class FCPSharedNowPlayingTemplate {
-  var get: CPNowPlayingTemplate {
+  var get: CPTemplate {
     return CPNowPlayingTemplate.shared
   }
 
@@ -17,4 +17,8 @@ class FCPSharedNowPlayingTemplate {
 }
 
 @available(iOS 14.0, *)
-extension FCPSharedNowPlayingTemplate: FCPRootTemplate { }
+extension FCPSharedNowPlayingTemplate: FCPRootTemplate {
+     var elementId: String {
+         return "FCPSharedNowPlayingTemplate"
+     }
+}

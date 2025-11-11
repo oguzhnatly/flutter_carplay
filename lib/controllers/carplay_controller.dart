@@ -3,6 +3,8 @@ import 'package:flutter_carplay/constants/private_constants.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:flutter_carplay/helpers/carplay_helper.dart';
 
+import '../models/template.dart';
+
 /// [FlutterCarPlayController] is an root object in order to control and communication
 /// system with the Apple CarPlay and native functions.
 class FlutterCarPlayController {
@@ -11,17 +13,17 @@ class FlutterCarPlayController {
     _carplayHelper.makeFCPChannelId(),
   );
   static final EventChannel _eventChannel = EventChannel(
-    _carplayHelper.makeFCPChannelId(event: "/event"),
+    _carplayHelper.makeFCPChannelId(event: '/event'),
   );
 
   /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate] in a List
-  static List<dynamic> templateHistory = [];
+  static List<CPTemplate> templateHistory = [];
 
   /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate]
-  static dynamic currentRootTemplate;
+  static CPTemplate? get currentRootTemplate => templateHistory.firstOrNull;
 
   /// [CPAlertTemplate], [CPActionSheetTemplate]
-  static dynamic currentPresentTemplate;
+  static CPTemplate? currentPresentTemplate;
 
   MethodChannel get methodChannel {
     return _methodChannel;
@@ -31,9 +33,12 @@ class FlutterCarPlayController {
     return _eventChannel;
   }
 
-  Future<bool> reactToNativeModule(FCPChannelTypes type, dynamic data) async {
-    final value = await _methodChannel.invokeMethod(
-      CPEnumUtils.stringFromEnum(type.toString()),
+  Future<bool?> flutterToNativeModule(
+    FCPChannelTypes type,
+    dynamic data,
+  ) async {
+    final value = await _methodChannel.invokeMethod<bool>(
+      EnumUtils.stringFromEnum(type.toString()),
       data,
     );
     return value;
@@ -46,14 +51,16 @@ class FlutterCarPlayController {
       if (value) {
         l1:
         for (var h in templateHistory) {
-          switch (h.runtimeType) {
+          switch (h) {
             case CPTabBarTemplate _:
-              for (var t in (h as CPTabBarTemplate).templates) {
+              for (var t in h.templates) {
                 for (var s in t.sections) {
                   for (var i in s.items) {
                     if (i.uniqueId == updatedListItem.uniqueId) {
-                      currentRootTemplate!
-                          .templates[currentRootTemplate!.templates.indexOf(t)]
+                      (currentRootTemplate as CPTabBarTemplate)
+                          .templates[(currentRootTemplate as CPTabBarTemplate)
+                              .templates
+                              .indexOf(t)]
                           .sections[t.sections.indexOf(s)]
                           .items[s.items.indexOf(i)] = updatedListItem;
                       break l1;
@@ -63,13 +70,13 @@ class FlutterCarPlayController {
               }
               break;
             case CPListTemplate _:
-              for (var s in (h as CPListTemplate).sections) {
+              for (var s in h.sections) {
                 for (var i in s.items) {
                   if (i.uniqueId == updatedListItem.uniqueId) {
-                    currentRootTemplate!
-                        .sections[currentRootTemplate!.sections.indexOf(
-                      s,
-                    )]
+                    (currentRootTemplate as CPListTemplate)
+                        .sections[(currentRootTemplate as CPListTemplate)
+                            .sections
+                            .indexOf(s)]
                         .items[s.items.indexOf(i)] = updatedListItem;
                     break l1;
                   }
@@ -83,12 +90,12 @@ class FlutterCarPlayController {
     });
   }
 
-  void addTemplateToHistory(dynamic template) {
-    if (template.runtimeType == CPTabBarTemplate ||
-        template.runtimeType == CPGridTemplate ||
-        template.runtimeType == CPInformationTemplate ||
-        template.runtimeType == CPPointOfInterestTemplate ||
-        template.runtimeType == CPListTemplate) {
+  void addTemplateToHistory(CPTemplate template) {
+    if (template is CPTabBarTemplate ||
+        template is CPGridTemplate ||
+        template is CPInformationTemplate ||
+        template is CPPointOfInterestTemplate ||
+        template is CPListTemplate) {
       templateHistory.add(template);
     } else {
       throw TypeError();
@@ -96,13 +103,13 @@ class FlutterCarPlayController {
   }
 
   void processFCPListItemSelectedChannel(String elementId) {
-    CPListItem? listItem = _carplayHelper.findCPListItem(
+    final CPListItem? listItem = _carplayHelper.findCPListItem(
       templates: templateHistory,
       elementId: elementId,
     );
     if (listItem != null) {
       listItem.onPress!(
-        () => reactToNativeModule(
+        () => flutterToNativeModule(
           FCPChannelTypes.onFCPListItemSelectedComplete,
           listItem.uniqueId,
         ),
@@ -112,14 +119,16 @@ class FlutterCarPlayController {
   }
 
   void processFCPAlertActionPressed(String elementId) {
-    CPAlertAction selectedAlertAction = currentPresentTemplate!.actions
-        .firstWhere((e) => e.uniqueId == elementId);
+    final CPAlertAction selectedAlertAction =
+        (currentPresentTemplate as CPActionsTemplate)
+            .actions
+            .firstWhere((e) => e.uniqueId == elementId);
     selectedAlertAction.onPress();
   }
 
   void processFCPAlertTemplateCompleted(bool completed) {
-    if (currentPresentTemplate?.onPresent != null) {
-      currentPresentTemplate!.onPresent!(completed);
+    if (currentPresentTemplate is CPAlertTemplate) {
+      (currentPresentTemplate as CPAlertTemplate).onPresent?.call(completed);
     }
   }
 
@@ -127,7 +136,7 @@ class FlutterCarPlayController {
     CPGridButton? gridButton;
     l1:
     for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPGridTemplate") {
+      if (t is CPGridTemplate) {
         for (var b in t.buttons) {
           if (b.uniqueId == elementId) {
             gridButton = b;
@@ -143,7 +152,7 @@ class FlutterCarPlayController {
     CPBarButton? barButton;
     l1:
     for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPListTemplate") {
+      if (t is CPListTemplate) {
         barButton = t.backButton;
         break l1;
       }
@@ -154,7 +163,7 @@ class FlutterCarPlayController {
   void processFCPTextButtonPressed(String elementId) {
     l1:
     for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPPointOfInterestTemplate") {
+      if (t is CPPointOfInterestTemplate) {
         for (CPPointOfInterest p in t.poi) {
           if (p.primaryButton != null &&
               p.primaryButton!.uniqueId == elementId) {
@@ -168,7 +177,7 @@ class FlutterCarPlayController {
           }
         }
       } else {
-        if (t.runtimeType.toString() == "CPInformationTemplate") {
+        if (t is CPInformationTemplate) {
           l2:
           for (CPTextButton b in t.actions) {
             if (b.uniqueId == elementId) {
@@ -179,5 +188,18 @@ class FlutterCarPlayController {
         }
       }
     }
+  }
+
+  static T? getTemplateFromHistory<T extends CPTemplate>(String elementId) {
+    for (final template in templateHistory) {
+      if (template is T && template.uniqueId == elementId) return template;
+
+      if (template is CPTabBarTemplate) {
+        for (final t in template.templates) {
+          if (t is T && t.uniqueId == elementId) return t as T;
+        }
+      }
+    }
+    return null;
   }
 }

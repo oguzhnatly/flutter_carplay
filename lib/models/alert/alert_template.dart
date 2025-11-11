@@ -1,8 +1,10 @@
 import 'package:flutter_carplay/models/alert/alert_action.dart';
 import 'package:uuid/uuid.dart';
 
+import '../template.dart';
+
 /// A template object that displays a modal alert.
-class CPAlertTemplate {
+class CPAlertTemplate implements CPTemplate, CPActionsTemplate {
   /// Unique id of the object.
   final String _elementId = const Uuid().v4();
 
@@ -14,6 +16,7 @@ class CPAlertTemplate {
   final List<String> titleVariants;
 
   /// The array of actions as [CPAlertAction] will be available on the alert.
+  @override
   final List<CPAlertAction> actions;
 
   /// Fired when the alert presented to CarPlay. With this callback function, it can be
@@ -30,13 +33,15 @@ class CPAlertTemplate {
     this.onPresent,
   });
 
+  @override
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "titleVariants": titleVariants,
-        "actions": actions.map((e) => e.toJson()).toList(),
-        "onPresent": onPresent != null ? true : false,
+        '_elementId': _elementId,
+        'titleVariants': titleVariants,
+        'actions': actions.map((e) => e.toJson()).toList(),
+        'onPresent': onPresent != null ? true : false,
       };
 
+  @override
   String get uniqueId {
     return _elementId;
   }

@@ -28,6 +28,7 @@ class FCPAlertTemplate {
   
   var get: CPAlertTemplate {
     let alertTemplate = CPAlertTemplate.init(titleVariants: titleVariants, actions: actions)
+    alertTemplate.elementId = self.elementId
     self._super = alertTemplate
     return alertTemplate
   }

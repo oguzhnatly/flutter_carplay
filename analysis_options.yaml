@@ -2,3 +2,13 @@ include: package:flutter_lints/flutter.yaml
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+
+formatter:
+  page_width: 80
+linter:
+  rules:
+    avoid_redundant_argument_values: true
+    prefer_final_locals: true
+    prefer_const_constructors: true
+    avoid_print: true
+    prefer_single_quotes: true

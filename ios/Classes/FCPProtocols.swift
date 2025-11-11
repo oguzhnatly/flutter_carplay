@@ -4,7 +4,11 @@
 //
 //  Created by Oğuzhan Atalay on 25.08.2021.
 //
+import CarPlay
 
-protocol FCPPresentTemplate {}
+public protocol FCPPresentTemplate: AnyObject {}
 
-protocol FCPRootTemplate { }
+public protocol FCPRootTemplate: AnyObject {
+  var get: CPTemplate { get }
+  var elementId: String { get }
+}

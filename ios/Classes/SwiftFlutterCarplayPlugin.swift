@@ -13,7 +13,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   private static var streamHandler: FCPStreamHandlerPlugin?
   private(set) static var registrar: FlutterPluginRegistrar?
   private static var objcRootTemplate: FCPRootTemplate?
-  private static var templateStack: [FCPRootTemplate] = []
+  static var templateStack: [FCPRootTemplate] = []
   private static var _rootTemplate: CPTemplate?
   public static var animated: Bool = false
   private var objcPresentTemplate: FCPPresentTemplate?
@@ -37,6 +37,10 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     self.streamHandler = FCPStreamHandlerPlugin(registrar: registrar)
   }
 
+  public static func sendOnScreenBackButtonPressed(elementId: String) {
+    FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onScreenBackButtonPressed, data: ["elementId": elementId])
+  }
+
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case FCPChannelTypes.setRootTemplate:
@@ -46,45 +50,58 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       }
       var rootTemplate: FCPRootTemplate?
       switch args["runtimeType"] as! String {
-      case String(describing: FCPTabBarTemplate.self):
-        rootTemplate = FCPTabBarTemplate(obj: args["rootTemplate"] as! [String : Any])
-        if ((rootTemplate as! FCPTabBarTemplate).getTemplates().count > 5) {
-          result(FlutterError(code: "ERROR",
-                              message: "CarPlay cannot have more than 5 templates on one screen.",
-                              details: nil))
-          return
-        }
-        SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPTabBarTemplate).get
-        break
-      case String(describing: FCPGridTemplate.self):
-        rootTemplate = FCPGridTemplate(obj: args["rootTemplate"] as! [String : Any])
-        SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPGridTemplate).get
-        break
-      case String(describing: FCPInformationTemplate.self):
-        rootTemplate = FCPInformationTemplate(obj: args["rootTemplate"] as! [String : Any])
-        SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPInformationTemplate).get
-        break
-      case String(describing: FCPPointOfInterestTemplate.self):
-        rootTemplate = FCPPointOfInterestTemplate(obj: args["rootTemplate"] as! [String : Any])
-        SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPPointOfInterestTemplate).get
-        break
-      case String(describing: FCPListTemplate.self):
-        rootTemplate = FCPListTemplate(obj: args["rootTemplate"] as! [String : Any], templateType: FCPListTemplateTypes.DEFAULT)
-        SwiftFlutterCarplayPlugin.rootTemplate = (rootTemplate as! FCPListTemplate).get
-        break
-      default:
-        result(false)
-        return
+          case String(describing: FCPTabBarTemplate.self):
+            rootTemplate = FCPTabBarTemplate(obj: args["rootTemplate"] as! [String : Any])
+            let tabBarTemplate = rootTemplate as! FCPTabBarTemplate
+            if tabBarTemplate.getTemplates().count > CPTabBarTemplate.maximumTabCount {
+                result(FlutterError(code: "ERROR",
+                                    message: "CarPlay cannot have more than \(CPTabBarTemplate.maximumTabCount) templates on one screen.",
+                                    details: nil))
+                return
+            }
+            break
+          case String(describing: FCPGridTemplate.self):
+            rootTemplate = FCPGridTemplate(obj: args["rootTemplate"] as! [String : Any])
+            break
+          case String(describing: FCPInformationTemplate.self):
+            rootTemplate = FCPInformationTemplate(obj: args["rootTemplate"] as! [String : Any])
+            break
+          case String(describing: FCPPointOfInterestTemplate.self):
+            rootTemplate = FCPPointOfInterestTemplate(obj: args["rootTemplate"] as! [String : Any])
+            break
+          case String(describing: FCPListTemplate.self):
+            rootTemplate = FCPListTemplate(obj: args["rootTemplate"] as! [String : Any], templateType: FCPListTemplateTypes.DEFAULT)
+            break
+          default:
+            result(false)
+            return
       }
-        
-      SwiftFlutterCarplayPlugin.templateStack = []
-      SwiftFlutterCarplayPlugin.objcRootTemplate = rootTemplate
+
+      SwiftFlutterCarplayPlugin.rootTemplate = rootTemplate!.get
+      if !(SwiftFlutterCarplayPlugin.templateStack.isEmpty ?? true) {
+          SwiftFlutterCarplayPlugin.templateStack[0] = rootTemplate!
+      } else {
+          SwiftFlutterCarplayPlugin.templateStack = [rootTemplate!]
+      }
+      SwiftFlutterCarplayPlugin.objcRootTemplate = rootTemplate!
       let animated = args["animated"] as! Bool
       SwiftFlutterCarplayPlugin.animated = animated
       result(true)
       break
     case FCPChannelTypes.forceUpdateRootTemplate:
       FlutterCarPlaySceneDelegate.forceUpdateRootTemplate()
+      result(true)
+      break
+    case FCPChannelTypes.updateListTemplateSections:
+      guard let args = call.arguments as? [String : Any] else {
+        result(false)
+        return
+      }
+      let elementId = args["elementId"] as! String
+      let sections = (args["sections"] as! Array<[String: Any]>).map {
+        FCPListSection(obj: $0)
+      }
+      FlutterCarPlaySceneDelegate.updateListTemplateSections(elementId: elementId, sections: sections)
       result(true)
       break
     case FCPChannelTypes.updateListItem:
@@ -154,12 +171,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       result(true)
       break
     case FCPChannelTypes.popTemplate:
-      guard let args = call.arguments as? [String : Any] else {
-        result(false)
-        return
+      guard let args = call.arguments as? [String : Any],
+        SwiftFlutterCarplayPlugin.templateStack.count >= 2 else {
+          result(false)
+          return
       }
       for _ in 1...(args["count"] as! Int) {
-        SwiftFlutterCarplayPlugin.templateStack.removeLast()
         FlutterCarPlaySceneDelegate.pop(animated: args["animated"] as! Bool)
       }
       result(true)
@@ -179,52 +196,55 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         return
       }
       let template = FCPSharedNowPlayingTemplate()
-      SwiftFlutterCarplayPlugin.templateStack.append(template)
-      FlutterCarPlaySceneDelegate.pushIfNotExist(template: template.get as CPTemplate, animated: animated)
-      result(true)
+
+      let isCompleted = FlutterCarPlaySceneDelegate.pushIfNotExist(template: template.get as CPTemplate, animated: animated)
+      if isCompleted {
+        SwiftFlutterCarplayPlugin.templateStack.append(template)
+        result(true)
+      } else {
+        result(false)
+      }
       break
     case FCPChannelTypes.pushTemplate:
       guard let args = call.arguments as? [String : Any] else {
         result(false)
         return
       }
-      var pushTemplate: CPTemplate?
+      var template: FCPRootTemplate?
       let animated = args["animated"] as! Bool
       switch args["runtimeType"] as! String {
-      case String(describing: FCPGridTemplate.self):
-        let template = FCPGridTemplate(obj: args["template"] as! [String : Any])
-        SwiftFlutterCarplayPlugin.templateStack.append(template)
-        pushTemplate = template.get
-        break
-      case String(describing: FCPPointOfInterestTemplate.self):
-        let template = FCPPointOfInterestTemplate(obj: args["template"] as! [String : Any])
-        SwiftFlutterCarplayPlugin.templateStack.append(template)
-        pushTemplate = template.get
-        break
-      case String(describing: FCPInformationTemplate.self):
-        let template = FCPInformationTemplate(obj: args["template"] as! [String : Any])
-        SwiftFlutterCarplayPlugin.templateStack.append(template)
-        pushTemplate = template.get
-        break
-    
-      case String(describing: FCPListTemplate.self):
-        let template = FCPListTemplate(obj: args["template"] as! [String : Any], templateType: FCPListTemplateTypes.DEFAULT)
-        SwiftFlutterCarplayPlugin.templateStack.append(template)
-        pushTemplate = template.get
-        break
-      default:
-        result(false)
-        return
+        case String(describing: FCPGridTemplate.self):
+          template = FCPGridTemplate(obj: args["template"] as! [String : Any])
+          break
+        case String(describing: FCPPointOfInterestTemplate.self):
+          template = FCPPointOfInterestTemplate(obj: args["template"] as! [String : Any])
+          break
+        case String(describing: FCPInformationTemplate.self):
+          template = FCPInformationTemplate(obj: args["template"] as! [String : Any])
+          break
+        case String(describing: FCPListTemplate.self):
+          template = FCPListTemplate(obj: args["template"] as! [String : Any], templateType: FCPListTemplateTypes.DEFAULT)
+          break
+        default:
+          result(false)
+          return
       }
-      FlutterCarPlaySceneDelegate.push(template: pushTemplate!, animated: animated)
-      result(true)
+
+      let isCompleted = FlutterCarPlaySceneDelegate.push(template: template!.get, animated: animated)
+      if isCompleted {
+        SwiftFlutterCarplayPlugin.templateStack.append(template!)
+        result(true)
+      } else {
+        result(false)
+      }
       break
     case FCPChannelTypes.popToRootTemplate:
-      guard let animated = call.arguments as? Bool else {
-        result(false)
-        return
+      guard let animated = call.arguments as? Bool,
+        SwiftFlutterCarplayPlugin.templateStack.count >= 2 else {
+          result(false)
+          return
       }
-      SwiftFlutterCarplayPlugin.templateStack = []
+
       FlutterCarPlaySceneDelegate.popToRootTemplate(animated: animated)
       self.objcPresentTemplate = nil
       result(true)
@@ -247,28 +267,18 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   }
   
   static func findItem(elementId: String, actionWhenFound: (_ item: FCPListItem) -> Void) {
-    let objcRootTemplateType = String(describing: SwiftFlutterCarplayPlugin.objcRootTemplate).match(#"(.*flutter_carplay\.(.*)\))"#)[0][2]
-    var templates: [FCPListTemplate] = []
-    if (objcRootTemplateType.elementsEqual(String(describing: FCPListTemplate.self))) {
-      templates.append(SwiftFlutterCarplayPlugin.objcRootTemplate as! FCPListTemplate)
-      NSLog("FCP: FCPListTemplate")
-    } else if (objcRootTemplateType.elementsEqual(String(describing: FCPTabBarTemplate.self))) {
-      templates = (SwiftFlutterCarplayPlugin.objcRootTemplate as! FCPTabBarTemplate).getTemplates()
-      NSLog("FCP: FCPTabBarTemplate")
-    } else {
-      NSLog("FCP: No Template")
-      return
-    }
-    for t in templateStack {
-      if (t is FCPListTemplate) {
-        guard let template = t as? FCPListTemplate else {
-          break;
-        }
-        templates.append(template)
-      }
+    var collected: [FCPListTemplate] = []
+
+    for template in SwiftFlutterCarplayPlugin.templateStack {
+       if let tabBar = template as? FCPTabBarTemplate,
+             let tabs = tabBar.getTemplates() as? [FCPListTemplate] {
+              collected.append(contentsOf: tabs)
+          } else if let list = template as? FCPListTemplate {
+              collected.append(list)
+          }
     }
 
-    for t in templates {
+    for t in collected {
       for s in t.getSections() {
         for i in s.getItems() {
           if (i.elementId == elementId) {
@@ -278,5 +288,24 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         }
       }
     }
+    NSLog("FCP: Item not found with elementId: \(elementId)")
+  }
+
+  static public func getTemplateFromHistory(elementId: String) -> FCPRootTemplate? {
+      for i in 0..<SwiftFlutterCarplayPlugin.templateStack.count {
+          if SwiftFlutterCarplayPlugin.templateStack[i].elementId == elementId {
+              return SwiftFlutterCarplayPlugin.templateStack[i]
+          }
+
+          if let tabBar = SwiftFlutterCarplayPlugin.templateStack[i] as? FCPTabBarTemplate {
+              let subTemplates = tabBar.getTemplates()
+              for j in 0..<subTemplates.count {
+                  if subTemplates[j].elementId == elementId {
+                      return subTemplates[j]
+                  }
+              }
+          }
+      }
+      return nil
   }
 }

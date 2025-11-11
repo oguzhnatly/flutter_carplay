@@ -29,14 +29,14 @@ void main() {
     });
 
     test('find CPListItem from dynamic list item and element id', () {
-      CPListItem? item = flutterCarplayHelper.findCPListItem(
+      final CPListItem? item = flutterCarplayHelper.findCPListItem(
         templates: templates,
         elementId: cpListItem.uniqueId,
       );
 
       expect(item, cpListItem);
 
-      CPListItem? nullableItem = flutterCarplayHelper.findCPListItem(
+      final CPListItem? nullableItem = flutterCarplayHelper.findCPListItem(
         templates: templates,
         elementId: '',
       );
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('make FCP channel id', () {
-      String channelId = flutterCarplayHelper.makeFCPChannelId(event: '/event');
+      final String channelId = flutterCarplayHelper.makeFCPChannelId(event: '/event');
 
       expect(channelId, 'com.oguzhnatly.flutter_carplay/event');
     });

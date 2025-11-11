@@ -30,6 +30,7 @@ class FCPActionSheetTemplate {
   
   var get: CPActionSheetTemplate {
     let actionSheetTemplate = CPActionSheetTemplate.init(title: self.title, message: self.message, actions: self.actions)
+    actionSheetTemplate.elementId = self.elementId
     self._super = actionSheetTemplate
     return actionSheetTemplate
   }

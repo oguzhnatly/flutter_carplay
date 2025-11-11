@@ -45,8 +45,9 @@ class FCPInformationTemplate {
     
     }
     
-    var get: CPInformationTemplate {
+    var get: CPTemplate {
         let informationTemplate = CPInformationTemplate.init(title: self.title,layout:self.layout,items:informationItems,actions:actions);
+        informationTemplate.elementId = self.elementId
         return informationTemplate
     }
 }

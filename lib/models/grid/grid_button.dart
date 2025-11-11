@@ -29,9 +29,9 @@ class CPGridButton {
   });
 
   Map<String, dynamic> toJson() => {
-        "_elementId": _elementId,
-        "titleVariants": titleVariants,
-        "image": image,
+        '_elementId': _elementId,
+        'titleVariants': titleVariants,
+        'image': image,
       };
 
   String get uniqueId {

@@ -1,6 +1,6 @@
 ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/banner.png)
 
-# CarPlay with Flutter 🚗
+# CarPlay and Android Auto with Flutter 🚗
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
 ![Pub Version (including pre-releases)](https://img.shields.io/pub/v/flutter_carplay?include_prereleases)
@@ -8,7 +8,9 @@
 ![Dart Pub Multi-Platform](https://badgen.net/pub/flutter-platform/flutter_carplay)
 ![DartPub Dart SDK](https://badgen.net/pub/sdk-version/flutter_carplay)
 
-Flutter Apps now on Apple CarPlay! `flutter_carplay` aims to make it safe to use iPhone apps made with Flutter in the car by integrating with CarPlay. CarPlay takes the things you want to do while driving and puts them on the car's built-in display.
+Flutter Apps now on Apple CarPlay and Android Auto ! `flutter_carplay` aims to make it safe to use apps made with Flutter in the car by integrating with CarPlay and Android Auto. The package takes the things you want to do while driving and puts them on the car's built-in display.
+
+**✨ New in v1.2.0**: Android Auto support with limited list of feature. First step to future improvements.
 
 **✨ New in v1.1.0**: CarPlay apps can now launch automatically without requiring the Flutter app to be opened first, supporting true background launch capabilities.
 
@@ -18,6 +20,22 @@ Flutter Apps now on Apple CarPlay! `flutter_carplay` aims to make it safe to use
 
 It supports **only iOS 14.0+**. For general design guidance, see [Human Interface Guidelines for CarPlay Apps](https://developer.apple.com/design/human-interface-guidelines/carplay/overview/introduction/).
 
+# Summary
+
+- [Overview](#overview)
+- [Templates](#templates)
+- [Supports](#supports)
+- [What's New in latest versions](#whats-new-in-latest-versions)
+- [Road Map](#road-map)
+- [Contributing](#contributing)
+- [Requesting the CarPlay Entitlements](#requesting-the-carplay-entitlements)
+- [Disclaimer Before The Installation](#disclaimer-before-the-installation)
+- [Get Started](#get-started)
+- [Solve problems configuring your project](#solve-problems-configuring-your-project)
+- [Usage & Features](#usage--features)
+- [Templates](#templates-1)
+- [LICENSE](#license)
+
 # Overview
 
 ![Flutter CarPlay Introduction](https://user-images.githubusercontent.com/54781138/131184549-3cb62678-ad3f-4d67-85fb-1410bd05eaff.gif)
@@ -26,12 +44,23 @@ Before you begin CarPlay integration, you must carefully read this section.
 
 [_The official App Programming Guidelines from Apple_](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf) is the most valuable resource for understanding the needs, limits, and capabilities of CarPlay Apps. This documentation is a 49-page which clearly spells out the some actions required, and you are strongly advised to read it. If you are interested in a CarPlay System, [learn more about the MFi Program](https://mfi.apple.com/).
 
-## Templates
+# Templates
+
+## Car Play Templates
 
 CarPlay apps are built from a fixed set of user interface templates that iOS renders on the CarPlay screen. Each CarPlay app category can only use a restricted number of templates. Your app entitlement determines your access to templates.
+
 ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/templates.png)
 
-## Supports
+## Android Auto Templates
+
+Android Auto apps built with the Android for Cars App Library are constructed using a fixed set of vehicle-optimized templates that the host renders on the car screen. Each Android Auto app category (e.g., Navigation, Point-of-Interest, IoT, etc.) can only use a restricted number of templates, and access to the Android for Cars App Library and its templates is generally restricted to supported app categories.
+
+https://developer.android.com/design/ui/cars/guides/templates/overview
+
+# Supports
+
+## Car Play Support
 
 `flutter_carplay` currently supports:
 
@@ -46,7 +75,19 @@ CarPlay apps are built from a fixed set of user interface templates that iOS ren
 
 By evaluating this information, you can request for the relevant entitlement from Apple.
 
-## What's New in v1.1.0
+## Android Auto Support
+
+- [x] List Template (limited support)
+- [x] Now Playing Template (Automatically handled by Android Auto system)
+
+# What's New in latest versions
+
+## v1.2.0
+
+- **🤖 Android Auto Support**: Initial support for Android Auto with limited
+  features (Thanks to [@EArminjon](https://github.com/EArminjon))
+
+## v1.1.0
 
 - **🚀 Background Launch Support**: CarPlay apps can now start automatically without requiring the Flutter app to be opened first (Thanks to [@vanlooverenkoen](https://github.com/vanlooverenkoen) and [@EArminjon](https://github.com/EArminjon))
 - **🎵 Now Playing Template**: Navigate to the shared instance of the Now Playing Template with `FlutterCarplay.showSharedNowPlaying()`
@@ -56,16 +97,29 @@ By evaluating this information, you can request for the relevant entitlement fro
 
 Special thanks to [@EArminjon](https://github.com/EArminjon), [@vanlooverenkoen](https://github.com/vanlooverenkoen), [@snipd-mikel](https://github.com/snipd-mikel), and all contributors who made this release possible!
 
-## Road Map
+# Road Map
 
 Other templates will be supported in the future releases by `flutter_carplay`.
 
-- [ ] Map
-- [ ] Search
-- [ ] Voice Control & "Hey Siri" for hands-free voice activation
-- [ ] Contact
+## Car Play Road Map
 
-## Contributing
+- [ ] Map Template
+- [ ] Search Template
+- [ ] Voice Control & "Hey Siri" for hands-free voice activation
+- [ ] Contact Template
+
+## Android Auto Road Map
+- [ ] Grid Template
+- [ ] Alert Template
+- [ ] Action Sheet Template
+- [ ] Information Template
+- [ ] Point of Interest Template
+- [ ] Map Template
+- [ ] Search Template
+- [ ] Voice Control & "Hey Google" for hands-free voice activation
+- [ ] Contact Template
+
+# Contributing
 
 - Pull Requests are always welcome.
 - Pull Request Reviews are even more welcome! I need help in testing.
@@ -102,7 +156,9 @@ WHILE THE INSTALLATION PROGRESS, IF YOU TRY TO CHANGE ANYTHING (E.G. ANYTHING WO
 
 # Get Started
 
-### Requirement Actions after Installating the Package
+## Car Play Get Started
+
+### Requirement Actions after Installation of the Package
 
 1. The iOS platform version must be set to 14.0. To make it global, navigate to `ios/Podfile` and copy the first two lines:
 
@@ -136,12 +192,12 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
-override func application( _ application: UIApplication,
-                        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-+  flutterEngine.run()
-*  GeneratedPluginRegistrant.register(with: flutterEngine)
-   return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-}
+    override func application( _ application: UIApplication,
+                            didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
++      flutterEngine.run()
++      GeneratedPluginRegistrant.register(with: flutterEngine)
+       return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
 }
 ```
 
@@ -202,15 +258,112 @@ override func application( _ application: UIApplication,
 
 ### That's it, you're ready to build your first CarPlay app! 🚀 😎
 
-# Solve problems configuring your project
+## Android Auto Get Started
+
+### Requirement Actions after Installation of the Package
+
+1. The Android platform version must be set to 21. Update your `android/app/build.gradle.kts` as below:
+
+```diff
+# Update to use at minimum api 21
++ minSdk = 21
+- minSdk = 19
+```
+
+2. To setup Android Auto, you need to add a metadata tag in your `AndroidManifest.xml` file. Open `android/app/src/main/AndroidManifest.xml` and add the following : 
+ 
+ 
+Inside the `<manifest>` tag:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <uses-feature
+    android:name="android.software.car.app.library"
+    android:required="false" />
+    <uses-permission android:name="androidx.car.app.MEDIA_TEMPLATES"/>
+    
+</manifest>
+```
+
+Inside the `<application>` tag:
+
+```xml
+<application>
+
+    <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+    <meta-data
+            android:name="androidx.car.app.minCarApiLevel"
+            android:value="1" />
+    <service
+            android:name="com.oguzhnatly.flutter_android_auto.AndroidAutoService"
+            android:exported="true">
+
+        <intent-filter>
+            <action android:name="androidx.car.app.CarAppService" />
+            <category android:name="androidx.car.app.category.MEDIA"/>
+        </intent-filter>
+    </service>
+    
+</application>
+```
+
+3. Create a new directory named `xml` inside `android/app/src/main/res/` if it doesn't already exist. Then, create a new XML file named `automotive_app_desc.xml` in the `res/xml/` directory and add the following content:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<automotiveApp xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <uses name="template" />
+    <uses name="media" />
+    
+</automotiveApp>
+``` 
+
+For others use, please check official [Android Auto documentation](https://developer.android.com/training/cars/apps/auto).
+
+4. In your `MainActivity.kt` file, make the necessary to resuse and cache the engine as follow :
+
+On Android Auto Service, use the same engine as the app if the app is already running, otherwise create a new one and cache using the id `FAAConstants.flutterEngineId`.
+To avoid creating multiple engines, you need to override the `provideFlutterEngine` and `configureFlutterEngine` methods as below :
+
+```kotlin
+package com.example.flutter_carplay_example
+
+import android.content.Context
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterEngineCache
+import io.flutter.embedding.engine.dart.DartExecutor
+import com.oguzhnatly.flutter_android_auto.FAAConstants
+
+class MainActivity : FlutterActivity() {
+    override fun provideFlutterEngine(context: Context): FlutterEngine? {
+        // Use engine from cache if it has been started by Android Auto.
+        return FlutterEngineCache.getInstance().get(FAAConstants.flutterEngineId);
+    }
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        // Cache the engine to make it usable by Android Auto.
+        FlutterEngineCache.getInstance().put(FAAConstants.flutterEngineId, flutterEngine)
+        super.configureFlutterEngine(flutterEngine)
+    }
+}
+```
+
+## Solve problems configuring your project
 
 Take a look at [this detailed issue reply](https://github.com/oguzhnatly/flutter_carplay/issues/3#issuecomment-926146126) if you got any error.
 
-# Usage & Features
+## Usage & Features
+
+To see a complete example for both CarPlay and Android Auto, check the example project.
 
 [**See Full Example**](https://github.com/oguzhnatly/flutter_carplay/blob/master/example/lib/main.dart)
 
-## Basic Usage
+### Basic Usage for Car Play
 
 - Import the all classes that you need from just one file:
 
@@ -260,7 +413,7 @@ _flutterCarplay.forceUpdateRootTemplate();
 
 > It's recommended that you should set the root template in the first initState of your app.
 
-## Listen Connection Changes
+### Listen Connection Changes
 
 You can detect connection changes, such as when CarPlay is connected to iPhone, is in the background, or is completely disconnected.
 
@@ -268,21 +421,21 @@ You can detect connection changes, such as when CarPlay is connected to iPhone, 
 /// Add the listener
 _flutterCarplay.addListenerOnConnectionChange(onCarplayConnectionChange);
 
-void onCarplayConnectionChange(CPConnectionStatusTypes status) {
+void onCarplayConnectionChange(ConnectionStatusTypes status) {
   // Do things when carplay connection status is:
-  // - CPConnectionStatusTypes.connected
-  // - CPConnectionStatusTypes.background
-  // - CPConnectionStatusTypes.disconnected
-  // - CPConnectionStatusTypes.unknown
+  // - ConnectionStatusTypes.connected
+  // - ConnectionStatusTypes.background
+  // - ConnectionStatusTypes.disconnected
+  // - ConnectionStatusTypes.unknown
 }
 
 /// Remove the listener
 _flutterCarplay.removeListenerOnConnectionChange();
 ```
 
-## CarPlay API Methods
+### CarPlay API Methods
 
-### **CarPlay.setRootTemplate**
+#### **CarPlay.setRootTemplate**
 
 Sets the root template of the navigation hierarchy. If a navigation
 hierarchy already exists, CarPlay replaces the entire hierarchy.
@@ -303,7 +456,7 @@ FlutterCarplay.setRootTemplate(
 // You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
-### **CarPlay.push**
+#### **CarPlay.push**
 
 Adds a template to the navigation hierarchy and displays it.
 
@@ -319,7 +472,7 @@ FlutterCarplay.push(
 );
 ```
 
-### **CarPlay.pop**
+#### **CarPlay.pop**
 
 Removes the top-most template from the navigation hierarchy.
 
@@ -332,7 +485,7 @@ FlutterCarplay.pop();
 FlutterCarplay.pop(animated: true, count: 1);
 ```
 
-### **CarPlay.popToRoot**
+#### **CarPlay.popToRoot**
 
 Removes all of the templates from the navigation hierarchy except the root template.
 
@@ -342,7 +495,7 @@ Removes all of the templates from the navigation hierarchy except the root templ
 FlutterCarplay.popToRoot(animated: true);
 ```
 
-### **CarPlay.popModal**
+#### **CarPlay.popModal**
 
 Removes a modal template. Since **CPAlertTemplate** and **CPActionSheetTemplate** are both modals, they can be removed.
 
@@ -352,7 +505,7 @@ Removes a modal template. Since **CPAlertTemplate** and **CPActionSheetTemplate*
 FlutterCarplay.popModal(animated: true);
 ```
 
-### **CarPlay.showSharedNowPlaying**
+#### **CarPlay.showSharedNowPlaying**
 
 Navigate to the shared instance of the Now Playing Template. This allows users to control media playback directly from CarPlay.
 
@@ -362,21 +515,21 @@ Navigate to the shared instance of the Now Playing Template. This allows users t
 FlutterCarplay.showSharedNowPlaying(animated: true);
 ```
 
-### **CarPlay.connectionStatus**
+#### **CarPlay.connectionStatus**
 
-Getter for current CarPlay connection status. It will return one of **CPConnectionStatusTypes** as String.
+Getter for current CarPlay connection status. It will return one of **ConnectionStatusTypes** as String.
 
 ```dart
 FlutterCarplay.connectionStatus
 ```
 
-# Templates
+## Templates
 
 CarPlay supports general purpose templates such as alerts, lists, and tab bars. They are used to display contents on the CarPlay screen from the app. [The Developer Guide](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf) contains more information on the templates that Apple supports.
 
 > If you attempt to use a template not supported by your entitlement, an exception will occur at runtime.
 
-## Tab Bar Template
+### Tab Bar Template
 
 ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/tabbar_template.png)
 
@@ -440,7 +593,7 @@ final CPTabBarTemplate tabBarTemplate = CPTabBarTemplate(
 FlutterCarplay.setRootTemplate(rootTemplate: tabBarTemplate, animated: true);
 ```
 
-## Grid Template
+### Grid Template
 
 ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/grid_template.png)
 
@@ -467,7 +620,7 @@ FlutterCarplay.setRootTemplate(rootTemplate: gridTemplate, animated: true);
 // You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
-## Alert Template
+### Alert Template
 
 ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/alert_template.png)
 
@@ -509,7 +662,7 @@ final CPAlertTemplate alertTemplate = CPAlertTemplate(
 FlutterCarplay.showAlert(template: alertTemplate, animated: true);
 ```
 
-## Action Sheet Template
+### Action Sheet Template
 
 ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/actionsheet_template.png)
 
@@ -552,7 +705,7 @@ final CPActionSheetTemplate actionSheetTemplate = CPActionSheetTemplate(
 FlutterCarplay.showActionSheet(template: actionSheetTemplate, animated: true);
 ```
 
-## List Template
+### List Template
 
 ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/list_template.png)
 
@@ -609,7 +762,7 @@ FlutterCarplay.setRootTemplate(rootTemplate: listTemplate, animated: true);
 // You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
-## Information Template
+### Information Template
 
 ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/information_template.png)
 
@@ -646,7 +799,7 @@ FlutterCarplay.setRootTemplate(rootTemplate: informationTemplate, animated: true
 // You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
-## Point Of Interest Template
+### Point Of Interest Template
 
 ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/point_of_interest_template.png)
 
@@ -687,7 +840,7 @@ The map section is determined by the points of interest.
     // You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
-## Now Playing Template
+### Now Playing Template
 
 The Now Playing template provides a standardized interface for media playback controls in CarPlay. It uses the system's shared instance and integrates with your app's media session.
 
