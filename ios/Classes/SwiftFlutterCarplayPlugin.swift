@@ -78,7 +78,11 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       }
 
       SwiftFlutterCarplayPlugin.rootTemplate = rootTemplate!.get
-      SwiftFlutterCarplayPlugin.templateStack = [rootTemplate!]
+      if !(SwiftFlutterCarplayPlugin.templateStack.isEmpty ?? true) {
+          SwiftFlutterCarplayPlugin.templateStack[0] = rootTemplate!
+      } else {
+          SwiftFlutterCarplayPlugin.templateStack = [rootTemplate!]
+      }
       SwiftFlutterCarplayPlugin.objcRootTemplate = rootTemplate!
       let animated = args["animated"] as! Bool
       SwiftFlutterCarplayPlugin.animated = animated
