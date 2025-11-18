@@ -1,3 +1,13 @@
+## 1.2.1
+
+- Update tabBar templates in https://github.com/oguzhnatly/flutter_carplay/pull/71
+
+This allow updating a tabBar without removing entire stack. This is useful to add, update or remove tabs.
+
+**Bug fixes :**
+- Ensure that updateSections only recreate necessary entries.
+- Ensure that updateSections take and memorise new entries (by using List.from).
+
 ## 1.2.0
 
 - Add early support for Android Auto under a new controller `FlutterAndroidAuto`. Not all features are supported yet, see the README for more details. ([#71](https://github.com/oguzhnatly/flutter_carplay/pull/71)) (ty @EArminjon).
