@@ -39,4 +39,11 @@ class CPTabBarTemplate implements CPTemplate {
   String get uniqueId {
     return _elementId;
   }
+
+  void updateTemplates(List<CPListTemplate> newTemplates) {
+    final copy = List<CPListTemplate>.from(newTemplates);
+    templates
+      ..clear()
+      ..addAll(copy);
+  }
 }

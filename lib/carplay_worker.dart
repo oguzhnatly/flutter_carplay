@@ -206,6 +206,28 @@ class FlutterCarplay {
     return;
   }
 
+  /// It will update the templates of the [CPTabBarTemplate] which has the given [elementId].
+  Future<void> updateTabBarTemplates({
+    required String elementId,
+    required List<CPListTemplate> templates,
+  }) async {
+    final bool? isCompleted = await _carPlayController.methodChannel
+        .invokeMethod('updateTabBarTemplates', <String, dynamic>{
+      'elementId': elementId,
+      'templates': templates
+          .map((CPListTemplate template) => template.toJson())
+          .toList(),
+    });
+
+    if (isCompleted == true) {
+      final template =
+          FlutterCarPlayController.getTemplateFromHistory<CPTabBarTemplate>(
+              elementId);
+      template?.updateTemplates(templates);
+    }
+    return;
+  }
+
   /// Getter for current root template.
   /// Return one of type [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate]
   static dynamic get rootTemplate {
