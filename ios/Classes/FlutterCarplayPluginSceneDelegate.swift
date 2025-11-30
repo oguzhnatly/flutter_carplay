@@ -114,11 +114,8 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
       let currentTemplates = interfaceController.templates
 
       SwiftFlutterCarplayPlugin.templateStack.removeAll { stackTemplate in
-          let cpTemplate = stackTemplate.get
-          if !currentTemplates.contains(where: { $0.elementId == cpTemplate.elementId }) {
-              if let elementId = cpTemplate.elementId {
-                  SwiftFlutterCarplayPlugin.sendOnScreenBackButtonPressed(elementId: elementId)
-              }
+          if !currentTemplates.contains(where: { $0.elementId == stackTemplate.elementId }) {
+              SwiftFlutterCarplayPlugin.sendOnScreenBackButtonPressed(elementId: stackTemplate.elementId)
               return true
           }
           return false

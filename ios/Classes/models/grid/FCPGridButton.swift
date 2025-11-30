@@ -21,14 +21,19 @@ class FCPGridButton {
   }
   
   var get: CPGridButton {
-    let gridButton = CPGridButton.init(titleVariants: self.titleVariants,
-                                       image: UIImage().fromCorrectSource(name: self.image),
-                                       handler: { _ in
-      DispatchQueue.main.async {
-        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onGridButtonPressed,
-                                         data: ["elementId": self.elementId])
+    let gridButton = CPGridButton(
+      titleVariants: self.titleVariants,
+      image: UIImage().fromCorrectSource(name: self.image),
+      handler: { _ in
+        DispatchQueue.main.async {
+          FCPStreamHandlerPlugin.sendEvent(
+            type: FCPChannelTypes.onGridButtonPressed,
+            data: ["elementId": self.elementId]
+          )
+        }
       }
-    })
+    )
+
     gridButton.isEnabled = true
     self._super = gridButton
     return gridButton
