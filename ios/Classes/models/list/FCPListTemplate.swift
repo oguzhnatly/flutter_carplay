@@ -14,7 +14,7 @@ class FCPListTemplate {
   private var title: String?
   private var systemIcon: String
   private var sections: [CPListSection] = []
-  private var objcSections: [FCPListSection] = []
+  var objcSections: [FCPListSection] = []
   private var emptyViewTitleVariants: [String] = []
   private var emptyViewSubtitleVariants: [String] = []
   private var showsTabBadge: Bool = false
@@ -65,15 +65,32 @@ class FCPListTemplate {
     return sections
   }
 
-  public func updateSections(sections: [FCPListSection]) {
-    let existingMap = Dictionary(uniqueKeysWithValues: zip(self.objcSections.map { $0.elementId }, self.sections))
+  public func merge(with: FCPListTemplate) -> FCPListTemplate {
+    let copy = with
+    self.updateSections(sections: copy.objcSections)
+    copy._super = self._super
+    copy.objcSections = self.objcSections
+    copy.sections = self.sections
+    return copy;
+  }
 
-    self.objcSections = sections
-    self.sections = sections.map { section in
-      if let existing = existingMap[section.elementId] {
-        return existing // reuse existing CPListSection
+  public func updateSections(sections: [FCPListSection]) {
+    let fcpSectionsMap: [String: FCPListSection] = Dictionary(uniqueKeysWithValues: self.objcSections.map { ($0.elementId, $0) })
+    let cpSectionsMap = Dictionary(uniqueKeysWithValues: zip(self.objcSections.map { $0.elementId }, self.sections))
+
+    /// Keep Flutter CarPlay object if necessary, use new instance.
+    self.objcSections = sections.map { section in
+      if let existing = fcpSectionsMap[section.elementId] {
+        return existing.merge(with: section) // Merge old instance with newest to keep some data (eg: completeHandler)
       } else {
-        return section.get // create new
+        return section // Use new instance
+      }
+    }
+    self.sections = sections.map { section in
+      if let existing = cpSectionsMap[section.elementId] {
+        return existing // Reuse existing CP template
+      } else {
+        return section.get // New CP template
       }
     }
   }
