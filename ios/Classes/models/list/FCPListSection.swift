@@ -13,7 +13,7 @@ class FCPListSection {
   private(set) var elementId: String
   private var header: String?
   private var items: [CPListTemplateItem]
-  var objcItems: [FCPListItem]
+  private var objcItems: [FCPListItem]
   
   init(obj: [String : Any]) {
     self.elementId = obj["_elementId"] as! String

@@ -9,6 +9,7 @@ import CarPlay
 
 @available(iOS 14.0, *)
 class FCPTabBarTemplate {
+  private(set) var _super: CPTabBarTemplate?
   private(set) var elementId: String
   private var title: String?
   private var templates: [CPTemplate]
@@ -29,15 +30,12 @@ class FCPTabBarTemplate {
     let tabBarTemplate = CPTabBarTemplate.init(templates: templates)
     tabBarTemplate.tabTitle = title
     tabBarTemplate.elementId = self.elementId
+    self._super = tabBarTemplate
     return tabBarTemplate
   }
   
   public func getTemplates() -> [FCPListTemplate] {
     return objcTemplates
-  }
-
-  public func getRawTemplates() -> [CPTemplate] {
-    return templates
   }
 
   public func updateTemplates(templates: [FCPListTemplate]) {
@@ -61,6 +59,7 @@ class FCPTabBarTemplate {
         return template.get // New CP template
       }
     }
+    _super?.updateTemplates(self.templates)
   }
 }
 

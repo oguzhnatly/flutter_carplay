@@ -14,7 +14,7 @@ class FCPListTemplate {
   private var title: String?
   private var systemIcon: String
   private var sections: [CPListSection] = []
-  var objcSections: [FCPListSection] = []
+  private var objcSections: [FCPListSection] = []
   private var emptyViewTitleVariants: [String] = []
   private var emptyViewSubtitleVariants: [String] = []
   private var showsTabBadge: Bool = false
@@ -61,10 +61,6 @@ class FCPListTemplate {
     return objcSections
   }
 
-  public func getRawSections() -> [CPListSection] {
-    return sections
-  }
-
   public func merge(with: FCPListTemplate) -> FCPListTemplate {
     let copy = with
     self.updateSections(sections: copy.objcSections)
@@ -93,6 +89,8 @@ class FCPListTemplate {
         return section.get // New CP template
       }
     }
+
+    _super?.updateSections(self.sections)
   }
 }
 
