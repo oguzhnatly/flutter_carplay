@@ -33,39 +33,22 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 
   // https://developer.apple.com/documentation/carplay/cplisttemplate/updatesections(_:)
   static public func updateListTemplateSections(elementId: String, sections: [FCPListSection]) {
-    guard let interfaceController = self.interfaceController else { return }
-
-    guard let template = interfaceController.templates.first(where: { $0.elementId == elementId }) as? CPListTemplate ??
-        interfaceController.templates.compactMap({ $0 as? CPTabBarTemplate }).flatMap({ $0.templates }).first(where: { $0.elementId == elementId }) as? CPListTemplate else {
-        NSLog("FlutterCarPlaySceneDelegate - updateListTemplateSections: Template with elementId \(elementId) not found.")
-        return
-    }
-
     guard let templateFromHistory = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: elementId) as? FCPListTemplate  else {
-        NSLog("FlutterCarPlaySceneDelegate - updateListTemplateSections: Template from history with elementId \(elementId) not found.")
-        return
+      NSLog("FlutterCarPlaySceneDelegate - updateListTemplateSections: Template from history with elementId \(elementId) not found.")
+      return
     }
 
     templateFromHistory.updateSections(sections: sections)
-    template.updateSections(templateFromHistory.getRawSections())
   }
 
   // https://developer.apple.com/documentation/carplay/cptabbartemplate/updatetemplates(_:)
   static public func updateTabBarTemplates(elementId: String, templates: [FCPListTemplate]) {
-    guard let interfaceController = self.interfaceController else { return }
-
-    guard let template = interfaceController.templates.first(where: { $0.elementId == elementId }) as? CPTabBarTemplate else {
-        NSLog("FlutterCarPlaySceneDelegate - updateTabBarTemplates: TabBar template with elementId \(elementId) not found.")
-        return
-    }
-
     guard let templateFromHistory = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: elementId) as? FCPTabBarTemplate  else {
         NSLog("FlutterCarPlaySceneDelegate - updateTabBarTemplates: TabBar template from history with elementId \(elementId) not found.")
         return
     }
 
     templateFromHistory.updateTemplates(templates: templates)
-    template.updateTemplates(templateFromHistory.getRawTemplates())
   }
 
   // Fired when just before the carplay become active
@@ -114,11 +97,8 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
       let currentTemplates = interfaceController.templates
 
       SwiftFlutterCarplayPlugin.templateStack.removeAll { stackTemplate in
-          let cpTemplate = stackTemplate.get
-          if !currentTemplates.contains(where: { $0.elementId == cpTemplate.elementId }) {
-              if let elementId = cpTemplate.elementId {
-                  SwiftFlutterCarplayPlugin.sendOnScreenBackButtonPressed(elementId: elementId)
-              }
+          if !currentTemplates.contains(where: { $0.elementId == stackTemplate.elementId }) {
+              SwiftFlutterCarplayPlugin.sendOnScreenBackButtonPressed(elementId: stackTemplate.elementId)
               return true
           }
           return false

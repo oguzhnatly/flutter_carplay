@@ -61,21 +61,36 @@ class FCPListTemplate {
     return objcSections
   }
 
-  public func getRawSections() -> [CPListSection] {
-    return sections
+  public func merge(with: FCPListTemplate) -> FCPListTemplate {
+    let copy = with
+    self.updateSections(sections: copy.objcSections)
+    copy._super = self._super
+    copy.objcSections = self.objcSections
+    copy.sections = self.sections
+    return copy;
   }
 
   public func updateSections(sections: [FCPListSection]) {
-    let existingMap = Dictionary(uniqueKeysWithValues: zip(self.objcSections.map { $0.elementId }, self.sections))
+    let fcpSectionsMap: [String: FCPListSection] = Dictionary(uniqueKeysWithValues: self.objcSections.map { ($0.elementId, $0) })
+    let cpSectionsMap = Dictionary(uniqueKeysWithValues: zip(self.objcSections.map { $0.elementId }, self.sections))
 
-    self.objcSections = sections
-    self.sections = sections.map { section in
-      if let existing = existingMap[section.elementId] {
-        return existing // reuse existing CPListSection
+    /// Keep Flutter CarPlay object if necessary, use new instance.
+    self.objcSections = sections.map { section in
+      if let existing = fcpSectionsMap[section.elementId] {
+        return existing.merge(with: section) // Merge old instance with newest to keep some data (eg: completeHandler)
       } else {
-        return section.get // create new
+        return section // Use new instance
       }
     }
+    self.sections = sections.map { section in
+      if let existing = cpSectionsMap[section.elementId] {
+        return existing // Reuse existing CP template
+      } else {
+        return section.get // New CP template
+      }
+    }
+
+    _super?.updateSections(self.sections)
   }
 }
 

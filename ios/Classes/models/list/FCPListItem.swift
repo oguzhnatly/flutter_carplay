@@ -32,20 +32,25 @@ class FCPListItem {
     self.setPlayingIndicatorLocation(fromString: obj["playingIndicatorLocation"] as? String)
     self.setAccessoryType(fromString: obj["accessoryType"] as? String)
   }
-  
+
+  private func handler(selectedItem: CPSelectableListItem, complete: @escaping () -> Void) {
+    if isOnPressListenerActive {
+      completeHandler = complete
+
+      DispatchQueue.main.async {
+        FCPStreamHandlerPlugin.sendEvent(
+          type: FCPChannelTypes.onListItemSelected,
+          data: ["elementId": self.elementId]
+        )
+      }
+    } else {
+      complete()
+    }
+  }
+
   var get: CPListItem {
     let listItem = CPListItem.init(text: text, detailText: detailText)
-    listItem.handler = ((CPSelectableListItem, @escaping () -> Void) -> Void)? { selectedItem, complete in
-      if self.isOnPressListenerActive == true {
-        DispatchQueue.main.async {
-          self.completeHandler = complete
-          FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onListItemSelected,
-                                           data: ["elementId": self.elementId])
-        }
-      } else {
-        complete()
-      }
-    }
+    listItem.handler = self.handler
     if image != nil {
       UIGraphicsBeginImageContext(CGSize.init(width: 100, height: 100))
       let emptyImage = UIGraphicsGetImageFromCurrentImageContext()
@@ -139,5 +144,11 @@ class FCPListItem {
     } else {
       self.accessoryType = CPListItemAccessoryType.none
     }
+  }
+
+  public func merge(with: FCPListItem) -> FCPListItem {
+    with._super = self._super
+    with._super?.handler = with.handler
+    return with;
   }
 }
