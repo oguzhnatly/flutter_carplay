@@ -1,3 +1,16 @@
+## 1.2.2
+
+**Issues:**
+Calling `updateTemplates` or `updateSections` updates the layout correctly when the CarPlay is already active, but fail to do when CarPlay not yet started. Using `updateTemplates` or `updateSections` doesn’t refresh ListItem's handler properly, causing missing callbacks. This results in items showing a loading indicator for several seconds because the end event never fires. 
+
+It's been updated by @EArminjon in https://github.com/oguzhnatly/flutter_carplay/pull/77
+
+**Fixes :**
+- Ensure `updateTemplate` and `updateSections` correctly refresh all relevant data and update the `final _super.handler`.
+- Reformatted the code.
+- Reuse existing `CPTemplate` instances instead of recreating them.
+- Renamed variables to improve clarity.
+
 ## 1.2.1
 
 - Update tabBar templates in https://github.com/oguzhnatly/flutter_carplay/pull/71
