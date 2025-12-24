@@ -5,63 +5,116 @@
 //  Created by Oğuzhan Atalay on 21.08.2021.
 //
 
-extension UIImage {
-  convenience init?(withURL url: URL) throws {
-    let imageData = try Data(contentsOf: url)
-    self.init(data: imageData)
-  }
-  
-    
-  @available(iOS 14.0, *)
-  func fromCorrectSource(name: String) -> UIImage {
-    if (name.starts(with: "http")) {
-      return fromUrl(url: name)
-    } else if (name.starts(with: "file://")) {
-      return fromFile(path: name)
-    }
-    return fromFlutterAsset(name: name)
-  }
-    
-  @available(iOS 14.0, *)
-  func fromFlutterAsset(name: String) -> UIImage {
-    let key: String? = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: name)
-    let image: UIImage? = UIImage(imageLiteralResourceName: key!)
-    return image ?? UIImage(systemName: "questionmark")!
-  }
+import UIKit
 
-  @available(iOS 14.0, *)
-  func fromFile(path: String) -> UIImage {
-    guard let url = URL(string: path) else {
-      return UIImage(systemName: "questionmark")!
-    }
-    let image: UIImage? = UIImage(contentsOfFile: url.path)
-    return image ?? UIImage(systemName: "questionmark")!
-  }
+// Image Source (no UIImage creation here)
+enum ImageSource {
+    case url(URL)
+    case file(String)
+    case flutterAsset(String)
+}
 
-  @available(iOS 14.0, *)
-  func fromUrl(url: String) -> UIImage {
-      let url = URL(string: url)
-      let data = try? Data(contentsOf: url!)
-      guard let data = data else {
-          return UIImage(systemName: "questionmark")!
-      }
-      return UIImage(data: data)!
-  }
-
-  func resizeImageTo(size: CGSize) -> UIImage? {
-      UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
-      self.draw(in: CGRect(origin: CGPoint.zero, size: size))
-      let newImage = UIGraphicsGetImageFromCurrentImageContext()!
-      UIGraphicsEndImageContext()
-      return newImage
+// String → ImageSource
+extension String {
+    func toImageSource() -> ImageSource {
+        if self.starts(with: "http") {
+            return .url(URL(string: self)!)
+        } else if self.starts(with: "file://") {
+            return .file(self.replacingOccurrences(of: "file://", with: ""))
+        } else {
+            return .flutterAsset(self)
+        }
     }
 }
 
-extension String {
-  func match(_ regex: String) -> [[String]] {
-    let nsString = self as NSString
-    return (try? NSRegularExpression(pattern: regex, options: []))?.matches(in: self, options: [], range: NSMakeRange(0, nsString.length)).map { match in
-        (0..<match.numberOfRanges).map { match.range(at: $0).location == NSNotFound ? "" : nsString.substring(with: match.range(at: $0)) }
-    } ?? []
+func makeSafeUIPlaceholder() -> UIImage {
+  if Thread.isMainThread {
+    return makeUIPlaceholder()
+  } else {
+    return DispatchQueue.main.sync {
+      makeUIPlaceholder()
+    }
   }
+}
+
+func makeUIPlaceholder() -> UIImage {
+  UIGraphicsBeginImageContextWithOptions(CGSize(width: 100, height: 100), false, 0)
+  let img = UIGraphicsGetImageFromCurrentImageContext()!
+  UIGraphicsEndImageContext()
+  return img
+}
+
+// UIImage creation (MAIN THREAD ONLY)
+func makeUIImage(from source: ImageSource) -> UIImage {
+    switch source {
+    case .url(let url):
+        let data = try? Data(contentsOf: url) // Synchronous URL loading (kept for compatibility but avoid using on main thread)
+        return data.flatMap { UIImage(data: $0) } ?? UIImage(systemName: "questionmark")!
+
+    case .file(let path):
+        return UIImage(contentsOfFile: path) ?? UIImage(systemName: "questionmark")!
+
+    case .flutterAsset(let name):
+        let key = SwiftFlutterCarplayPlugin.registrar!.lookupKey(forAsset: name)
+        return UIImage(imageLiteralResourceName: key)
+    }
+}
+
+// Asynchronous image loader. Always calls completion on main thread.
+func loadUIImageAsync(from source: ImageSource, completion: @escaping (UIImage?) -> Void) {
+    switch source {
+    case .url(let url):
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            var image: UIImage? = nil
+            if let data = data {
+                image = UIImage(data: data)
+            }
+            if let image = image {
+                DispatchQueue.main.async { completion(image) }
+            } else {
+                DispatchQueue.main.async { completion(UIImage(systemName: "questionmark")) }
+            }
+        }
+        task.resume()
+
+    case .file(let path):
+        DispatchQueue.global(qos: .userInitiated).async {
+            let image = UIImage(contentsOfFile: path) ?? UIImage(systemName: "questionmark")
+            DispatchQueue.main.async { completion(image) }
+        }
+
+    case .flutterAsset(let name):
+        DispatchQueue.main.async {
+            let key = SwiftFlutterCarplayPlugin.registrar!.lookupKey(forAsset: name)
+            let image = UIImage(imageLiteralResourceName: key)
+            completion(image)
+        }
+    }
+}
+
+//  UIImage utilities (safe, UI only)
+extension UIImage {
+    func resizeImageTo(size: CGSize) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+        draw(in: CGRect(origin: .zero, size: size))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return newImage
+    }
+}
+
+// Regex helper
+extension String {
+    func match(_ regex: String) -> [[String]] {
+        let nsString = self as NSString
+        return (try? NSRegularExpression(pattern: regex))?
+            .matches(in: self, range: NSRange(location: 0, length: nsString.length))
+            .map { match in
+                (0..<match.numberOfRanges).map {
+                    match.range(at: $0).location == NSNotFound
+                    ? ""
+                    : nsString.substring(with: match.range(at: $0))
+                }
+            } ?? []
+    }
 }
