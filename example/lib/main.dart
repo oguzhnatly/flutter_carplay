@@ -452,7 +452,11 @@ class _MyAppState extends State<MyApp> {
               // FLUTTER AND THE RELATED LOGO ARE TRADEMARKS OF Google LLC.
               // WE ARE NOT ENDORSED BY OR AFFILIATED WITH Google LLC.
               // ----- TRADEMARKS RIGHTS INFORMATION END -----
-              image: 'images/logo_flutter_1080px_clr.png',
+              //
+              // Using asset and network images for demonstration purposes.
+              image: i.isOdd
+                  ? 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png'
+                  : 'images/logo_flutter_1080px_clr.png',
               onPress: () {
                 print('Grid Button $i pressed');
               },
