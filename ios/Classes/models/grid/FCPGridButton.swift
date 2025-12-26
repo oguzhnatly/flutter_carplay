@@ -21,9 +21,19 @@ class FCPGridButton {
   }
   
   var get: CPGridButton {
-    let gridButton = CPGridButton(
+    var gridButton: CPGridButton!
+    let image: UIImage
+
+    if #available(iOS 26.0, *) {
+      image = makeSafeUIPlaceholder();
+    } else {
+      let imageSource = self.image.toImageSource()
+      image = makeUIImage(from: imageSource)
+    }
+
+    gridButton = CPGridButton(
       titleVariants: self.titleVariants,
-      image: UIImage().fromCorrectSource(name: self.image),
+      image: image,
       handler: { _ in
         DispatchQueue.main.async {
           FCPStreamHandlerPlugin.sendEvent(
@@ -33,6 +43,15 @@ class FCPGridButton {
         }
       }
     )
+
+    if #available(iOS 26.0, *) {
+      let imageSource = self.image.toImageSource()
+      loadUIImageAsync(from: imageSource) { uiImage in
+        if let uiImage = uiImage {
+          gridButton.updateImage(uiImage)
+        }
+      }
+    }
 
     gridButton.isEnabled = true
     self._super = gridButton

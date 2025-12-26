@@ -52,14 +52,11 @@ class FCPListItem {
     let listItem = CPListItem.init(text: text, detailText: detailText)
     listItem.handler = self.handler
     if image != nil {
-      UIGraphicsBeginImageContext(CGSize.init(width: 100, height: 100))
-      let emptyImage = UIGraphicsGetImageFromCurrentImageContext()
-      UIGraphicsEndImageContext()
-      listItem.setImage(emptyImage)
-      DispatchQueue.global(qos: .background).async {
-        let uiImage = UIImage().fromCorrectSource(name: self.image!)
-        DispatchQueue.main.async {
-            listItem.setImage(uiImage)
+      listItem.setImage(makeSafeUIPlaceholder())
+      let imageSource = self.image!.toImageSource()
+      loadUIImageAsync(from: imageSource) { uiImage in
+        if let uiImage = uiImage {
+          listItem.setImage(uiImage)
         }
       }
     }
@@ -96,16 +93,21 @@ class FCPListItem {
       self._super?.setDetailText(detailText)
       self.detailText = detailText
     }
-    if image != nil {
-      DispatchQueue.global(qos: .background).async {
-        let uiImage = UIImage().fromCorrectSource(name: image!)
-        DispatchQueue.main.async {
+
+    if let image = image, image != self.image {
+      self._super?.setImage(makeSafeUIPlaceholder())
+      let imageSource = image.toImageSource()
+      loadUIImageAsync(from: imageSource) { uiImage in
+        if let uiImage = uiImage {
           self._super?.setImage(uiImage)
         }
       }
-      
       self.image = image
+    } else if image == nil {
+      self.image = nil
+      self._super?.setImage(nil)
     }
+
     if playbackProgress != nil {
       self._super?.playbackProgress = playbackProgress!
       self.playbackProgress = playbackProgress
