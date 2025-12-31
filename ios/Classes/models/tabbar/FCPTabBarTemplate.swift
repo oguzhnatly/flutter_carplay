@@ -25,8 +25,6 @@ extension FCPGridTemplate: FCPTabBarChildTemplate { }
 @available(iOS 14.0, *)
 extension FCPInformationTemplate: FCPTabBarChildTemplate { }
 
-// MARK: - Template Factory Pattern
-
 @available(iOS 14.0, *)
 protocol TemplateFactory {
     func create(from data: [String: Any]) -> FCPTabBarChildTemplate?
@@ -75,8 +73,6 @@ struct TemplateFactoryMapper {
         return factories[typeKey] ?? defaultFactory
     }
 }
-
-// MARK: - FCPTabBarTemplate
 
 @available(iOS 14.0, *)
 class FCPTabBarTemplate {
