@@ -24,7 +24,7 @@ class CPTabBarTemplate implements CPTemplate {
 
   /// The templates to show as tabs.
   /// Supported types: [CPListTemplate], [CPPointOfInterestTemplate],
-  /// [CPGridTemplate], [CPInformationTemplate], [CPActionSheetTemplate], [CPAlertTemplate]
+  /// [CPGridTemplate], [CPInformationTemplate]
   final List<CPTemplate> templates;
 
   /// When creating a [CPTabBarTemplate], provide an array of templates for the tab bar to display.
