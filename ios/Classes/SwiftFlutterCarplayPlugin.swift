@@ -280,9 +280,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     var collected: [FCPListTemplate] = []
 
     for template in SwiftFlutterCarplayPlugin.templateStack {
-       if let tabBar = template as? FCPTabBarTemplate,
-             let tabs = tabBar.getTemplates() as? [FCPListTemplate] {
-              collected.append(contentsOf: tabs)
+       if let tabBar = template as? FCPTabBarTemplate {
+              for child in tabBar.getTemplates() {
+                  if let listTemplate = child as? FCPListTemplate {
+                      collected.append(listTemplate)
+                  }
+              }
           } else if let list = template as? FCPListTemplate {
               collected.append(list)
           }
@@ -311,7 +314,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
               let subTemplates = tabBar.getTemplates()
               for j in 0..<subTemplates.count {
                   if subTemplates[j].elementId == elementId {
-                      return subTemplates[j]
+                      return subTemplates[j] as? FCPRootTemplate
                   }
               }
           }
