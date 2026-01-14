@@ -42,13 +42,13 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   }
 
   // https://developer.apple.com/documentation/carplay/cptabbartemplate/updatetemplates(_:)
-  static public func updateTabBarTemplates(elementId: String, templates: [FCPListTemplate]) {
+  static public func updateTabBarTemplates(elementId: String, templates: Array<[String: Any]>) {
     guard let templateFromHistory = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: elementId) as? FCPTabBarTemplate  else {
         NSLog("FlutterCarPlaySceneDelegate - updateTabBarTemplates: TabBar template from history with elementId \(elementId) not found.")
         return
     }
 
-    templateFromHistory.updateTemplates(templates: templates)
+    templateFromHistory.updateTemplates(newTemplatesData: templates)
   }
 
   // Fired when just before the carplay become active

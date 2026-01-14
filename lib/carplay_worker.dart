@@ -207,16 +207,28 @@ class FlutterCarplay {
   }
 
   /// It will update the templates of the [CPTabBarTemplate] which has the given [elementId].
+  /// Supported template types: [CPListTemplate], [CPPointOfInterestTemplate],
+  /// [CPGridTemplate], [CPInformationTemplate]
   Future<void> updateTabBarTemplates({
     required String elementId,
-    required List<CPListTemplate> templates,
+    required List<CPTemplate> templates,
   }) async {
     final bool? isCompleted = await _carPlayController.methodChannel
         .invokeMethod('updateTabBarTemplates', <String, dynamic>{
       'elementId': elementId,
-      'templates': templates
-          .map((CPListTemplate template) => template.toJson())
-          .toList(),
+      'templates': templates.map((CPTemplate template) {
+        final json = template.toJson();
+        if (template is CPListTemplate) {
+          json['runtimeType'] = 'FCPListTemplate';
+        } else if (template is CPPointOfInterestTemplate) {
+          json['runtimeType'] = 'FCPPointOfInterestTemplate';
+        } else if (template is CPGridTemplate) {
+          json['runtimeType'] = 'FCPGridTemplate';
+        } else if (template is CPInformationTemplate) {
+          json['runtimeType'] = 'FCPInformationTemplate';
+        }
+        return json;
+      }).toList(),
     });
 
     if (isCompleted == true) {
@@ -320,7 +332,7 @@ class FlutterCarplay {
   /// Adds a template to the navigation hierarchy and displays it.
   ///
   /// - template is to add to the navigation hierarchy. **Must be one of the type:**
-  /// [CPGridTemplate] or [CPListTemplate] [CPInformationTemplat] [CPPointOfInterestTemplate] If not, it will throw an [TypeError]
+  /// [CPGridTemplate] or [CPListTemplate] [CPInformationTemplate] [CPPointOfInterestTemplate] If not, it will throw an [TypeError]
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
   static Future<bool> push({
