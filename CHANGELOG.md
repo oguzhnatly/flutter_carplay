@@ -1,3 +1,9 @@
+## 1.2.3
+
+- Update tab bar template to support mixed template types in https://github.com/oguzhnatly/flutter_carplay/pull/81
+
+This enhances the tab bar template by enabling support for multiple template types (not just list templates) as tab bar children. Supported template types: CPListTemplate, CPPointOfInterestTemplate, CPGridTemplate, CPInformationTemplate (ty @shihabkandil).
+
 ## 1.2.2
 
 **Issues:**
