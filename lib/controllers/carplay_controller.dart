@@ -198,7 +198,7 @@ class FlutterCarPlayController {
 
       if (template is CPTabBarTemplate) {
         for (final t in template.templates) {
-          if (t is T && t.uniqueId == elementId) return t as T;
+          if (t is T && t.uniqueId == elementId) return t;
         }
       }
     }
