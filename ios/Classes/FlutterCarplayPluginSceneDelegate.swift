@@ -21,6 +21,7 @@ extension CPTemplate {
 }
 
 @available(iOS 14.0, *)
+@objc(FlutterCarPlaySceneDelegate)
 class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate, CPInterfaceControllerDelegate {
   static private var interfaceController: CPInterfaceController?
 
