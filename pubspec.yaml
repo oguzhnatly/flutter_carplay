@@ -1,6 +1,6 @@
 name: flutter_carplay
 description: Flutter Apps are now on Apple CarPlay and Android Auto. This package aims to make it safe to use apps made with Flutter in the car by integrating with CarPlay or Android Auto.
-version: 1.2.2
+version: 1.2.3
 homepage: https://github.com/oguzhnatly/flutter_carplay#readme
 repository: https://github.com/oguzhnatly/flutter_carplay
 issue_tracker: https://github.com/oguzhnatly/flutter_carplay/issues
