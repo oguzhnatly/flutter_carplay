@@ -84,7 +84,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.2.2"
+    version: "1.2.5"
   flutter_lints:
     dependency: "direct dev"
     description:

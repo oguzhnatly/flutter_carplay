@@ -122,7 +122,7 @@ class FlutterAndroidAuto {
     final bool? isCompleted = await _androidAutoController
         .flutterToNativeModule(FAAChannelTypes.setRootTemplate, {
       'template': template.toJson(),
-      'runtimeType': 'F${template.runtimeType}',
+      'runtimeType': _getAARuntimeTypeString(template),
     });
 
     if (isCompleted == true) {
@@ -240,7 +240,7 @@ class FlutterAndroidAuto {
     final bool? isCompleted = await _androidAutoController
         .flutterToNativeModule(FAAChannelTypes.pushTemplate, <String, dynamic>{
       'template': template.toJson(),
-      'runtimeType': 'F${template.runtimeType}',
+      'runtimeType': _getAARuntimeTypeString(template),
     });
     if (isCompleted == true) {
       FlutterAndroidAutoController.templateHistory.add(template);
@@ -251,4 +251,11 @@ class FlutterAndroidAuto {
   /// Didn't exist on Android Auto. If the player can be displayed, a button will
   /// be shown on the bottom right of the Android Auto screen.
   static Future<bool> showSharedNowPlaying() async => false;
+
+  /// Returns the runtime type string for native communication.
+  /// Uses explicit type checks to ensure compatibility with Dart obfuscation.
+  static String _getAARuntimeTypeString(AATemplate template) {
+    if (template is AAListTemplate) return 'FAAListTemplate';
+    return 'FAA${template.runtimeType}';
+  }
 }

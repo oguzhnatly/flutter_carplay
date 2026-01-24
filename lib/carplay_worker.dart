@@ -166,7 +166,7 @@ class FlutterCarplay {
           .invokeMethod('setRootTemplate', <String, dynamic>{
         'rootTemplate': rootTemplate.toJson(),
         'animated': animated,
-        'runtimeType': 'F${rootTemplate.runtimeType}',
+        'runtimeType': _getCPRuntimeTypeString(rootTemplate),
       }).then((value) {
         if (value) {
           if (FlutterCarPlayController.templateHistory.isEmpty) {
@@ -347,7 +347,7 @@ class FlutterCarplay {
           FCPChannelTypes.pushTemplate, <String, dynamic>{
         'template': template.toJson(),
         'animated': animated,
-        'runtimeType': 'F${template.runtimeType}',
+        'runtimeType': _getCPRuntimeTypeString(template),
       });
       if (isCompleted == true) {
         _carPlayController.addTemplateToHistory(template);
@@ -367,5 +367,18 @@ class FlutterCarplay {
       animated,
     );
     return isCompleted ?? false;
+  }
+
+  /// Returns the runtime type string for native communication.
+  /// Uses explicit type checks to ensure compatibility with Dart obfuscation.
+  static String _getCPRuntimeTypeString(CPTemplate template) {
+    if (template is CPTabBarTemplate) return 'FCPTabBarTemplate';
+    if (template is CPGridTemplate) return 'FCPGridTemplate';
+    if (template is CPListTemplate) return 'FCPListTemplate';
+    if (template is CPInformationTemplate) return 'FCPInformationTemplate';
+    if (template is CPPointOfInterestTemplate) {
+      return 'FCPPointOfInterestTemplate';
+    }
+    return 'FCP${template.runtimeType}';
   }
 }
