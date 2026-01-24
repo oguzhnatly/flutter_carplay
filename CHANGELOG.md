@@ -1,3 +1,9 @@
+## 1.2.5
+
+- Fix main thread image loading crash for CPListItem and CPGridButton in https://github.com/oguzhnatly/flutter_carplay/pull/79 (ty @EArminjon)
+
+This fixes a crash caused by creating UIImage on background threads. Network images are now loaded asynchronously using URLSession, and placeholder images are shown until the actual image loads. For iOS 26+, CPGridButton uses the new `updateImage()` API for async updates.
+
 ## 1.2.4
 
 - Fix file URI percent encoding for album art paths with spaces in https://github.com/oguzhnatly/flutter_carplay/pull/82 (ty @APIUM)
