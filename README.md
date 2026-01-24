@@ -95,7 +95,7 @@ By evaluating this information, you can request for the relevant entitlement fro
 - **🔧 Improved Completion Handlers**: Better reliability for list item interactions and template transitions
 - **📱 Flutter 3.32.x Compatibility**: Updated for the latest Flutter versions
 
-Special thanks to [@EArminjon](https://github.com/EArminjon), [@vanlooverenkoen](https://github.com/vanlooverenkoen), [@snipd-mikel](https://github.com/snipd-mikel), and all contributors who made this release possible!
+Special thanks to [@EArminjon](https://github.com/EArminjon), [@vanlooverenkoen](https://github.com/vanlooverenkoen), [@snipd-mikel](https://github.com/snipd-mikel), [@APIUM](https://github.com/APIUM), and all contributors who made this release possible!
 
 # Road Map
 

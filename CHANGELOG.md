@@ -1,3 +1,8 @@
+## 1.2.4
+
+- Fix file URI percent encoding for album art paths with spaces in https://github.com/oguzhnatly/flutter_carplay/pull/82 (ty @APIUM)
+- Add `sectionIndexEnabled` option to CPListTemplate for hiding section index letters in https://github.com/oguzhnatly/flutter_carplay/pull/83 (ty @APIUM)
+
 ## 1.2.3
 
 - Update tab bar template to support mixed template types in https://github.com/oguzhnatly/flutter_carplay/pull/81
