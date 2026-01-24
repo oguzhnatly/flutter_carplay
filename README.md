@@ -20,6 +20,17 @@ Flutter Apps now on Apple CarPlay and Android Auto ! `flutter_carplay` aims to m
 
 It supports **only iOS 14.0+**. For general design guidance, see [Human Interface Guidelines for CarPlay Apps](https://developer.apple.com/design/human-interface-guidelines/carplay/overview/introduction/).
 
+## 📚 Documentation
+
+For detailed guides and examples, check out the **[Wiki](https://github.com/oguzhnatly/flutter_carplay/wiki)**:
+
+- [Getting Started](https://github.com/oguzhnatly/flutter_carplay/wiki/Getting-Started) — Installation and basic setup
+- [iOS Setup](https://github.com/oguzhnatly/flutter_carplay/wiki/iOS-Setup) — CarPlay entitlements and configuration
+- [Android Auto Setup](https://github.com/oguzhnatly/flutter_carplay/wiki/Android-Auto-Setup) — Android Auto configuration
+- [Templates](https://github.com/oguzhnatly/flutter_carplay/wiki/Templates) — All templates with code examples
+- [Troubleshooting](https://github.com/oguzhnatly/flutter_carplay/wiki/Troubleshooting) — Common issues and solutions
+- [FAQ](https://github.com/oguzhnatly/flutter_carplay/wiki/FAQ) — Frequently asked questions
+
 # Summary
 
 - [Overview](#overview)
