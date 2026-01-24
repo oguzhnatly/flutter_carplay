@@ -1,3 +1,8 @@
+## 1.2.6
+
+- Fix compatibility with Dart's `--obfuscate` flag by using explicit type checks instead of `runtimeType.toString()` (fixes #28)
+- Add security policy (SECURITY.md)
+
 ## 1.2.5
 
 - Fix main thread image loading crash for CPListItem and CPGridButton in https://github.com/oguzhnatly/flutter_carplay/pull/79 (ty @EArminjon)
