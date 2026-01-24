@@ -14,10 +14,12 @@ class FCPListSection {
   private var header: String?
   private var items: [CPListTemplateItem]
   private var objcItems: [FCPListItem]
-  
-  init(obj: [String : Any]) {
+  private var sectionIndexEnabled: Bool
+
+  init(obj: [String : Any], sectionIndexEnabled: Bool = true) {
     self.elementId = obj["_elementId"] as! String
     self.header = obj["header"] as? String
+    self.sectionIndexEnabled = sectionIndexEnabled
     self.objcItems = (obj["items"] as! Array<[String : Any]>).map {
       FCPListItem(obj: $0)
     }
@@ -25,9 +27,10 @@ class FCPListSection {
       $0.get
     }
   }
-  
+
   var get: CPListSection {
-    let listSection = CPListSection.init(items: items, header: header, sectionIndexTitle: header)
+    let indexTitle = sectionIndexEnabled ? header : nil
+    let listSection = CPListSection.init(items: items, header: header, sectionIndexTitle: indexTitle)
     self._super = listSection
     return listSection
   }

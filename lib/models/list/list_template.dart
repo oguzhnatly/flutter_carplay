@@ -60,6 +60,12 @@ class CPListTemplate implements CPTemplate {
   /// Back button object
   final CPBarButton? backButton;
 
+  /// Whether to show the section index (alphabetical letters) in the scroll bar.
+  /// When true, the first letter of each section header appears on the right edge
+  /// for quick navigation. Section headers are always shown regardless of this setting.
+  /// Defaults to true.
+  final bool sectionIndexEnabled;
+
   /// Creates [CPListTemplate] to display a list of items, grouped into one or more sections.
   /// Each section contains an array of list items — objects that is [CPListItem]
   ///
@@ -72,6 +78,7 @@ class CPListTemplate implements CPTemplate {
     this.showsTabBadge = false,
     required this.systemIcon,
     this.backButton,
+    this.sectionIndexEnabled = true,
   });
 
   @override
@@ -84,6 +91,7 @@ class CPListTemplate implements CPTemplate {
         'showsTabBadge': showsTabBadge,
         'systemIcon': systemIcon,
         'backButton': backButton?.toJson(),
+        'sectionIndexEnabled': sectionIndexEnabled,
       };
 
   @override

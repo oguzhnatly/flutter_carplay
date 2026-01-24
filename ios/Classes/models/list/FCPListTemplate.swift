@@ -21,7 +21,8 @@ class FCPListTemplate {
   private var templateType: FCPListTemplateTypes
   private var objcBackButton: FCPBarButton?
   private var backButton: CPBarButton?
-  
+  private var sectionIndexEnabled: Bool = true
+
   init(obj: [String : Any], templateType: FCPListTemplateTypes) {
     self.elementId = obj["_elementId"] as! String
     self.title = obj["title"] as? String
@@ -29,9 +30,10 @@ class FCPListTemplate {
     self.emptyViewTitleVariants = obj["emptyViewTitleVariants"] as? [String] ?? []
     self.emptyViewSubtitleVariants = obj["emptyViewSubtitleVariants"] as? [String] ?? []
     self.showsTabBadge = obj["showsTabBadge"] as! Bool
-    self.templateType = templateType 
+    self.sectionIndexEnabled = obj["sectionIndexEnabled"] as? Bool ?? true
+    self.templateType = templateType
     self.objcSections = (obj["sections"] as! Array<[String : Any]>).map {
-      FCPListSection(obj: $0)
+      FCPListSection(obj: $0, sectionIndexEnabled: self.sectionIndexEnabled)
     }
     self.sections = self.objcSections.map {
       $0.get
