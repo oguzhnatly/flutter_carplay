@@ -31,8 +31,10 @@ extension UIImage {
 
   @available(iOS 14.0, *)
   func fromFile(path: String) -> UIImage {
-    let cleanPath = path.replacingOccurrences(of: "file://", with: "")
-    let image: UIImage? = UIImage(contentsOfFile: cleanPath)
+    guard let url = URL(string: path) else {
+      return UIImage(systemName: "questionmark")!
+    }
+    let image: UIImage? = UIImage(contentsOfFile: url.path)
     return image ?? UIImage(systemName: "questionmark")!
   }
 
