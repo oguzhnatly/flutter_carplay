@@ -110,7 +110,15 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         return
       }
       let elementId = args["elementId"] as! String
-      let templates = args["templates"] as! Array<[String: Any]>
+      let templates = (args["templates"] as! Array<[String: Any]>).map {
+        FCPListTemplate(obj: $0, templateType: FCPListTemplateTypes.PART_OF_GRID_TEMPLATE)
+      }
+      if templates.count > CPTabBarTemplate.maximumTabCount {
+        result(FlutterError(code: "ERROR",
+                            message: "CarPlay cannot have more than \(CPTabBarTemplate.maximumTabCount) templates on one screen.",
+                            details: nil))
+        return
+      }
       FlutterCarPlaySceneDelegate.updateTabBarTemplates(elementId: elementId, templates: templates)
       result(true)
       break
