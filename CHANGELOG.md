@@ -1,3 +1,11 @@
+## 1.2.7
+
+- Fix build failure on Xcode versions without iOS 26 SDK (#84)
+
+The `CPGridButton.updateImage()` API introduced in 1.2.5 is only available in iOS 26+. This caused compile errors on older Xcode versions since `#available` only handles runtime checks, not compile time SDK availability. iOS 26 specific code is now wrapped in `#if compiler(>=6.0)` to ensure older toolchains skip it entirely.
+
+- Fix type mismatch in `updateTabBarTemplates` that prevented compilation
+
 ## 1.2.6
 
 - Fix compatibility with Dart's `--obfuscate` flag by using explicit type checks instead of `runtimeType.toString()` (fixes #28)
