@@ -25,15 +25,11 @@ class FCPGridButton {
     let image: UIImage
     let imageSource = self.image.toImageSource()
 
-    #if compiler(>=6.0)
     if #available(iOS 26.0, *) {
       image = makeSafeUIPlaceholder()
     } else {
       image = makeUIImage(from: imageSource)
     }
-    #else
-    image = makeUIImage(from: imageSource)
-    #endif
 
     gridButton = CPGridButton(
       titleVariants: self.titleVariants,
@@ -48,15 +44,13 @@ class FCPGridButton {
       }
     )
 
-    #if compiler(>=6.0)
     if #available(iOS 26.0, *) {
       loadUIImageAsync(from: imageSource) { uiImage in
         if let uiImage = uiImage {
-          gridButton.updateImage(uiImage)
+          gridButton.perform(Selector("updateImage:"), with: uiImage)
         }
       }
     }
-    #endif
 
     gridButton.isEnabled = true
     self._super = gridButton

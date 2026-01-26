@@ -1,3 +1,9 @@
+## 1.2.8
+
+- Fix build failure on Xcode without iOS 26 SDK (follow up to #84)
+
+The v1.2.7 fix using `#if compiler(>=6.0)` didn't work because Swift 6.0 shipped with Xcode 16 (iOS 18), before iOS 26. Now uses dynamic selector invocation to avoid compile time symbol lookup for `updateImage`.
+
 ## 1.2.7
 
 - Fix build failure on Xcode versions without iOS 26 SDK (#84)
