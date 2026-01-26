@@ -1,3 +1,9 @@
+## 1.2.9
+
+- Add missing `@available(iOS 14.0, *)` annotations to `makeUIImage` and `loadUIImageAsync` (#84)
+
+These functions reference `SwiftFlutterCarplayPlugin` which requires iOS 14.0+, so Swift requires the availability annotation to propagate. This was missing since v1.2.5.
+
 ## 1.2.8
 
 - Fix build failure on Xcode without iOS 26 SDK (follow up to #84)

@@ -45,6 +45,7 @@ func makeUIPlaceholder() -> UIImage {
 }
 
 // UIImage creation (MAIN THREAD ONLY)
+@available(iOS 14.0, *)
 func makeUIImage(from source: ImageSource) -> UIImage {
     switch source {
     case .url(let url):
@@ -61,6 +62,7 @@ func makeUIImage(from source: ImageSource) -> UIImage {
 }
 
 // Asynchronous image loader. Always calls completion on main thread.
+@available(iOS 14.0, *)
 func loadUIImageAsync(from source: ImageSource, completion: @escaping (UIImage?) -> Void) {
     switch source {
     case .url(let url):
