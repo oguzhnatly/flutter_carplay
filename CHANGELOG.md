@@ -1,3 +1,9 @@
+## 1.2.10
+
+- Add `@objc(FlutterCarPlaySceneDelegate)` annotation for iOS 26 compatibility (#87)
+
+This enables apps to reference the delegate class as `flutter_carplay.FlutterCarPlaySceneDelegate` in their scene manifest configuration. Required for runtime class discovery via `NSClassFromString`. Thanks @APIUM!
+
 ## 1.2.9
 
 - Add missing `@available(iOS 14.0, *)` annotations to `makeUIImage` and `loadUIImageAsync` (#84)
