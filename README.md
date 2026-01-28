@@ -874,6 +874,10 @@ If this package has been helpful, consider supporting its development:
 
 Your support helps maintain and improve this package! ❤️
 
+# Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=oguzhnatly/flutter_carplay&type=Date)](https://star-history.com/#oguzhnatly/flutter_carplay&Date)
+
 # LICENSE
 
 [**MIT License**](https://github.com/oguzhnatly/flutter_carplay/blob/master/LICENSE)
