@@ -866,6 +866,15 @@ FlutterCarplay.showSharedNowPlaying(animated: true);
 
 > **Multiple Calls Safe**: The `showSharedNowPlaying()` method can be called multiple times safely without causing issues.
 
+# Support
+
+If this package has been helpful, consider supporting its development:
+
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?logo=github)](https://github.com/sponsors/oguzhnatly)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Ko--fi-ff5e5b?logo=ko-fi)](https://ko-fi.com/oguzhnatly)
+
+Your support helps maintain and improve this package! ❤️
+
 # LICENSE
 
 [**MIT License**](https://github.com/oguzhnatly/flutter_carplay/blob/master/LICENSE)
