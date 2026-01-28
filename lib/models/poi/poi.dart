@@ -15,6 +15,13 @@ class CPPointOfInterest {
   String? detailTitle;
   String? detailSubtitle;
   String? detailSummary;
+
+  /// The image displayed for this point of interest.
+  ///
+  /// Supports three formats:
+  /// - **Asset path**: `images/marker.png` (from pubspec.yaml assets)
+  /// - **File path**: `file:///path/to/image.png` (local file on device)
+  /// - **Network URL**: `https://example.com/image.png` (remote image)
   String? image;
 
   final CPTextButton? primaryButton;

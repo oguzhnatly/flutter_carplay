@@ -102,7 +102,7 @@ By evaluating this information, you can request for the relevant entitlement fro
 
 - **🚀 Background Launch Support**: CarPlay apps can now start automatically without requiring the Flutter app to be opened first (Thanks to [@vanlooverenkoen](https://github.com/vanlooverenkoen) and [@EArminjon](https://github.com/EArminjon))
 - **🎵 Now Playing Template**: Navigate to the shared instance of the Now Playing Template with `FlutterCarplay.showSharedNowPlaying()`
-- **🌐 HTTP(s) Image Support**: Load images from URLs in addition to local assets (Thanks to [@vanlooverenkoen](https://github.com/vanlooverenkoen))
+- **🌐 Flexible Image Sources**: Load images from assets, local files (`file://`), or URLs (`https://`) (Thanks to [@vanlooverenkoen](https://github.com/vanlooverenkoen))
 - **🔧 Improved Completion Handlers**: Better reliability for list item interactions and template transitions
 - **📱 Flutter 3.32.x Compatibility**: Updated for the latest Flutter versions
 
@@ -563,9 +563,11 @@ final CPTabBarTemplate tabBarTemplate = CPTabBarTemplate(
                 // complete function stops the loading
                 complete();
               },
-              // You can use local assets or HTTP(s) URLs (v1.1.0+)
+              // Supports three image formats (v1.1.0+):
+              // - Asset: 'images/logo_flutter_1080px_clr.png'
+              // - File:  'file:///path/to/local/image.png'
+              // - URL:   'https://example.com/image.png'
               image: 'images/logo_flutter_1080px_clr.png',
-              // Or use a URL: image: 'https://example.com/image.png',
             ),
             CPListItem(
               text: "Item 2",

@@ -18,8 +18,11 @@ class CPListItem {
   final Function(Function() complete, CPListItem self)? onPress;
 
   /// Displays an image on the leading edge of the list item cell.
-  /// Image asset path in pubspec.yaml file.
-  /// For example: images/flutter_logo.png
+  ///
+  /// Supports three formats:
+  /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
+  /// - **File path**: `file:///path/to/image.png` (local file on device)
+  /// - **Network URL**: `https://example.com/image.png` (remote image)
   String? image;
 
   /// Playback progress status for the content that the list item represents.
@@ -84,8 +87,11 @@ class CPListItem {
   }
 
   /// Updating the image which will be displayed on the leading edge of the list item cell.
-  /// Image asset path in pubspec.yaml file.
-  /// For example: images/flutter_logo.png
+  ///
+  /// Supports three formats:
+  /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
+  /// - **File path**: `file:///path/to/image.png` (local file on device)
+  /// - **Network URL**: `https://example.com/image.png` (remote image)
   set updateImage(String image) {
     this.image = image;
     FlutterCarPlayController.updateCPListItem(this);
