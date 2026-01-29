@@ -221,6 +221,15 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         result(false)
       }
       break
+    case FCPChannelTypes.setNowPlayingButtons:
+      guard let args = call.arguments as? [String: Any],
+            let buttons = args["buttons"] as? [[String: Any]] else {
+        result(false)
+        return
+      }
+      FCPSharedNowPlayingTemplate.setButtons(buttons)
+      result(true)
+      break
     case FCPChannelTypes.pushTemplate:
       guard let args = call.arguments as? [String : Any] else {
         result(false)

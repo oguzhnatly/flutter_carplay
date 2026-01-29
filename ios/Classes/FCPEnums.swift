@@ -26,6 +26,8 @@ enum FCPChannelTypes {
   static let popTemplate = "popTemplate"
   static let pushTemplate = "pushTemplate"
   static let showNowPlaying = "showNowPlaying"
+  static let setNowPlayingButtons = "setNowPlayingButtons"
+  static let onNowPlayingButtonPressed = "onNowPlayingButtonPressed"
   static let closePresent = "closePresent"
   static let onGridButtonPressed = "onGridButtonPressed"
   static let setActionSheet = "setActionSheet"

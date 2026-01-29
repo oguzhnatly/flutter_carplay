@@ -1,11 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/constants/constants.dart';
 import 'package:flutter_carplay/constants/private_constants.dart';
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
-import 'package:flutter_carplay/flutter_carplay.dart';
-
-import 'models/template.dart';
+import 'package:flutter_carplay/helpers/enum_utils.dart';
+import 'package:flutter_carplay/models/action_sheet/action_sheet_template.dart';
+import 'package:flutter_carplay/models/alert/alert_template.dart';
+import 'package:flutter_carplay/models/grid/grid_template.dart';
+import 'package:flutter_carplay/models/information/information_template.dart';
+import 'package:flutter_carplay/models/list/list_section.dart';
+import 'package:flutter_carplay/models/list/list_template.dart';
+import 'package:flutter_carplay/models/now_playing/now_playing_button.dart';
+import 'package:flutter_carplay/models/poi/poi_template.dart';
+import 'package:flutter_carplay/models/tabbar/tabbar_template.dart';
+import 'package:flutter_carplay/models/template.dart';
 
 /// An object in order to integrate Apple CarPlay in navigation and
 /// manage all user interface elements appearing on your screens displayed on
@@ -31,6 +40,9 @@ class FlutterCarplay {
   static String _connectionStatus = EnumUtils.stringFromEnum(
     ConnectionStatusTypes.unknown.toString(),
   );
+
+  /// Current now playing buttons configured on the Now Playing screen.
+  static List<CPNowPlayingButton> _nowPlayingButtons = [];
 
   /// A listener function, which will be triggered when CarPlay connection changes
   /// and will be transmitted to the main code, allowing the user to access
@@ -87,6 +99,11 @@ class FlutterCarplay {
           break;
         case FCPChannelTypes.onTextButtonPressed:
           _carPlayController.processFCPTextButtonPressed(
+            event['data']['elementId'],
+          );
+          break;
+        case FCPChannelTypes.onNowPlayingButtonPressed:
+          _processFCPNowPlayingButtonPressed(
             event['data']['elementId'],
           );
           break;
@@ -367,6 +384,58 @@ class FlutterCarplay {
       animated,
     );
     return isCompleted ?? false;
+  }
+
+  /// Sets custom buttons on the Now Playing screen.
+  ///
+  /// The Now Playing screen supports various button types:
+  /// - [CPNowPlayingRepeatButton] - Cycles through repeat modes
+  /// - [CPNowPlayingShuffleButton] - Toggles shuffle mode
+  /// - [CPNowPlayingPlaybackRateButton] - Cycles through playback rates
+  /// - [CPNowPlayingAddToLibraryButton] - Adds item to library
+  /// - [CPNowPlayingMoreButton] - Shows additional options
+  /// - [CPNowPlayingImageButton] - Custom image button with callback
+  ///
+  /// **[!] CarPlay supports a maximum of 2 custom buttons on the Now Playing screen.**
+  ///
+  /// Example:
+  /// ```dart
+  /// FlutterCarplay.setNowPlayingButtons([
+  ///   CPNowPlayingShuffleButton(onPress: () => print('Shuffle toggled')),
+  ///   CPNowPlayingRepeatButton(onPress: () => print('Repeat mode changed')),
+  /// ]);
+  /// ```
+  static Future<bool> setNowPlayingButtons(
+    List<CPNowPlayingButton> buttons,
+  ) async {
+    _nowPlayingButtons = buttons;
+    final bool? isCompleted = await _carPlayController.methodChannel
+        .invokeMethod<bool>('setNowPlayingButtons', <String, dynamic>{
+      'buttons': buttons.map((b) => b.toJson()).toList(),
+    });
+    return isCompleted ?? false;
+  }
+
+  /// Processes a Now Playing button press event from the native side.
+  static void _processFCPNowPlayingButtonPressed(String elementId) {
+    for (final button in _nowPlayingButtons) {
+      if (button.uniqueId == elementId) {
+        if (button is CPNowPlayingRepeatButton) {
+          button.onPress?.call();
+        } else if (button is CPNowPlayingShuffleButton) {
+          button.onPress?.call();
+        } else if (button is CPNowPlayingAddToLibraryButton) {
+          button.onPress?.call();
+        } else if (button is CPNowPlayingMoreButton) {
+          button.onPress?.call();
+        } else if (button is CPNowPlayingPlaybackRateButton) {
+          button.onPress?.call();
+        } else if (button is CPNowPlayingImageButton) {
+          button.onPress();
+        }
+        return;
+      }
+    }
   }
 
   /// Returns the runtime type string for native communication.

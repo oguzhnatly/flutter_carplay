@@ -866,6 +866,56 @@ FlutterCarplay.showSharedNowPlaying(animated: true);
 
 > **Multiple Calls Safe**: The `showSharedNowPlaying()` method can be called multiple times safely without causing issues.
 
+#### Custom Now Playing Buttons
+
+You can add custom buttons to the Now Playing screen to provide additional controls like shuffle, repeat, playback rate, and custom actions.
+
+**Available Button Types:**
+
+| Button Type | Description |
+|------------|-------------|
+| `CPNowPlayingShuffleButton` | Toggles shuffle mode |
+| `CPNowPlayingRepeatButton` | Cycles through repeat modes (off, one, all) |
+| `CPNowPlayingPlaybackRateButton` | Cycles through playback rates (0.5x, 1x, 1.5x, 2x) |
+| `CPNowPlayingAddToLibraryButton` | Adds the current item to the user's library |
+| `CPNowPlayingMoreButton` | Shows additional options menu |
+| `CPNowPlayingImageButton` | Custom image button with callback |
+
+**Example: Configure shuffle and repeat buttons:**
+
+```dart
+FlutterCarplay.setNowPlayingButtons([
+  CPNowPlayingShuffleButton(
+    onPress: () {
+      print('Shuffle toggled');
+      // Handle shuffle state change
+    },
+  ),
+  CPNowPlayingRepeatButton(
+    onPress: () {
+      print('Repeat mode changed');
+      // Handle repeat mode change
+    },
+  ),
+]);
+```
+
+**Example: Custom image button (like/favorite):**
+
+```dart
+FlutterCarplay.setNowPlayingButtons([
+  CPNowPlayingImageButton(
+    image: 'images/heart.png', // Asset, file://, or https:// URL
+    onPress: () {
+      print('Favorite button pressed');
+      // Handle favorite action
+    },
+  ),
+]);
+```
+
+> **Note**: CarPlay supports a maximum of 2 custom buttons on the Now Playing screen. For image buttons, use simple, single color template images for best results.
+
 # Support
 
 If this package has been helpful, consider supporting its development:

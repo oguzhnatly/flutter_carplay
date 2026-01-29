@@ -149,6 +149,14 @@ class _MyAppState extends State<MyApp> {
             complete();
           },
         ),
+        CPListItem(
+          text: 'Now Playing Template',
+          detailText: 'Shows the Now Playing screen with custom buttons.',
+          onPress: (complete, self) {
+            openNowPlaying();
+            complete();
+          },
+        ),
       ],
       header: 'Features',
     ));
@@ -590,6 +598,30 @@ class _MyAppState extends State<MyApp> {
     ]));
   }
 
+  void openNowPlaying() {
+    if (!Platform.isIOS) {
+      print('Now Playing is only available on iOS');
+      return;
+    }
+
+    // Configure custom buttons for the Now Playing screen
+    FlutterCarplay.setNowPlayingButtons([
+      CPNowPlayingShuffleButton(
+        onPress: () {
+          print('Shuffle button pressed');
+        },
+      ),
+      CPNowPlayingRepeatButton(
+        onPress: () {
+          print('Repeat button pressed');
+        },
+      ),
+    ]);
+
+    // Navigate to the Now Playing screen
+    FlutterCarplay.showSharedNowPlaying();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -797,6 +829,18 @@ class _MyAppState extends State<MyApp> {
                   ),
                   onPressed: () => openGridTemplate(),
                   child: const Text('Open Grid\nTemplate'),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 15),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 24,
+                    ),
+                  ),
+                  onPressed: () => openNowPlaying(),
+                  child: const Text('Now\nPlaying'),
                 ),
               ],
             ),

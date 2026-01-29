@@ -41,5 +41,13 @@ export 'package:flutter_carplay/models/list/list_template.dart'
 export 'package:flutter_carplay/models/poi/poi.dart' show CPPointOfInterest;
 export 'package:flutter_carplay/models/poi/poi_template.dart'
     show CPPointOfInterestTemplate;
+export 'package:flutter_carplay/models/now_playing/now_playing_button.dart'
+    show CPNowPlayingButton,
+        CPNowPlayingRepeatButton,
+        CPNowPlayingShuffleButton,
+        CPNowPlayingAddToLibraryButton,
+        CPNowPlayingMoreButton,
+        CPNowPlayingPlaybackRateButton,
+        CPNowPlayingImageButton;
 export 'package:flutter_carplay/models/tabbar/tabbar_template.dart'
     show CPTabBarTemplate;
