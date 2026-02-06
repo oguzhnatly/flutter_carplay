@@ -60,9 +60,9 @@ class FlutterCarPlayController {
                       if (i.uniqueId == updatedListItem.uniqueId) {
                         final tabBar = currentRootTemplate as CPTabBarTemplate;
                         final templateIndex = tabBar.templates.indexOf(t);
-                        final listTemplate =
-                            tabBar.templates[templateIndex] as CPListTemplate;
-                        listTemplate.sections[t.sections.indexOf(s)]
+                        final listTemplate = tabBar.templates[templateIndex] as CPListTemplate;
+                        listTemplate
+                            .sections[t.sections.indexOf(s)]
                             .items[s.items.indexOf(i)] = updatedListItem;
                         break l1;
                       }
