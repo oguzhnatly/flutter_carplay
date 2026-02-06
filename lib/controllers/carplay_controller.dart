@@ -75,10 +75,7 @@ class FlutterCarPlayController {
               for (var s in h.sections) {
                 for (var i in s.items) {
                   if (i.uniqueId == updatedListItem.uniqueId) {
-                    (currentRootTemplate as CPListTemplate)
-                        .sections[(currentRootTemplate as CPListTemplate)
-                            .sections
-                            .indexOf(s)]
+                    h.sections[h.sections.indexOf(s)]
                         .items[s.items.indexOf(i)] = updatedListItem;
                     break l1;
                   }
