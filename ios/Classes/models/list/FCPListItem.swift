@@ -8,10 +8,10 @@
 import CarPlay
 
 @available(iOS 14.0, *)
-class FCPListItem {
+final class FCPListItem {
   private(set) var _super: CPListItem?
   private(set) var elementId: String
-  private var text: String
+  private(set) var text: String?
   private var detailText: String?
   private var isOnPressListenerActive: Bool = false
   private var completeHandler: (() -> Void)?
@@ -20,10 +20,10 @@ class FCPListItem {
   private var isPlaying: Bool?
   private var playingIndicatorLocation: CPListItemPlayingIndicatorLocation?
   private var accessoryType: CPListItemAccessoryType?
-  
-  init(obj: [String : Any]) {
+
+  init(obj: [String: Any]) {
     self.elementId = obj["_elementId"] as! String
-    self.text = obj["text"] as! String
+    self.text = obj["text"] as? String
     self.detailText = obj["detailText"] as? String
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
     self.image = obj["image"] as? String
@@ -48,7 +48,7 @@ class FCPListItem {
     }
   }
 
-  var get: CPListItem {
+  var get: CPListTemplateItem {
     let listItem = CPListItem.init(text: text, detailText: detailText)
     listItem.handler = self.handler
     if image != nil {
@@ -75,7 +75,7 @@ class FCPListItem {
     self._super = listItem
     return listItem
   }
-  
+
   public func stopHandler() {
     guard self.completeHandler != nil else {
       return
@@ -83,8 +83,17 @@ class FCPListItem {
     self.completeHandler!()
     self.completeHandler = nil
   }
-  
-  public func update(text: String?, detailText: String?, image: String?, playbackProgress: CGFloat?, isPlaying: Bool?, playingIndicatorLocation: String?, accessoryType: String?) {
+
+  public func update(args: [String: Any]) {
+    let elementId = args["_elementId"] as! String
+    let text = args["text"] as? String
+    let detailText = args["detailText"] as? String
+    let image = args["image"] as? String
+    let playbackProgress = args["playbackProgress"] as? CGFloat
+    let isPlaying = args["isPlaying"] as? Bool
+    let playingIndicatorLocation = args["playingIndicatorLocation"] as? String
+    let accessoryType = args["accessoryType"] as? String
+
     if text != nil {
       self._super?.setText(text!)
       self.text = text!
@@ -129,7 +138,7 @@ class FCPListItem {
       }
     }
   }
-  
+
   private func setPlayingIndicatorLocation(fromString: String?) {
     if fromString == "leading" {
       self.playingIndicatorLocation = CPListItemPlayingIndicatorLocation.leading
@@ -137,7 +146,7 @@ class FCPListItem {
       self.playingIndicatorLocation = CPListItemPlayingIndicatorLocation.trailing
     }
   }
-  
+
   private func setAccessoryType(fromString: String?) {
     if fromString == "cloud" {
       self.accessoryType = CPListItemAccessoryType.cloud
@@ -147,10 +156,7 @@ class FCPListItem {
       self.accessoryType = CPListItemAccessoryType.none
     }
   }
-
-  public func merge(with: FCPListItem) -> FCPListItem {
-    with._super = self._super
-    with._super?.handler = with.handler
-    return with;
-  }
 }
+
+@available(iOS 14.0, *)
+extension FCPListItem: FCPListTemplateItem {}

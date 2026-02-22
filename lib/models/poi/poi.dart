@@ -1,31 +1,60 @@
 import 'package:uuid/uuid.dart';
+
 import '../button/text_button.dart';
 
 /// A section object of list items that appear in a list template.
+/// https://developer.apple.com/documentation/carplay/cppointofinterest
+/// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
 class CPPointOfInterest {
   /// Unique id of the object.
-  final String _elementId = const Uuid().v4();
+  final String _elementId;
 
-  /// Header text of the section.
-  double latitude = 0.0;
-  double longitude = 0.0;
-  String title = '';
+  /// The latitude of the geographical coordinate.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  double latitude;
+
+  /// The longitude of the geographical coordinate.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  double longitude;
+
+  /// The title that the picker displays for the item.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  String title;
+
+  /// The subtitle that the picker displays for the item.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   String? subtitle;
+
+  /// A brief summary that the picker displays for the item.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   String? summary;
+
+  /// The detail card’s title.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   String? detailTitle;
+
+  /// The detail card’s subtitle.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   String? detailSubtitle;
+
+  /// A brief summary that the detail card displays.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   String? detailSummary;
 
-  /// The image displayed for this point of interest.
-  ///
+  /// A custom image that the map annotation displays.
   /// Supports three formats:
   /// - **Asset path**: `images/marker.png` (from pubspec.yaml assets)
   /// - **File path**: `file:///path/to/image.png` (local file on device)
   /// - **Network URL**: `https://example.com/image.png` (remote image)
   String? image;
 
-  final CPTextButton? primaryButton;
-  final CPTextButton? secondaryButton;
+  /// The detail card’s primary action button.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  CPTextButton? primaryButton;
+
+  /// The detail card’s secondary action button.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  CPTextButton? secondaryButton;
 
   /// Creates [CPPointOfInterest]
   CPPointOfInterest({
@@ -40,7 +69,8 @@ class CPPointOfInterest {
     this.image,
     this.primaryButton,
     this.secondaryButton,
-  });
+    String? id,
+  }) : _elementId = id ?? const Uuid().v4();
 
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,

@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
           detailText: 'Detail Text',
           onPress: (complete, self) {
             self.setDetailText('You can change the detail text.. 🚀');
-            self.setAccessoryType(CPListItemAccessoryTypes.cloud);
+            self.setAccessoryType(CPListItemAccessoryType.cloud);
             Future.delayed(const Duration(seconds: 1), () {
               self.setDetailText('Customizable Detail Text');
               complete();
@@ -85,12 +85,12 @@ class _MyAppState extends State<MyApp> {
               text: 'You can also change the title',
               detailText: 'and detail text while loading',
             );
-            self.setAccessoryType(CPListItemAccessoryTypes.none);
+            self.setAccessoryType(CPListItemAccessoryType.none);
             Future.delayed(const Duration(seconds: 1), () {
               complete();
             });
           },
-          accessoryType: CPListItemAccessoryTypes.disclosureIndicator,
+          accessoryType: CPListItemAccessoryType.disclosureIndicator,
         ),
         CPListItem(text: 'Item 4', detailText: 'Detail Text'),
         CPListItem(text: 'Item 5', detailText: 'Detail Text'),
@@ -315,7 +315,7 @@ class _MyAppState extends State<MyApp> {
           ),
           CPAlertAction(
             title: 'Cancel',
-            style: CPAlertActionStyles.cancel,
+            style: CPAlertActionStyle.cancel,
             onPress: () {
               FlutterCarplay.popModal();
               print('Cancel pressed');
@@ -323,7 +323,7 @@ class _MyAppState extends State<MyApp> {
           ),
           CPAlertAction(
             title: 'Remove',
-            style: CPAlertActionStyles.destructive,
+            style: CPAlertActionStyle.destructive,
             onPress: () {
               FlutterCarplay.popModal();
               print('Remove pressed');
@@ -347,7 +347,7 @@ class _MyAppState extends State<MyApp> {
         actions: [
           CPAlertAction(
             title: 'Cancel',
-            style: CPAlertActionStyles.cancel,
+            style: CPAlertActionStyle.cancel,
             onPress: () {
               print('Cancel pressed in action sheet');
               FlutterCarplay.popModal();
@@ -355,7 +355,7 @@ class _MyAppState extends State<MyApp> {
           ),
           CPAlertAction(
             title: 'Dismiss',
-            style: CPAlertActionStyles.destructive,
+            style: CPAlertActionStyle.destructive,
             onPress: () {
               print('Dismiss pressed in action sheet');
               FlutterCarplay.popModal();
@@ -462,6 +462,7 @@ class _MyAppState extends State<MyApp> {
               },
             ),
         ],
+        systemIcon: 'systemIcon',
       ),
     );
   }
@@ -499,7 +500,7 @@ class _MyAppState extends State<MyApp> {
           title: 'List Template',
           backButton: CPBarButton(
             title: 'Back',
-            style: CPBarButtonStyles.none,
+            buttonStyle: CPBarButtonStyle.none,
             onPress: () {
               FlutterCarplay.pop();
             },
@@ -682,7 +683,7 @@ class _MyAppState extends State<MyApp> {
             ),
             Center(
               child: Text(
-                'Connection Status: ${EnumUtils.stringFromEnum(connectionStatus)}',
+                'Connection Status: ${connectionStatus.name}',
               ),
             ),
             Row(

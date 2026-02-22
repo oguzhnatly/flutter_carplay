@@ -1,26 +1,31 @@
-import 'package:flutter_carplay/helpers/enum_utils.dart';
-import 'package:flutter_carplay/models/button/text_button.dart';
 import 'package:uuid/uuid.dart';
 
+import '../button/text_button.dart';
 import '../template.dart';
 import 'information_constants.dart';
 import 'information_item.dart';
 
 /// A template object that displays and manages information items and text buttons.
-class CPInformationTemplate implements CPTemplate {
+/// https://developer.apple.com/documentation/carplay/cpinformationtemplate
+/// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+class CPInformationTemplate extends CPTemplate {
   /// Unique id of the object.
-  final String _elementId = const Uuid().v4();
+  final String _elementId;
 
-  /// A title will be shown in the navigation bar.
+  /// The template’s title.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   final String title;
 
+  /// The layout that the template uses to arrange its items.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   final CPInformationTemplateLayout layout;
 
-  /// The array of actions as [CPTextButton] displayed on the template.
+  /// The actions that the template displays.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   final List<CPTextButton> actions;
 
-  /// The array of information items  as [CPInformationItem] displayed on the template.
-
+  /// An array of information items that the template displays.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   final List<CPInformationItem> informationItems;
 
   /// Creates [CPInformationTemplate]
@@ -29,15 +34,23 @@ class CPInformationTemplate implements CPTemplate {
     required this.layout,
     required this.actions,
     required this.informationItems,
-  });
+    super.tabTitle,
+    super.showsTabBadge = false,
+    super.systemIcon,
+    String? id,
+  }) : _elementId = id ?? const Uuid().v4();
 
   @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
-        'layout': EnumUtils.stringFromEnum(layout.toString()),
+        'layout': layout.name,
         'title': title,
         'actions': actions.map((e) => e.toJson()).toList(),
         'informationItems': informationItems.map((e) => e.toJson()).toList(),
+        'tabTitle': tabTitle,
+        'showsTabBadge': showsTabBadge,
+        'systemIcon': systemIcon,
+        'runtimeType': 'FCPInformationTemplate',
       };
 
   @override

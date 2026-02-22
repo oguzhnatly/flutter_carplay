@@ -4,7 +4,6 @@ import 'package:flutter_carplay/constants/private_constants.dart';
 import '../aa_models/list/list_item.dart';
 import '../aa_models/template.dart';
 import '../helpers/auto_android_helper.dart';
-import '../helpers/enum_utils.dart';
 
 /// [FlutterAndroidAutoController] is an root object in order to control and communication
 /// system with the Android Auto and native functions.
@@ -36,7 +35,7 @@ class FlutterAndroidAutoController {
     dynamic data,
   ]) async {
     final bool? value = await _methodChannel.invokeMethod<bool>(
-      EnumUtils.stringFromEnum(type.toString()),
+      type.name,
       data,
     );
     return value;

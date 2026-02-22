@@ -9,39 +9,40 @@ import CarPlay
 
 @available(iOS 14.0, *)
 class FCPTextButton {
-    private(set) var _super: CPTextButton?
-    private(set) var elementId: String
-    private var title: String
-    private var style: CPTextButtonStyle
-    
-    init(obj: [String : Any]) {
-        self.elementId = obj["_elementId"] as! String
-        self.title = obj["title"] as! String
-        let style = obj["style"] as? String
-        if style == nil || style == "normal" {
-            self.style = CPTextButtonStyle.normal
+  private(set) var _super: CPTextButton?
+  private(set) var elementId: String
+  private var title: String
+  private var textstyle: CPTextButtonStyle
+
+  init(obj: [String: Any]) {
+    self.elementId = obj["_elementId"] as! String
+    self.title = obj["title"] as! String
+    let textstyle = obj["textstyle"] as? String
+    if textstyle == nil || textstyle == "normal" {
+      self.textstyle = CPTextButtonStyle.normal
+    } else {
+      if textstyle == "cancel" {
+        self.textstyle = CPTextButtonStyle.cancel
+      } else {
+        if textstyle == "confirm" {
+          self.textstyle = CPTextButtonStyle.confirm
         } else {
-            if style == "cancel"{
-                self.style = CPTextButtonStyle.cancel
-            }
-            else {
-                if style == "confirm"{
-                    self.style = CPTextButtonStyle.confirm
-                }
-                else {
-                    self.style = CPTextButtonStyle.normal
-                }
-            }
+          self.textstyle = CPTextButtonStyle.normal
         }
+      }
     }
-    
-    var get: CPTextButton {
-        let textButton = CPTextButton.init(title: title, textStyle:self.style, handler: { _ in
-            DispatchQueue.main.async {
-                FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onTextButtonPressed, data: ["elementId": self.elementId])
-            }
-        })
-        self._super = textButton
-        return textButton
-    }
+  }
+
+  var get: CPTextButton {
+    let textButton = CPTextButton.init(
+      title: title, textStyle: self.textstyle,
+      handler: { _ in
+        DispatchQueue.main.async {
+          FCPStreamHandlerPlugin.sendEvent(
+            type: FCPChannelTypes.onTextButtonPressed, data: ["elementId": self.elementId])
+        }
+      })
+    self._super = textButton
+    return textButton
+  }
 }

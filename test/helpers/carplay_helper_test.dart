@@ -1,5 +1,4 @@
 import 'package:flutter_carplay/flutter_carplay.dart';
-import 'package:flutter_carplay/helpers/carplay_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -18,7 +17,7 @@ void main() {
 
     final templates = [
       CPTabBarTemplate(
-        title: '<CPTabBarTemplate>',
+        tabTitle: '<CPTabBarTemplate>',
         templates: [cpListTemplate],
       ),
       cpListTemplate,
@@ -29,14 +28,16 @@ void main() {
     });
 
     test('find CPListItem from dynamic list item and element id', () {
-      final CPListItem? item = flutterCarplayHelper.findCPListItem(
+      final CPListTemplateItem? item =
+          flutterCarplayHelper.findCPListTemplateItem(
         templates: templates,
         elementId: cpListItem.uniqueId,
       );
 
       expect(item, cpListItem);
 
-      final CPListItem? nullableItem = flutterCarplayHelper.findCPListItem(
+      final CPListTemplateItem? nullableItem =
+          flutterCarplayHelper.findCPListTemplateItem(
         templates: templates,
         elementId: '',
       );
@@ -45,7 +46,8 @@ void main() {
     });
 
     test('make FCP channel id', () {
-      final String channelId = flutterCarplayHelper.makeFCPChannelId(event: '/event');
+      final String channelId =
+          flutterCarplayHelper.makeFCPChannelId(event: '/event');
 
       expect(channelId, 'com.oguzhnatly.flutter_carplay/event');
     });

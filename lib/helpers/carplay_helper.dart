@@ -1,11 +1,13 @@
 import 'package:flutter_carplay/flutter_carplay.dart';
 
 class FlutterCarplayHelper {
-  CPListItem? findCPListItem({
+  const FlutterCarplayHelper();
+
+  CPListTemplateItem? findCPListTemplateItem({
     required List<dynamic> templates,
     required String elementId,
   }) {
-    CPListItem? listItem;
+    CPListTemplateItem? listItem;
     l1:
     for (var t in templates) {
       final List<CPListTemplate> listTemplates = [];
