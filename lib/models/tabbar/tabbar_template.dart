@@ -35,7 +35,8 @@ class CPTabBarTemplate implements CPTemplate {
   ///
   /// [!] You can’t add a tab bar template to an existing navigation hierarchy,
   /// or present one modally.
-  CPTabBarTemplate({this.title, required this.templates});
+  CPTabBarTemplate({this.title, required List<CPTemplate> templates})
+      : templates = List<CPTemplate>.from(templates);
 
   @override
   Map<String, dynamic> toJson() => {
