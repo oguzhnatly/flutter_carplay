@@ -58,12 +58,7 @@ class FlutterCarPlayController {
                   for (var s in t.sections) {
                     for (var i in s.items) {
                       if (i.uniqueId == updatedListItem.uniqueId) {
-                        final tabBar = currentRootTemplate as CPTabBarTemplate;
-                        final templateIndex = tabBar.templates.indexOf(t);
-                        final listTemplate = tabBar.templates[templateIndex] as CPListTemplate;
-                        listTemplate
-                            .sections[t.sections.indexOf(s)]
-                            .items[s.items.indexOf(i)] = updatedListItem;
+                        s.items[s.items.indexOf(i)] = updatedListItem;
                         break l1;
                       }
                     }
@@ -75,11 +70,7 @@ class FlutterCarPlayController {
               for (var s in h.sections) {
                 for (var i in s.items) {
                   if (i.uniqueId == updatedListItem.uniqueId) {
-                    (currentRootTemplate as CPListTemplate)
-                        .sections[(currentRootTemplate as CPListTemplate)
-                            .sections
-                            .indexOf(s)]
-                        .items[s.items.indexOf(i)] = updatedListItem;
+                    s.items[s.items.indexOf(i)] = updatedListItem;
                     break l1;
                   }
                 }
