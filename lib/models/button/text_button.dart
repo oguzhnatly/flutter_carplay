@@ -1,34 +1,39 @@
-import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'package:uuid/uuid.dart';
 
-enum CPTextButtonStyles { normal, cancel, confirm }
+import 'button_constants.dart';
 
-/// A button object for placement in a point of interest or information template.
+/// A button that displays a stylized title.
+/// https://developer.apple.com/documentation/carplay/CPTextButton
+/// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
 class CPTextButton {
   /// Unique id of the object.
-  final String _elementId = const Uuid().v4();
+  final String _elementId;
 
-  /// The title displayed on the bar button.
+  /// The text the button displays.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   final String title;
 
-  /// The style to use when displaying the button.
-  /// Default is [CPTextButtonStyles.normal]
-  final CPTextButtonStyles style;
+  /// The text style the button applies to its title.
+  /// Default is [CPTextButtonStyle.normal]
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  final CPTextButtonStyle textstyle;
 
-  /// Fired when the user taps a text button.
+  /// A closure that CarPlay invokes when the user taps the button.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   final Function() onPress;
 
-  /// Creates [CPTextButton] with a title, style and handler.
+  /// Creates [CPTextButton]
   CPTextButton({
     required this.title,
-    this.style = CPTextButtonStyles.normal,
+    this.textstyle = CPTextButtonStyle.normal,
     required this.onPress,
-  });
+    String? id,
+  }) : _elementId = id ?? const Uuid().v4();
 
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'title': title,
-        'style': EnumUtils.stringFromEnum(style.toString()),
+        'textstyle': textstyle.name,
       };
 
   String get uniqueId {

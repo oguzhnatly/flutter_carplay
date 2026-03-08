@@ -14,11 +14,17 @@ class FCPSharedNowPlayingTemplate {
   }
 
   init() {}
+
+  public func update(with: any FCPTemplate) {
+    guard let with = with as? FCPSharedNowPlayingTemplate else {
+      return
+    }
+  }
 }
 
 @available(iOS 14.0, *)
-extension FCPSharedNowPlayingTemplate: FCPRootTemplate {
-     var elementId: String {
-         return "FCPSharedNowPlayingTemplate"
-     }
+extension FCPSharedNowPlayingTemplate: FCPTemplate {
+  var elementId: String {
+    return "FCPSharedNowPlayingTemplate"
+  }
 }

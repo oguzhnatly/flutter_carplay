@@ -1,4 +1,3 @@
-import 'package:flutter_carplay/aa_models/template.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 
 class FlutterAutoAndroidHelper {

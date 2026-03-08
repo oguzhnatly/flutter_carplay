@@ -1,11 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_carplay/constants/private_constants.dart';
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
-
-import 'models/template.dart';
 
 /// An object in order to integrate Apple CarPlay in navigation and
 /// manage all user interface elements appearing on your screens displayed on
@@ -28,9 +25,7 @@ class FlutterCarplay {
   late final StreamSubscription<dynamic>? _eventBroadcast;
 
   /// Current CarPlay and mobile app connection status.
-  static String _connectionStatus = EnumUtils.stringFromEnum(
-    ConnectionStatusTypes.unknown.toString(),
-  );
+  static String _connectionStatus = ConnectionStatusTypes.unknown.name;
 
   /// A listener function, which will be triggered when CarPlay connection changes
   /// and will be transmitted to the main code, allowing the user to access
@@ -53,9 +48,7 @@ class FlutterCarplay {
             ConnectionStatusTypes.values,
             event['data']['status'],
           );
-          _connectionStatus = EnumUtils.stringFromEnum(
-            connectionStatus.toString(),
-          );
+          _connectionStatus = connectionStatus.name;
           if (_onCarplayConnectionChange != null) {
             _onCarplayConnectionChange!(connectionStatus);
           }
@@ -63,6 +56,17 @@ class FlutterCarplay {
         case FCPChannelTypes.onFCPListItemSelected:
           _carPlayController.processFCPListItemSelectedChannel(
             event['data']['elementId'],
+          );
+          break;
+        case FCPChannelTypes.onFCPListImageRowItemSelected:
+          _carPlayController.processFCPListImageRowItemSelectedChannel(
+            event['data']['elementId'],
+          );
+          break;
+        case FCPChannelTypes.onFCPListImageRowItemElementSelected:
+          _carPlayController.processFCPListImageRowItemElementSelectedChannel(
+            event['data']['elementId'],
+            event['data']['index'],
           );
           break;
         case FCPChannelTypes.onFCPAlertActionPressed:
@@ -257,7 +261,7 @@ class FlutterCarplay {
     bool animated = true,
   }) {
     return _carPlayController.methodChannel.invokeMethod(
-      EnumUtils.stringFromEnum(FCPChannelTypes.setAlert.toString()),
+      FCPChannelTypes.setAlert.name,
       <String, dynamic>{
         'rootTemplate': template.toJson(),
         'animated': animated,
@@ -281,7 +285,7 @@ class FlutterCarplay {
     bool animated = true,
   }) {
     return _carPlayController.methodChannel.invokeMethod(
-      EnumUtils.stringFromEnum(FCPChannelTypes.setActionSheet.toString()),
+      FCPChannelTypes.setActionSheet.name,
       <String, dynamic>{
         'rootTemplate': template.toJson(),
         'animated': animated,
