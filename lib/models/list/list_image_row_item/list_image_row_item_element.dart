@@ -9,4 +9,6 @@ abstract interface class CPListImageRowItemElement {
   Map<String, dynamic> toJson();
 
   String get uniqueId;
+
+  void setImage(String image);
 }

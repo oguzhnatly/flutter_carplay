@@ -52,6 +52,7 @@ class CPListImageRowItemCardElement implements CPListImageRowItemElement {
         'runtimeType': 'FCPListImageRowItemCardElement',
       };
 
+  @override
   void setImage(String image) {
     this.image = image;
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
@@ -69,6 +70,21 @@ class CPListImageRowItemCardElement implements CPListImageRowItemElement {
 
   void setTintColor(UIColor tintColor) {
     this.tintColor = tintColor;
+    FlutterCarPlayController.updateCPListImageRowItemElement(this);
+  }
+
+  void update({
+    String? image,
+    String? title,
+    String? subtitle,
+    UIColor? tintColor,
+    bool? showsImageFullHeight,
+  }) {
+    if (image != null) this.image = image;
+    if (title != null) this.title = title;
+    if (subtitle != null) this.subtitle = subtitle;
+    if (tintColor != null) this.tintColor = tintColor;
+
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }
 

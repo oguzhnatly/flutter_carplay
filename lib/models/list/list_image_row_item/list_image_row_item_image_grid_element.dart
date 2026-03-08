@@ -46,6 +46,7 @@ class CPListImageRowItemImageGridElement implements CPListImageRowItemElement {
         'runtimeType': 'FCPListImageRowItemImageGridElement',
       };
 
+  @override
   void setImage(String image) {
     this.image = image;
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
@@ -58,6 +59,20 @@ class CPListImageRowItemImageGridElement implements CPListImageRowItemElement {
 
   void setAccessorySymbolName(String accessorySymbolName) {
     this.accessorySymbolName = accessorySymbolName;
+    FlutterCarPlayController.updateCPListImageRowItemElement(this);
+  }
+
+  void update({
+    String? image,
+    String? title,
+    String? accessorySymbolName,
+  }) {
+    if (image != null) this.image = image;
+    if (title != null) this.title = title;
+    if (accessorySymbolName != null) {
+      this.accessorySymbolName = accessorySymbolName;
+    }
+
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }
 

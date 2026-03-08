@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
           text: 'Item 3',
           detailText: 'Detail Text',
           onPress: (complete, self) {
-            self.updateTexts(
+            self.update(
               text: 'You can also change the title',
               detailText: 'and detail text while loading',
             );

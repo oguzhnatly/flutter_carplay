@@ -87,20 +87,13 @@ class CPListItem extends CPListTemplateItem {
     FlutterCarPlayController.updateCPListItem(this);
   }
 
-  /// Updating the list item's both the primary and detail text at the same time.
-  void updateTexts({String? text, String? detailText}) {
-    this.text = text ?? this.text;
-    this.detailText = detailText ?? this.detailText;
-    FlutterCarPlayController.updateCPListItem(this);
-  }
-
   /// Updating the image which will be displayed on the leading edge of the list item cell.
   ///
   /// Supports three formats:
   /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
   /// - **File path**: `file:///path/to/image.png` (local file on device)
   /// - **Network URL**: `https://example.com/image.png` (remote image)
-  set updateImage(String image) {
+  void setImage(String image) {
     this.image = image;
     FlutterCarPlayController.updateCPListItem(this);
   }
@@ -133,6 +126,34 @@ class CPListItem extends CPListTemplateItem {
   /// Setter for accessoryType
   void setAccessoryType(CPListItemAccessoryType accessoryType) {
     this.accessoryType = accessoryType;
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
+  void update({
+    String? text,
+    String? detailText,
+    String? image,
+    double? playbackProgress,
+    bool? isPlaying,
+    CPListItemPlayingIndicatorLocation? playingIndicatorLocation,
+    CPListItemAccessoryType? accessoryType,
+  }) {
+    if (text != null) this.text = text;
+    if (detailText != null) this.detailText = detailText;
+    if (image != null) this.image = image;
+    if (playbackProgress != null) {
+      if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
+        this.playbackProgress = playbackProgress;
+      } else {
+        throw RangeError('playbackProgress must be between 0.0 and 1.0');
+      }
+    }
+    if (isPlaying != null) this.isPlaying = isPlaying;
+    if (playingIndicatorLocation != null) {
+      this.playingIndicatorLocation = playingIndicatorLocation;
+    }
+    if (accessoryType != null) this.accessoryType = accessoryType;
+
     FlutterCarPlayController.updateCPListItem(this);
   }
 
