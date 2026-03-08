@@ -102,9 +102,7 @@ class FlutterCarPlayController {
                 if (t is CPListTemplate) {
                   for (var s in t.sections) {
                     for (var i in s.items) {
-                      if (i.uniqueId ==
-                              updatedListImageRowItemElement.uniqueId &&
-                          i is CPListImageRowItem) {
+                      if (i is CPListImageRowItem) {
                         for (var e in i.elements ?? []) {
                           if (e.uniqueId ==
                               updatedListImageRowItemElement.uniqueId) {
@@ -122,8 +120,7 @@ class FlutterCarPlayController {
             case CPListTemplate _:
               for (var s in h.sections) {
                 for (var i in s.items) {
-                  if (i.uniqueId == updatedListImageRowItemElement.uniqueId &&
-                      i is CPListImageRowItem) {
+                  if (i is CPListImageRowItem) {
                     for (var e in i.elements ?? []) {
                       if (e.uniqueId ==
                           updatedListImageRowItemElement.uniqueId) {
@@ -206,7 +203,7 @@ class FlutterCarPlayController {
     );
 
     if (item is CPListItem) {
-      item.onPress!(
+      item.onPress?.call(
         () => flutterToNativeModule(
           FCPChannelTypes.onFCPListItemSelectedComplete,
           item.uniqueId,
@@ -223,7 +220,7 @@ class FlutterCarPlayController {
     );
 
     if (item is CPListImageRowItem) {
-      item.onPress!(
+      item.onPress?.call(
         () => flutterToNativeModule(
           FCPChannelTypes.onFCPListImageRowItemSelectedComplete,
           item.uniqueId,
@@ -243,7 +240,7 @@ class FlutterCarPlayController {
     );
 
     if (item is CPListImageRowItem) {
-      item.onItemPress!(
+      item.onItemPress?.call(
         () => flutterToNativeModule(
           FCPChannelTypes.onFCPListImageRowItemElementSelectedComplete,
           item.uniqueId,
@@ -255,11 +252,15 @@ class FlutterCarPlayController {
   }
 
   void processFCPAlertActionPressed(String elementId) {
-    final CPAlertAction selectedAlertAction =
-        (currentPresentTemplate as CPActionsTemplate)
-            .actions
-            .firstWhere((e) => e.uniqueId == elementId);
-    selectedAlertAction.onPress();
+    if (currentPresentTemplate is! CPActionsTemplate) return;
+
+    final actions = (currentPresentTemplate as CPActionsTemplate).actions;
+    for (var action in actions) {
+      if (action.uniqueId == elementId) {
+        action.onPress();
+        return;
+      }
+    }
   }
 
   void processFCPAlertTemplateCompleted(bool completed) {
@@ -285,40 +286,45 @@ class FlutterCarPlayController {
   }
 
   void processFCPBarButtonPressed(String elementId) {
-    CPBarButton? barButton;
-    l1:
     for (var t in templateHistory) {
-      if (t is CPListTemplate) {
-        barButton = t.backButton;
-        break l1;
+      final List<CPListTemplate> listTemplates = [];
+      if (t is CPTabBarTemplate) {
+        for (var template in t.templates) {
+          if (template is CPListTemplate) listTemplates.add(template);
+        }
+      } else if (t is CPListTemplate) {
+        listTemplates.add(t);
+      }
+      for (var list in listTemplates) {
+        if (list.backButton?.uniqueId == elementId) {
+          list.backButton?.onPress();
+          return;
+        }
       }
     }
-    if (barButton != null) barButton.onPress();
   }
 
   void processFCPTextButtonPressed(String elementId) {
-    l1:
     for (var t in templateHistory) {
       if (t is CPPointOfInterestTemplate) {
         for (CPPointOfInterest p in t.poi) {
           if (p.primaryButton != null &&
               p.primaryButton!.uniqueId == elementId) {
             p.primaryButton!.onPress();
-            break l1;
+            return;
           }
           if (p.secondaryButton != null &&
               p.secondaryButton!.uniqueId == elementId) {
             p.secondaryButton!.onPress();
-            break l1;
+            return;
           }
         }
       } else {
         if (t is CPInformationTemplate) {
-          l2:
           for (CPTextButton b in t.actions) {
             if (b.uniqueId == elementId) {
               b.onPress();
-              break l2;
+              return;
             }
           }
         }

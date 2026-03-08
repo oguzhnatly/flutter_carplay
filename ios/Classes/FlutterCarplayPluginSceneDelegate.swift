@@ -130,7 +130,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     self.interfaceController?.presentTemplate(
       template, animated: animated,
       completion: { completed, error in
-        guard error != nil else {
+        if error != nil {
           onPresent(false)
           return
         }

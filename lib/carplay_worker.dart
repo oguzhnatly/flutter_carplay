@@ -22,7 +22,7 @@ class FlutterCarplay {
       FlutterCarPlayController();
 
   /// CarPlay main bridge as a listener from CarPlay and native side.
-  late final StreamSubscription<dynamic>? _eventBroadcast;
+  StreamSubscription<dynamic>? _eventBroadcast;
 
   /// Current CarPlay and mobile app connection status.
   static String _connectionStatus = ConnectionStatusTypes.unknown.name;
@@ -111,17 +111,17 @@ class FlutterCarplay {
   ///
   /// [!] It is not recommended to use this function if you do not know what you are doing.
   void closeConnection() {
-    _eventBroadcast!.cancel();
+    _eventBroadcast?.cancel();
   }
 
   /// A function that will resume the paused all event listeners from CarPlay.
   void resumeConnection() {
-    _eventBroadcast!.resume();
+    _eventBroadcast?.resume();
   }
 
   /// A function that will pause the all active event listeners from CarPlay.
   void pauseConnection() {
-    _eventBroadcast!.pause();
+    _eventBroadcast?.pause();
   }
 
   /// Callback function will be fired when CarPlay connection status is changed.
