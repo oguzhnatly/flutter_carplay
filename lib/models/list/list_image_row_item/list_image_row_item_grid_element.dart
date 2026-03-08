@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 
+import '../../../controllers/carplay_controller.dart';
 import 'list_image_row_item_element.dart';
 
 /// https://developer.apple.com/documentation/carplay/cplistimagerowitemgridelement
@@ -11,7 +12,7 @@ class CPListImageRowItemGridElement implements CPListImageRowItemElement {
   /// The image to display in the card.
   /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
   @override
-  final String image;
+  String image;
 
   /// Creates [CPListImageRowItemGridElement]
   CPListImageRowItemGridElement({
@@ -25,6 +26,11 @@ class CPListImageRowItemGridElement implements CPListImageRowItemElement {
         'image': image,
         'runtimeType': 'FCPListImageRowItemGridElement',
       };
+
+  void setImage(String image) {
+    this.image = image;
+    FlutterCarPlayController.updateCPListImageRowItemElement(this);
+  }
 
   @override
   String get uniqueId {

@@ -410,7 +410,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         }
       }
     }
-    NSLog("FCP: Item not found with elementId: \(elementId)")
+    NSLog("FCP: FCPListTemplateItem not found with elementId: \(elementId)")
   }
 
   @available(iOS 26.0, *)
@@ -444,6 +444,14 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         }
       }
     }
+
+    for element in collected {
+      if element.elementId == elementId {
+        actionWhenFound(element)
+        return
+      }
+    }
+    NSLog("FCP: FCPListImageRowItemElement not found with elementId: \(elementId)")
   }
 
   static public func getTemplateFromHistory(elementId: String) -> FCPTemplate? {

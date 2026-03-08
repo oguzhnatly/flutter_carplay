@@ -24,7 +24,7 @@ void main() {
     ];
 
     setUp(() {
-      flutterCarplayHelper = FlutterCarplayHelper();
+      flutterCarplayHelper = const FlutterCarplayHelper();
     });
 
     test('find CPListItem from dynamic list item and element id', () {

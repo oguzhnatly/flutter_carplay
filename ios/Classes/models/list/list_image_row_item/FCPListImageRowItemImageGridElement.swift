@@ -57,8 +57,20 @@ final class FCPListImageRowItemImageGridElement {
   }
 
   public func update(args: [String: Any]) {
+    let image = args["image"] as? String
     let title = args["title"] as? String
     let accessorySymbolName = args["accessorySymbolName"] as? String
+
+    if let image = image, image != self.image {
+      self._super?.image = makeSafeUIPlaceholder()
+      let imageSource = image.toImageSource()
+      loadUIImageAsync(from: imageSource) { uiImage in
+        if let uiImage = uiImage {
+          self._super?.image = uiImage
+        }
+      }
+      self.image = image
+    }
 
     if let title = title {
       self.title = title

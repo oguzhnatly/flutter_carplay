@@ -78,7 +78,7 @@ func makeUIImage(
           userInfo: [NSLocalizedDescriptionKey: "Asset name cannot be empty"])
       }
       let key = SwiftFlutterCarplayPlugin.registrar!.lookupKey(forAsset: name)
-      if Bundle.main.path(forResource: key, ofType: nil) != nil {
+      if Bundle.main.path(forResource: key, ofType: nil) == nil {
         throw NSError(
           domain: "ImageLoadError", code: 3,
           userInfo: [NSLocalizedDescriptionKey: "Asset not found in bundle"])
@@ -144,7 +144,7 @@ func loadUIImageAsync(
             userInfo: [NSLocalizedDescriptionKey: "Asset name cannot be empty"])
         }
         let key = SwiftFlutterCarplayPlugin.registrar!.lookupKey(forAsset: name)
-        if Bundle.main.path(forResource: key, ofType: nil) != nil {
+        if Bundle.main.path(forResource: key, ofType: nil) == nil {
           throw NSError(
             domain: "ImageLoadError", code: 3,
             userInfo: [NSLocalizedDescriptionKey: "Asset not found in bundle"])

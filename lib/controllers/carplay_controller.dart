@@ -4,7 +4,8 @@ import 'package:flutter_carplay/flutter_carplay.dart';
 /// [FlutterCarPlayController] is an root object in order to control and communication
 /// system with the Apple CarPlay and native functions.
 class FlutterCarPlayController {
-  static final FlutterCarplayHelper _carplayHelper = FlutterCarplayHelper();
+  static final FlutterCarplayHelper _carplayHelper =
+      const FlutterCarplayHelper();
   static final MethodChannel _methodChannel = MethodChannel(
     _carplayHelper.makeFCPChannelId(),
   );

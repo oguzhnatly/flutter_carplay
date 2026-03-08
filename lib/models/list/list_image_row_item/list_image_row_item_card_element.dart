@@ -13,7 +13,7 @@ class CPListImageRowItemCardElement implements CPListImageRowItemElement {
   /// The image to display in the card.
   /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
   @override
-  final String image;
+  String image;
 
   /// The title associated with this element.
   /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
@@ -51,6 +51,11 @@ class CPListImageRowItemCardElement implements CPListImageRowItemElement {
         'showsImageFullHeight': showsImageFullHeight,
         'runtimeType': 'FCPListImageRowItemCardElement',
       };
+
+  void setImage(String image) {
+    this.image = image;
+    FlutterCarPlayController.updateCPListImageRowItemElement(this);
+  }
 
   void setTitle(String title) {
     this.title = title;

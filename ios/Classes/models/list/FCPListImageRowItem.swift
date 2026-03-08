@@ -108,9 +108,9 @@ final class FCPListImageRowItem {
           text: text ?? "", imageGridElements: imageGridElements,
           allowsMultipleLines: allowsMultipleLines)
       } else if runtimeType == CPListImageRowItemRowElement.self {
-        let elements = elements.compactMap { $0 as? CPListImageRowItemRowElement }
+        let rowElements = elements.compactMap { $0 as? CPListImageRowItemRowElement }
         listImageRowItem = CPListImageRowItem.init(
-          text: text ?? "", elements: elements, allowsMultipleLines: allowsMultipleLines)
+          text: text ?? "", elements: rowElements, allowsMultipleLines: allowsMultipleLines)
       } else {
         fatalError("FCPListImageRowItem.get: Missing runtimeType in item")
       }

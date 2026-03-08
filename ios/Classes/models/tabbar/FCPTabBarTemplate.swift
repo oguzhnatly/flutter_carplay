@@ -95,7 +95,7 @@ class FCPTabBarTemplate {
     self.objcTemplates = templates.map { template in
       if let existing = existingTemplatesById[template.elementId] {
         existing.update(with: template)
-        return existing // Reuse existing FCP template with updated content
+        return existing  // Reuse existing FCP template with updated content
       } else {
         return template  // Use new instance
       }
