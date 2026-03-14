@@ -14,25 +14,29 @@ class FCPAlertAction {
   private var title: String
   private var style: CPAlertAction.Style
   private var handlerType: FCPAlertActionTypes
-  
-  init(obj: [String : Any], type: FCPAlertActionTypes) {
+
+  init(obj: [String: Any], type: FCPAlertActionTypes) {
     self.elementId = obj["_elementId"] as! String
     self.title = obj["title"] as! String
     let style = obj["style"] as! String
-    self.style = style.elementsEqual("normal")
+    self.style =
+      style.elementsEqual("normal")
       ? CPAlertAction.Style.default
       : style.elementsEqual("destructive")
-      ? CPAlertAction.Style.destructive
-      : CPAlertAction.Style.cancel
+        ? CPAlertAction.Style.destructive
+        : CPAlertAction.Style.cancel
     self.handlerType = type
   }
-  
+
   var get: CPAlertAction {
-    let alertAction = CPAlertAction.init(title: title, style: style, handler: { _ in
-      DispatchQueue.main.async {
-        FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onAlertActionPressed, data: ["elementId": self.elementId])
-      }
-    })
+    let alertAction = CPAlertAction.init(
+      title: title, style: style,
+      handler: { _ in
+        DispatchQueue.main.async {
+          FCPStreamHandlerPlugin.sendEvent(
+            type: FCPChannelTypes.onAlertActionPressed, data: ["elementId": self.elementId])
+        }
+      })
     self._super = alertAction
     return alertAction
   }

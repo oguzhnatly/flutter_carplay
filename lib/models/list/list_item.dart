@@ -1,41 +1,48 @@
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
-import 'package:flutter_carplay/helpers/enum_utils.dart';
 import 'package:flutter_carplay/models/list/list_constants.dart';
 import 'package:uuid/uuid.dart';
 
-/// A selectable list item object that appears in a list template.
-class CPListItem {
+import 'list_template_item.dart';
+
+/// A selectable row in a list template.
+/// https://developer.apple.com/documentation/carplay/cplistitem
+/// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
+class CPListItem extends CPListTemplateItem {
   /// Unique id of the object.
-  final String _elementId = const Uuid().v4();
+  final String _elementId;
 
-  /// Text displayed in the list item cell.
-  String text;
-
-  /// Secondary text displayed below the primary text in the list item cell.
+  /// The list item’s secondary text.
+  /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   String? detailText;
 
-  /// An optional callback function that CarPlay invokes when the user selects the list item.
-  final Function(Function() complete, CPListItem self)? onPress;
-
-  /// Displays an image on the leading edge of the list item cell.
+  /// The image that the list item displays in its leading region.
   ///
   /// Supports three formats:
   /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
   /// - **File path**: `file:///path/to/image.png` (local file on device)
   /// - **Network URL**: `https://example.com/image.png` (remote image)
+  /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   String? image;
 
-  /// Playback progress status for the content that the list item represents.
+  /// The playback progress status for the content that the list item represents.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   double? playbackProgress;
 
-  /// Determines whether the list item displays its Now Playing indicator.
+  /// A Boolean value that determines whether the list item displays its Now Playing indicator.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   bool? isPlaying;
 
   /// The location where the list item displays its Now Playing indicator.
-  CPListItemPlayingIndicatorLocations? playingIndicatorLocation;
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  CPListItemPlayingIndicatorLocation? playingIndicatorLocation;
 
-  /// An accessory that the list item displays in its trailing region.
-  CPListItemAccessoryTypes? accessoryType;
+  /// The accessory that the list item displays in its trailing region.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  CPListItemAccessoryType? accessoryType;
+
+  /// An optional closure that CarPlay invokes when the user selects the list item.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  final Function(Function() complete, CPListItem self)? onPress;
 
   /// Creates [CPListItem] that manages the content of a single row in a [CPListTemplate].
   /// CarPlay manages the layout of a list item and may adjust its layout to allow for
@@ -43,7 +50,7 @@ class CPListItem {
   /// A list item can display primary text, secondary text, now playing indicators as playback progress,
   /// an accessory image and a trailing image.
   CPListItem({
-    required this.text,
+    super.text,
     this.detailText,
     this.onPress,
     this.image,
@@ -51,8 +58,10 @@ class CPListItem {
     this.isPlaying,
     this.playingIndicatorLocation,
     this.accessoryType,
-  });
+    String? id,
+  }) : _elementId = id ?? const Uuid().v4();
 
+  @override
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'text': text,
@@ -61,10 +70,9 @@ class CPListItem {
         'image': image,
         'playbackProgress': playbackProgress,
         'isPlaying': isPlaying,
-        'playingIndicatorLocation': EnumUtils.stringFromEnum(
-          playingIndicatorLocation.toString(),
-        ),
-        'accessoryType': EnumUtils.stringFromEnum(accessoryType.toString()),
+        'playingIndicatorLocation': playingIndicatorLocation?.name,
+        'accessoryType': accessoryType?.name,
+        'runtimeType': 'FCPListItem',
       };
 
   /// Updating the list item's primary text.
@@ -79,20 +87,13 @@ class CPListItem {
     FlutterCarPlayController.updateCPListItem(this);
   }
 
-  /// Updating the list item's both the primary and detail text at the same time.
-  void updateTexts({String? text, String? detailText}) {
-    this.text = text ?? this.text;
-    this.detailText = detailText ?? this.detailText;
-    FlutterCarPlayController.updateCPListItem(this);
-  }
-
   /// Updating the image which will be displayed on the leading edge of the list item cell.
   ///
   /// Supports three formats:
   /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
   /// - **File path**: `file:///path/to/image.png` (local file on device)
   /// - **Network URL**: `https://example.com/image.png` (remote image)
-  set updateImage(String image) {
+  void setImage(String image) {
     this.image = image;
     FlutterCarPlayController.updateCPListItem(this);
   }
@@ -116,18 +117,47 @@ class CPListItem {
 
   /// Setter for playingIndicatorLocation
   void setPlayingIndicatorLocation(
-    CPListItemPlayingIndicatorLocations playingIndicatorLocation,
+    CPListItemPlayingIndicatorLocation playingIndicatorLocation,
   ) {
     this.playingIndicatorLocation = playingIndicatorLocation;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
   /// Setter for accessoryType
-  void setAccessoryType(CPListItemAccessoryTypes accessoryType) {
+  void setAccessoryType(CPListItemAccessoryType accessoryType) {
     this.accessoryType = accessoryType;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
+  void update({
+    String? text,
+    String? detailText,
+    String? image,
+    double? playbackProgress,
+    bool? isPlaying,
+    CPListItemPlayingIndicatorLocation? playingIndicatorLocation,
+    CPListItemAccessoryType? accessoryType,
+  }) {
+    if (text != null) this.text = text;
+    if (detailText != null) this.detailText = detailText;
+    if (image != null) this.image = image;
+    if (playbackProgress != null) {
+      if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
+        this.playbackProgress = playbackProgress;
+      } else {
+        throw RangeError('playbackProgress must be between 0.0 and 1.0');
+      }
+    }
+    if (isPlaying != null) this.isPlaying = isPlaying;
+    if (playingIndicatorLocation != null) {
+      this.playingIndicatorLocation = playingIndicatorLocation;
+    }
+    if (accessoryType != null) this.accessoryType = accessoryType;
+
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
+  @override
   String get uniqueId {
     return _elementId;
   }

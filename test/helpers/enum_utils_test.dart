@@ -5,33 +5,21 @@ void main() {
   group('EnumUtils', () {
     test('convert string into any type of enum', () {
       final cpListItemAccessoryType = EnumUtils.enumFromString(
-        CPListItemAccessoryTypes.values,
+        CPListItemAccessoryType.values,
         'cloud',
       );
 
-      expect(cpListItemAccessoryType, CPListItemAccessoryTypes.cloud);
+      expect(cpListItemAccessoryType, CPListItemAccessoryType.cloud);
 
       final cpListItemPlayingIndicatorLocation = EnumUtils.enumFromString(
-        CPListItemPlayingIndicatorLocations.values,
+        CPListItemPlayingIndicatorLocation.values,
         'trailing',
       );
 
       expect(
         cpListItemPlayingIndicatorLocation,
-        CPListItemPlayingIndicatorLocations.trailing,
+        CPListItemPlayingIndicatorLocation.trailing,
       );
-    });
-
-    test('convert dynamic type into string after the `.`', () {
-      final cpAlertActionStylesString = EnumUtils.stringFromEnum(
-        CPAlertActionStyles.normal.toString(),
-      );
-
-      expect(cpAlertActionStylesString, 'normal');
-
-      final fcpChannelTypesString = EnumUtils.stringFromEnum('car.setAlert');
-
-      expect(fcpChannelTypesString, 'setAlert');
     });
   });
 }

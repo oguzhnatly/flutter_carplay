@@ -3,27 +3,26 @@ import 'package:uuid/uuid.dart';
 
 import '../template.dart';
 
-/// A template object that displays a modal alert.
-class CPAlertTemplate implements CPTemplate, CPActionsTemplate {
+/// A template that displays a modal alert.
+/// https://developer.apple.com/documentation/carplay/cpalerttemplate
+/// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
+class CPAlertTemplate extends CPTemplate implements CPActionsTemplate {
   /// Unique id of the object.
-  final String _elementId = const Uuid().v4();
+  final String _elementId;
 
   /// The array of title variants.
-  /// When the system displays the alert, it selects the title that best fits
-  /// the available screen space, so arrange the titles from most to least preferred
-  /// when creating an alert template. Also, localize each title for display to the user,
-  /// and **be sure to include at least one title in the array.**
+  /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   final List<String> titleVariants;
 
-  /// The array of actions as [CPAlertAction] will be available on the alert.
+  /// The array of actions available on the alert.
+  /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   @override
   final List<CPAlertAction> actions;
 
-  /// Fired when the alert presented to CarPlay. With this callback function, it can be
-  /// determined whether an error was encountered while presenting, or if it was successfully opened,
-  /// with the [bool] completed data in it.
-  ///
-  /// If completed is true, the alert successfully presented. If not, you may want to show an error to the user.
+  /// The closure that CarPlay invokes after the user taps the action button.
+  /// Notes:
+  /// - If completed is true, the alert successfully presented. If not, you may want to show an error to the user.
+  /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   final Function(bool completed)? onPresent;
 
   /// Creates [CPAlertTemplate]
@@ -31,7 +30,11 @@ class CPAlertTemplate implements CPTemplate, CPActionsTemplate {
     required this.titleVariants,
     required this.actions,
     this.onPresent,
-  });
+    super.tabTitle,
+    super.showsTabBadge = false,
+    super.systemIcon,
+    String? id,
+  }) : _elementId = id ?? const Uuid().v4();
 
   @override
   Map<String, dynamic> toJson() => {
@@ -39,6 +42,10 @@ class CPAlertTemplate implements CPTemplate, CPActionsTemplate {
         'titleVariants': titleVariants,
         'actions': actions.map((e) => e.toJson()).toList(),
         'onPresent': onPresent != null ? true : false,
+        'tabTitle': tabTitle,
+        'showsTabBadge': showsTabBadge,
+        'systemIcon': systemIcon,
+        'runtimeType': 'FCPAlertTemplate',
       };
 
   @override

@@ -3,8 +3,14 @@ enum FCPChannelTypes {
   setRootTemplate,
   forceUpdateRootTemplate,
   updateListItem,
+  updateListImageRowItem,
+  updateListImageRowItemElement,
   onFCPListItemSelected,
   onFCPListItemSelectedComplete,
+  onFCPListImageRowItemSelected,
+  onFCPListImageRowItemSelectedComplete,
+  onFCPListImageRowItemElementSelected,
+  onFCPListImageRowItemElementSelectedComplete,
   onFCPAlertActionPressed,
   setAlert,
   onPresentStateChanged,
@@ -18,6 +24,8 @@ enum FCPChannelTypes {
   onTextButtonPressed,
   popToRootTemplate,
   onScreenBackButtonPressed,
+  updateTabBarTemplates,
+  updateListTemplateSections,
 }
 
 enum FAAChannelTypes {
