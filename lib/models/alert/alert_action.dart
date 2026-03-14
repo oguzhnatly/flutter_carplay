@@ -33,6 +33,7 @@ class CPAlertAction {
         '_elementId': _elementId,
         'title': title,
         'style': style.name,
+        'runtimeType': 'FCPAlertAction',
       };
 
   String get uniqueId {

@@ -34,6 +34,7 @@ class CPTextButton {
         '_elementId': _elementId,
         'title': title,
         'textstyle': textstyle.name,
+        'runtimeType': 'FCPTextButton',
       };
 
   String get uniqueId {

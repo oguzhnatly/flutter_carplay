@@ -51,9 +51,12 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         return
       }
       var rootTemplate: FCPTemplate?
-      switch args["runtimeType"] as! String {
+      var data = args["rootTemplate"] as? [String: Any] ?? [:]
+      var runtimeType = data["runtimeType"] as? String ?? ""
+
+      switch runtimeType {
       case String(describing: FCPTabBarTemplate.self):
-        rootTemplate = FCPTabBarTemplate(obj: args["rootTemplate"] as! [String: Any])
+        rootTemplate = FCPTabBarTemplate(obj: data)
         let tabBarTemplate = rootTemplate as! FCPTabBarTemplate
         if tabBarTemplate.getFCPTemplates().count > CPTabBarTemplate.maximumTabCount {
           result(
@@ -66,16 +69,16 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         }
         break
       case String(describing: FCPGridTemplate.self):
-        rootTemplate = FCPGridTemplate(obj: args["rootTemplate"] as! [String: Any])
+        rootTemplate = FCPGridTemplate(obj: data)
         break
       case String(describing: FCPInformationTemplate.self):
-        rootTemplate = FCPInformationTemplate(obj: args["rootTemplate"] as! [String: Any])
+        rootTemplate = FCPInformationTemplate(obj: data)
         break
       case String(describing: FCPPointOfInterestTemplate.self):
-        rootTemplate = FCPPointOfInterestTemplate(obj: args["rootTemplate"] as! [String: Any])
+        rootTemplate = FCPPointOfInterestTemplate(obj: data)
         break
       case String(describing: FCPListTemplate.self):
-        rootTemplate = FCPListTemplate(obj: args["rootTemplate"] as! [String: Any])
+        rootTemplate = FCPListTemplate(obj: data)
         break
       default:
         result(false)
@@ -325,18 +328,21 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       }
       var template: FCPTemplate?
       let animated = args["animated"] as! Bool
-      switch args["runtimeType"] as! String {
+      let data = args["template"] as? [String: Any] ?? [:]
+      let runtimeType = data["runtimeType"] as? String ?? ""
+
+      switch runtimeType {
       case String(describing: FCPGridTemplate.self):
-        template = FCPGridTemplate(obj: args["template"] as! [String: Any])
+        template = FCPGridTemplate(obj: data)
         break
       case String(describing: FCPPointOfInterestTemplate.self):
-        template = FCPPointOfInterestTemplate(obj: args["template"] as! [String: Any])
+        template = FCPPointOfInterestTemplate(obj: data)
         break
       case String(describing: FCPInformationTemplate.self):
-        template = FCPInformationTemplate(obj: args["template"] as! [String: Any])
+        template = FCPInformationTemplate(obj: data)
         break
       case String(describing: FCPListTemplate.self):
-        template = FCPListTemplate(obj: args["template"] as! [String: Any])
+        template = FCPListTemplate(obj: data)
         break
       default:
         result(false)

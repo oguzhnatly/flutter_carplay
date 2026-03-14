@@ -26,6 +26,7 @@ class CPInformationItem {
         '_elementId': _elementId,
         'title': title,
         'detail': detail,
+        'runtimeType': 'FCPInformationItem',
       };
 
   String get uniqueId {

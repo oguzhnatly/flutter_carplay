@@ -166,13 +166,12 @@ class FlutterCarplay {
         rootTemplate is CPListTemplate ||
         rootTemplate is CPInformationTemplate ||
         rootTemplate is CPPointOfInterestTemplate) {
-      return _carPlayController.methodChannel
-          .invokeMethod('setRootTemplate', <String, dynamic>{
+      return FlutterCarPlayController.flutterToNativeModule(
+          FCPChannelTypes.setRootTemplate, <String, dynamic>{
         'rootTemplate': rootTemplate.toJson(),
         'animated': animated,
-        'runtimeType': _getCPRuntimeTypeString(rootTemplate),
       }).then((value) {
-        if (value) {
+        if (value == true) {
           if (FlutterCarPlayController.templateHistory.isEmpty) {
             FlutterCarPlayController.templateHistory.add(rootTemplate);
           } else {
@@ -185,8 +184,9 @@ class FlutterCarplay {
 
   /// It will set the current root template again.
   Future<void> forceUpdateRootTemplate() {
-    return _carPlayController.methodChannel
-        .invokeMethod('forceUpdateRootTemplate');
+    return FlutterCarPlayController.flutterToNativeModule(
+      FCPChannelTypes.forceUpdateRootTemplate,
+    );
   }
 
   /// It will update the sections of the [CPListTemplate] which has the given [elementId].
@@ -194,12 +194,15 @@ class FlutterCarplay {
     required String elementId,
     required List<CPListSection> sections,
   }) async {
-    final bool? isCompleted = await _carPlayController.methodChannel
-        .invokeMethod('updateListTemplateSections', <String, dynamic>{
-      'elementId': elementId,
-      'sections':
-          sections.map((CPListSection section) => section.toJson()).toList(),
-    });
+    final bool? isCompleted =
+        await FlutterCarPlayController.flutterToNativeModule(
+      FCPChannelTypes.updateListTemplateSections,
+      <String, dynamic>{
+        'elementId': elementId,
+        'sections':
+            sections.map((CPListSection section) => section.toJson()).toList(),
+      },
+    );
 
     if (isCompleted == true) {
       final template =
@@ -217,23 +220,15 @@ class FlutterCarplay {
     required String elementId,
     required List<CPTemplate> templates,
   }) async {
-    final bool? isCompleted = await _carPlayController.methodChannel
-        .invokeMethod('updateTabBarTemplates', <String, dynamic>{
-      'elementId': elementId,
-      'templates': templates.map((CPTemplate template) {
-        final json = template.toJson();
-        if (template is CPListTemplate) {
-          json['runtimeType'] = 'FCPListTemplate';
-        } else if (template is CPPointOfInterestTemplate) {
-          json['runtimeType'] = 'FCPPointOfInterestTemplate';
-        } else if (template is CPGridTemplate) {
-          json['runtimeType'] = 'FCPGridTemplate';
-        } else if (template is CPInformationTemplate) {
-          json['runtimeType'] = 'FCPInformationTemplate';
-        }
-        return json;
-      }).toList(),
-    });
+    final bool? isCompleted =
+        await FlutterCarPlayController.flutterToNativeModule(
+      FCPChannelTypes.updateTabBarTemplates,
+      <String, dynamic>{
+        'elementId': elementId,
+        'templates':
+            templates.map((CPTemplate template) => template.toJson()).toList(),
+      },
+    );
 
     if (isCompleted == true) {
       final template =
@@ -260,15 +255,15 @@ class FlutterCarplay {
     required CPAlertTemplate template,
     bool animated = true,
   }) {
-    return _carPlayController.methodChannel.invokeMethod(
-      FCPChannelTypes.setAlert.name,
+    return FlutterCarPlayController.flutterToNativeModule(
+      FCPChannelTypes.setAlert,
       <String, dynamic>{
         'rootTemplate': template.toJson(),
         'animated': animated,
         'onPresent': template.onPresent != null ? true : false,
       },
     ).then((value) {
-      if (value) {
+      if (value == true) {
         FlutterCarPlayController.currentPresentTemplate = template;
       }
     });
@@ -284,14 +279,14 @@ class FlutterCarplay {
     required CPActionSheetTemplate template,
     bool animated = true,
   }) {
-    return _carPlayController.methodChannel.invokeMethod(
-      FCPChannelTypes.setActionSheet.name,
+    return FlutterCarPlayController.flutterToNativeModule(
+      FCPChannelTypes.setActionSheet,
       <String, dynamic>{
         'rootTemplate': template.toJson(),
         'animated': animated,
       },
     ).then((value) {
-      if (value) {
+      if (value == true) {
         FlutterCarPlayController.currentPresentTemplate = template;
       }
     });
@@ -302,7 +297,8 @@ class FlutterCarplay {
   /// - If animated is true, CarPlay animates the transition between templates.
   /// - count represents how many times this function will occur.
   static Future<bool> pop({bool animated = true, int count = 1}) async {
-    final bool? isCompleted = await _carPlayController.flutterToNativeModule(
+    final bool? isCompleted =
+        await FlutterCarPlayController.flutterToNativeModule(
       FCPChannelTypes.popTemplate,
       <String, dynamic>{'count': count, 'animated': animated},
     );
@@ -313,7 +309,8 @@ class FlutterCarplay {
   /// Removes all of the templates from the navigation hierarchy except the root template.
   /// If animated is true, CarPlay animates the presentation of the template.
   static Future<bool> popToRoot({bool animated = true}) async {
-    final bool? isCompleted = await _carPlayController.flutterToNativeModule(
+    final bool? isCompleted =
+        await FlutterCarPlayController.flutterToNativeModule(
       FCPChannelTypes.popToRootTemplate,
       animated,
     );
@@ -325,7 +322,8 @@ class FlutterCarplay {
   /// modals, they can be removed. If animated is true, CarPlay animates the transition between templates.
   static Future<bool> popModal({bool animated = true}) async {
     FlutterCarPlayController.currentPresentTemplate = null;
-    final bool? isCompleted = await _carPlayController.flutterToNativeModule(
+    final bool? isCompleted =
+        await FlutterCarPlayController.flutterToNativeModule(
       FCPChannelTypes.closePresent,
       animated,
     );
@@ -347,12 +345,14 @@ class FlutterCarplay {
         template is CPListTemplate ||
         template is CPInformationTemplate ||
         template is CPPointOfInterestTemplate) {
-      final bool? isCompleted = await _carPlayController.flutterToNativeModule(
-          FCPChannelTypes.pushTemplate, <String, dynamic>{
-        'template': template.toJson(),
-        'animated': animated,
-        'runtimeType': _getCPRuntimeTypeString(template),
-      });
+      final bool? isCompleted =
+          await FlutterCarPlayController.flutterToNativeModule(
+        FCPChannelTypes.pushTemplate,
+        <String, dynamic>{
+          'template': template.toJson(),
+          'animated': animated,
+        },
+      );
       if (isCompleted == true) {
         _carPlayController.addTemplateToHistory(template);
       }
@@ -366,23 +366,11 @@ class FlutterCarplay {
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
   static Future<bool> showSharedNowPlaying({bool animated = true}) async {
-    final bool? isCompleted = await _carPlayController.flutterToNativeModule(
+    final bool? isCompleted =
+        await FlutterCarPlayController.flutterToNativeModule(
       FCPChannelTypes.showNowPlaying,
       animated,
     );
     return isCompleted ?? false;
-  }
-
-  /// Returns the runtime type string for native communication.
-  /// Uses explicit type checks to ensure compatibility with Dart obfuscation.
-  static String _getCPRuntimeTypeString(CPTemplate template) {
-    if (template is CPTabBarTemplate) return 'FCPTabBarTemplate';
-    if (template is CPGridTemplate) return 'FCPGridTemplate';
-    if (template is CPListTemplate) return 'FCPListTemplate';
-    if (template is CPInformationTemplate) return 'FCPInformationTemplate';
-    if (template is CPPointOfInterestTemplate) {
-      return 'FCPPointOfInterestTemplate';
-    }
-    return 'FCP${template.runtimeType}';
   }
 }

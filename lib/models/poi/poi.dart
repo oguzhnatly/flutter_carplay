@@ -85,6 +85,7 @@ class CPPointOfInterest {
         'image': image,
         'primaryButton': primaryButton?.toJson(),
         'secondaryButton': secondaryButton?.toJson(),
+        'runtimeType': 'FCPPointOfInterest',
       };
 
   String get uniqueId {

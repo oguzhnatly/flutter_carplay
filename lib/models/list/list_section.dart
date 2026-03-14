@@ -37,6 +37,7 @@ class CPListSection {
         'header': header,
         'items': items.map((e) => e.toJson()).toList(),
         'sectionIndexEnabled': sectionIndexEnabled,
+        'runtimeType': 'FCPListSection',
       };
 
   String get uniqueId {

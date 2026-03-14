@@ -30,10 +30,10 @@ class FlutterCarPlayController {
     return _eventChannel;
   }
 
-  Future<bool?> flutterToNativeModule(
-    FCPChannelTypes type,
+  static Future<bool?> flutterToNativeModule(
+    FCPChannelTypes type, [
     dynamic data,
-  ) async {
+  ]) async {
     final value = await _methodChannel.invokeMethod<bool>(
       type.name,
       data,
@@ -44,11 +44,12 @@ class FlutterCarPlayController {
   static void updateCPListItem(
     CPListItem updatedListItem,
   ) {
-    _methodChannel
-        .invokeMethod('updateListItem', updatedListItem.toJson())
-        .then(
+    flutterToNativeModule(
+      FCPChannelTypes.updateListItem,
+      updatedListItem.toJson(),
+    ).then(
       (value) {
-        if (!value) return;
+        if (value != true) return;
 
         for (var h in templateHistory) {
           switch (h) {
@@ -88,12 +89,12 @@ class FlutterCarPlayController {
   static void updateCPListImageRowItemElement(
     CPListImageRowItemElement updatedListImageRowItemElement,
   ) {
-    _methodChannel
-        .invokeMethod('updateListImageRowItemElement',
-            updatedListImageRowItemElement.toJson())
-        .then(
+    flutterToNativeModule(
+      FCPChannelTypes.updateListImageRowItemElement,
+      updatedListImageRowItemElement.toJson(),
+    ).then(
       (value) {
-        if (!value) return;
+        if (value != true) return;
 
         for (var h in templateHistory) {
           switch (h) {
@@ -143,11 +144,12 @@ class FlutterCarPlayController {
   static void updateCPListImageRowItem(
     CPListImageRowItem updatedListImageItem,
   ) {
-    _methodChannel
-        .invokeMethod('updateListImageRowItem', updatedListImageItem.toJson())
-        .then(
+    flutterToNativeModule(
+      FCPChannelTypes.updateListImageRowItem,
+      updatedListImageItem.toJson(),
+    ).then(
       (value) {
-        if (!value) return;
+        if (value != true) return;
 
         for (var h in templateHistory) {
           switch (h) {

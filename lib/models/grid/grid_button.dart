@@ -44,6 +44,7 @@ class CPGridButton {
         'titleVariants': titleVariants,
         'image': image,
         'onPress': onPress != null ? true : false,
+        'runtimeType': 'FCPGridButton',
       };
 
   String get uniqueId {

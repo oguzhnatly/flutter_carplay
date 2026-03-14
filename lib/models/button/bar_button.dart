@@ -34,6 +34,7 @@ class CPBarButton {
         '_elementId': _elementId,
         'title': title,
         'buttonStyle': buttonStyle.name,
+        'runtimeType': 'FCPBarButton',
       };
 
   String get uniqueId {
