@@ -77,9 +77,15 @@ class FCPListTemplate {
 
       return zip(currentSections, newSections).contains { (current, new) in
         if current.elementId != new.elementId { return true }
-        let currentItemIds = current.getFCPListTemplateItems().map { $0.elementId }
-        let newItemIds = new.getFCPListTemplateItems().map { $0.elementId }
-        return currentItemIds != newItemIds
+        let currentItems = current.getFCPListTemplateItems()
+        let newItems = new.getFCPListTemplateItems()
+
+        if currentItems.count != newItems.count { return true }
+
+        for (c, n) in zip(currentItems, newItems) {
+          if c as AnyObject !== n as AnyObject { return true }
+        }
+        return false
       }
     }()
 
