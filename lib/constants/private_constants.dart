@@ -29,6 +29,10 @@ enum FCPChannelTypes {
   getMaximumNumberOfGridImages,
   getMaximumSectionCount,
   getMaximumItemCount,
+  onSearchTextUpdated,
+  onSearchResultSelected,
+  onSearchButtonPressed,
+  onSearchResultSelectedComplete,
 }
 
 enum FAAChannelTypes {
