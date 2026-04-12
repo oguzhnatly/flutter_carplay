@@ -1,3 +1,16 @@
+## 1.3.0
+
+- Implement CPListImageRowItem with full support for cardElements, condensedElements, elements, gridElements, and imageGridElements (#94) (ty @EArminjon)
+- Support individual update for CPListImageRowItem and CPListImageRowItemElement
+- Expose tabTitle, systemIcon, and showsTabBadges on CPTabBarTemplate
+- Rename enums and classes to be 1:1 with Apple documentation (breaking change)
+- Rework UUID logic to allow custom elementId on all models
+- Expose convenient update methods on CPListItem and other templates
+- Improve image loading error handling with proper error callbacks
+- Fix app crash when images are empty string
+- Add missing GridButton handler as optional (not required)
+- Update uuid dependency to 4.5.3
+
 ## 1.2.11
 
 - Fix `List<CPTemplate>` is not a subtype of `Iterable<CPListTemplate>` in `updateTemplates` (#92) (ty @EArminjon)
