@@ -40,6 +40,9 @@ enum FCPChannelTypes {
   static let onTextButtonPressed = "onTextButtonPressed"
   static let popToRootTemplate = "popToRootTemplate"
   static let onScreenBackButtonPressed = "onScreenBackButtonPressed"
+  static let getMaximumNumberOfGridImages = "getMaximumNumberOfGridImages"
+  static let getMaximumSectionCount = "getMaximumSectionCount"
+  static let getMaximumItemCount = "getMaximumItemCount"
 }
 
 enum FCPAlertActionTypes {

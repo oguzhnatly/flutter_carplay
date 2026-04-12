@@ -2,6 +2,7 @@ import 'package:flutter_carplay/models/button/bar_button.dart';
 import 'package:flutter_carplay/models/list/list_section.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../controllers/carplay_controller.dart';
 import '../template.dart';
 
 /// A template that displays and manages a list of items.
@@ -62,6 +63,16 @@ class CPListTemplate extends CPTemplate {
         'backButton': backButton?.toJson(),
         'runtimeType': 'FCPListTemplate',
       };
+
+  /// The maximum number of sections that the template can display.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  static Future<int?> getMaximumSectionCount() =>
+      FlutterCarPlayController.getMaximumSectionCount();
+
+  /// The maximum number of items, across all sections, that the template can display.
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  static Future<int?> getMaximumItemCount() =>
+      FlutterCarPlayController.getMaximumItemCount();
 
   @override
   String get uniqueId {

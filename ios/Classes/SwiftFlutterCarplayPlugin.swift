@@ -370,6 +370,15 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       self.objcPresentTemplate = nil
       result(true)
       break
+    case FCPChannelTypes.getMaximumNumberOfGridImages:
+      result(CPMaximumNumberOfGridImages)
+      break
+    case FCPChannelTypes.getMaximumSectionCount:
+      result(CPListTemplate.maximumSectionCount)
+      break
+    case FCPChannelTypes.getMaximumItemCount:
+      result(CPListTemplate.maximumItemCount)
+      break
     default:
       result(false)
       break

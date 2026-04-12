@@ -186,6 +186,27 @@ class FlutterCarPlayController {
     );
   }
 
+  static Future<int?> getMaximumNumberOfGridImages() async {
+    final value = await _methodChannel.invokeMethod<int>(
+      FCPChannelTypes.getMaximumNumberOfGridImages.name,
+    );
+    return value;
+  }
+
+  static Future<int?> getMaximumSectionCount() async {
+    final value = await _methodChannel.invokeMethod<int>(
+      FCPChannelTypes.getMaximumSectionCount.name,
+    );
+    return value;
+  }
+
+  static Future<int?> getMaximumItemCount() async {
+    final value = await _methodChannel.invokeMethod<int>(
+      FCPChannelTypes.getMaximumItemCount.name,
+    );
+    return value;
+  }
+
   void addTemplateToHistory(CPTemplate template) {
     if (template is CPTabBarTemplate ||
         template is CPGridTemplate ||

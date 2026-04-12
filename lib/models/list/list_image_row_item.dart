@@ -77,6 +77,11 @@ class CPListImageRowItem extends CPListTemplateItem {
     FlutterCarPlayController.updateCPListImageRowItem(this);
   }
 
+  /// The maximum number of images that an image row can contain.
+  /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 14.0+
+  static Future<int?> getMaximumNumberOfGridImages() =>
+      FlutterCarPlayController.getMaximumNumberOfGridImages();
+
   @override
   String get uniqueId {
     return _elementId;
