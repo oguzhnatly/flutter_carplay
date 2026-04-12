@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_carplay/constants/private_constants.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 
-import 'aa_models/template.dart';
 import 'controllers/android_auto_controller.dart';
 
 /// An object in order to integrate Android auto in navigation and
@@ -26,9 +24,7 @@ class FlutterAndroidAuto {
   late final StreamSubscription<dynamic>? _eventBroadcast;
 
   /// Current Android Auto and mobile app connection status.
-  static String _connectionStatus = EnumUtils.stringFromEnum(
-    ConnectionStatusTypes.unknown.toString(),
-  );
+  static String _connectionStatus = ConnectionStatusTypes.unknown.name;
 
   /// A listener function, which will be triggered when CarPlay connection changes
   /// and will be transmitted to the main code, allowing the user to access
@@ -52,9 +48,7 @@ class FlutterAndroidAuto {
             ConnectionStatusTypes.values,
             event['data']['status'],
           );
-          _connectionStatus = EnumUtils.stringFromEnum(
-            connectionStatus.toString(),
-          );
+          _connectionStatus = connectionStatus.name;
           if (_onAndroidAutoConnectionChange != null) {
             _onAndroidAutoConnectionChange!(connectionStatus);
           }
