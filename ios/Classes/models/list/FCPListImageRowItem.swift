@@ -124,7 +124,8 @@ final class FCPListImageRowItem {
         listImageRowItem = CPListImageRowItem.init(text: text ?? "", images: placeholderImages)
       }
 
-      for (index, imagePath) in gridImages.enumerated() {
+      let maxCount = listImageRowItem.gridImages.count
+      for (index, imagePath) in gridImages.prefix(maxCount).enumerated() {
         let imageSource = imagePath.toImageSource()
         loadUIImageAsync(from: imageSource) { uiImage in
           if let uiImage = uiImage {
