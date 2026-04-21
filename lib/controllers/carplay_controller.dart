@@ -367,10 +367,13 @@ class FlutterCarPlayController {
                 .whereType<CPListItem>()
                 .map((e) => e.toJson())
                 .toList();
-            _methodChannel.invokeMethod('updateSearchResults', <String, dynamic>{
-              'elementId': elementId,
-              'searchResults': items,
-            });
+            FlutterCarPlayController.flutterToNativeModule(
+              FCPChannelTypes.updateSearchResults,
+              <String, dynamic>{
+                'elementId': elementId,
+                'searchResults': items,
+              },
+            );
           },
         );
         return;
@@ -392,10 +395,10 @@ class FlutterCarPlayController {
           t.onSearchResultSelected?.call(
             selectedItem,
             () {
-              _methodChannel.invokeMethod(
-                  'onSearchResultSelectedComplete', <String, dynamic>{
-                'elementId': elementId,
-              });
+              FlutterCarPlayController.flutterToNativeModule(
+                FCPChannelTypes.onSearchResultSelectedComplete,
+                <String, dynamic>{'elementId': elementId},
+              );
             },
           );
         }

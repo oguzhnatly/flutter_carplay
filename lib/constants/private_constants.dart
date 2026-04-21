@@ -32,6 +32,7 @@ enum FCPChannelTypes {
   onSearchTextUpdated,
   onSearchResultSelected,
   onSearchButtonPressed,
+  updateSearchResults,
   onSearchResultSelectedComplete,
 }
 

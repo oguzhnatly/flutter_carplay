@@ -15,7 +15,6 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
 
   init(obj: [String: Any]) {
     self.elementId = obj["_elementId"] as! String
-    super.init()
   }
 
   var get: CPTemplate {
