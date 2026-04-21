@@ -26,6 +26,8 @@ enum FCPChannelTypes {
   onScreenBackButtonPressed,
   updateTabBarTemplates,
   updateListTemplateSections,
+  updateInformationTemplateItems,
+  updateInformationTemplateActions,
   getMaximumNumberOfGridImages,
   getMaximumSectionCount,
   getMaximumItemCount,

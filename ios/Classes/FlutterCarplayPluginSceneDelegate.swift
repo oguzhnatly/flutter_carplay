@@ -50,7 +50,6 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     templateFromHistory.updateSections(sections: sections)
   }
 
-  // https://developer.apple.com/documentation/carplay/cpinformationtemplate/items
   static public func updateInformationTemplateItems(elementId: String, items: [FCPInformationItem]) {
     guard let templateFromHistory = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: elementId) as? FCPInformationTemplate else {
       NSLog("FlutterCarPlaySceneDelegate - updateInformationTemplateItems: Template from history with elementId \(elementId) not found.")
@@ -60,7 +59,6 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     templateFromHistory.updateInformationItems(items: items)
   }
 
-  // https://developer.apple.com/documentation/carplay/cpinformationtemplate/actions
   static public func updateInformationTemplateActions(elementId: String, actions: [FCPTextButton]) {
     guard let templateFromHistory = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: elementId) as? FCPInformationTemplate else {
       NSLog("FlutterCarPlaySceneDelegate - updateInformationTemplateActions: Template from history with elementId \(elementId) not found.")
