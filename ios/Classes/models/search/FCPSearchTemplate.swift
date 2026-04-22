@@ -77,6 +77,3 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
     return currentResultItems
   }
 }
-
-@available(iOS 14.0, *)
-extension FCPSearchTemplate: FCPRootTemplate {}
