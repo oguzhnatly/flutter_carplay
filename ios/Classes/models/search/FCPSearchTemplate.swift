@@ -9,7 +9,7 @@ import CarPlay
 class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
   private(set) var _super: CPSearchTemplate?
   private(set) var elementId: String
-  private var searchCompletionHandler: (([any CPListTemplateItem]) -> Void)?
+  private var searchCompletionHandler: (([CPListItem]) -> Void)?
   private var selectedCompletionHandler: (() -> Void)?
   private var currentResultItems: [FCPListItem] = []
 
@@ -25,7 +25,7 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
     return searchTemplate
   }
 
-  func searchTemplate(_ searchTemplate: CPSearchTemplate, updatedSearchText searchText: String, completionHandler: @escaping ([any CPListTemplateItem]) -> Void) {
+  func searchTemplate(_ searchTemplate: CPSearchTemplate, updatedSearchText searchText: String, completionHandler: @escaping ([CPListItem]) -> Void) {
     self.searchCompletionHandler = completionHandler
     DispatchQueue.main.async {
       FCPStreamHandlerPlugin.sendEvent(
@@ -63,7 +63,7 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
 
   public func updateSearchResults(items: [FCPListItem]) {
     self.currentResultItems = items
-    let cpItems: [any CPListTemplateItem] = items.map { $0.get }
+    let cpItems = items.compactMap { $0.get as? CPListItem }
     self.searchCompletionHandler?(cpItems)
     self.searchCompletionHandler = nil
   }
@@ -76,4 +76,9 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
   public func getCurrentResultItems() -> [FCPListItem] {
     return currentResultItems
   }
+}
+
+@available(iOS 14.0, *)
+extension FCPSearchTemplate: FCPTemplate {
+  public func update(with template: any FCPTemplate) {}
 }
