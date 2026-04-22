@@ -9,7 +9,7 @@ import CarPlay
 class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
   private(set) var _super: CPSearchTemplate?
   private(set) var elementId: String
-  private var searchCompletionHandler: (([CPListItem]) -> Void)?
+  private var searchCompletionHandler: (([any CPListTemplateItem]) -> Void)?
   private var selectedCompletionHandler: (() -> Void)?
   private var currentResultItems: [FCPListItem] = []
 
@@ -25,7 +25,7 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
     return searchTemplate
   }
 
-  func searchTemplate(_ searchTemplate: CPSearchTemplate, updatedSearchText searchText: String, completionHandler: @escaping ([CPListItem]) -> Void) {
+  func searchTemplate(_ searchTemplate: CPSearchTemplate, updatedSearchText searchText: String, completionHandler: @escaping ([any CPListTemplateItem]) -> Void) {
     self.searchCompletionHandler = completionHandler
     DispatchQueue.main.async {
       FCPStreamHandlerPlugin.sendEvent(
