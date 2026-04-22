@@ -63,7 +63,7 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
 
   public func updateSearchResults(items: [FCPListItem]) {
     self.currentResultItems = items
-    let cpItems = items.map { $0.get }
+    let cpItems: [any CPListTemplateItem] = items.map { $0.get }
     self.searchCompletionHandler?(cpItems)
     self.searchCompletionHandler = nil
   }
