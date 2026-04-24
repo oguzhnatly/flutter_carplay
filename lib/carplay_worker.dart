@@ -213,6 +213,51 @@ class FlutterCarplay {
     return;
   }
 
+  /// It will update the information items of the [CPInformationTemplate] which has the given [elementId].
+  Future<void> updateInformationTemplateItems({
+    required String elementId,
+    required List<CPInformationItem> items,
+  }) async {
+    final bool? isCompleted =
+        await FlutterCarPlayController.flutterToNativeModule(
+      FCPChannelTypes.updateInformationTemplateItems,
+      <String, dynamic>{
+        'elementId': elementId,
+        'items': items.map((CPInformationItem item) => item.toJson()).toList(),
+      },
+    );
+
+    if (isCompleted == true) {
+      final template = FlutterCarPlayController
+          .getTemplateFromHistory<CPInformationTemplate>(elementId);
+      template?.updateInformationItems(items);
+    }
+    return;
+  }
+
+  /// It will update the actions of the [CPInformationTemplate] which has the given [elementId].
+  Future<void> updateInformationTemplateActions({
+    required String elementId,
+    required List<CPTextButton> actions,
+  }) async {
+    final bool? isCompleted =
+        await FlutterCarPlayController.flutterToNativeModule(
+      FCPChannelTypes.updateInformationTemplateActions,
+      <String, dynamic>{
+        'elementId': elementId,
+        'actions':
+            actions.map((CPTextButton action) => action.toJson()).toList(),
+      },
+    );
+
+    if (isCompleted == true) {
+      final template = FlutterCarPlayController
+          .getTemplateFromHistory<CPInformationTemplate>(elementId);
+      template?.updateActions(actions);
+    }
+    return;
+  }
+
   /// It will update the templates of the [CPTabBarTemplate] which has the given [elementId].
   /// Supported template types: [CPListTemplate], [CPPointOfInterestTemplate],
   /// [CPGridTemplate], [CPInformationTemplate]

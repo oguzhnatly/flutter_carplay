@@ -50,6 +50,24 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     templateFromHistory.updateSections(sections: sections)
   }
 
+  static public func updateInformationTemplateItems(elementId: String, items: [FCPInformationItem]) {
+    guard let templateFromHistory = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: elementId) as? FCPInformationTemplate else {
+      NSLog("FlutterCarPlaySceneDelegate - updateInformationTemplateItems: Template from history with elementId \(elementId) not found.")
+      return
+    }
+
+    templateFromHistory.updateInformationItems(items: items)
+  }
+
+  static public func updateInformationTemplateActions(elementId: String, actions: [FCPTextButton]) {
+    guard let templateFromHistory = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: elementId) as? FCPInformationTemplate else {
+      NSLog("FlutterCarPlaySceneDelegate - updateInformationTemplateActions: Template from history with elementId \(elementId) not found.")
+      return
+    }
+
+    templateFromHistory.updateActions(actions: actions)
+  }
+
   // https://developer.apple.com/documentation/carplay/cptabbartemplate/updatetemplates(_:)
   static public func updateTabBarTemplates(elementId: String, templates: [FCPTemplate]) {
     guard

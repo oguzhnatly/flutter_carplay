@@ -57,4 +57,18 @@ class CPInformationTemplate extends CPTemplate {
   String get uniqueId {
     return _elementId;
   }
+
+  void updateInformationItems(List<CPInformationItem> newItems) {
+    final copy = List<CPInformationItem>.from(newItems);
+    informationItems
+      ..clear()
+      ..addAll(copy);
+  }
+
+  void updateActions(List<CPTextButton> newActions) {
+    final copy = List<CPTextButton>.from(newActions);
+    actions
+      ..clear()
+      ..addAll(copy);
+  }
 }

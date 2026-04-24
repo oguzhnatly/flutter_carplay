@@ -50,13 +50,11 @@ class FCPInformationTemplate {
   var get: CPTemplate {
     let informationTemplate = CPInformationTemplate.init(
       title: self.title, layout: self.layout, items: informationItems, actions: actions)
-
     informationTemplate.tabTitle = tabTitle
     informationTemplate.showsTabBadge = showsTabBadge
     if let systemIcon = systemIcon {
       informationTemplate.tabImage = UIImage(systemName: systemIcon)
     }
-
     informationTemplate.elementId = self.elementId
     self._super = informationTemplate
     return informationTemplate
@@ -66,6 +64,18 @@ class FCPInformationTemplate {
     guard let with = with as? FCPInformationTemplate else {
       return
     }
+  }
+
+  public func updateInformationItems(items: [FCPInformationItem]) {
+    self.objcInformationItems = items
+    self.informationItems = items.map { $0.get }
+    _super?.items = self.informationItems
+  }
+
+  public func updateActions(actions: [FCPTextButton]) {
+    self.objcActions = actions
+    self.actions = actions.map { $0.get }
+    _super?.actions = self.actions
   }
 }
 @available(iOS 14.0, *)
