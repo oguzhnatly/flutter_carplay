@@ -1,6 +1,7 @@
 ## 1.3.1
 
 - Fix crash on iOS 18 and earlier when `CPListImageRowItem` is truncated by the host and fewer image slots are available than requested (#98) (ty @EArminjon)
+- Add update methods for CPInformationTemplate items and actions (#97) (ty @sINFdorako)
 - Document `CPListImageRowItem` support and `CPInformationTemplate` update methods in the README
 - Update the security policy supported versions to include `1.3.x`
 
@@ -8,7 +9,6 @@
 
 - Implement CPListImageRowItem with full support for cardElements, condensedElements, elements, gridElements, and imageGridElements (#94) (ty @EArminjon)
 - Support individual update for CPListImageRowItem and CPListImageRowItemElement
-- Add update methods for CPInformationTemplate items and actions (#97) (ty @sINFdorako)
 - Expose tabTitle, systemIcon, and showsTabBadges on CPTabBarTemplate
 - Rename enums and classes to be 1:1 with Apple documentation (breaking change)
 - Rework UUID logic to allow custom elementId on all models
