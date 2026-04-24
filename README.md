@@ -93,6 +93,13 @@ By evaluating this information, you can request for the relevant entitlement fro
 
 # What's New in latest versions
 
+## v1.3.0
+
+- **🖼️ CPListImageRowItem**: Added support for image row list items, including element based layouts on newer iOS versions
+- **🔄 Information Template Updates**: Added update methods for information items and actions without rebuilding the whole template, thanks to [@sINFdorako](https://github.com/sINFdorako)
+- **🧩 Better Tab Bar Configuration**: `tabTitle`, `systemIcon`, and `showsTabBadge` are now exposed consistently on templates
+- **🛠️ API Polish**: Added custom ids across models, convenient update helpers, and improved image loading reliability
+
 ## v1.2.0
 
 - **🤖 Android Auto Support**: Initial support for Android Auto with limited
@@ -811,6 +818,64 @@ FlutterCarplay.push(template: informationTemplate, animated: true);
 FlutterCarplay.setRootTemplate(rootTemplate: informationTemplate, animated: true);
 // You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
+
+You can also update an existing `CPInformationTemplate` without rebuilding the full template.
+
+```dart
+await _flutterCarplay.updateInformationTemplateItems(
+  elementId: informationTemplate.uniqueId,
+  items: [
+    CPInformationItem(title: "Battery", detail: "85%"),
+    CPInformationItem(title: "Range", detail: "240 km"),
+  ],
+);
+
+await _flutterCarplay.updateInformationTemplateActions(
+  elementId: informationTemplate.uniqueId,
+  actions: [
+    CPTextButton(
+      title: "Refresh",
+      onPress: () {
+        print("Refresh tapped");
+      },
+    ),
+  ],
+);
+```
+
+### List Image Row Item
+
+`CPListImageRowItem` lets you show a row of multiple images inside a `CPListTemplate` section.
+
+```dart
+final CPListTemplate listTemplate = CPListTemplate(
+  title: "Gallery",
+  sections: [
+    CPListSection(
+      items: [
+        CPListImageRowItem(
+          text: "Recently played",
+          gridImages: [
+            "https://picsum.photos/200/200?1",
+            "https://picsum.photos/200/200?2",
+            "https://picsum.photos/200/200?3",
+          ],
+          onPress: (complete, item) {
+            print(item.text);
+            complete();
+          },
+          onItemPress: (complete, item, index) {
+            print("Tapped image index: $index");
+            complete();
+          },
+        ),
+      ],
+    ),
+  ],
+);
+```
+
+Use `CPListImageRowItem.getMaximumNumberOfGridImages()` if you want to respect the host limit before building the row.
 
 ### Point Of Interest Template
 
