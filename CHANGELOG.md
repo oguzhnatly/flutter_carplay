@@ -8,6 +8,7 @@
 
 - Implement CPListImageRowItem with full support for cardElements, condensedElements, elements, gridElements, and imageGridElements (#94) (ty @EArminjon)
 - Support individual update for CPListImageRowItem and CPListImageRowItemElement
+- Add update methods for CPInformationTemplate items and actions (#97) (ty @sINFdorako)
 - Expose tabTitle, systemIcon, and showsTabBadges on CPTabBarTemplate
 - Rename enums and classes to be 1:1 with Apple documentation (breaking change)
 - Rework UUID logic to allow custom elementId on all models

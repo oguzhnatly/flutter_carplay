@@ -79,7 +79,6 @@ https://developer.android.com/design/ui/cars/guides/templates/overview
 - [x] Alert Template
 - [x] Grid Template
 - [x] List Template
-- [x] List Image Row Item (v1.3.0)
 - [x] Tab Bar Template
 - [x] Information Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
 - [x] Point of Interest Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
@@ -97,7 +96,7 @@ By evaluating this information, you can request for the relevant entitlement fro
 ## v1.3.0
 
 - **🖼️ CPListImageRowItem**: Added support for image row list items, including element based layouts on newer iOS versions
-- **🔄 Information Template Updates**: Added update methods for information items and actions without rebuilding the whole template
+- **🔄 Information Template Updates**: Added update methods for information items and actions without rebuilding the whole template, thanks to [@sINFdorako](https://github.com/sINFdorako)
 - **🧩 Better Tab Bar Configuration**: `tabTitle`, `systemIcon`, and `showsTabBadge` are now exposed consistently on templates
 - **🛠️ API Polish**: Added custom ids across models, convenient update helpers, and improved image loading reliability
 
