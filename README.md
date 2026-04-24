@@ -94,6 +94,12 @@ By evaluating this information, you can request for the relevant entitlement fro
 
 # What's New in latest versions
 
+## v1.3.1
+
+- **🩹 CPListImageRowItem Crash Fix**: Fixes a crash on iOS 18 and earlier when the host truncates the image row and exposes fewer slots than requested
+- **📚 Documentation Updates**: Adds README coverage for `CPListImageRowItem` and dynamic `CPInformationTemplate` updates
+- **🔐 Security Policy Refresh**: Marks `1.3.x` as a supported version line in `SECURITY.md`
+
 ## v1.3.0
 
 - **🖼️ CPListImageRowItem**: Added support for image row list items, including element based layouts on newer iOS versions
