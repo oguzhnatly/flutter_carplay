@@ -212,7 +212,8 @@ class FlutterCarPlayController {
         template is CPGridTemplate ||
         template is CPInformationTemplate ||
         template is CPPointOfInterestTemplate ||
-        template is CPListTemplate) {
+        template is CPListTemplate ||
+        template is CPSearchTemplate) {
       templateHistory.add(template);
     } else {
       throw TypeError();
@@ -351,6 +352,66 @@ class FlutterCarPlayController {
             }
           }
         }
+      }
+    }
+  }
+
+  void processFCPSearchTextUpdated(String elementId, String searchText) {
+    for (var t in templateHistory) {
+      if (t is CPSearchTemplate && t.uniqueId == elementId) {
+        t.onSearchTextUpdated?.call(
+          searchText,
+          (List<dynamic> results) {
+            t.updateResults(results);
+            final items = results
+                .whereType<CPListItem>()
+                .map((e) => e.toJson())
+                .toList();
+            FlutterCarPlayController.flutterToNativeModule(
+              FCPChannelTypes.updateSearchResults,
+              <String, dynamic>{
+                'elementId': elementId,
+                'searchResults': items,
+              },
+            );
+          },
+        );
+        return;
+      }
+    }
+  }
+
+  void processFCPSearchResultSelected(String elementId, String itemElementId) {
+    for (var t in templateHistory) {
+      if (t is CPSearchTemplate && t.uniqueId == elementId) {
+        CPListItem? selectedItem;
+        for (var item in t.currentResults) {
+          if (item is CPListItem && item.uniqueId == itemElementId) {
+            selectedItem = item;
+            break;
+          }
+        }
+        if (selectedItem != null) {
+          t.onSearchResultSelected?.call(
+            selectedItem,
+            () {
+              FlutterCarPlayController.flutterToNativeModule(
+                FCPChannelTypes.onSearchResultSelectedComplete,
+                <String, dynamic>{'elementId': elementId},
+              );
+            },
+          );
+        }
+        return;
+      }
+    }
+  }
+
+  void processFCPSearchButtonPressed(String elementId) {
+    for (var t in templateHistory) {
+      if (t is CPSearchTemplate && t.uniqueId == elementId) {
+        t.onSearchButtonPressed?.call();
+        return;
       }
     }
   }
