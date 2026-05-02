@@ -130,6 +130,9 @@ final class FCPListImageRowItem {
         loadUIImageAsync(from: imageSource) { uiImage in
           if let uiImage = uiImage {
             var currentImages = listImageRowItem.gridImages
+            guard currentImages.indices.contains(index) else {
+              return
+            }
             currentImages[index] = uiImage
             listImageRowItem.update(currentImages)
           }

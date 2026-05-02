@@ -38,10 +38,12 @@ func makeSafeUIPlaceholder() -> UIImage {
 }
 
 func makeUIPlaceholder() -> UIImage {
-  UIGraphicsBeginImageContextWithOptions(CGSize(width: 100, height: 100), false, 0)
-  let img = UIGraphicsGetImageFromCurrentImageContext()!
-  UIGraphicsEndImageContext()
-  return img
+  let size = CGSize(width: 100, height: 100)
+  let renderer = UIGraphicsImageRenderer(size: size)
+  return renderer.image { _ in
+    UIColor.clear.setFill()
+    UIRectFill(CGRect(origin: .zero, size: size))
+  }
 }
 
 // UIImage creation (MAIN THREAD ONLY)
@@ -171,11 +173,10 @@ func loadUIImageAsync(
 //  UIImage utilities (safe, UI only)
 extension UIImage {
   func resizeImageTo(size: CGSize) -> UIImage {
-    UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
-    draw(in: CGRect(origin: .zero, size: size))
-    let newImage = UIGraphicsGetImageFromCurrentImageContext()!
-    UIGraphicsEndImageContext()
-    return newImage
+    let renderer = UIGraphicsImageRenderer(size: size)
+    return renderer.image { _ in
+      draw(in: CGRect(origin: .zero, size: size))
+    }
   }
 }
 
