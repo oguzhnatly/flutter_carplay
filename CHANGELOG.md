@@ -1,3 +1,7 @@
+## 1.3.2
+
+- Avoid iOS crash around image management (#101) (ty @EArminjon)
+
 ## 1.3.1
 
 - Fix crash on iOS 18 and earlier when `CPListImageRowItem` is truncated by the host and fewer image slots are available than requested (#98) (ty @EArminjon)
