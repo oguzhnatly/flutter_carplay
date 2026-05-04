@@ -16,4 +16,10 @@ enum class FAAChannelTypes {
     onListItemSelected,
     onListItemSelectedComplete,
     onScreenBackButtonPressed,
+    setAlert,
+    closePresent,
+    onAlertActionPressed,
+    onPresentStateChanged,
+    updateTabBarTemplates,
+    onTabBarItemSelected,
 }

@@ -10,12 +10,13 @@ class FlutterAutoAndroidHelper {
     for (var t in templates) {
       final List<AAListTemplate> listTemplates = [];
 
-      /*if (t.runtimeType.toString() == (AATabBarTemplate).toString()) {
-        for (var template in t.templates) {
-          listTemplates.add(template);
+      if (t is AATabBarTemplate) {
+        for (var tab in t.tabs) {
+          if (tab is AAListTemplate) {
+            listTemplates.add(tab);
+          }
         }
-      } else*/
-      if (t is AAListTemplate) {
+      } else if (t is AAListTemplate) {
         listTemplates.add(t);
       }
 

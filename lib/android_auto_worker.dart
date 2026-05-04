@@ -53,16 +53,38 @@ class FlutterAndroidAuto {
             _onAndroidAutoConnectionChange!(connectionStatus);
           }
           break;
+
         case FAAChannelTypes.onListItemSelected:
           _androidAutoController.processFAAListItemSelectedChannel(
             event['data']['elementId'],
           );
           break;
+
         case FAAChannelTypes.onScreenBackButtonPressed:
           FlutterAndroidAutoController.templateHistory.removeWhere(
             (AATemplate item) => item.uniqueId == event['data']['elementId'],
           );
           break;
+
+        case FAAChannelTypes.onAlertActionPressed:
+          _androidAutoController.processFAAAlertActionPressed(
+            event['data']['elementId'],
+          );
+          break;
+
+        case FAAChannelTypes.onPresentStateChanged:
+          final bool completed = event['data']['completed'] as bool? ?? false;
+          _androidAutoController.processFAAPresentStateChanged(
+            event['data']['elementId'],
+            completed,
+          );
+          break;
+
+        case FAAChannelTypes.onTabBarItemSelected:
+          // Notifies Dart that the active tab changed. No Dart-side action
+          // is strictly required; update the history if needed.
+          break;
+
         default:
           break;
       }
@@ -136,57 +158,57 @@ class FlutterAndroidAuto {
   }
 
   /// Getter for current root template.
-  /// Return one of type [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate]
   static dynamic get rootTemplate {
     return FlutterAndroidAutoController.currentRootTemplate;
   }
 
-  /// It will present [CPAlertTemplate] modally.
+  /// Presents an [AAAlertTemplate] modally on Android Auto.
   ///
-  /// - template is to present modally.
-  /// - If animated is true, CarPlay animates the presentation of the template.
+  /// Because Android Auto does not support true overlay modals, the alert is
+  /// pushed onto the navigation stack as a full-screen [MessageTemplate].
+  /// Use [popModal] to dismiss it programmatically.
   ///
-  /// [!] CarPlay can only present one modal template at a time.
-/*static Future<void> showAlert({
-    required CPAlertTemplate template,
-    bool animated = true,
-  }) {
-    return _androidAutoController.methodChannel.invokeMethod(
-      EnumUtils.stringFromEnum(FCPChannelTypes.setAlert.toString()),
-      <String, dynamic>{
-        'rootTemplate': template.toJson(),
-        'animated': animated,
-        'onPresent': template.onPresent != null ? true : false,
-      },
-    ).then((value) {
-      if (value) {
-        FlutterCarPlayController.currentPresentTemplate = template;
-      }
+  /// [!] Only one modal can be presented at a time.
+  static Future<void> showAlert({
+    required AAAlertTemplate template,
+  }) async {
+    final bool? isCompleted = await _androidAutoController
+        .flutterToNativeModule(FAAChannelTypes.setAlert, {
+      'template': template.toJson(),
     });
-  }*/
 
-  /// It will present [CPActionSheetTemplate] modally.
+    if (isCompleted == true) {
+      FlutterAndroidAutoController.currentPresentTemplate = template;
+    }
+  }
+
+  /// Dismisses the currently presented modal ([AAAlertTemplate]).
+  static Future<bool> popModal() async {
+    FlutterAndroidAutoController.currentPresentTemplate = null;
+    final bool? isCompleted = await _androidAutoController
+        .flutterToNativeModule(FAAChannelTypes.closePresent);
+    return isCompleted ?? false;
+  }
+
+  /// Updates the tabs of the currently displayed [AATabBarTemplate].
   ///
-  /// - template is to present modally.
-  /// - If animated is true, CarPlay animates the presentation of the template.
-  ///
-  /// [!] CarPlay can only present one modal template at a time.
-/* static Future<void> showActionSheet({
-    required CPActionSheetTemplate template,
-    bool animated = true,
-  }) {
-    return _androidAutoController.methodChannel.invokeMethod(
-      EnumUtils.stringFromEnum(FCPChannelTypes.setActionSheet.toString()),
-      <String, dynamic>{
-        'rootTemplate': template.toJson(),
-        'animated': animated,
-      },
-    ).then((value) {
-      if (value) {
-        FlutterCarPlayController.currentPresentTemplate = template;
-      }
+  /// [template] must be the same instance (or have the same [uniqueId]) as the
+  /// one currently set as root, with its [AATabBarTemplate.tabs] already updated.
+  static Future<void> updateTabBarTemplates({
+    required AATabBarTemplate template,
+  }) async {
+    await _androidAutoController
+        .flutterToNativeModule(FAAChannelTypes.updateTabBarTemplates, {
+      'template': template.toJson(),
     });
-  }*/
+
+    // Keep Dart-side history in sync
+    final index = FlutterAndroidAutoController.templateHistory
+        .indexWhere((t) => t.uniqueId == template.uniqueId);
+    if (index >= 0) {
+      FlutterAndroidAutoController.templateHistory[index] = template;
+    }
+  }
 
   /// Removes the top-most template from the navigation hierarchy.
   ///
@@ -211,20 +233,10 @@ class FlutterAndroidAuto {
     return isCompleted ?? false;
   }
 
-  /// Removes a modal template. Since [CPAlertTemplate] and [CPActionSheetTemplate] are both
-  /// modals, they can be removed. If animated is true, CarPlay animates the transition between templates.
-/* static Future<bool> popModal({bool animated = true}) async {
-    FlutterCarPlayController.currentPresentTemplate = null;
-    return await _androidAutoController.flutterToNativeModule(
-      FAAChannelTypes.closePresent,
-      animated,
-    );
-  }*/
-
   /// Adds a template to the navigation hierarchy and displays it.
   ///
   /// - template is to add to the navigation hierarchy. **Must be one of the type:**
-  /// [AAGridTemplate] or [AAListTemplate] [AAInformationTemplat] [AAPointOfInterestTemplate]
+  /// [AAListTemplate] or [AATabBarTemplate]
   ///
   /// Be aware of the restrictions : https://developer.android.com/training/cars/apps#template-restrictions
   /// - Max 5 templates in the navigation stack.
@@ -250,6 +262,8 @@ class FlutterAndroidAuto {
   /// Uses explicit type checks to ensure compatibility with Dart obfuscation.
   static String _getAARuntimeTypeString(AATemplate template) {
     if (template is AAListTemplate) return 'FAAListTemplate';
+    if (template is AATabBarTemplate) return 'FAATabBarTemplate';
+    if (template is AAAlertTemplate) return 'FAAAlertTemplate';
     return 'FAA${template.runtimeType}';
   }
 }
