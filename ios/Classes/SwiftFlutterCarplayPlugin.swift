@@ -80,6 +80,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       case String(describing: FCPListTemplate.self):
         rootTemplate = FCPListTemplate(obj: data)
         break
+      case String(describing: FCPSearchTemplate.self):
+        rootTemplate = FCPSearchTemplate(obj: data)
+        break
       default:
         result(false)
         return
@@ -368,6 +371,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       case String(describing: FCPListTemplate.self):
         template = FCPListTemplate(obj: data)
         break
+      case String(describing: FCPSearchTemplate.self):
+        template = FCPSearchTemplate(obj: data)
+        break
       default:
         result(false)
         return
@@ -381,6 +387,37 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       } else {
         result(false)
       }
+      break
+    case FCPChannelTypes.updateSearchResults:
+      guard let args = call.arguments as? [String : Any] else {
+        result(false)
+        return
+      }
+      let elementId = args["elementId"] as! String
+      let items = (args["searchResults"] as! Array<[String : Any]>).map {
+        FCPListItem(obj: $0)
+      }
+      for template in SwiftFlutterCarplayPlugin.templateStack {
+        if let searchTemplate = template as? FCPSearchTemplate, searchTemplate.elementId == elementId {
+          searchTemplate.updateSearchResults(items: items)
+          break
+        }
+      }
+      result(true)
+      break
+    case FCPChannelTypes.onSearchResultSelectedComplete:
+      guard let args = call.arguments as? [String : Any] else {
+        result(false)
+        return
+      }
+      let elementId = args["elementId"] as! String
+      for template in SwiftFlutterCarplayPlugin.templateStack {
+        if let searchTemplate = template as? FCPSearchTemplate, searchTemplate.elementId == elementId {
+          searchTemplate.completeSelectedResult()
+          break
+        }
+      }
+      result(true)
       break
     case FCPChannelTypes.popToRootTemplate:
       guard let animated = call.arguments as? Bool,
@@ -436,6 +473,13 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         }
       } else if let list = template as? FCPListTemplate {
         collected.append(list)
+      } else if let search = template as? FCPSearchTemplate {
+        for item in search.getCurrentResultItems() {
+          if item.elementId == elementId {
+            actionWhenFound(item)
+            return
+          }
+        }
       }
     }
 

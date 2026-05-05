@@ -94,6 +94,23 @@ class FlutterCarplay {
             event['data']['elementId'],
           );
           break;
+        case FCPChannelTypes.onSearchTextUpdated:
+          _carPlayController.processFCPSearchTextUpdated(
+            event['data']['elementId'],
+            event['data']['searchText'],
+          );
+          break;
+        case FCPChannelTypes.onSearchResultSelected:
+          _carPlayController.processFCPSearchResultSelected(
+            event['data']['elementId'],
+            event['data']['itemElementId'],
+          );
+          break;
+        case FCPChannelTypes.onSearchButtonPressed:
+          _carPlayController.processFCPSearchButtonPressed(
+            event['data']['elementId'],
+          );
+          break;
         case FCPChannelTypes.onScreenBackButtonPressed:
           FlutterCarPlayController.templateHistory.removeWhere(
             (CPTemplate item) => item.uniqueId == event['data']['elementId'],
@@ -165,7 +182,8 @@ class FlutterCarplay {
         rootTemplate is CPGridTemplate ||
         rootTemplate is CPListTemplate ||
         rootTemplate is CPInformationTemplate ||
-        rootTemplate is CPPointOfInterestTemplate) {
+        rootTemplate is CPPointOfInterestTemplate ||
+        rootTemplate is CPSearchTemplate) {
       return FlutterCarPlayController.flutterToNativeModule(
           FCPChannelTypes.setRootTemplate, <String, dynamic>{
         'rootTemplate': rootTemplate.toJson(),
@@ -389,7 +407,8 @@ class FlutterCarplay {
     if (template is CPGridTemplate ||
         template is CPListTemplate ||
         template is CPInformationTemplate ||
-        template is CPPointOfInterestTemplate) {
+        template is CPPointOfInterestTemplate ||
+        template is CPSearchTemplate) {
       final bool? isCompleted =
           await FlutterCarPlayController.flutterToNativeModule(
         FCPChannelTypes.pushTemplate,
