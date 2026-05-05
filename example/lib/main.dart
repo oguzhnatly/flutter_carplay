@@ -223,7 +223,7 @@ class _MyAppState extends State<MyApp> {
                             AAListItem(
                               title: 'Item 1',
                               subtitle: 'Click to pop',
-                              imageUrl:
+                              image:
                                   'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
                               onPress: (complete, AAListItem item) {
                                 FlutterAndroidAuto.pop();
@@ -233,7 +233,7 @@ class _MyAppState extends State<MyApp> {
                             AAListItem(
                               title: 'Page 2',
                               subtitle: 'Click to open page 2',
-                              imageUrl:
+                              image:
                                   'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
                               onPress: (complete, AAListItem item) {
                                 print('Item for Page 2 pressed');
@@ -246,7 +246,7 @@ class _MyAppState extends State<MyApp> {
                                           AAListItem(
                                             title: 'Item 1',
                                             subtitle: 'Click to pop',
-                                            imageUrl:
+                                            image:
                                                 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
                                             onPress:
                                                 (complete, AAListItem item) {
@@ -258,7 +258,7 @@ class _MyAppState extends State<MyApp> {
                                             title: 'Page 2',
                                             subtitle:
                                                 'Click to open pop to root',
-                                            imageUrl:
+                                            image:
                                                 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
                                             onPress:
                                                 (complete, AAListItem item) {

@@ -21,9 +21,17 @@ class AAListTemplate implements AATemplate {
   /// inside an [AATabBarTemplate]. Falls back to [title] when not set.
   final String? tabTitle;
 
-  /// SF Symbol / icon name used to resolve a [CarIcon] for the tab bar item.
-  /// Common names such as "map", "house", "magnifyingglass" are mapped to
-  /// Car App Library built-in icons. Unknown names fall back to a default.
+  /// Ícone exibido na aba quando este template é usado dentro de um
+  /// [AATabBarTemplate]. Aceita três formatos:
+  ///
+  /// - **Nome de ícone do sistema** (ex: `"star"`, `"map"`) — mapeado para
+  ///   um [CarIcon] built-in do Car App Library.
+  /// - **Asset Flutter** (ex: `"images/logo.png"`) — carregado via
+  ///   `AssetManager` do APK.
+  /// - **Arquivo local** (ex: `"file:///path/to/icon.png"`) — lido do disco.
+  /// - **URL de rede** (ex: `"https://example.com/icon.png"`) — download async.
+  ///
+  /// Quando [iconUrl] também está definido, [iconUrl] tem prioridade.
   final String? systemIcon;
 
   /// URL of an image to use as the tab bar icon. Loaded asynchronously.

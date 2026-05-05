@@ -414,29 +414,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
             loadCarImageAsync(url)?.let { return it }
         }
 
-        val carContext = AndroidAutoService.session?.carContext
-        if (carContext != null) {
-            val drawableRes: Int? = when (tab.systemIcon?.lowercase()) {
-                "star", "star.fill", "star.circle", "star.circle.fill",
-                "heart", "heart.fill", "suit.heart", "suit.heart.fill",
-                "bookmark", "bookmark.fill", "favorites", "ic_faa_star"
-                -> R.drawable.ic_faa_star
-
-                "door.left.hand.open", "door.right.hand.open",
-                "door.left.hand.closed", "door.right.hand.closed",
-                "door.open", "door", "rectangle.portrait.and.arrow.right", "ic_faa_door_open"
-                -> R.drawable.ic_faa_door_open
-
-                "lock", "lock.fill", "lock.circle", "lock.circle.fill",
-                "lock.open", "lock.open.fill", "key", "key.fill",
-                "person.badge.key", "person.badge.key.fill", "login", "ic_faa_lock"
-                -> R.drawable.ic_faa_lock
-
-                else -> null
-            }
-            if (drawableRes != null) {
-                return CarIcon.Builder(IconCompat.createWithResource(carContext, drawableRes)).build()
-            }
+        tab.systemIcon?.let { icon ->
+            loadCarImageAsync(icon)?.let { return it }
         }
 
         return when (tab.systemIcon?.lowercase()) {

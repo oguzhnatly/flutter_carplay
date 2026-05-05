@@ -49,7 +49,7 @@ class FCPListTemplate {
     listTemplate.tabTitle = tabTitle
     listTemplate.showsTabBadge = showsTabBadge
     if let systemIcon = systemIcon {
-      listTemplate.tabImage = UIImage(systemName: systemIcon)
+      resolveTabIcon(systemIcon) { listTemplate.tabImage = $0 }
     }
     if let backButton = backButton {
       listTemplate.backButton = backButton
