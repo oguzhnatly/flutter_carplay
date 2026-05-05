@@ -359,14 +359,11 @@ class FlutterCarPlayController {
   void processFCPSearchTextUpdated(String elementId, String searchText) {
     for (var t in templateHistory) {
       if (t is CPSearchTemplate && t.uniqueId == elementId) {
-        t.onSearchTextUpdated?.call(
+        t.onUpdatedSearchText?.call(
           searchText,
-          (List<dynamic> results) {
+          (List<CPListItem> results) {
             t.updateResults(results);
-            final items = results
-                .whereType<CPListItem>()
-                .map((e) => e.toJson())
-                .toList();
+            final items = results.map((e) => e.toJson()).toList();
             FlutterCarPlayController.flutterToNativeModule(
               FCPChannelTypes.updateSearchResults,
               <String, dynamic>{
@@ -386,13 +383,13 @@ class FlutterCarPlayController {
       if (t is CPSearchTemplate && t.uniqueId == elementId) {
         CPListItem? selectedItem;
         for (var item in t.currentResults) {
-          if (item is CPListItem && item.uniqueId == itemElementId) {
+          if (item.uniqueId == itemElementId) {
             selectedItem = item;
             break;
           }
         }
         if (selectedItem != null) {
-          t.onSearchResultSelected?.call(
+          t.onSelectedResult?.call(
             selectedItem,
             () {
               FlutterCarPlayController.flutterToNativeModule(
@@ -410,7 +407,7 @@ class FlutterCarPlayController {
   void processFCPSearchButtonPressed(String elementId) {
     for (var t in templateHistory) {
       if (t is CPSearchTemplate && t.uniqueId == elementId) {
-        t.onSearchButtonPressed?.call();
+        t.onSearchTemplateSearchButtonPressed?.call();
         return;
       }
     }

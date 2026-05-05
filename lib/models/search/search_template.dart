@@ -1,38 +1,37 @@
 import 'package:uuid/uuid.dart';
 
+import '../list/list_item.dart';
 import '../template.dart';
 
-/// A template that displays a search interface.
+/// A template that provides the ability to search for a destination and see a list of search results.
 /// https://developer.apple.com/documentation/carplay/cpsearchtemplate
-/// iOS 14.0+
+/// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
 class CPSearchTemplate extends CPTemplate {
   /// Unique id of the object.
   final String _elementId;
 
-  /// Called when the user updates the search text.
-  /// Provides the current search text and a callback to update the displayed results.
-  /// iOS 14.0+
-  final Function(String searchText, Function(List<dynamic> results) update)?
-      onSearchTextUpdated;
+  /// Tells the delegate that the user updated the search criteria text.
+  /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
+  final Function(String searchText, Function(List<CPListItem> results) update)?
+      onUpdatedSearchText;
 
-  /// Called when the user selects a search result.
-  /// Provides the selected item and a completion callback to dismiss the search interface.
-  /// iOS 14.0+
-  final Function(dynamic selectedItem, Function() complete)?
-      onSearchResultSelected;
+  /// Tells the delegate that the user selected an item from the search result.
+  /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
+  final Function(CPListItem selectedItem, Function() complete)?
+      onSelectedResult;
 
-  /// Called when the user taps the search button on the keyboard.
-  /// iOS 14.0+
-  final Function()? onSearchButtonPressed;
+  /// Tells the delegate that the user tapped the keyboard's search button.
+  /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
+  final Function()? onSearchTemplateSearchButtonPressed;
 
-  List<dynamic> _currentResults = [];
+  final List<CPListItem> _currentResults = [];
 
   /// Creates [CPSearchTemplate] to display a CarPlay search interface.
   CPSearchTemplate({
     String? id,
-    this.onSearchTextUpdated,
-    this.onSearchResultSelected,
-    this.onSearchButtonPressed,
+    this.onUpdatedSearchText,
+    this.onSelectedResult,
+    this.onSearchTemplateSearchButtonPressed,
   })  : _elementId = id ?? const Uuid().v4(),
         super();
 
@@ -40,18 +39,19 @@ class CPSearchTemplate extends CPTemplate {
   Map<String, dynamic> toJson() => {
         'runtimeType': 'FCPSearchTemplate',
         '_elementId': _elementId,
-        'onSearchTextUpdated': onSearchTextUpdated != null,
-        'onSearchResultSelected': onSearchResultSelected != null,
-        'onSearchButtonPressed': onSearchButtonPressed != null,
+        'onUpdatedSearchText': onUpdatedSearchText != null,
+        'onSelectedResult': onSelectedResult != null,
+        'onSearchTemplateSearchButtonPressed':
+            onSearchTemplateSearchButtonPressed != null,
       };
 
   @override
   String get uniqueId => _elementId;
 
-  List<dynamic> get currentResults => _currentResults;
+  List<CPListItem> get currentResults => _currentResults;
 
-  void updateResults(List<dynamic> results) {
-    final copy = List<dynamic>.from(results);
+  void updateResults(List<CPListItem> results) {
+    final copy = List<CPListItem>.from(results);
     _currentResults
       ..clear()
       ..addAll(copy);
