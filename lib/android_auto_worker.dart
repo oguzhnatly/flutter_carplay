@@ -85,6 +85,12 @@ class FlutterAndroidAuto {
           // is strictly required; update the history if needed.
           break;
 
+        case FAAChannelTypes.onGridButtonPressed:
+          _androidAutoController.processFAAGridButtonPressed(
+            event['data']['elementId'],
+          );
+          break;
+
         default:
           break;
       }
@@ -262,6 +268,7 @@ class FlutterAndroidAuto {
   /// Uses explicit type checks to ensure compatibility with Dart obfuscation.
   static String _getAARuntimeTypeString(AATemplate template) {
     if (template is AAListTemplate) return 'FAAListTemplate';
+    if (template is AAGridTemplate) return 'FAAGridTemplate';
     if (template is AATabBarTemplate) return 'FAATabBarTemplate';
     if (template is AAAlertTemplate) return 'FAAAlertTemplate';
     return 'FAA${template.runtimeType}';

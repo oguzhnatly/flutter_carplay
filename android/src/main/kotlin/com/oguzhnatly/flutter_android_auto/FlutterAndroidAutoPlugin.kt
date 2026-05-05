@@ -4,6 +4,8 @@ import androidx.car.app.model.Action
 import androidx.car.app.model.CarIcon
 import androidx.core.graphics.drawable.IconCompat
 import androidx.car.app.model.CarText
+import androidx.car.app.model.GridItem
+import androidx.car.app.model.GridTemplate
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.MessageTemplate
@@ -86,6 +88,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     FAAChannelTypes.popTemplate.name            -> popTemplate(call, result)
                     FAAChannelTypes.popToRootTemplate.name      -> popToRootTemplate(call, result)
                     FAAChannelTypes.onListItemSelectedComplete.name -> onListItemSelectedComplete(call, result)
+                    FAAChannelTypes.onGridButtonSelectedComplete.name -> onGridButtonSelectedComplete(call, result)
                     FAAChannelTypes.setAlert.name               -> setAlert(call, result)
                     FAAChannelTypes.closePresent.name           -> closePresent(call, result)
                     FAAChannelTypes.updateTabBarTemplates.name  -> updateTabBarTemplates(call, result)
@@ -141,9 +144,15 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         pendingRawType = rawType
         pendingAddBackButton = addBackButton
 
-        val loadingBuilder = ListTemplate.Builder().setLoading(true)
-        if (!loadingMessage.isNullOrBlank()) loadingBuilder.setTitle(loadingMessage)
-        val loading = loadingBuilder.build()
+        val loading: Template = if (rawType == "FAAGridTemplate") {
+            GridTemplate.Builder().setLoading(true)
+                .apply { if (!loadingMessage.isNullOrBlank()) setTitle(loadingMessage) }
+                .build()
+        } else {
+            ListTemplate.Builder().setLoading(true)
+                .apply { if (!loadingMessage.isNullOrBlank()) setTitle(loadingMessage) }
+                .build()
+        }
 
         if (screen == null || screen == currentScreen) {
             currentTemplate = loading
@@ -173,6 +182,42 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         pluginScope.launch {
             // Special case: if the root screen is a tab bar, rebuild the whole
             // tab template (which internally rebuilds the active tab's list).
+            val rebuilt: Template? = if (screen == null && currentTabBarData != null) {
+                buildNativeTabTemplate(currentTabBarData!!)
+            } else {
+                buildTemplateForType(type, data, null, addBackButton = addBack, owningScreen = screen)
+            }
+
+            if (rebuilt != null) {
+                if (screen == null || screen == currentScreen) {
+                    currentTemplate = rebuilt
+                    currentScreen?.invalidate()
+                } else {
+                    pushedScreenTemplates[screen] = rebuilt
+                    screen.invalidate()
+                }
+            }
+            result.success(true)
+        }
+    }
+
+    private fun onGridButtonSelectedComplete(call: MethodCall, result: MethodChannel.Result) {
+        val screen  = pendingScreen
+        val data    = pendingRawData
+        val type    = pendingRawType
+        val addBack = pendingAddBackButton
+
+        pendingScreen        = null
+        pendingRawData       = null
+        pendingRawType       = null
+        pendingAddBackButton = false
+
+        if (data == null || type == null) {
+            result.success(true)
+            return
+        }
+
+        pluginScope.launch {
             val rebuilt: Template? = if (screen == null && currentTabBarData != null) {
                 buildNativeTabTemplate(currentTabBarData!!)
             } else {
@@ -354,6 +399,13 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
             owningScreen = null,    // tab items belong to the root screen
             rawType = "FAAListTemplate",
         )
+        "FAAGridTemplate" -> getGridTemplate(
+            result = null,
+            data = tab.templateData,
+            addBackButton = addBackButton,
+            owningScreen = null,    // tab items belong to the root screen
+            rawType = "FAAGridTemplate",
+        )
         else -> ListTemplate.Builder().setLoading(true).build()
     }
 
@@ -490,6 +542,13 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
             owningScreen = owningScreen,
             rawType = runtimeType,
         )
+        "FAAGridTemplate" -> getGridTemplate(
+            result = result,
+            data = data,
+            addBackButton = addBackButton,
+            owningScreen = owningScreen,
+            rawType = runtimeType,
+        )
         "FAATabBarTemplate" -> {
             val tabBarTemplate = FAATabBarTemplate.fromJson(data)
             currentTabBarData = tabBarTemplate
@@ -575,7 +634,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         item.subtitle?.let { rowBuilder.addText(CarText.create(it)) }
 
-        item.imageUrl?.let {
+        item.image?.let {
             loadCarImageAsync(it)?.let { carIcon -> rowBuilder.setImage(carIcon) }
         }
 
@@ -591,6 +650,83 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         return rowBuilder.build()
     }
 
+
+    // ─── Grid ────────────────────────────────────────────────────────────────
+
+    private suspend fun getGridTemplate(
+        result: MethodChannel.Result?,
+        data: Map<String, Any?>,
+        addBackButton: Boolean = true,
+        owningScreen: Screen? = null,
+        rawType: String = "FAAGridTemplate",
+    ): Template {
+        val template = FAAGridTemplate.fromJson(data)
+        val builder  = GridTemplate.Builder().setTitle(template.title)
+
+        val emptyMessage = template.emptyViewTitleVariants.firstOrNull()
+        val isEmpty      = template.buttons.isEmpty()
+
+        if (isEmpty) {
+            if (emptyMessage != null) {
+                builder.setLoading(false)
+                builder.setSingleList(ItemList.Builder().setNoItemsMessage(emptyMessage).build())
+            } else {
+                builder.setLoading(true)
+            }
+        } else {
+            builder.setLoading(false)
+            val itemListBuilder = ItemList.Builder()
+            for (button in template.buttons) {
+                itemListBuilder.addItem(
+                    createGridItemFromButton(button, owningScreen, data, rawType, addBackButton)
+                )
+            }
+            builder.setSingleList(itemListBuilder.build())
+        }
+
+        if (addBackButton) builder.setHeaderAction(Action.BACK)
+        return builder.build()
+    }
+
+    /**
+     * Builds a [GridItem] for a single grid button.
+     *
+     * The image is loaded asynchronously from [FAAGridButton.imageUrl]. When no
+     * URL is provided, or the load fails, [CarIcon.COMPOSE_MESSAGE] is used as a
+     * safe fallback so that [GridItem.Builder.build] never throws a missing-image
+     * exception.
+     *
+     * Tapping the item exibe imediatamente o loading na tela (via [showLoadingForScreen])
+     * e dispara [FAAChannelTypes.onGridButtonPressed] para o Dart. O Dart deve
+     * chamar [onGridButtonSelectedComplete] para encerrar o loading.
+     */
+    private suspend fun createGridItemFromButton(
+        button: FAAGridButton,
+        owningScreen: Screen?,
+        rawData: Map<String, Any?>,
+        rawType: String,
+        addBackButton: Boolean,
+    ): GridItem {
+        val itemBuilder = GridItem.Builder().setTitle(button.title)
+
+        val carIcon: CarIcon = button.image
+            ?.let { loadCarImageAsync(it) }
+            ?: CarIcon.COMPOSE_MESSAGE
+
+        itemBuilder.setImage(carIcon)
+
+        if (button.isOnPressListenerActive) {
+            itemBuilder.setOnClickListener {
+                showLoadingForScreen(owningScreen, rawData, rawType, addBackButton, button.loadingMessage)
+                sendEvent(
+                    type = FAAChannelTypes.onGridButtonPressed.name,
+                    data = mapOf("elementId" to button.elementId)
+                )
+            }
+        }
+
+        return itemBuilder.build()
+    }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
         FlutterAndroidAutoPlugin.events = events

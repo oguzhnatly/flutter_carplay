@@ -49,4 +49,6 @@ enum FAAChannelTypes {
   onPresentStateChanged,
   updateTabBarTemplates,
   onTabBarItemSelected,
+  onGridButtonPressed,
+  onGridButtonSelectedComplete,
 }

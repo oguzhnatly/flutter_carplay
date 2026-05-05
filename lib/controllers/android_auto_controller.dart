@@ -3,6 +3,8 @@ import 'package:flutter_carplay/constants/private_constants.dart';
 
 import '../aa_models/alert/alert_action.dart';
 import '../aa_models/alert/alert_template.dart';
+import '../aa_models/grid/grid_button.dart';
+import '../aa_models/grid/grid_template.dart';
 import '../aa_models/list/list_item.dart';
 import '../aa_models/tabbar/tabbar_template.dart';
 import '../aa_models/template.dart';
@@ -58,6 +60,22 @@ class FlutterAndroidAutoController {
           listItem.uniqueId,
         ),
         listItem,
+      );
+    }
+  }
+
+  void processFAAGridButtonPressed(String elementId) {
+    final AAGridButton? button = _androidAutoHelper.findAAGridButton(
+      templates: templateHistory,
+      elementId: elementId,
+    );
+    if (button != null) {
+      button.onPress?.call(
+        () => flutterToNativeModule(
+          FAAChannelTypes.onGridButtonSelectedComplete,
+          button.uniqueId,
+        ),
+        button,
       );
     }
   }

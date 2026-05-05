@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 
+import '../grid/grid_template.dart';
 import '../list/list_template.dart';
 import '../template.dart';
 
@@ -52,6 +53,7 @@ class AATabBarTemplate implements AATemplate {
 
   static String _runtimeTypeOf(AATemplate t) {
     if (t is AAListTemplate) return 'FAAListTemplate';
+    if (t is AAGridTemplate) return 'FAAGridTemplate';
     return 'FAAUnknown';
   }
 }

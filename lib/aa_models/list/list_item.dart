@@ -6,7 +6,11 @@ class AAListItem {
 
   final String title;
   final String? subtitle;
-  final String? imageUrl;
+  /// Imagem exibida na região à esquerda do item. Suporta três formatos:
+  /// - **Asset** (pubspec.yaml): `'images/logo.png'`
+  /// - **Arquivo local**: `'file:///path/to/image.png'`
+  /// - **URL de rede**: `'https://example.com/image.png'`
+  final String? image;
 
   /// Text displayed as the header of the loading screen while the item's
   /// [onPress] handler is executing (until [complete] is called).
@@ -19,7 +23,7 @@ class AAListItem {
   AAListItem({
     required this.title,
     this.subtitle,
-    this.imageUrl,
+    this.image,
     this.loadingMessage,
     this.onPress,
   }) : _elementId = const Uuid().v4();
@@ -30,7 +34,7 @@ class AAListItem {
         '_elementId': _elementId,
         'title': title,
         'subtitle': subtitle,
-        'imageUrl': imageUrl,
+        'image': image,
         'loadingMessage': loadingMessage,
         'onPress': onPress != null ? true : false,
       };
