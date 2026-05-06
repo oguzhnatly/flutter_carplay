@@ -242,7 +242,7 @@ class FlutterAndroidAuto {
   /// Adds a template to the navigation hierarchy and displays it.
   ///
   /// - template is to add to the navigation hierarchy. **Must be one of the type:**
-  /// [AAListTemplate] or [AATabBarTemplate]
+  /// [AATabBarTemplate] [AAListTemplate] [AAGridTemplate]
   ///
   /// Be aware of the restrictions : https://developer.android.com/training/cars/apps#template-restrictions
   /// - Max 5 templates in the navigation stack.

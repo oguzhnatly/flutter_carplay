@@ -1,6 +1,7 @@
 package com.oguzhnatly.flutter_android_auto
 
 import androidx.car.app.model.Action
+import androidx.car.app.model.CarColor
 import androidx.car.app.model.CarIcon
 import androidx.core.graphics.drawable.IconCompat
 import androidx.car.app.model.CarText
@@ -337,17 +338,20 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         val builder = MessageTemplate.Builder(body).setTitle(title)
 
         for (action in alert.actions) {
-            builder.addAction(
-                Action.Builder()
-                    .setTitle(action.title)
-                    .setOnClickListener {
-                        sendEvent(
-                            type = FAAChannelTypes.onAlertActionPressed.name,
-                            data = mapOf("elementId" to action.elementId)
-                        )
-                    }
-                    .build()
-            )
+            val actionBuilder = Action.Builder()
+                .setTitle(action.title)
+                .setOnClickListener {
+                    sendEvent(
+                        type = FAAChannelTypes.onAlertActionPressed.name,
+                        data = mapOf("elementId" to action.elementId)
+                    )
+                }
+
+            if (action.style == "destructive") {
+                actionBuilder.setBackgroundColor(CarColor.RED)
+            }
+
+            builder.addAction(actionBuilder.build())
         }
         return builder.build()
     }

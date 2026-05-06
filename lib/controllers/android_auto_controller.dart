@@ -21,10 +21,10 @@ class FlutterAndroidAutoController {
     _androidAutoHelper.makeFAAChannelId(event: '/event'),
   );
 
-  /// [AATabBarTemplate], [AAListTemplate] in a List
+  /// [AATabBarTemplate], [AAGridTemplate], [AAListTemplate] in a List
   static List<AATemplate> templateHistory = [];
 
-  /// [AATabBarTemplate], [AAListTemplate]
+  /// [AATabBarTemplate], [AAGridTemplate], [AAListTemplate]
   static AATemplate? get currentRootTemplate => templateHistory.firstOrNull;
 
   /// The currently presented modal, i.e. [AAAlertTemplate].
