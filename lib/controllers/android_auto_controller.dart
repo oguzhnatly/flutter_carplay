@@ -1,7 +1,11 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_carplay/constants/private_constants.dart';
 
+import '../aa_models/alert/alert_action.dart';
+import '../aa_models/alert/alert_template.dart';
+import '../aa_models/grid/grid_button.dart';
 import '../aa_models/list/list_item.dart';
+import '../aa_models/tabbar/tabbar_template.dart';
 import '../aa_models/template.dart';
 import '../helpers/auto_android_helper.dart';
 
@@ -17,13 +21,13 @@ class FlutterAndroidAutoController {
     _androidAutoHelper.makeFAAChannelId(event: '/event'),
   );
 
-  /// [AATabBarTemplate], [AAGridTemplate], [AAListTemplate], [AAIInformationTemplate], [AAPointOfInterestTemplate] in a List
+  /// [AATabBarTemplate], [AAGridTemplate], [AAListTemplate] in a List
   static List<AATemplate> templateHistory = [];
 
-  /// [AATabBarTemplate], [AAGridTemplate], [AAListTemplate], [AAIInformationTemplate], [AAPointOfInterestTemplate]
+  /// [AATabBarTemplate], [AAGridTemplate], [AAListTemplate]
   static AATemplate? get currentRootTemplate => templateHistory.firstOrNull;
 
-  /// [AAAlertTemplate], [AAActionSheetTemplate]
+  /// The currently presented modal, i.e. [AAAlertTemplate].
   static AATemplate? currentPresentTemplate;
 
   MethodChannel get methodChannel => _methodChannel;
@@ -41,133 +45,58 @@ class FlutterAndroidAutoController {
     return value;
   }
 
-  /* static void updateCPListItem(CPListItem updatedListItem) {
-    _methodChannel.invokeMethod('updateListItem', <String, dynamic>{
-      ...updatedListItem.toJson(),
-    }).then((value) {
-      if (value) {
-        l1:
-        for (var h in templateHistory) {
-          switch (h.runtimeType) {
-            case CPTabBarTemplate _:
-              for (var t in (h as CPTabBarTemplate).templates) {
-                for (var s in t.sections) {
-                  for (var i in s.items) {
-                    if (i.uniqueId == updatedListItem.uniqueId) {
-                      currentRootTemplate!
-                          .templates[currentRootTemplate!.templates.indexOf(t)]
-                          .sections[t.sections.indexOf(s)]
-                          .items[s.items.indexOf(i)] = updatedListItem;
-                      break l1;
-                    }
-                  }
-                }
-              }
-              break;
-            case CPListTemplate _:
-              for (var s in (h as CPListTemplate).sections) {
-                for (var i in s.items) {
-                  if (i.uniqueId == updatedListItem.uniqueId) {
-                    currentRootTemplate!
-                        .sections[currentRootTemplate!.sections.indexOf(
-                      s,
-                    )]
-                        .items[s.items.indexOf(i)] = updatedListItem;
-                    break l1;
-                  }
-                }
-              }
-              break;
-            default:
-          }
-        }
-      }
-    });
-  }*/
+  // ─── Event processors ──────────────────────────────────────────────────────
 
-  void processFAAListItemSelectedChannel(String elementId) {
-    final AAListItem? listItem = _androidAutoHelper.findAAListItem(
+  Future<void> processFAAListItemSelectedChannel(String elementId) async {
+    final item = _androidAutoHelper.findAAListItem(
       templates: templateHistory,
       elementId: elementId,
     );
-    if (listItem != null) {
-      listItem.onPress!(
-        () => flutterToNativeModule(
-          FAAChannelTypes.onListItemSelectedComplete,
-          listItem.uniqueId,
-        ),
-        listItem,
-      );
+    if (item is! AAListItem) return;
+
+    void complete() {
+      flutterToNativeModule(
+          FAAChannelTypes.onListItemSelectedComplete, item.uniqueId);
     }
+
+    await item.onPress?.call(complete, item).catchError((_) => complete());
   }
 
-/*void processFAAAlertActionPressed(String elementId) {
-    CAAAlertAction selectedAlertAction = currentPresentTemplate!.actions
-        .firstWhere((e) => e.uniqueId == elementId);
-    selectedAlertAction.onPress();
-  }*/
+  Future<void> processFAAGridButtonPressed(String elementId) async {
+    final item = _androidAutoHelper.findAAGridButton(
+      templates: templateHistory,
+      elementId: elementId,
+    );
+    if (item is! AAGridButton) return;
 
-/*void processFCPAlertTemplateCompleted(bool completed) {
-    if (currentPresentTemplate?.onPresent != null) {
-      currentPresentTemplate!.onPresent!(completed);
+    void complete() {
+      flutterToNativeModule(
+          FAAChannelTypes.onGridButtonSelectedComplete, item.uniqueId);
     }
-  }*/
 
-/*void processFCPGridButtonPressed(String elementId) {
-    CPGridButton? gridButton;
-    l1:
-    for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPGridTemplate") {
-        for (var b in t.buttons) {
-          if (b.uniqueId == elementId) {
-            gridButton = b;
-            break l1;
-          }
-        }
-      }
-    }
-    if (gridButton != null) gridButton.onPress();
-  }*/
+    await item.onPress?.call(complete, item).catchError((_) => complete());
+  }
 
-/*void processFCPBarButtonPressed(String elementId) {
-    CPBarButton? barButton;
-    l1:
-    for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPListTemplate") {
-        barButton = t.backButton;
-        break l1;
-      }
-    }
-    if (barButton != null) barButton.onPress();
-  }*/
+  void processFAAAlertActionPressed(String elementId) {
+    final template = currentPresentTemplate;
+    if (template is! AAAlertTemplate) return;
 
-/*void processFCPTextButtonPressed(String elementId) {
-    l1:
-    for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPPointOfInterestTemplate") {
-        for (CPPointOfInterest p in t.poi) {
-          if (p.primaryButton != null &&
-              p.primaryButton!.uniqueId == elementId) {
-            p.primaryButton!.onPress();
-            break l1;
-          }
-          if (p.secondaryButton != null &&
-              p.secondaryButton!.uniqueId == elementId) {
-            p.secondaryButton!.onPress();
-            break l1;
-          }
-        }
-      } else {
-        if (t.runtimeType.toString() == "CPInformationTemplate") {
-          l2:
-          for (CPTextButton b in t.actions) {
-            if (b.uniqueId == elementId) {
-              b.onPress();
-              break l2;
-            }
-          }
-        }
-      }
+    final AAAlertAction? action =
+        template.actions.cast<AAAlertAction?>().firstWhere(
+              (a) => a?.uniqueId == elementId,
+              orElse: () => null,
+            );
+    action?.onPress();
+  }
+
+  void processFAAPresentStateChanged(String elementId, bool completed) {
+    final template = currentPresentTemplate;
+    if (template is AAAlertTemplate && template.onPresent != null) {
+      template.onPresent!(completed);
     }
-  }*/
+    if (!completed) {
+      // Alert was dismissed (e.g. via back button) – clear the reference.
+      currentPresentTemplate = null;
+    }
+  }
 }

@@ -31,11 +31,17 @@ class CPGridButton {
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   final Function()? onPress;
 
+  /// Reserved for API consistency with [AAGridButton]. Not used on iOS because
+  /// [CPGridButton] has no completion-handler pattern and shows no loading indicator.
+  /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
+  final int? onPressTimeout;
+
   /// Creates [CPGridButton]
   CPGridButton({
     required this.titleVariants,
     required this.image,
     this.onPress,
+    this.onPressTimeout,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
 
@@ -44,6 +50,7 @@ class CPGridButton {
         'titleVariants': titleVariants,
         'image': image,
         'onPress': onPress != null ? true : false,
+        'onPressTimeout': onPressTimeout,
         'runtimeType': 'FCPGridButton',
       };
 

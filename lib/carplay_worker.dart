@@ -38,7 +38,7 @@ class FlutterCarplay {
 
     _eventBroadcast = _carPlayController.eventChannel
         .receiveBroadcastStream()
-        .listen((event) {
+        .listen((event) async {
       final FCPChannelTypes receivedChannelType =
           EnumUtils.enumFromString(FCPChannelTypes.values, event['type']);
       switch (receivedChannelType) {
@@ -54,12 +54,12 @@ class FlutterCarplay {
           }
           break;
         case FCPChannelTypes.onFCPListItemSelected:
-          _carPlayController.processFCPListItemSelectedChannel(
+          await _carPlayController.processFCPListItemSelectedChannel(
             event['data']['elementId'],
           );
           break;
         case FCPChannelTypes.onFCPListImageRowItemSelected:
-          _carPlayController.processFCPListImageRowItemSelectedChannel(
+          await _carPlayController.processFCPListImageRowItemSelectedChannel(
             event['data']['elementId'],
           );
           break;
@@ -228,8 +228,8 @@ class FlutterCarplay {
     );
 
     if (isCompleted == true) {
-      final template = FlutterCarPlayController
-          .getTemplateFromHistory<CPInformationTemplate>(elementId);
+      final template = FlutterCarPlayController.getTemplateFromHistory<
+          CPInformationTemplate>(elementId);
       template?.updateInformationItems(items);
     }
     return;
@@ -251,8 +251,8 @@ class FlutterCarplay {
     );
 
     if (isCompleted == true) {
-      final template = FlutterCarPlayController
-          .getTemplateFromHistory<CPInformationTemplate>(elementId);
+      final template = FlutterCarPlayController.getTemplateFromHistory<
+          CPInformationTemplate>(elementId);
       template?.updateActions(actions);
     }
     return;
