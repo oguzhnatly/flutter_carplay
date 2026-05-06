@@ -22,9 +22,10 @@ class AndroidAutoService : CarAppService() {
 
         if (existing != null) {
             engineCache.remove(flutterEngineId)
+            existing.destroy()
         }
 
-        val flutterEngine = FlutterEngine(this)
+        val flutterEngine = FlutterEngine(applicationContext)
         flutterEngine.dartExecutor.executeDartEntrypoint(
             DartExecutor.DartEntrypoint.createDefault()
         )
@@ -33,8 +34,11 @@ class AndroidAutoService : CarAppService() {
 
     override fun onDestroy() {
         super.onDestroy()
-
-        FlutterEngineCache.getInstance().remove(FAAConstants.flutterEngineId)
+        session = null
+        val cache = FlutterEngineCache.getInstance()
+        val engine = cache.get(FAAConstants.flutterEngineId)
+        cache.remove(FAAConstants.flutterEngineId)
+        engine?.destroy()
     }
 
     override fun createHostValidator() = HostValidator.ALLOW_ALL_HOSTS_VALIDATOR

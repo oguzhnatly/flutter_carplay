@@ -37,7 +37,7 @@ class FlutterAndroidAuto {
 
     _eventBroadcast = _androidAutoController.eventChannel
         .receiveBroadcastStream()
-        .listen((event) {
+        .listen((event) async {
       final FAAChannelTypes receivedChannelType =
           EnumUtils.enumFromString(FAAChannelTypes.values, event['type']);
 
@@ -55,7 +55,7 @@ class FlutterAndroidAuto {
           break;
 
         case FAAChannelTypes.onListItemSelected:
-          _androidAutoController.processFAAListItemSelectedChannel(
+          await _androidAutoController.processFAAListItemSelectedChannel(
             event['data']['elementId'],
           );
           break;
@@ -86,7 +86,7 @@ class FlutterAndroidAuto {
           break;
 
         case FAAChannelTypes.onGridButtonPressed:
-          _androidAutoController.processFAAGridButtonPressed(
+          await _androidAutoController.processFAAGridButtonPressed(
             event['data']['elementId'],
           );
           break;

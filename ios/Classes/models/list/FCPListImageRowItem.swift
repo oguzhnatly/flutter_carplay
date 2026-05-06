@@ -19,6 +19,10 @@ final class FCPListImageRowItem {
   private var completeItemHandler: (() -> Void)?
   private var elements: [Any] = []  // Any used for compatibility instead of CPListImageRowItemElement
   private var objcElements: [Any] = []  // Any used for compatibility instead of FCPListImageRowItemElement
+  /// Pending row-level press handlers keyed by elementId.
+  static var pendingHandlers: [String: FCPListImageRowItem] = [:]
+  /// Pending element-level press handlers keyed by elementId.
+  static var pendingItemHandlers: [String: FCPListImageRowItem] = [:]
 
   init(obj: [String: Any]) {
     self.elementId = obj["_elementId"] as! String
@@ -55,6 +59,7 @@ final class FCPListImageRowItem {
   private func handler(selectedItem: CPSelectableListItem, complete: @escaping () -> Void) {
     if isOnPressListenerActive {
       completeHandler = complete
+      FCPListImageRowItem.pendingHandlers[elementId] = self
 
       DispatchQueue.main.async {
         FCPStreamHandlerPlugin.sendEvent(
@@ -72,6 +77,7 @@ final class FCPListImageRowItem {
   ) {
     if isOnItemPressListenerActive {
       completeItemHandler = complete
+      FCPListImageRowItem.pendingItemHandlers[elementId] = self
 
       DispatchQueue.main.async {
         FCPStreamHandlerPlugin.sendEvent(
@@ -152,17 +158,15 @@ final class FCPListImageRowItem {
   }
 
   public func stopHandler() {
-    guard self.completeHandler != nil else {
-      return
-    }
+    FCPListImageRowItem.pendingHandlers.removeValue(forKey: elementId)
+    guard self.completeHandler != nil else { return }
     self.completeHandler!()
     self.completeHandler = nil
   }
 
   public func stopItemHandler() {
-    guard self.completeItemHandler != nil else {
-      return
-    }
+    FCPListImageRowItem.pendingItemHandlers.removeValue(forKey: elementId)
+    guard self.completeItemHandler != nil else { return }
     self.completeItemHandler!()
     self.completeItemHandler = nil
   }

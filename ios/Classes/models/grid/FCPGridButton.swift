@@ -14,12 +14,16 @@ class FCPGridButton {
   private var titleVariants: [String]
   private var image: String
   private var isOnPressListenerActive: Bool
+  /// Stored for API consistency with Android. Not used on iOS because CPGridButton
+  /// has no completion-handler pattern and shows no loading indicator.
+  private var onPressTimeout: Int?
 
   init(obj: [String: Any]) {
     self.elementId = obj["_elementId"] as! String
     self.titleVariants = obj["titleVariants"] as! [String]
     self.image = obj["image"] as! String
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
+    self.onPressTimeout = obj["onPressTimeout"] as? Int
   }
 
   var get: CPGridButton {

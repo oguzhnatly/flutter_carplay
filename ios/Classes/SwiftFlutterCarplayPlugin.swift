@@ -218,15 +218,11 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         result(false)
         return
       }
-      SwiftFlutterCarplayPlugin.findListItem(
-        elementId: args,
-        actionWhenFound: { item in
-          if let listItem = item as? FCPListItem {
-            listItem.stopHandler()
-          } else {
-            NSLog("FCP: Found item is not an FCPListItem for elementId: \(args)")
-          }
-        })
+      if let listItem = FCPListItem.pendingHandlers[args] {
+        listItem.stopHandler()
+      } else {
+        NSLog("FCP: No pending FCPListItem handler for elementId: \(args)")
+      }
       result(true)
       break
     case FCPChannelTypes.onListImageRowItemSelectedComplete:
@@ -234,15 +230,11 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         result(false)
         return
       }
-      SwiftFlutterCarplayPlugin.findListItem(
-        elementId: args,
-        actionWhenFound: { item in
-          if let listItem = item as? FCPListImageRowItem {
-            listItem.stopHandler()
-          } else {
-            NSLog("FCP: Found item is not an FCPListImageRowItem for elementId: \(args)")
-          }
-        })
+      if let listItem = FCPListImageRowItem.pendingHandlers[args] {
+        listItem.stopHandler()
+      } else {
+        NSLog("FCP: No pending FCPListImageRowItem handler for elementId: \(args)")
+      }
       result(true)
       break
     case FCPChannelTypes.onListImageRowItemElementSelectedComplete:
@@ -250,15 +242,11 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         result(false)
         return
       }
-      SwiftFlutterCarplayPlugin.findListItem(
-        elementId: args,
-        actionWhenFound: { item in
-          if let listItem = item as? FCPListImageRowItem {
-            listItem.stopItemHandler()
-          } else {
-            NSLog("FCP: Found item is not an FCPListImageRowItem for elementId: \(args)")
-          }
-        })
+      if let listItem = FCPListImageRowItem.pendingItemHandlers[args] {
+        listItem.stopItemHandler()
+      } else {
+        NSLog("FCP: No pending FCPListImageRowItem item handler for elementId: \(args)")
+      }
       result(true)
       break
     case FCPChannelTypes.setAlert:

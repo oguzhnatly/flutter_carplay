@@ -21,11 +21,11 @@ class AAGridTemplate implements AATemplate {
   /// The grid cells. Android Auto recommends a maximum of 8 items.
   final List<AAGridButton> buttons;
 
-  /// Mensagens exibidas quando [buttons] está vazio.
+  /// Messages displayed when [buttons] is empty.
   ///
-  /// Android Auto usa o primeiro elemento como texto passado para
-  /// `ItemList.Builder.setNoItemsMessage()`. Quando [buttons] está vazio e
-  /// esta lista é nula ou vazia, o template exibe um indicador de loading.
+  /// Android Auto uses the first element as the text passed to
+  /// `ItemList.Builder.setNoItemsMessage()`. When [buttons] is empty and
+  /// this list is null or empty, the template shows a loading indicator.
   final List<String>? emptyViewTitleVariants;
 
   /// Label displayed on the tab bar item when this template is used as a tab

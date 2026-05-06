@@ -7,6 +7,7 @@ data class FAAListItem(
     val image: String? = null,
     val isOnPressListenerActive: Boolean,
     val loadingMessage: String? = null,
+    val onPressTimeoutMs: Long? = null,
 ) {
     companion object {
         fun fromJson(map: Map<String, Any?>): FAAListItem {
@@ -16,9 +17,13 @@ data class FAAListItem(
             val image = map["image"] as? String
             val isOnPressListenerActive = map["onPress"] as? Boolean ?: false
             val loadingMessage = map["loadingMessage"] as? String
+            val onPressTimeoutMs = (map["onPressTimeout"] as? Int)
+                ?.takeIf { it >= 1 }
+                ?.let { it.toLong() * 1_000L }
 
             return FAAListItem(
-                elementId, title, subtitle, image, isOnPressListenerActive, loadingMessage
+                elementId, title, subtitle, image, isOnPressListenerActive,
+                loadingMessage, onPressTimeoutMs,
             )
         }
     }

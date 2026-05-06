@@ -13,30 +13,36 @@ class AAGridButton {
   /// Label variants displayed beneath the cell image. Must not be empty.
   final List<String> titleVariants;
 
-  /// Imagem exibida dentro da célula do grid. Suporta três formatos:
+  /// Image displayed inside the grid cell. Supports three formats:
   /// - **Asset** (pubspec.yaml): `'images/logo.png'`
-  /// - **Arquivo local**: `'file:///path/to/image.png'`
-  /// - **URL de rede**: `'https://example.com/image.png'`
+  /// - **Local file**: `'file:///path/to/image.png'`
+  /// - **Network URL**: `'https://example.com/image.png'`
   ///
   /// Falls back to a default icon when null or when the load fails.
   final String? image;
 
-  /// Texto exibido como título da tela de loading enquanto o [onPress] é
-  /// executado (até que [complete] seja chamado). Quando nulo, o loading
-  /// não exibe título.
+  /// Text displayed as the loading screen title while [onPress] is executing
+  /// (until [complete] is called). When null, no title is shown.
   final String? loadingMessage;
+
+  /// Maximum time in seconds the loading screen stays visible waiting for
+  /// [onPress] to call [complete]. When null, no safety timeout is scheduled
+  /// and the loading persists until [complete] is called. Values below 1 are
+  /// ignored.
+  final int? onPressTimeout;
 
   /// Callback fired when the user taps this button.
   ///
-  /// - `complete` deve ser chamado após o processamento para remover o loading
-  ///   e reconstruir o template — idêntico ao comportamento do [AAListItem].
-  /// - `self` é a referência ao próprio botão pressionado.
-  final Function(Function() complete, AAGridButton self)? onPress;
+  /// - `complete` must be called after processing to dismiss the loading screen
+  ///   and rebuild the template — identical to [AAListItem] behaviour.
+  /// - `self` is a reference to the tapped button itself.
+  final Future<void> Function(Function() complete, AAGridButton self)? onPress;
 
   AAGridButton({
     required this.titleVariants,
     this.image,
     this.loadingMessage,
+    this.onPressTimeout,
     this.onPress,
   })  : assert(titleVariants.isNotEmpty, 'titleVariants must not be empty'),
         _elementId = const Uuid().v4();
@@ -48,6 +54,7 @@ class AAGridButton {
         'titleVariants': titleVariants,
         'image': image,
         'loadingMessage': loadingMessage,
+        'onPressTimeout': onPressTimeout,
         'onPress': onPress != null,
       };
 }

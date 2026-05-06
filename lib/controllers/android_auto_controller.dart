@@ -4,7 +4,6 @@ import 'package:flutter_carplay/constants/private_constants.dart';
 import '../aa_models/alert/alert_action.dart';
 import '../aa_models/alert/alert_template.dart';
 import '../aa_models/grid/grid_button.dart';
-import '../aa_models/grid/grid_template.dart';
 import '../aa_models/list/list_item.dart';
 import '../aa_models/tabbar/tabbar_template.dart';
 import '../aa_models/template.dart';
@@ -48,46 +47,45 @@ class FlutterAndroidAutoController {
 
   // ─── Event processors ──────────────────────────────────────────────────────
 
-  void processFAAListItemSelectedChannel(String elementId) {
-    final AAListItem? listItem = _androidAutoHelper.findAAListItem(
+  Future<void> processFAAListItemSelectedChannel(String elementId) async {
+    final item = _androidAutoHelper.findAAListItem(
       templates: templateHistory,
       elementId: elementId,
     );
-    if (listItem != null) {
-      listItem.onPress!(
-        () => flutterToNativeModule(
-          FAAChannelTypes.onListItemSelectedComplete,
-          listItem.uniqueId,
-        ),
-        listItem,
-      );
+    if (item is! AAListItem) return;
+
+    void complete() {
+      flutterToNativeModule(
+          FAAChannelTypes.onListItemSelectedComplete, item.uniqueId);
     }
+
+    await item.onPress?.call(complete, item).catchError((_) => complete());
   }
 
-  void processFAAGridButtonPressed(String elementId) {
-    final AAGridButton? button = _androidAutoHelper.findAAGridButton(
+  Future<void> processFAAGridButtonPressed(String elementId) async {
+    final item = _androidAutoHelper.findAAGridButton(
       templates: templateHistory,
       elementId: elementId,
     );
-    if (button != null) {
-      button.onPress?.call(
-        () => flutterToNativeModule(
-          FAAChannelTypes.onGridButtonSelectedComplete,
-          button.uniqueId,
-        ),
-        button,
-      );
+    if (item is! AAGridButton) return;
+
+    void complete() {
+      flutterToNativeModule(
+          FAAChannelTypes.onGridButtonSelectedComplete, item.uniqueId);
     }
+
+    await item.onPress?.call(complete, item).catchError((_) => complete());
   }
 
   void processFAAAlertActionPressed(String elementId) {
     final template = currentPresentTemplate;
     if (template is! AAAlertTemplate) return;
 
-    final AAAlertAction? action = template.actions.cast<AAAlertAction?>().firstWhere(
-          (a) => a?.uniqueId == elementId,
-          orElse: () => null,
-        );
+    final AAAlertAction? action =
+        template.actions.cast<AAAlertAction?>().firstWhere(
+              (a) => a?.uniqueId == elementId,
+              orElse: () => null,
+            );
     action?.onPress();
   }
 

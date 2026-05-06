@@ -24,6 +24,7 @@ import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -53,6 +54,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         var pendingRawData: Map<String, Any?>? = null
         var pendingRawType: String? = null
         var pendingAddBackButton: Boolean = false
+
+        private const val HANDLER_TIMEOUT_MS = 15_000L
 
         fun sendEvent(type: String, data: Map<String, Any>) {
             events?.success(mapOf("type" to type, "data" to data))
@@ -138,6 +141,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         rawType: String,
         addBackButton: Boolean,
         loadingMessage: String? = null,
+        timeoutMs: Long? = null,
     ) {
         pendingScreen = screen
         pendingRawData = rawData
@@ -160,6 +164,44 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         } else {
             pushedScreenTemplates[screen] = loading
             screen.invalidate()
+        }
+
+        if (timeoutMs != null) {
+            pluginScope.launch {
+                delay(timeoutMs)
+                if (pendingRawData === rawData) {
+                    rebuildPendingTemplate()
+                }
+            }
+        }
+    }
+
+    private fun rebuildPendingTemplate() {
+        val screen  = pendingScreen
+        val data    = pendingRawData ?: return
+        val type    = pendingRawType ?: return
+        val addBack = pendingAddBackButton
+
+        pendingScreen        = null
+        pendingRawData       = null
+        pendingRawType       = null
+        pendingAddBackButton = false
+
+        pluginScope.launch {
+            val rebuilt: Template? = if (screen == null && currentTabBarData != null) {
+                buildNativeTabTemplate(currentTabBarData!!)
+            } else {
+                buildTemplateForType(type, data, null, addBackButton = addBack, owningScreen = screen)
+            }
+            if (rebuilt != null) {
+                if (screen == null || screen == currentScreen) {
+                    currentTemplate = rebuilt
+                    currentScreen?.invalidate()
+                } else {
+                    pushedScreenTemplates[screen] = rebuilt
+                    screen.invalidate()
+                }
+            }
         }
     }
 
@@ -619,7 +661,12 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         if (item.isOnPressListenerActive) {
             rowBuilder.setOnClickListener {
-                showLoadingForScreen(owningScreen, rawData, rawType, addBackButton, item.loadingMessage)
+                if (events == null) return@setOnClickListener
+                showLoadingForScreen(
+                    owningScreen, rawData, rawType, addBackButton,
+                    item.loadingMessage,
+                    item.onPressTimeoutMs,
+                )
                 sendEvent(
                     type = FAAChannelTypes.onListItemSelected.name,
                     data = mapOf("elementId" to item.elementId)
@@ -696,7 +743,12 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         if (button.isOnPressListenerActive) {
             itemBuilder.setOnClickListener {
-                showLoadingForScreen(owningScreen, rawData, rawType, addBackButton, button.loadingMessage)
+                if (events == null) return@setOnClickListener
+                showLoadingForScreen(
+                    owningScreen, rawData, rawType, addBackButton,
+                    button.loadingMessage,
+                    button.onPressTimeoutMs,
+                )
                 sendEvent(
                     type = FAAChannelTypes.onGridButtonPressed.name,
                     data = mapOf("elementId" to button.elementId)

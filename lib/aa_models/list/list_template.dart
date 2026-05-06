@@ -21,17 +21,17 @@ class AAListTemplate implements AATemplate {
   /// inside an [AATabBarTemplate]. Falls back to [title] when not set.
   final String? tabTitle;
 
-  /// Ícone exibido na aba quando este template é usado dentro de um
-  /// [AATabBarTemplate]. Aceita três formatos:
+  /// Icon displayed in the tab when this template is used inside an
+  /// [AATabBarTemplate]. Supports three formats:
   ///
-  /// - **Nome de ícone do sistema** (ex: `"star"`, `"map"`) — mapeado para
-  ///   um [CarIcon] built-in do Car App Library.
-  /// - **Asset Flutter** (ex: `"images/logo.png"`) — carregado via
-  ///   `AssetManager` do APK.
-  /// - **Arquivo local** (ex: `"file:///path/to/icon.png"`) — lido do disco.
-  /// - **URL de rede** (ex: `"https://example.com/icon.png"`) — download async.
+  /// - System icon name (e.g., "star", "map") — mapped to a
+  /// built-in [CarIcon] from the Car App Library.
+  /// - Flutter asset (e.g., "images/logo.png") — loaded via the
+  /// APK AssetManager.
+  /// - Local file (e.g., "file:///path/to/icon.png") — read from disk.
+  /// - Network URL (e.g., "https://example.com/icon.png") — downloaded asynchronously.
   ///
-  /// Quando [iconUrl] também está definido, [iconUrl] tem prioridade.
+  /// When [iconUrl] is also set, [iconUrl] takes precedence.
   final String? systemIcon;
 
   /// URL of an image to use as the tab bar icon. Loaded asynchronously.
