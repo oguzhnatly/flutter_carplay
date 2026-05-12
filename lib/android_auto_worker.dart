@@ -58,6 +58,18 @@ class FlutterAndroidAuto {
             event['data']['elementId'],
           );
           break;
+        case FAAChannelTypes.onListSectionSelected:
+          _androidAutoController.processFAAListSectionSelectedChannel(
+            event['data']['elementId'],
+            event['data']['selectedIndex'],
+          );
+          break;
+        case FAAChannelTypes.onToggleCheckedChange:
+          _androidAutoController.processFAAToggleCheckedChangeChannel(
+            event['data']['elementId'],
+            event['data']['checked'],
+          );
+          break;
         case FAAChannelTypes.onScreenBackButtonPressed:
           FlutterAndroidAutoController.templateHistory.removeWhere(
             (AATemplate item) => item.uniqueId == event['data']['elementId'],
@@ -126,6 +138,17 @@ class FlutterAndroidAuto {
         FlutterAndroidAutoController.templateHistory[0] = template;
       }
     }
+  }
+
+  /// It will update the sections of the [AAListTemplate] which has the given [elementId].
+  Future<void> updateListTemplateSections({
+    required String elementId,
+    required List<AAListSection> sections,
+  }) {
+    return FlutterAndroidAutoController.updateAAListTemplateSections(
+      elementId: elementId,
+      sections: sections,
+    );
   }
 
   /// It will set the current root template again.

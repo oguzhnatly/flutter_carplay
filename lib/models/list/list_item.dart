@@ -24,6 +24,15 @@ class CPListItem extends CPListTemplateItem {
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   String? image;
 
+  /// The image that the list item displays in its trailing region.
+  ///
+  /// Supports three formats:
+  /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
+  /// - **File path**: `file:///path/to/image.png` (local file on device)
+  /// - **Network URL**: `https://example.com/image.png` (remote image)
+  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
+  String? accessoryImage;
+
   /// The playback progress status for the content that the list item represents.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   double? playbackProgress;
@@ -54,6 +63,7 @@ class CPListItem extends CPListTemplateItem {
     this.detailText,
     this.onPress,
     this.image,
+    this.accessoryImage,
     this.playbackProgress,
     this.isPlaying,
     this.playingIndicatorLocation,
@@ -68,6 +78,7 @@ class CPListItem extends CPListTemplateItem {
         'detailText': detailText,
         'onPress': onPress != null ? true : false,
         'image': image,
+        'accessoryImage': accessoryImage,
         'playbackProgress': playbackProgress,
         'isPlaying': isPlaying,
         'playingIndicatorLocation': playingIndicatorLocation?.name,
@@ -95,6 +106,14 @@ class CPListItem extends CPListTemplateItem {
   /// - **Network URL**: `https://example.com/image.png` (remote image)
   void setImage(String image) {
     this.image = image;
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
+  /// Updating the image displayed in the trailing region of the list item cell.
+  ///
+  /// Supports the same asset path, file path, and network URL formats as [image].
+  void setAccessoryImage(String? accessoryImage) {
+    this.accessoryImage = accessoryImage;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
@@ -133,6 +152,7 @@ class CPListItem extends CPListTemplateItem {
     String? text,
     String? detailText,
     String? image,
+    String? accessoryImage,
     double? playbackProgress,
     bool? isPlaying,
     CPListItemPlayingIndicatorLocation? playingIndicatorLocation,
@@ -141,6 +161,7 @@ class CPListItem extends CPListTemplateItem {
     if (text != null) this.text = text;
     if (detailText != null) this.detailText = detailText;
     if (image != null) this.image = image;
+    if (accessoryImage != null) this.accessoryImage = accessoryImage;
     if (playbackProgress != null) {
       if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
         this.playbackProgress = playbackProgress;

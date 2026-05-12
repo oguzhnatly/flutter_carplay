@@ -2,6 +2,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_carplay/constants/private_constants.dart';
 
 import '../aa_models/list/list_item.dart';
+import '../aa_models/list/list_section.dart';
+import '../aa_models/list/list_template.dart';
 import '../aa_models/template.dart';
 import '../helpers/auto_android_helper.dart';
 
@@ -85,6 +87,40 @@ class FlutterAndroidAutoController {
     });
   }*/
 
+  static Future<bool?> flutterToNativeModuleStatic(
+    FAAChannelTypes type, [
+    dynamic data,
+  ]) async {
+    final bool? value = await _methodChannel.invokeMethod<bool>(
+      type.name,
+      data,
+    );
+    return value;
+  }
+
+  static Future<void> updateAAListTemplateSections({
+    required String elementId,
+    required List<AAListSection> sections,
+  }) async {
+    final bool? isCompleted = await flutterToNativeModuleStatic(
+      FAAChannelTypes.updateListTemplateSections,
+      <String, dynamic>{
+        'elementId': elementId,
+        'sections':
+            sections.map((AAListSection section) => section.toJson()).toList(),
+      },
+    );
+
+    if (isCompleted == true) {
+      for (final template in templateHistory) {
+        if (template is AAListTemplate && template.uniqueId == elementId) {
+          template.updateSections(sections);
+          return;
+        }
+      }
+    }
+  }
+
   void processFAAListItemSelectedChannel(String elementId) {
     final AAListItem? listItem = _androidAutoHelper.findAAListItem(
       templates: templateHistory,
@@ -98,6 +134,33 @@ class FlutterAndroidAutoController {
         ),
         listItem,
       );
+    }
+  }
+
+  void processFAAListSectionSelectedChannel(
+      String elementId, int selectedIndex) {
+    final AAListSection? listSection = _androidAutoHelper.findAAListSection(
+      templates: templateHistory,
+      elementId: elementId,
+    );
+    final selectedItem = listSection?.items.elementAtOrNull(selectedIndex);
+
+    if (listSection != null && selectedItem != null) {
+      listSection.onSelected?.call(selectedIndex, selectedItem);
+    }
+  }
+
+  void processFAAToggleCheckedChangeChannel(
+    String elementId,
+    bool checked,
+  ) {
+    final AAListItem? listItem = _androidAutoHelper.findAAListItem(
+      templates: templateHistory,
+      elementId: elementId,
+    );
+
+    if (listItem != null) {
+      listItem.toggle?.onCheckedChange?.call(checked, listItem);
     }
   }
 

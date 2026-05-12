@@ -55,6 +55,7 @@ class _MyAppState extends State<MyApp> {
             });
           },
           image: 'images/logo_flutter_1080px_clr.png',
+          accessoryImage: 'images/logo_flutter_1080px_clr.png',
         ),
         CPListItem(
           text: 'Item 2',
@@ -212,6 +213,7 @@ class _MyAppState extends State<MyApp> {
               AAListItem(
                 title: 'Page 1',
                 subtitle: 'Click to open page 1',
+                isBrowsable: true,
                 onPress: (complete, AAListItem item) {
                   print('Item for Page 1 pressed');
                   FlutterAndroidAuto.push(
@@ -286,8 +288,27 @@ class _MyAppState extends State<MyApp> {
           ),
           AAListSection(
             title: 'Second Section',
+            selectedIndex: 0,
+            onSelected: (selectedIndex, selectedItem) {
+              print('Selected index: $selectedIndex (${selectedItem.title})');
+            },
             items: [
-              AAListItem(title: 'Test'),
+              AAListItem(title: 'Radio option 1'),
+              AAListItem(title: 'Radio option 2'),
+            ],
+          ),
+          AAListSection(
+            title: 'Toggles',
+            items: [
+              AAListItem(
+                title: 'Toggle item',
+                toggle: AAToggle(
+                  isChecked: true,
+                  onCheckedChange: (checked, item) {
+                    print('${item.title} changed to $checked');
+                  },
+                ),
+              ),
             ],
           ),
         ],

@@ -10,11 +10,34 @@ class AAListSection {
   final String? title;
 
   final List<AAListItem> items;
+  final int? selectedIndex;
+  final Function(int selectedIndex, AAListItem selectedItem)? onSelected;
 
   AAListSection({
     this.title,
     required this.items,
-  }) : _elementId = const Uuid().v4();
+    this.selectedIndex,
+    this.onSelected,
+  })  : assert(
+          selectedIndex == null ||
+              (selectedIndex >= 0 && selectedIndex < items.length),
+          'selectedIndex must be within the list item range.',
+        ),
+        assert(
+          (selectedIndex == null && onSelected == null) || items.isNotEmpty,
+          'A selectable list must have at least one item.',
+        ),
+        assert(
+          selectedIndex == null && onSelected == null ||
+              items.every((AAListItem item) => item.onPress == null),
+          'Selectable list items must not have an onClickListener set.',
+        ),
+        assert(
+          selectedIndex == null && onSelected == null ||
+              items.every((AAListItem item) => item.toggle == null),
+          'Selectable list items must not have a toggle set.',
+        ),
+        _elementId = const Uuid().v4();
 
   String get uniqueId => _elementId;
 
@@ -22,5 +45,7 @@ class AAListSection {
         '_elementId': _elementId,
         'title': title,
         'items': items.map((AAListItem item) => item.toJson()).toList(),
+        'selectedIndex': selectedIndex,
+        'onSelected': onSelected != null ? true : false,
       };
 }

@@ -32,6 +32,28 @@ class FlutterAutoAndroidHelper {
     return null;
   }
 
+  AAListSection? findAAListSection({
+    required List<AATemplate> templates,
+    required String elementId,
+  }) {
+    for (var t in templates) {
+      final List<AAListTemplate> listTemplates = [];
+
+      if (t is AAListTemplate) {
+        listTemplates.add(t);
+      }
+
+      for (var list in listTemplates) {
+        for (var section in list.sections) {
+          if (section.uniqueId == elementId) {
+            return section;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   String makeFAAChannelId({String event = ''}) =>
       'com.oguzhnatly.flutter_android_auto$event';
 }

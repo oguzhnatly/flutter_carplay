@@ -404,8 +404,10 @@ await FlutterCarplay.setRootTemplate(
               CPListItem(
                 text: "Item 1",
                 detailText: "Detail Text",
+                accessoryImage: 'images/logo_flutter_1080px_clr.png',
                 onPress: (complete, self) {
                   self.setDetailText("You can change the detail text.. 🚀");
+                  self.setAccessoryImage('images/logo_flutter_1080px_clr.png');
                   Future.delayed(const Duration(seconds: 1), () {
                     self.setDetailText("Customizable Detail Text");
                     complete();
@@ -430,6 +432,54 @@ _flutterCarplay.forceUpdateRootTemplate();
 > You can set a root template without initializing the CarPlay Controllers, but some callback functions may not work or most likely you will get an error.
 
 > It's recommended that you should set the root template in the first initState of your app.
+
+### Basic Usage for Android Auto
+
+Android Auto row/list affordances follow the AndroidX Car App API names. Selectable lists render radio buttons on every row, `isBrowsable` renders the system navigation affordance, and `toggle` renders a switch in the row.
+
+```dart
+final FlutterAndroidAuto flutterAndroidAuto = FlutterAndroidAuto();
+
+await FlutterAndroidAuto.setRootTemplate(
+  template: AAListTemplate(
+    title: 'Home',
+    sections: [
+      AAListSection(
+        selectedIndex: 0,
+        onSelected: (selectedIndex, selectedItem) {
+          print('Selected $selectedIndex: ${selectedItem.title}');
+        },
+        items: [
+          AAListItem(title: 'Radio option 1'),
+          AAListItem(title: 'Radio option 2'),
+        ],
+      ),
+      AAListSection(
+        title: 'Rows',
+        items: [
+          AAListItem(
+            title: 'Open details',
+            isBrowsable: true,
+            onPress: (complete, item) {
+              complete();
+            },
+          ),
+          AAListItem(
+            title: 'Toggle item',
+            toggle: AAToggle(
+              isChecked: true,
+              onCheckedChange: (checked, item) {
+                print('${item.title}: $checked');
+              },
+            ),
+          ),
+        ],
+      ),
+    ],
+  ),
+);
+flutterAndroidAuto.forceUpdateRootTemplate();
+```
 
 ### Listen Connection Changes
 
@@ -749,6 +799,7 @@ final CPListTemplate listTemplate = CPListTemplate(
             complete();
           },
           image: 'images/logo_flutter_1080px_clr.png',
+          accessoryImage: 'images/logo_flutter_1080px_clr.png',
         ),
         CPListItem(
           text: "Item 2",
