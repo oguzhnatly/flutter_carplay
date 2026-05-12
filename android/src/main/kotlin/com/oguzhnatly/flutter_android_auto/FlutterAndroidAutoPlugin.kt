@@ -9,6 +9,7 @@ import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.SectionedItemList
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
+import androidx.car.app.model.Toggle
 import androidx.car.app.Screen
 import androidx.car.app.ScreenManager
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -34,6 +35,10 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         var events: EventChannel.EventSink? = null
         var currentTemplate: Template? = null
         var currentScreen: Screen? = null
+        private var currentRootTemplateElementId: String? = null
+        private val listTemplateData = mutableMapOf<String, MutableMap<String, Any?>>()
+        private val listTemplateBackButtons = mutableMapOf<String, Boolean>()
+        private val listTemplateScreens = mutableMapOf<String, Screen>()
 
         fun sendEvent(type: String, data: Map<String, Any>) {
             events?.success(
@@ -85,6 +90,10 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     )
 
                     FAAChannelTypes.popToRootTemplate.name -> popToRootTemplate(
+                        call, result
+                    )
+
+                    FAAChannelTypes.updateListTemplateSections.name -> updateListTemplateSections(
                         call, result
                     )
 
@@ -157,6 +166,37 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         result.success(true)
     }
 
+    private fun updateListTemplateSections(
+        call: MethodCall, result: MethodChannel.Result
+    ) {
+        val elementId = call.argument<String>("elementId") ?: ""
+        val sections = call.argument<List<Map<String, Any?>>>("sections") ?: emptyList()
+        val data = listTemplateData[elementId]
+
+        if (data == null) {
+            result.error(
+                "No template found",
+                "AAListTemplate not found with elementId: $elementId",
+                null
+            )
+            return
+        }
+
+        data["sections"] = sections
+        val addBackButton = listTemplateBackButtons[elementId] ?: true
+
+        pluginScope.launch {
+            val template = getListTemplate(data, addBackButton)
+            listTemplateData[elementId] = data
+            if (currentRootTemplateElementId == elementId) {
+                currentTemplate = template
+            }
+            listTemplateScreens[elementId]?.invalidate()
+            currentScreen?.invalidate()
+            result.success(true)
+        }
+    }
+
     private fun pushTemplate(
         call: MethodCall, result: MethodChannel.Result
     ) {
@@ -169,9 +209,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         pluginScope.launch {
             val template = when (runtimeType) {
-                "FAAListTemplate" -> getListTemplate(
-                    call, result, data
-                )
+                "FAAListTemplate" -> getListTemplate(data)
 
                 else -> null
             }
@@ -183,7 +221,10 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                 )
             } else {
                 val newScreen = object : Screen(carContext) {
-                    override fun onGetTemplate(): Template = template
+                    override fun onGetTemplate(): Template =
+                        listTemplateData[elementId]?.let {
+                            getListTemplateBlocking(it, true)
+                        } ?: template
 
                     init {
                         lifecycle.addObserver(object : LifecycleEventObserver {
@@ -205,6 +246,10 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     }
                 }
 
+                listTemplateData[elementId] = data.toMutableMap()
+                listTemplateBackButtons[elementId] = true
+                listTemplateScreens[elementId] = newScreen
+
                 carContext.getCarService(ScreenManager::class.java)
                     .push(newScreen)
 
@@ -221,9 +266,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         pluginScope.launch {
             val template = when (runtimeType) {
-                "FAAListTemplate" -> getListTemplate(
-                    call, result, data, false
-                )
+                "FAAListTemplate" -> getListTemplate(data, false)
 
                 else -> null
             }
@@ -236,6 +279,11 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                 )
             } else {
                 currentTemplate = template
+                val elementId = data["_elementId"] as? String ?: ""
+                currentRootTemplateElementId = elementId
+                listTemplateData[elementId] = data.toMutableMap()
+                listTemplateBackButtons[elementId] = false
+                currentScreen?.let { listTemplateScreens[elementId] = it }
                 currentScreen?.invalidate()
                 result.success(true)
             }
@@ -243,37 +291,48 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
     }
 
     private suspend fun getListTemplate(
-        call: MethodCall,
-        result: MethodChannel.Result,
         data: Map<String, Any?>,
         addBackButton: Boolean = true
     ): Template {
-        val template = FAAListTemplate.fromJson(data)
-        val listTemplateBuilder =
-            ListTemplate.Builder().setTitle(template.title)
+        return createListTemplate(data, addBackButton)
+    }
 
-        if (template.sections.size == 0) {
+    private fun getListTemplateBlocking(
+        data: Map<String, Any?>,
+        addBackButton: Boolean = true
+    ): Template {
+        return kotlinx.coroutines.runBlocking {
+            createListTemplate(data, addBackButton)
+        }
+    }
+
+    private suspend fun createListTemplate(
+        data: Map<String, Any?>,
+        addBackButton: Boolean = true
+    ): Template {
+        val title = data["title"] as? String ?: ""
+        val sections = (data["sections"] as? List<*>)?.mapNotNull {
+            (it as? Map<*, *>)?.mapKeys { entry -> entry.key.toString() }
+                ?.let { FAAListSection.fromJson(it) }
+        } ?: emptyList()
+        val listTemplateBuilder =
+            ListTemplate.Builder().setTitle(title)
+
+        if (sections.isEmpty()) {
             listTemplateBuilder.setLoading(true)
         } else {
             listTemplateBuilder.setLoading(false)
             val isSingleList =
-                template.sections.size == 1 && template.sections.first().title.isEmpty()
+                sections.size == 1 && sections.first().title.isEmpty()
 
             if (isSingleList) {
-                val itemListBuilder = ItemList.Builder()
-                val sectionItems = template.sections.first().items
-                for (item in sectionItems) {
-                    itemListBuilder.addItem(createRowFromItem(item))
-                }
-                listTemplateBuilder.setSingleList(itemListBuilder.build())
+                listTemplateBuilder.setSingleList(
+                    createItemListFromSection(sections.first())
+                )
             } else {
-                for (section in template.sections) {
-                    val itemListBuilder = ItemList.Builder()
-                    for (item in section.items) {
-                        itemListBuilder.addItem(createRowFromItem(item))
-                    }
+                for (section in sections) {
                     val sectionedItemList = SectionedItemList.create(
-                        itemListBuilder.build(), section.title ?: ""
+                        createItemListFromSection(section), section.title ?: ""
                     )
                     listTemplateBuilder.addSectionedList(sectionedItemList)
                 }
@@ -287,8 +346,45 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         return listTemplateBuilder.build()
     }
 
+    private suspend fun createItemListFromSection(section: FAAListSection): ItemList {
+        val itemListBuilder = ItemList.Builder()
+        val useSelectionListener =
+            section.isOnSelectedListenerActive || section.selectedIndex != null
+
+        for (item in section.items) {
+            itemListBuilder.addItem(
+                createRowFromItem(item, enableOnClick = !useSelectionListener)
+            )
+        }
+
+        if (useSelectionListener) {
+            itemListBuilder.setOnSelectedListener { selectedIndex ->
+                if (section.isOnSelectedListenerActive) {
+                    sendEvent(
+                        type = FAAChannelTypes.onListSectionSelected.name,
+                        data = mapOf(
+                            "elementId" to section.elementId,
+                            "selectedIndex" to selectedIndex
+                        )
+                    )
+                }
+            }
+        }
+
+        section.selectedIndex?.let { selectedIndex ->
+            if (selectedIndex >= 0 && selectedIndex < section.items.size) {
+                itemListBuilder.setSelectedIndex(selectedIndex)
+            }
+        }
+
+        return itemListBuilder.build()
+    }
+
     // Helper function to create a Row from an FAAListItem, avoiding code duplication
-    private suspend fun createRowFromItem(item: FAAListItem): Row {
+    private suspend fun createRowFromItem(
+        item: FAAListItem,
+        enableOnClick: Boolean = true
+    ): Row {
         val rowBuilder = Row.Builder().setTitle(CarText.create(item.title))
 
         item.subtitle?.let { rowBuilder.addText(CarText.create(it)) }
@@ -299,7 +395,28 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
             }
         }
 
-        if (item.isOnPressListenerActive) {
+        item.isBrowsable?.let {
+            rowBuilder.setBrowsable(it)
+        }
+
+        item.toggle?.let { toggle ->
+            val toggleBuilder = Toggle.Builder { checked ->
+                if (toggle.isOnCheckedChangeListenerActive) {
+                    sendEvent(
+                        type = FAAChannelTypes.onToggleCheckedChange.name,
+                        data = mapOf(
+                            "elementId" to item.elementId,
+                            "checked" to checked
+                        )
+                    )
+                }
+            }.setChecked(toggle.isChecked)
+
+            toggle.isEnabled?.let { toggleBuilder.setEnabled(it) }
+            rowBuilder.setToggle(toggleBuilder.build())
+        }
+
+        if (enableOnClick && item.isOnPressListenerActive) {
             rowBuilder.setOnClickListener {
                 sendEvent(
                     type = FAAChannelTypes.onListItemSelected.name,
