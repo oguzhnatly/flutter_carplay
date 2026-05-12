@@ -14,7 +14,8 @@ class AAListSection {
   AAListSection({
     this.title,
     required this.items,
-  }) : _elementId = const Uuid().v4();
+    String? id,
+  }) : _elementId = id ?? const Uuid().v4();
 
   String get uniqueId => _elementId;
 

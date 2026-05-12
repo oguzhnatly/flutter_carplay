@@ -13,7 +13,8 @@ class AAListTemplate implements AATemplate {
   AAListTemplate({
     required this.title,
     required this.sections,
-  }) : _elementId = const Uuid().v4();
+    String? id,
+  }) : _elementId = id ?? const Uuid().v4();
 
   @override
   String get uniqueId => _elementId;
