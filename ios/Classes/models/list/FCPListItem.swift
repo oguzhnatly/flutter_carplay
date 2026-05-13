@@ -51,9 +51,8 @@ final class FCPListItem {
       }
 
       if let timeout = onPressTimeout {
-        let capturedElementId = elementId
         DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { [weak self] in
-          self.stopHandler()
+          self?.stopHandler()
         }
       }
     } else {
