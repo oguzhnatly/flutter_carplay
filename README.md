@@ -89,6 +89,9 @@ By evaluating this information, you can request for the relevant entitlement fro
 ## Android Auto Support
 
 - [x] List Template (limited support)
+- [x] Grid Template
+- [x] Tab Bar Template (requires Car App API level 6+)
+- [x] Alert Template
 - [x] Now Playing Template (Automatically handled by Android Auto system)
 
 # What's New in latest versions
@@ -127,8 +130,6 @@ Other templates will be supported in the future releases by `flutter_carplay`.
 - [ ] Contact Template
 
 ## Android Auto Road Map
-- [ ] Grid Template
-- [ ] Alert Template
 - [ ] Action Sheet Template
 - [ ] Information Template
 - [ ] Point of Interest Template
@@ -380,6 +381,142 @@ Take a look at [this detailed issue reply](https://github.com/oguzhnatly/flutter
 To see a complete example for both CarPlay and Android Auto, check the example project.
 
 [**See Full Example**](https://github.com/oguzhnatly/flutter_carplay/blob/master/example/lib/main.dart)
+
+### Basic Usage for Android Auto
+
+- Import all the classes you need from a single file:
+
+```dart
+import 'package:flutter_carplay/flutter_carplay.dart';
+```
+
+- Initialize the Android Auto controller and set a root template:
+
+```dart
+final FlutterAndroidAuto _androidAuto = FlutterAndroidAuto();
+
+await FlutterAndroidAuto.setRootTemplate(
+  template: AATabBarTemplate(
+    tabs: [
+      AAListTemplate(
+        title: "Home",
+        tabTitle: "Home",
+        systemIcon: "house.fill",
+        sections: [
+          AAListSection(
+            items: [
+              AAListItem(
+                title: "Item 1",
+                subtitle: "Detail Text",
+                onPress: (complete, self) async {
+                  await Future.delayed(const Duration(seconds: 1));
+                  complete();
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+);
+```
+
+> It is recommended to set the root template in the first `initState` of your app, after Android Auto is connected.
+
+### Listen Connection Changes for Android Auto
+
+```dart
+/// Add the listener
+_androidAuto.addListenerOnConnectionChange(onAndroidAutoConnectionChange);
+
+void onAndroidAutoConnectionChange(ConnectionStatusTypes status) {
+  // - ConnectionStatusTypes.connected
+  // - ConnectionStatusTypes.disconnected
+  // - ConnectionStatusTypes.unknown
+}
+
+/// Remove the listener
+_androidAuto.removeListenerOnConnectionChange();
+```
+
+### Android Auto API Methods
+
+#### **FlutterAndroidAuto.setRootTemplate**
+
+Sets the root template of the navigation hierarchy. If one already exists, it replaces it entirely.
+
+- `template` must be one of: **AATabBarTemplate**, **AAGridTemplate**, **AAListTemplate**.
+
+```dart
+await FlutterAndroidAuto.setRootTemplate(
+  template: /* AATabBarTemplate, AAGridTemplate or AAListTemplate */,
+);
+```
+
+#### **FlutterAndroidAuto.push**
+
+Adds a template to the navigation hierarchy and displays it.
+
+- `template` must be one of: **AAGridTemplate**, **AAListTemplate**.
+
+> Android Auto limits the navigation stack to 5 templates in depth, including the root template.
+
+```dart
+await FlutterAndroidAuto.push(
+  template: /* AAGridTemplate or AAListTemplate */,
+);
+```
+
+#### **FlutterAndroidAuto.pop**
+
+Removes the top-most template from the navigation hierarchy.
+
+```dart
+await FlutterAndroidAuto.pop();
+```
+
+#### **FlutterAndroidAuto.popToRoot**
+
+Removes all templates from the navigation hierarchy except the root template.
+
+```dart
+await FlutterAndroidAuto.popToRoot();
+```
+
+#### **FlutterAndroidAuto.showAlert**
+
+Presents an `AAAlertTemplate` as a full-screen modal. Because Android Auto does not support true overlay modals, the alert is pushed onto the navigation stack as a `MessageTemplate`.
+
+```dart
+await FlutterAndroidAuto.showAlert(template: alertTemplate);
+```
+
+#### **FlutterAndroidAuto.popModal**
+
+Dismisses the currently presented `AAAlertTemplate`.
+
+```dart
+await FlutterAndroidAuto.popModal();
+```
+
+#### **FlutterAndroidAuto.updateTabBarTemplates**
+
+Updates the tabs of the currently displayed `AATabBarTemplate` without rebuilding the root.
+
+```dart
+await FlutterAndroidAuto.updateTabBarTemplates(template: updatedTabBarTemplate);
+```
+
+#### **FlutterAndroidAuto.connectionStatus**
+
+Getter for the current Android Auto connection status.
+
+```dart
+FlutterAndroidAuto.connectionStatus // returns a ConnectionStatusTypes as String
+```
+
+---
 
 ### Basic Usage for Car Play
 
@@ -930,6 +1067,184 @@ FlutterCarplay.showSharedNowPlaying(animated: true);
 > **Note**: The Now Playing template displays information from your app's active media session. Make sure your app is properly configured with AVAudioSession and media playback controls for the best experience.
 
 > **Multiple Calls Safe**: The `showSharedNowPlaying()` method can be called multiple times safely without causing issues.
+
+## Android Auto Templates
+
+Android Auto templates are built using the [Android for Cars App Library](https://developer.android.com/training/cars/apps). Each template is vehicle-optimized and rendered by the host application on the car screen.
+
+### Tab Bar Template (Android Auto)
+
+The Tab Bar Template is a container that displays multiple child templates as tabs. Rendered as `TabTemplate` from the Car App Library.
+
+> Requires Car App API level 6+. On older hosts, the first tab's content is shown as a plain list. Supports between 2 and 4 tabs — extra tabs beyond the limit are discarded with a warning in logcat.
+
+```dart
+final AATabBarTemplate tabBarTemplate = AATabBarTemplate(
+  tabs: [
+    AAListTemplate(
+      title: "Home",
+      tabTitle: "Home",
+      systemIcon: "house.fill",
+      sections: [
+        AAListSection(
+          items: [
+            AAListItem(
+              title: "Item 1",
+              subtitle: "Detail Text",
+              image: 'images/logo_flutter_1080px_clr.png',
+              onPress: (complete, self) async {
+                await Future.delayed(const Duration(seconds: 1));
+                complete();
+              },
+            ),
+          ],
+        ),
+      ],
+    ),
+    AAGridTemplate(
+      title: "Grid",
+      tabTitle: "Grid",
+      systemIcon: "square.grid.2x2",
+      buttons: [
+        AAGridButton(
+          titleVariants: ["Button 1"],
+          image: 'images/logo_flutter_1080px_clr.png',
+          onPress: (complete, self) async {
+            complete();
+          },
+        ),
+      ],
+    ),
+  ],
+);
+
+await FlutterAndroidAuto.setRootTemplate(template: tabBarTemplate);
+```
+
+To update the tabs dynamically without resetting the root:
+
+```dart
+tabBarTemplate.updateTabs([/* updated list of AATemplate */]);
+await FlutterAndroidAuto.updateTabBarTemplates(template: tabBarTemplate);
+```
+
+### Grid Template (Android Auto)
+
+The Grid Template displays a grid of tappable cells, each with an image and a title. Use it to let users select from a fixed set of categories.
+
+> Android Auto recommends a maximum of 8 buttons per grid.
+
+```dart
+final AAGridTemplate gridTemplate = AAGridTemplate(
+  title: "Grid Template",
+  buttons: [
+    for (var i = 1; i <= 8; i++)
+      AAGridButton(
+        titleVariants: ["Item $i"],
+        image: 'images/logo_flutter_1080px_clr.png',
+        loadingMessage: "Loading...",
+        onPressTimeout: 10,
+        onPress: (complete, self) async {
+          await Future.delayed(const Duration(seconds: 1));
+          complete();
+        },
+      ),
+  ],
+  emptyViewTitleVariants: ["No items available"],
+);
+
+await FlutterAndroidAuto.push(template: gridTemplate);
+// OR
+await FlutterAndroidAuto.setRootTemplate(template: gridTemplate);
+```
+
+### Alert Template (Android Auto)
+
+Alerts present important information as a full-screen message with one or more action buttons. Because Android Auto does not support true overlay modals, the alert is pushed onto the navigation stack as a `MessageTemplate`.
+
+> Only one alert can be presented at a time. Use `FlutterAndroidAuto.popModal()` to dismiss it programmatically.
+
+```dart
+final AAAlertTemplate alertTemplate = AAAlertTemplate(
+  title: "Alert Title",
+  message: "This is an example message.",
+  actions: [
+    AAAlertAction(
+      title: "Confirm",
+      style: AAAlertActionStyle.normal,
+      onPress: () {
+        print("Confirm pressed");
+        FlutterAndroidAuto.popModal();
+      },
+    ),
+    AAAlertAction(
+      title: "Cancel",
+      style: AAAlertActionStyle.cancel,
+      onPress: () {
+        print("Cancel pressed");
+        FlutterAndroidAuto.popModal();
+      },
+    ),
+    AAAlertAction(
+      title: "Delete",
+      style: AAAlertActionStyle.destructive,
+      onPress: () {
+        print("Delete pressed");
+        FlutterAndroidAuto.popModal();
+      },
+    ),
+  ],
+  onPresent: (bool completed) {
+    print("Alert presented: $completed");
+  },
+);
+
+await FlutterAndroidAuto.showAlert(template: alertTemplate);
+```
+
+### List Template (Android Auto)
+
+A list presents data as a scrollable, single-column table divided into sections. Each item can include a title, subtitle, and an image.
+
+```dart
+final AAListTemplate listTemplate = AAListTemplate(
+  title: "Home",
+  sections: [
+    AAListSection(
+      title: "First Section",
+      items: [
+        AAListItem(
+          title: "Item 1",
+          subtitle: "Detail Text",
+          // Supports three image formats:
+          // - Asset: 'images/logo.png'
+          // - File:  'file:///path/to/image.png'
+          // - URL:   'https://example.com/image.png'
+          image: 'images/logo_flutter_1080px_clr.png',
+          loadingMessage: "Loading...",
+          onPressTimeout: 10,
+          onPress: (complete, self) async {
+            await Future.delayed(const Duration(seconds: 1));
+            complete();
+          },
+        ),
+        AAListItem(
+          title: "Item 2",
+          subtitle: "No image example",
+          onPress: (complete, self) async {
+            complete();
+          },
+        ),
+      ],
+    ),
+  ],
+  emptyViewTitleVariants: ["Nothing here yet"],
+);
+
+await FlutterAndroidAuto.push(template: listTemplate);
+// OR
+await FlutterAndroidAuto.setRootTemplate(template: listTemplate);
+```
 
 # Support
 
