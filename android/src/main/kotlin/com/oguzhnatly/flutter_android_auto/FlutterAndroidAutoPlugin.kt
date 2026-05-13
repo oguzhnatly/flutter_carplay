@@ -320,14 +320,6 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
             currentAlertScreen = alertScreen
             carContext.getCarService(ScreenManager::class.java).push(alertScreen)
-
-            if (alertTemplate.hasOnPresent) {
-                sendEvent(
-                    type = FAAChannelTypes.onPresentStateChanged.name,
-                    data = mapOf("elementId" to alertTemplate.elementId, "completed" to true)
-                )
-            }
-
             result.success(true)
         }
     }
@@ -396,9 +388,23 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
             ?: tabBar.tabs.firstOrNull()
             ?: return ListTemplate.Builder().setLoading(true).build()
 
-        if (tabBar.tabs.size < 2) {
+        val carContext = AndroidAutoService.session?.carContext
+        val supportsTabTemplate = carContext != null && carContext.getCarAppApiLevel() >= 6
+
+        if (tabBar.tabs.size < 2 || !supportsTabTemplate) {
             return buildInnerTemplateForTab(activeTab, addBackButton = false)
         }
+
+        if (tabBar.tabs.size > 4) {
+            android.util.Log.w(
+                "FlutterAndroidAuto",
+                "TabTemplate supports a maximum of 4 tabs, but ${tabBar.tabs.size} were provided. " +
+                "Only the first 4 will be displayed."
+            )
+        }
+
+        val cappedTabs = tabBar.tabs.take(4)
+        val resolvedActiveTab = if (cappedTabs.contains(activeTab)) activeTab else cappedTabs.first()
 
         val tabCallback = object : TabTemplate.TabCallback {
             override fun onTabSelected(tabContentId: String) {
@@ -417,9 +423,9 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         val builder = TabTemplate.Builder(tabCallback)
         builder.setHeaderAction(Action.APP_ICON)
-        builder.setActiveTabContentId(activeTab.elementId)
+        builder.setActiveTabContentId(resolvedActiveTab.elementId)
 
-        for (tab in tabBar.tabs) {
+        for (tab in cappedTabs) {
             builder.addTab(
                 Tab.Builder()
                     .setTitle(tab.tabTitle)
@@ -429,7 +435,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
             )
         }
 
-        val innerTemplate = buildInnerTemplateForTab(activeTab, addBackButton = false)
+        val innerTemplate = buildInnerTemplateForTab(resolvedActiveTab, addBackButton = false)
         builder.setTabContents(TabContents.Builder(innerTemplate).build())
         return builder.build()
     }

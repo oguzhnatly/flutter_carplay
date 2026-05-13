@@ -17,15 +17,15 @@ object FAAHelpers {
 }
 
 /**
- * Carrega uma imagem a partir de três formatos possíveis e retorna um [CarIcon]:
+ * Loads an image from three possible formats and returns a [CarIcon]:
  *
- * - **URL de rede** (`http://` ou `https://`) — download via [HttpURLConnection].
- * - **Arquivo local** (`file://`) — leitura direta do sistema de arquivos.
- * - **Asset Flutter** (qualquer outro valor) — abre via `Context.assets` sob o
- *   prefixo `flutter_assets/`, que é onde o Flutter empacota os assets no APK.
- *   Exemplo: `"images/logo.png"` → `flutter_assets/images/logo.png`.
+ * - **Network URL** (`http://` or `https://`) — downloaded via [HttpURLConnection].
+ * - **Local file** (`file://`) — read directly from the file system.
+ * - **Flutter asset** (any other value) — opened via `Context.assets` under the
+ *   `flutter_assets/` prefix, which is where Flutter packages assets inside the APK.
+ *   Example: `"images/logo.png"` → `flutter_assets/images/logo.png`.
  *
- * Retorna `null` se o carregamento falhar por qualquer motivo.
+ * Returns `null` if loading fails for any reason.
  */
 suspend fun loadCarImageAsync(image: String): CarIcon? = withContext(Dispatchers.IO) {
     try {

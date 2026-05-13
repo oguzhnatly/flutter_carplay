@@ -15,10 +15,6 @@ final class FCPListItem {
   private var detailText: String?
   private var isOnPressListenerActive: Bool = false
   private var completeHandler: (() -> Void)?
-  /// Keeps the FCPListItem instance that currently holds a pending CarPlay complete closure,
-  /// keyed by elementId. This lets stopHandler() always reach the right object regardless of
-  /// whether the templateStack was rebuilt since the item was pressed.
-  static var pendingHandlers: [String: FCPListItem] = [:]
   /// Optional timeout in seconds. When set, a safety timer automatically calls
   /// stopHandler() if Flutter never calls onListItemSelectedComplete.
   private var onPressTimeout: TimeInterval?
@@ -46,7 +42,6 @@ final class FCPListItem {
   private func handler(selectedItem: CPSelectableListItem, complete: @escaping () -> Void) {
     if isOnPressListenerActive {
       completeHandler = complete
-      FCPListItem.pendingHandlers[elementId] = self
 
       DispatchQueue.main.async {
         FCPStreamHandlerPlugin.sendEvent(
@@ -58,7 +53,6 @@ final class FCPListItem {
       if let timeout = onPressTimeout {
         let capturedElementId = elementId
         DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { [weak self] in
-          guard let self, FCPListItem.pendingHandlers[capturedElementId] != nil else { return }
           self.stopHandler()
         }
       }
@@ -96,8 +90,9 @@ final class FCPListItem {
   }
 
   public func stopHandler() {
-    FCPListItem.pendingHandlers.removeValue(forKey: elementId)
-    guard self.completeHandler != nil else { return }
+    guard self.completeHandler != nil else {
+      return
+    }
     self.completeHandler!()
     self.completeHandler = nil
   }

@@ -186,6 +186,7 @@ class FlutterAndroidAuto {
     if (isCompleted == true) {
       FlutterAndroidAutoController.currentPresentTemplate = template;
     }
+    template.onPresent?.call(isCompleted ?? false);
   }
 
   /// Dismisses the currently presented modal ([AAAlertTemplate]).
