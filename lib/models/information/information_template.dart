@@ -37,6 +37,7 @@ class CPInformationTemplate extends CPTemplate {
     super.tabTitle,
     super.showsTabBadge = false,
     super.systemIcon,
+    super.onPop,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
 
