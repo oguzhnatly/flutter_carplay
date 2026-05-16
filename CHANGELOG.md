@@ -1,3 +1,8 @@
+## 1.3.3
+
+- Expose `onPop` callbacks on pushed CarPlay templates (#106) (ty @sINFdorako)
+- Add Android Auto list item, section, and template IDs (#103) (ty @JulianBissekkou)
+
 ## 1.3.2
 
 - Avoid iOS crash around image management (#101) (ty @EArminjon)
