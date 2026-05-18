@@ -45,6 +45,11 @@ enum FCPChannelTypes {
   static let getMaximumNumberOfGridImages = "getMaximumNumberOfGridImages"
   static let getMaximumSectionCount = "getMaximumSectionCount"
   static let getMaximumItemCount = "getMaximumItemCount"
+  static let onSearchTextUpdated = "onSearchTextUpdated"
+  static let onSearchResultSelected = "onSearchResultSelected"
+  static let onSearchButtonPressed = "onSearchButtonPressed"
+  static let updateSearchResults = "updateSearchResults"
+  static let onSearchResultSelectedComplete = "onSearchResultSelectedComplete"
 }
 
 enum FCPAlertActionTypes {
