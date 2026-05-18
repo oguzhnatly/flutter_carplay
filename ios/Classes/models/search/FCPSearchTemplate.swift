@@ -12,9 +12,13 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
   private var searchCompletionHandler: (([CPListItem]) -> Void)?
   private var selectedCompletionHandler: (() -> Void)?
   private var currentResultItems: [FCPListItem] = []
+  private var hasSearchTextCallback: Bool
+  private var hasSelectedResultCallback: Bool
 
   init(obj: [String: Any]) {
     self.elementId = obj["_elementId"] as! String
+    self.hasSearchTextCallback = obj["onUpdatedSearchText"] as? Bool ?? false
+    self.hasSelectedResultCallback = obj["onSelectedResult"] as? Bool ?? false
   }
 
   var get: CPTemplate {
@@ -26,6 +30,10 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
   }
 
   func searchTemplate(_ searchTemplate: CPSearchTemplate, updatedSearchText searchText: String, completionHandler: @escaping ([CPListItem]) -> Void) {
+    guard hasSearchTextCallback else {
+      completionHandler([])
+      return
+    }
     self.searchCompletionHandler = completionHandler
     DispatchQueue.main.async {
       FCPStreamHandlerPlugin.sendEvent(
@@ -36,7 +44,10 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
   }
 
   func searchTemplate(_ searchTemplate: CPSearchTemplate, selectedResult item: CPListItem, completionHandler: @escaping () -> Void) {
-    self.selectedCompletionHandler = completionHandler
+    guard hasSelectedResultCallback else {
+      completionHandler()
+      return
+    }
     var selectedElementId = ""
     for fcpItem in currentResultItems {
       if fcpItem._super === item {
@@ -44,6 +55,11 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
         break
       }
     }
+    guard !selectedElementId.isEmpty else {
+      completionHandler()
+      return
+    }
+    self.selectedCompletionHandler = completionHandler
     DispatchQueue.main.async {
       FCPStreamHandlerPlugin.sendEvent(
         type: FCPChannelTypes.onSearchResultSelected,
@@ -76,9 +92,9 @@ class FCPSearchTemplate: NSObject, CPSearchTemplateDelegate {
   public func getCurrentResultItems() -> [FCPListItem] {
     return currentResultItems
   }
+
+  public func update(with template: any FCPTemplate) {}
 }
 
 @available(iOS 14.0, *)
-extension FCPSearchTemplate: FCPTemplate {
-  public func update(with template: any FCPTemplate) {}
-}
+extension FCPSearchTemplate: FCPTemplate {}
