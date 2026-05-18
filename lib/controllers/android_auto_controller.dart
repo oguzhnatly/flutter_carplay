@@ -146,6 +146,7 @@ class FlutterAndroidAutoController {
     final selectedItem = listSection?.items.elementAtOrNull(selectedIndex);
 
     if (listSection != null && selectedItem != null) {
+      listSection.selectedIndex = selectedIndex;
       listSection.onSelected?.call(selectedIndex, selectedItem);
     }
   }
@@ -160,7 +161,11 @@ class FlutterAndroidAutoController {
     );
 
     if (listItem != null) {
-      listItem.toggle?.onCheckedChange?.call(checked, listItem);
+      final toggle = listItem.toggle;
+      if (toggle != null) {
+        toggle.isChecked = checked;
+        toggle.onCheckedChange?.call(checked, listItem);
+      }
     }
   }
 

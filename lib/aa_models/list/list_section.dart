@@ -10,7 +10,7 @@ class AAListSection {
   final String? title;
 
   final List<AAListItem> items;
-  final int? selectedIndex;
+  int? selectedIndex;
   final Function(int selectedIndex, AAListItem selectedItem)? onSelected;
 
   AAListSection({

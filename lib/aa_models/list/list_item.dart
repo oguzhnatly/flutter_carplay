@@ -1,11 +1,11 @@
 import 'package:uuid/uuid.dart';
 
 class AAToggle {
-  final bool isChecked;
+  bool isChecked;
   final bool? isEnabled;
   final Function(bool checked, AAListItem self)? onCheckedChange;
 
-  const AAToggle({
+  AAToggle({
     this.isChecked = false,
     this.isEnabled,
     this.onCheckedChange,
