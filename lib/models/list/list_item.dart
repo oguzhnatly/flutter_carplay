@@ -44,12 +44,6 @@ class CPListItem extends CPListTemplateItem {
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   final Future<void> Function(Function() complete, CPListItem self)? onPress;
 
-  /// Maximum time in seconds the CarPlay loading indicator stays visible waiting
-  /// for [onPress] to call [complete]. When null, no safety timeout is scheduled
-  /// and the spinner persists until [complete] is called. Values below 1 are ignored.
-  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
-  final int? onPressTimeout;
-
   /// Creates [CPListItem] that manages the content of a single row in a [CPListTemplate].
   /// CarPlay manages the layout of a list item and may adjust its layout to allow for
   /// the display of auxiliary content, such as, an accessory or a Now Playing indicator.
@@ -59,7 +53,6 @@ class CPListItem extends CPListTemplateItem {
     super.text,
     this.detailText,
     this.onPress,
-    this.onPressTimeout,
     this.image,
     this.playbackProgress,
     this.isPlaying,
@@ -74,7 +67,6 @@ class CPListItem extends CPListTemplateItem {
         'text': text,
         'detailText': detailText,
         'onPress': onPress != null ? true : false,
-        'onPressTimeout': onPressTimeout,
         'image': image,
         'playbackProgress': playbackProgress,
         'isPlaying': isPlaying,

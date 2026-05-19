@@ -56,8 +56,6 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         var pendingRawType: String? = null
         var pendingAddBackButton: Boolean = false
 
-        private const val HANDLER_TIMEOUT_MS = 15_000L
-
         fun sendEvent(type: String, data: Map<String, Any>) {
             events?.success(mapOf("type" to type, "data" to data))
         }
@@ -142,7 +140,6 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         rawType: String,
         addBackButton: Boolean,
         loadingMessage: String? = null,
-        timeoutMs: Long? = null,
     ) {
         pendingScreen = screen
         pendingRawData = rawData
@@ -167,14 +164,6 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
             screen.invalidate()
         }
 
-        if (timeoutMs != null) {
-            pluginScope.launch {
-                delay(timeoutMs)
-                if (pendingRawData === rawData) {
-                    rebuildPendingTemplate()
-                }
-            }
-        }
     }
 
     private fun rebuildPendingTemplate() {
@@ -675,7 +664,6 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                 showLoadingForScreen(
                     owningScreen, rawData, rawType, addBackButton,
                     item.loadingMessage,
-                    item.onPressTimeoutMs,
                 )
                 sendEvent(
                     type = FAAChannelTypes.onListItemSelected.name,
@@ -757,7 +745,6 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                 showLoadingForScreen(
                     owningScreen, rawData, rawType, addBackButton,
                     button.loadingMessage,
-                    button.onPressTimeoutMs,
                 )
                 sendEvent(
                     type = FAAChannelTypes.onGridButtonPressed.name,

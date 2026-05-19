@@ -25,12 +25,6 @@ class AAGridButton {
   /// (until [complete] is called). When null, no title is shown.
   final String? loadingMessage;
 
-  /// Maximum time in seconds the loading screen stays visible waiting for
-  /// [onPress] to call [complete]. When null, no safety timeout is scheduled
-  /// and the loading persists until [complete] is called. Values below 1 are
-  /// ignored.
-  final int? onPressTimeout;
-
   /// Callback fired when the user taps this button.
   ///
   /// - `complete` must be called after processing to dismiss the loading screen
@@ -42,7 +36,6 @@ class AAGridButton {
     required this.titleVariants,
     this.image,
     this.loadingMessage,
-    this.onPressTimeout,
     this.onPress,
   })  : assert(titleVariants.isNotEmpty, 'titleVariants must not be empty'),
         _elementId = const Uuid().v4();
@@ -54,7 +47,6 @@ class AAGridButton {
         'titleVariants': titleVariants,
         'image': image,
         'loadingMessage': loadingMessage,
-        'onPressTimeout': onPressTimeout,
         'onPress': onPress != null,
       };
 }

@@ -15,9 +15,6 @@ final class FCPListItem {
   private var detailText: String?
   private var isOnPressListenerActive: Bool = false
   private var completeHandler: (() -> Void)?
-  /// Optional timeout in seconds. When set, a safety timer automatically calls
-  /// stopHandler() if Flutter never calls onListItemSelectedComplete.
-  private var onPressTimeout: TimeInterval?
   private var image: String?
   private var playbackProgress: CGFloat?
   private var isPlaying: Bool?
@@ -29,9 +26,6 @@ final class FCPListItem {
     self.text = obj["text"] as? String
     self.detailText = obj["detailText"] as? String
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
-    if let seconds = obj["onPressTimeout"] as? Int, seconds >= 1 {
-      self.onPressTimeout = TimeInterval(seconds)
-    }
     self.image = obj["image"] as? String
     self.playbackProgress = obj["playbackProgress"] as? CGFloat
     self.isPlaying = obj["isPlaying"] as? Bool
@@ -48,12 +42,6 @@ final class FCPListItem {
           type: FCPChannelTypes.onListItemSelected,
           data: ["elementId": self.elementId]
         )
-      }
-
-      if let timeout = onPressTimeout {
-        DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { [weak self] in
-          self?.stopHandler()
-        }
       }
     } else {
       complete()

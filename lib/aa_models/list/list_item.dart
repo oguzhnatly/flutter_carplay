@@ -18,12 +18,6 @@ class AAListItem {
   /// is shown.
   final String? loadingMessage;
 
-  /// Maximum time in seconds the loading screen stays visible waiting for
-  /// [onPress] to call [complete]. When null, no safety timeout is scheduled
-  /// and the loading persists until [complete] is called. Values below 1 are
-  /// ignored.
-  final int? onPressTimeout;
-
   final Future<void> Function(Function() complete, AAListItem self)? onPress;
 
   AAListItem({
@@ -31,7 +25,6 @@ class AAListItem {
     this.subtitle,
     this.image,
     this.loadingMessage,
-    this.onPressTimeout,
     this.onPress,
   }) : _elementId = const Uuid().v4();
 
@@ -43,7 +36,6 @@ class AAListItem {
         'subtitle': subtitle,
         'image': image,
         'loadingMessage': loadingMessage,
-        'onPressTimeout': onPressTimeout,
         'onPress': onPress != null ? true : false,
       };
 }

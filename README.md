@@ -1143,7 +1143,6 @@ final AAGridTemplate gridTemplate = AAGridTemplate(
         titleVariants: ["Item $i"],
         image: 'images/logo_flutter_1080px_clr.png',
         loadingMessage: "Loading...",
-        onPressTimeout: 10,
         onPress: (complete, self) async {
           await Future.delayed(const Duration(seconds: 1));
           complete();
@@ -1222,7 +1221,6 @@ final AAListTemplate listTemplate = AAListTemplate(
           // - URL:   'https://example.com/image.png'
           image: 'images/logo_flutter_1080px_clr.png',
           loadingMessage: "Loading...",
-          onPressTimeout: 10,
           onPress: (complete, self) async {
             await Future.delayed(const Duration(seconds: 1));
             complete();

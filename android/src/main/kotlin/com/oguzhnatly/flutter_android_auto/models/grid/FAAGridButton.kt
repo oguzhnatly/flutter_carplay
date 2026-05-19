@@ -6,9 +6,7 @@ data class FAAGridButton(
     val image: String?,
     val loadingMessage: String?,
     val isOnPressListenerActive: Boolean,
-    val onPressTimeoutMs: Long? = null,
 ) {
-    /** Primary title shown beneath the grid cell image. */
     val title: String get() = titleVariants.firstOrNull() ?: ""
 
     companion object {
@@ -19,13 +17,10 @@ data class FAAGridButton(
             val image = map["image"] as? String
             val loadingMessage = map["loadingMessage"] as? String
             val isOnPressListenerActive = map["onPress"] as? Boolean ?: false
-            val onPressTimeoutMs = (map["onPressTimeout"] as? Int)
-                ?.takeIf { it >= 1 }
-                ?.let { it.toLong() * 1_000L }
 
             return FAAGridButton(
                 elementId, titleVariants, image, loadingMessage,
-                isOnPressListenerActive, onPressTimeoutMs,
+                isOnPressListenerActive,
             )
         }
     }
