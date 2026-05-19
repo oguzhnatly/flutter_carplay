@@ -46,6 +46,7 @@ class CPListTemplate extends CPTemplate {
     super.tabTitle,
     super.showsTabBadge = false,
     super.systemIcon,
+    super.onPop,
     this.backButton,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();

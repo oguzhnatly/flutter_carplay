@@ -45,7 +45,8 @@ class AAListTemplate implements AATemplate {
     this.tabTitle,
     this.systemIcon,
     this.iconUrl,
-  }) : _elementId = const Uuid().v4();
+    String? id,
+  }) : _elementId = id ?? const Uuid().v4();
 
   @override
   String get uniqueId => _elementId;

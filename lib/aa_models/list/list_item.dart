@@ -26,7 +26,8 @@ class AAListItem {
     this.image,
     this.loadingMessage,
     this.onPress,
-  }) : _elementId = const Uuid().v4();
+    String? id,
+  }) : _elementId = id ?? const Uuid().v4();
 
   String get uniqueId => _elementId;
 
