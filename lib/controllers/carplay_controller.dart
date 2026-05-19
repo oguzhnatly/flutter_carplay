@@ -219,59 +219,55 @@ class FlutterCarPlayController {
     }
   }
 
-  void processFCPListItemSelectedChannel(String elementId) {
+  Future<void> processFCPListItemSelectedChannel(String elementId) async {
+    final item = _carplayHelper.findCPListTemplateItem(
+      templates: templateHistory,
+      elementId: elementId,
+    );
+    if (item is! CPListItem) return;
+
+    Future<void> complete() async {
+      await flutterToNativeModule(
+          FCPChannelTypes.onFCPListItemSelectedComplete, item.uniqueId);
+    }
+
+    await item.onPress?.call(complete, item).catchError((_) => complete());
+  }
+
+  Future<void> processFCPListImageRowItemSelectedChannel(
+      String elementId) async {
     final item = _carplayHelper.findCPListTemplateItem(
       templates: templateHistory,
       elementId: elementId,
     );
 
-    if (item is CPListItem) {
-      item.onPress?.call(
-        () => flutterToNativeModule(
-          FCPChannelTypes.onFCPListItemSelectedComplete,
-          item.uniqueId,
-        ),
-        item,
-      );
+    if (item is! CPListImageRowItem) return;
+
+    Future<void> complete() async {
+      await flutterToNativeModule(
+          FCPChannelTypes.onFCPListImageRowItemSelectedComplete, item.uniqueId);
     }
+
+    await item.onPress?.call(complete, item).catchError((_) => complete());
   }
 
-  void processFCPListImageRowItemSelectedChannel(String elementId) {
-    final item = _carplayHelper.findCPListTemplateItem(
-      templates: templateHistory,
-      elementId: elementId,
-    );
-
-    if (item is CPListImageRowItem) {
-      item.onPress?.call(
-        () => flutterToNativeModule(
-          FCPChannelTypes.onFCPListImageRowItemSelectedComplete,
-          item.uniqueId,
-        ),
-        item,
-      );
-    }
-  }
-
-  void processFCPListImageRowItemElementSelectedChannel(
+  Future<void> processFCPListImageRowItemElementSelectedChannel(
     String elementId,
     int index,
-  ) {
+  ) async {
     final item = _carplayHelper.findCPListTemplateItem(
       templates: templateHistory,
       elementId: elementId,
     );
 
-    if (item is CPListImageRowItem) {
-      item.onItemPress?.call(
-        () => flutterToNativeModule(
+    if (item is! CPListImageRowItem) return;
+    void complete() {
+      flutterToNativeModule(
           FCPChannelTypes.onFCPListImageRowItemElementSelectedComplete,
-          item.uniqueId,
-        ),
-        item,
-        index,
-      );
+          item.uniqueId);
     }
+
+    await item.onPress?.call(complete, item).catchError((_) => complete());
   }
 
   void processFCPAlertActionPressed(String elementId) {

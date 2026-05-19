@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
         CPListItem(
           text: 'Item 1',
           detailText: 'Detail Text',
-          onPress: (complete, self) {
+          onPress: (complete, self) async {
             self.setDetailText('You can change the detail text.. 🚀');
             self.setAccessoryType(CPListItemAccessoryType.cloud);
             Future.delayed(const Duration(seconds: 1), () {
@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
           isPlaying: false,
           playbackProgress: 0,
           image: 'images/logo_flutter_1080px_clr.png',
-          onPress: (complete, self) {
+          onPress: (complete, self) async {
             for (var i = 1; i <= 100; i++) {
               sleep(const Duration(milliseconds: 10));
               self.setPlaybackProgress(i / 100);
@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
         CPListItem(
           text: 'Item 3',
           detailText: 'Detail Text',
-          onPress: (complete, self) {
+          onPress: (complete, self) async {
             self.update(
               text: 'You can also change the title',
               detailText: 'and detail text while loading',
@@ -104,7 +104,7 @@ class _MyAppState extends State<MyApp> {
         CPListItem(
           text: 'Alert',
           detailText: 'Action template that the user can perform on an alert',
-          onPress: (complete, self) {
+          onPress: (complete, self) async {
             showAlert();
             complete();
           },
@@ -112,7 +112,7 @@ class _MyAppState extends State<MyApp> {
         CPListItem(
           text: 'Grid Template',
           detailText: 'A template that displays and manages a grid of items',
-          onPress: (complete, self) {
+          onPress: (complete, self) async {
             openGridTemplate();
             complete();
           },
@@ -120,7 +120,7 @@ class _MyAppState extends State<MyApp> {
         CPListItem(
           text: 'Action Sheet',
           detailText: 'A template that displays a modal action sheet',
-          onPress: (complete, self) {
+          onPress: (complete, self) async {
             showActionSheet();
             complete();
           },
@@ -128,7 +128,7 @@ class _MyAppState extends State<MyApp> {
         CPListItem(
           text: 'List Template',
           detailText: 'Displays and manages a list of items',
-          onPress: (complete, self) {
+          onPress: (complete, self) async {
             openListTemplate();
             complete();
           },
@@ -136,7 +136,7 @@ class _MyAppState extends State<MyApp> {
         CPListItem(
           text: 'Information Template',
           detailText: 'Displays a list of items and up to three actions',
-          onPress: (complete, self) {
+          onPress: (complete, self) async {
             openInformationTemplate();
             complete();
           },
@@ -144,7 +144,7 @@ class _MyAppState extends State<MyApp> {
         CPListItem(
           text: 'Point Of Interest Template',
           detailText: 'Displays a Map with points of interest.',
-          onPress: (complete, self) {
+          onPress: (complete, self) async {
             openPoiTemplate();
             complete();
           },
@@ -212,7 +212,7 @@ class _MyAppState extends State<MyApp> {
               AAListItem(
                 title: 'Page 1',
                 subtitle: 'Click to open page 1',
-                onPress: (complete, AAListItem item) {
+                onPress: (complete, AAListItem item) async {
                   print('Item for Page 1 pressed');
                   FlutterAndroidAuto.push(
                     template: AAListTemplate(
@@ -223,9 +223,9 @@ class _MyAppState extends State<MyApp> {
                             AAListItem(
                               title: 'Item 1',
                               subtitle: 'Click to pop',
-                              imageUrl:
+                              image:
                                   'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
-                              onPress: (complete, AAListItem item) {
+                              onPress: (complete, AAListItem item) async {
                                 FlutterAndroidAuto.pop();
                                 complete();
                               },
@@ -233,9 +233,9 @@ class _MyAppState extends State<MyApp> {
                             AAListItem(
                               title: 'Page 2',
                               subtitle: 'Click to open page 2',
-                              imageUrl:
+                              image:
                                   'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
-                              onPress: (complete, AAListItem item) {
+                              onPress: (complete, AAListItem item) async {
                                 print('Item for Page 2 pressed');
                                 FlutterAndroidAuto.push(
                                   template: AAListTemplate(
@@ -246,10 +246,10 @@ class _MyAppState extends State<MyApp> {
                                           AAListItem(
                                             title: 'Item 1',
                                             subtitle: 'Click to pop',
-                                            imageUrl:
+                                            image:
                                                 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
-                                            onPress:
-                                                (complete, AAListItem item) {
+                                            onPress: (complete,
+                                                AAListItem item) async {
                                               FlutterAndroidAuto.pop();
                                               complete();
                                             },
@@ -258,10 +258,10 @@ class _MyAppState extends State<MyApp> {
                                             title: 'Page 2',
                                             subtitle:
                                                 'Click to open pop to root',
-                                            imageUrl:
+                                            image:
                                                 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
-                                            onPress:
-                                                (complete, AAListItem item) {
+                                            onPress: (complete,
+                                                AAListItem item) async {
                                               FlutterAndroidAuto.popToRoot();
                                               complete();
                                             },

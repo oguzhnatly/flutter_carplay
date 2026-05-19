@@ -180,6 +180,36 @@ extension UIImage {
   }
 }
 
+/// Resolve a tab icon from [systemIcon]:
+/// 1. Named SF Symbol (ex: "star") → `UIImage(systemName:)`
+/// 2. Image source (URL, file, Flutter asset) → loaded via `makeUIImage` /
+///    `loadUIImageAsync`, using a placeholder on iOS 26+ while loading async.
+///
+/// The [applyImage] closure is called once with the resolved image so that
+/// the caller can assign it to the appropriate template property.
+@available(iOS 14.0, *)
+func resolveTabIcon(
+  _ systemIcon: String,
+  applyImage: @escaping (UIImage?) -> Void
+) {
+  // 1. SF Symbol — resolved synchronously
+  if let sysImage = UIImage(systemName: systemIcon) {
+    applyImage(sysImage)
+    return
+  }
+
+  // 2. Image source (URL, file, asset)
+  let imageSource = systemIcon.toImageSource()
+  if #available(iOS 26.0, *) {
+    applyImage(makeSafeUIPlaceholder())
+    loadUIImageAsync(from: imageSource) { uiImage in
+      applyImage(uiImage)
+    }
+  } else {
+    applyImage(makeUIImage(from: imageSource))
+  }
+}
+
 // Regex helper
 extension String {
   func match(_ regex: String) -> [[String]] {

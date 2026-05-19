@@ -42,7 +42,7 @@ class CPListItem extends CPListTemplateItem {
 
   /// An optional closure that CarPlay invokes when the user selects the list item.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
-  final Function(Function() complete, CPListItem self)? onPress;
+  final Future<void> Function(Function() complete, CPListItem self)? onPress;
 
   /// Creates [CPListItem] that manages the content of a single row in a [CPListTemplate].
   /// CarPlay manages the layout of a list item and may adjust its layout to allow for

@@ -38,7 +38,7 @@ class FCPGridTemplate {
     gridTemplate.tabTitle = tabTitle
     gridTemplate.showsTabBadge = showsTabBadge
     if let systemIcon = systemIcon {
-      gridTemplate.tabImage = UIImage(systemName: systemIcon)
+      resolveTabIcon(systemIcon) { gridTemplate.tabImage = $0 }
     }
 
     self._super = gridTemplate
