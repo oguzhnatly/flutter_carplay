@@ -17,8 +17,10 @@ class CPGridButton {
 
   /// The image displayed on the button.
   ///
-  /// Supports three formats:
+  /// Supports these formats:
   /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
+  /// - **SVG asset**: `images/icon.svg` (rasterized to PNG before being sent to
+  ///   the native side; remote/`file://` SVGs are not supported)
   /// - **File path**: `file:///path/to/image.png` (local file on device)
   /// - **Network URL**: `https://example.com/image.png` (remote image)
   ///

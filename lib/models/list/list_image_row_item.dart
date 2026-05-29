@@ -12,6 +12,10 @@ class CPListImageRowItem extends CPListTemplateItem {
   final String _elementId;
 
   /// The images that appear in the list item’s image row.
+  ///
+  /// Each entry accepts an asset path, an SVG Flutter asset (`.svg`, rasterized
+  /// to PNG before reaching the native side), a `file://` path, or a network
+  /// URL. Remote/`file://` SVGs are not supported.
   /// iOS 14.0–26.0 | iPadOS 14.0–26.0 | Mac Catalyst 14.0–26.0
   final List<String>? gridImages;
 

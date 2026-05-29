@@ -10,6 +10,10 @@ class CPListImageRowItemGridElement implements CPListImageRowItemElement {
   final String _elementId;
 
   /// The image to display in the card.
+  ///
+  /// Accepts an asset path, an SVG Flutter asset (`.svg`, rasterized to PNG
+  /// before reaching the native side), a `file://` path, or a network URL.
+  /// Remote/`file://` SVGs are not supported.
   /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
   @override
   String image;

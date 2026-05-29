@@ -42,8 +42,10 @@ class CPPointOfInterest {
   String? detailSummary;
 
   /// A custom image that the map annotation displays.
-  /// Supports three formats:
+  /// Supports these formats:
   /// - **Asset path**: `images/marker.png` (from pubspec.yaml assets)
+  /// - **SVG asset**: `images/marker.svg` (rasterized to PNG before being sent
+  ///   to the native side; remote/`file://` SVGs are not supported)
   /// - **File path**: `file:///path/to/image.png` (local file on device)
   /// - **Network URL**: `https://example.com/image.png` (remote image)
   String? image;
