@@ -46,8 +46,6 @@ void main() {
   setUp(() {
     mockAssets();
     clearSvgRasterCache();
-    FlutterCarplay.svgRasterSize = defaultSvgRasterSize;
-    FlutterAndroidAuto.svgRasterSize = defaultSvgRasterSize;
   });
 
   tearDown(() {
@@ -115,6 +113,7 @@ void main() {
       const customSize = 48;
       expect(customSize, isNot(defaultSvgRasterSize));
       FlutterCarplay.svgRasterSize = customSize;
+      addTearDown(() => FlutterCarplay.svgRasterSize = defaultSvgRasterSize);
 
       final captured = capturePayload(_carplayChannel);
       await FlutterCarPlayController.flutterToNativeModule(
@@ -180,6 +179,8 @@ void main() {
       const customSize = 64;
       expect(customSize, isNot(defaultSvgRasterSize));
       FlutterAndroidAuto.svgRasterSize = customSize;
+      addTearDown(
+          () => FlutterAndroidAuto.svgRasterSize = defaultSvgRasterSize);
 
       final captured = capturePayload(_androidAutoChannel);
       await controller.flutterToNativeModule(
