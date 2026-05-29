@@ -36,6 +36,7 @@ class CPTabBarTemplate extends CPTemplate {
     super.tabTitle,
     super.showsTabBadge = false,
     super.systemIcon,
+    super.onPop,
     String? id,
   })  : templates = List<CPTemplate>.from(templates),
         _elementId = id ?? const Uuid().v4();

@@ -18,6 +18,7 @@ class AAListSection {
     required this.items,
     this.selectedIndex,
     this.onSelected,
+    String? id,
   })  : assert(
           selectedIndex == null ||
               (selectedIndex >= 0 && selectedIndex < items.length),
@@ -37,7 +38,7 @@ class AAListSection {
               items.every((AAListItem item) => item.toggle == null),
           'Selectable list items must not have a toggle set.',
         ),
-        _elementId = const Uuid().v4();
+        _elementId = id ?? const Uuid().v4();
 
   String get uniqueId => _elementId;
 

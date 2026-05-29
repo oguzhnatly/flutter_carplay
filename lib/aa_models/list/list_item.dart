@@ -36,6 +36,7 @@ class AAListItem {
     this.isBrowsable,
     this.toggle,
     this.onPress,
+    String? id,
   })  : assert(
           isBrowsable != true || toggle == null,
           'A browsable row must not have a toggle set.',
@@ -48,7 +49,7 @@ class AAListItem {
           toggle == null || onPress == null,
           'If a row contains a toggle, it must not have an onClickListener set.',
         ),
-        _elementId = const Uuid().v4();
+        _elementId = id ?? const Uuid().v4();
 
   String get uniqueId => _elementId;
 
