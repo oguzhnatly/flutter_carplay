@@ -3,7 +3,9 @@ import 'package:flutter_carplay/constants/private_constants.dart';
 
 import '../aa_models/list/list_item.dart';
 import '../aa_models/template.dart';
+import '../android_auto_worker.dart';
 import '../helpers/auto_android_helper.dart';
+import '../helpers/svg_rasterizer.dart';
 
 /// [FlutterAndroidAutoController] is an root object in order to control and communication
 /// system with the Android Auto and native functions.
@@ -34,6 +36,12 @@ class FlutterAndroidAutoController {
     FAAChannelTypes type, [
     dynamic data,
   ]) async {
+    // Rasterize any Flutter asset SVGs referenced by image fields (e.g.
+    // AAListItem.imageUrl) into PNG bytes before sending the payload to the
+    // native side, which cannot render SVG directly. Non-collection payloads
+    // pass through unchanged.
+    await resolveSvgInPayload(data, size: FlutterAndroidAuto.svgRasterSize);
+
     final bool? value = await _methodChannel.invokeMethod<bool>(
       type.name,
       data,
