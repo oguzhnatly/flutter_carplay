@@ -61,7 +61,8 @@ class _MyAppState extends State<MyApp> {
           detailText: 'Start progress bar',
           isPlaying: false,
           playbackProgress: 0,
-          image: 'images/logo_flutter_1080px_clr.png',
+          // SVG asset: rasterized to PNG before being sent to the native side.
+          image: 'images/icon.svg',
           onPress: (complete, self) {
             for (var i = 1; i <= 100; i++) {
               sleep(const Duration(milliseconds: 10));
@@ -212,6 +213,9 @@ class _MyAppState extends State<MyApp> {
               AAListItem(
                 title: 'Page 1',
                 subtitle: 'Click to open page 1',
+                // SVG asset: rasterized to PNG before being sent to the native
+                // side.
+                imageUrl: 'images/icon.svg',
                 onPress: (complete, AAListItem item) {
                   print('Item for Page 1 pressed');
                   FlutterAndroidAuto.push(
@@ -453,10 +457,15 @@ class _MyAppState extends State<MyApp> {
               // WE ARE NOT ENDORSED BY OR AFFILIATED WITH Google LLC.
               // ----- TRADEMARKS RIGHTS INFORMATION END -----
               //
-              // Using asset and network images for demonstration purposes.
-              image: i.isOdd
-                  ? 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png'
-                  : 'images/logo_flutter_1080px_clr.png',
+              // Using asset, SVG asset, and network images for demonstration
+              // purposes. SVG assets are rasterized to PNG before being sent to
+              // the native side.
+              image: switch (i % 3) {
+                0 =>
+                  'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
+                1 => 'images/icon.svg',
+                _ => 'images/logo_flutter_1080px_clr.png',
+              },
               onPress: () {
                 print('Grid Button $i pressed');
               },
