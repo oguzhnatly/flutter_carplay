@@ -248,6 +248,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         data: Map<String, Any?>,
         addBackButton: Boolean = true
     ): Template {
+        val carContext = AndroidAutoService.session?.carContext
         val template = FAAListTemplate.fromJson(data)
         val listTemplateBuilder =
             ListTemplate.Builder().setTitle(template.title)
@@ -263,14 +264,14 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                 val itemListBuilder = ItemList.Builder()
                 val sectionItems = template.sections.first().items
                 for (item in sectionItems) {
-                    itemListBuilder.addItem(createRowFromItem(item))
+                    itemListBuilder.addItem(createRowFromItem(carContext, item))
                 }
                 listTemplateBuilder.setSingleList(itemListBuilder.build())
             } else {
                 for (section in template.sections) {
                     val itemListBuilder = ItemList.Builder()
                     for (item in section.items) {
-                        itemListBuilder.addItem(createRowFromItem(item))
+                        itemListBuilder.addItem(createRowFromItem(carContext, item))
                     }
                     val sectionedItemList = SectionedItemList.create(
                         itemListBuilder.build(), section.title ?: ""
@@ -288,13 +289,13 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
     }
 
     // Helper function to create a Row from an FAAListItem, avoiding code duplication
-    private suspend fun createRowFromItem(item: FAAListItem): Row {
+    private suspend fun createRowFromItem(carContext: CarContext?, item: FAAListItem): Row {
         val rowBuilder = Row.Builder().setTitle(CarText.create(item.title))
 
         item.subtitle?.let { rowBuilder.addText(CarText.create(it)) }
 
-        item.imageUrl?.let {
-            loadCarImageAsync(it)?.let { carIcon ->
+        if (carContext != null && (item.imageData != null || item.imageUrl != null)) {
+            resolveCarIcon(carContext, item.imageData, item.imageUrl)?.let { carIcon ->
                 rowBuilder.setImage(carIcon)
             }
         }

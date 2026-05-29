@@ -5,6 +5,7 @@ data class FAAListItem(
     val title: String,
     val subtitle: String? = null,
     val imageUrl: String? = null,
+    val imageData: ByteArray? = null,
     val isOnPressListenerActive: Boolean,
 ) {
     companion object {
@@ -13,10 +14,11 @@ data class FAAListItem(
             val title = map["title"] as? String ?: ""
             val subtitle = map["subtitle"] as? String
             val imageUrl = map["imageUrl"] as? String
+            val imageData = map["imageData"] as? ByteArray
             val isOnPressListenerActive = map["onPress"] as? Boolean ?: false
 
             return FAAListItem(
-                elementId, title, subtitle, imageUrl, isOnPressListenerActive
+                elementId, title, subtitle, imageUrl, imageData, isOnPressListenerActive
             )
         }
     }
