@@ -105,6 +105,30 @@ void main() {
 
       expect(captured['arguments'], isTrue);
     });
+
+    test('uses the global FlutterCarplay.svgRasterSize for the walker',
+        () async {
+      // Bytes produced at the default size vs. a custom global size must differ,
+      // proving the controller forwards the global setting to the walker.
+      final defaultBytes = await rasterizeSvgAsset(_svgAssetKey);
+
+      const customSize = 48;
+      expect(customSize, isNot(defaultSvgRasterSize));
+      FlutterCarplay.svgRasterSize = customSize;
+
+      final captured = capturePayload(_carplayChannel);
+      await FlutterCarPlayController.flutterToNativeModule(
+        FCPChannelTypes.updateListItem,
+        <String, dynamic>{'text': 'a', 'image': _svgAssetKey},
+      );
+
+      final args = captured['arguments'] as Map;
+      final emitted = args['imageData'] as Uint8List;
+
+      final expected = await rasterizeSvgAsset(_svgAssetKey, size: customSize);
+      expect(emitted, equals(expected));
+      expect(emitted, isNot(equals(defaultBytes)));
+    });
   });
 
   group('android_auto_controller flutterToNativeModule', () {
@@ -147,6 +171,28 @@ void main() {
       final args = captured['arguments'] as Map;
       expect(args['imageUrl'], 'https://x/icon.png');
       expect(args.containsKey('imageData'), isFalse);
+    });
+
+    test('uses the global FlutterAndroidAuto.svgRasterSize for the walker',
+        () async {
+      final defaultBytes = await rasterizeSvgAsset(_svgAssetKey);
+
+      const customSize = 64;
+      expect(customSize, isNot(defaultSvgRasterSize));
+      FlutterAndroidAuto.svgRasterSize = customSize;
+
+      final captured = capturePayload(_androidAutoChannel);
+      await controller.flutterToNativeModule(
+        FAAChannelTypes.pushTemplate,
+        <String, dynamic>{'title': 'a', 'imageUrl': _svgAssetKey},
+      );
+
+      final args = captured['arguments'] as Map;
+      final emitted = args['imageData'] as Uint8List;
+
+      final expected = await rasterizeSvgAsset(_svgAssetKey, size: customSize);
+      expect(emitted, equals(expected));
+      expect(emitted, isNot(equals(defaultBytes)));
     });
   });
 }
