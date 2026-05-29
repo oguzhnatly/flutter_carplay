@@ -27,6 +27,12 @@ class FlutterCarplay {
   /// Current CarPlay and mobile app connection status.
   static String _connectionStatus = ConnectionStatusTypes.unknown.name;
 
+  /// The size (in logical pixels, square) used when rasterizing Flutter asset
+  /// SVGs referenced by image fields (e.g. `CPListItem.image`,
+  /// `CPGridButton.image`, `CPPoi.image`) before they are sent to the native
+  /// side. Defaults to [defaultSvgRasterSize] (120).
+  static int svgRasterSize = defaultSvgRasterSize;
+
   /// A listener function, which will be triggered when CarPlay connection changes
   /// and will be transmitted to the main code, allowing the user to access
   /// the current connection status.
