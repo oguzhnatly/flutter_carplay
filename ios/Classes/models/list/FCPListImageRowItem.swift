@@ -4,6 +4,7 @@
 //
 
 import CarPlay
+import Flutter
 
 @available(iOS 14.0, *)
 final class FCPListImageRowItem {
@@ -11,6 +12,7 @@ final class FCPListImageRowItem {
   private(set) var elementId: String
   private(set) var text: String?
   private var gridImages: [String]?
+  private var gridImageData: [FlutterStandardTypedData?]?
   private var imageTitles: [String]?
   private var allowsMultipleLines: Bool
   private var isOnPressListenerActive: Bool
@@ -24,6 +26,7 @@ final class FCPListImageRowItem {
     self.elementId = obj["_elementId"] as! String
     self.text = obj["text"] as? String
     self.gridImages = obj["gridImages"] as? [String]
+    self.gridImageData = obj["gridImageData"] as? [FlutterStandardTypedData?]
     self.imageTitles = obj["imageTitles"] as? [String]
     self.allowsMultipleLines = obj["allowsMultipleLines"] as? Bool ?? false
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
@@ -126,6 +129,18 @@ final class FCPListImageRowItem {
 
       let maxCount = listImageRowItem.gridImages.count
       for (index, imagePath) in gridImages.prefix(maxCount).enumerated() {
+        // Prefer rasterized SVG bytes (aligned by index with gridImages) when
+        // present; otherwise fall back to string-based async resolution.
+        if let bytesData = gridImageData,
+          bytesData.indices.contains(index),
+          let bytesImage = makeUIImage(fromBytes: bytesData[index])
+        {
+          var currentImages = listImageRowItem.gridImages
+          guard currentImages.indices.contains(index) else { continue }
+          currentImages[index] = bytesImage
+          listImageRowItem.update(currentImages)
+          continue
+        }
         let imageSource = imagePath.toImageSource()
         loadUIImageAsync(from: imageSource) { uiImage in
           if let uiImage = uiImage {

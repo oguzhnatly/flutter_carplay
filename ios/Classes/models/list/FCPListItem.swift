@@ -6,6 +6,7 @@
 //
 
 import CarPlay
+import Flutter
 
 @available(iOS 14.0, *)
 final class FCPListItem {
@@ -16,6 +17,7 @@ final class FCPListItem {
   private var isOnPressListenerActive: Bool = false
   private var completeHandler: (() -> Void)?
   private var image: String?
+  private var imageData: FlutterStandardTypedData?
   private var playbackProgress: CGFloat?
   private var isPlaying: Bool?
   private var playingIndicatorLocation: CPListItemPlayingIndicatorLocation?
@@ -27,6 +29,7 @@ final class FCPListItem {
     self.detailText = obj["detailText"] as? String
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
     self.image = obj["image"] as? String
+    self.imageData = obj["imageData"] as? FlutterStandardTypedData
     self.playbackProgress = obj["playbackProgress"] as? CGFloat
     self.isPlaying = obj["isPlaying"] as? Bool
     self.setPlayingIndicatorLocation(fromString: obj["playingIndicatorLocation"] as? String)
@@ -53,10 +56,14 @@ final class FCPListItem {
     listItem.handler = self.handler
     if image != nil {
       listItem.setImage(makeSafeUIPlaceholder())
-      let imageSource = self.image!.toImageSource()
-      loadUIImageAsync(from: imageSource) { uiImage in
-        if let uiImage = uiImage {
-          listItem.setImage(uiImage)
+      if let uiImage = makeUIImage(fromBytes: imageData) {
+        listItem.setImage(uiImage)
+      } else {
+        let imageSource = self.image!.toImageSource()
+        loadUIImageAsync(from: imageSource) { uiImage in
+          if let uiImage = uiImage {
+            listItem.setImage(uiImage)
+          }
         }
       }
     }
@@ -89,6 +96,7 @@ final class FCPListItem {
     let text = args["text"] as? String
     let detailText = args["detailText"] as? String
     let image = args["image"] as? String
+    let imageData = args["imageData"] as? FlutterStandardTypedData
     let playbackProgress = args["playbackProgress"] as? CGFloat
     let isPlaying = args["isPlaying"] as? Bool
     let playingIndicatorLocation = args["playingIndicatorLocation"] as? String
@@ -105,15 +113,21 @@ final class FCPListItem {
 
     if let image = image, image != self.image {
       self._super?.setImage(makeSafeUIPlaceholder())
-      let imageSource = image.toImageSource()
-      loadUIImageAsync(from: imageSource) { uiImage in
-        if let uiImage = uiImage {
-          self._super?.setImage(uiImage)
+      if let uiImage = makeUIImage(fromBytes: imageData) {
+        self._super?.setImage(uiImage)
+      } else {
+        let imageSource = image.toImageSource()
+        loadUIImageAsync(from: imageSource) { uiImage in
+          if let uiImage = uiImage {
+            self._super?.setImage(uiImage)
+          }
         }
       }
       self.image = image
+      self.imageData = imageData
     } else if image == nil {
       self.image = nil
+      self.imageData = nil
       self._super?.setImage(nil)
     }
 

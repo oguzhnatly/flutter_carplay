@@ -6,6 +6,7 @@
 //
 
 import CarPlay
+import Flutter
 
 @available(iOS 14.0, *)
 class FCPGridButton {
@@ -13,12 +14,14 @@ class FCPGridButton {
   private(set) var elementId: String
   private var titleVariants: [String]
   private var image: String
+  private var imageData: FlutterStandardTypedData?
   private var isOnPressListenerActive: Bool
 
   init(obj: [String: Any]) {
     self.elementId = obj["_elementId"] as! String
     self.titleVariants = obj["titleVariants"] as! [String]
     self.image = obj["image"] as! String
+    self.imageData = obj["imageData"] as? FlutterStandardTypedData
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
   }
 
@@ -26,8 +29,11 @@ class FCPGridButton {
     var gridButton: CPGridButton!
     let image: UIImage
     let imageSource = self.image.toImageSource()
+    let bytesImage = makeUIImage(fromBytes: imageData)
 
-    if #available(iOS 26.0, *) {
+    if let bytesImage = bytesImage {
+      image = bytesImage
+    } else if #available(iOS 26.0, *) {
       image = makeSafeUIPlaceholder()
     } else {
       image = makeUIImage(from: imageSource)
@@ -48,7 +54,7 @@ class FCPGridButton {
       }
     )
 
-    if #available(iOS 26.0, *) {
+    if bytesImage == nil, #available(iOS 26.0, *) {
       loadUIImageAsync(from: imageSource) { uiImage in
         if let uiImage = uiImage {
           gridButton.perform(Selector("updateImage:"), with: uiImage)
