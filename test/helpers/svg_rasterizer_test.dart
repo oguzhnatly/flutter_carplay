@@ -6,27 +6,33 @@ import 'package:flutter/services.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// A valid asset path used throughout the tests. The bytes served for this key
-/// are wired up in [_mockAsset].
+/// A valid asset path used throughout the tests.
 const _svgAssetKey = 'test/fixtures/icon.svg';
+const _svgFixtureKeys = <String>[
+  _svgAssetKey,
+  'test/fixtures/navigation.svg',
+  'test/fixtures/media.svg',
+  'test/fixtures/warning.svg',
+];
 const _invalidSvgAssetKey = 'test/fixtures/invalid.svg';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   /// Registers a mock handler on the `flutter/assets` channel that serves the
-  /// fixture SVG bytes for [_svgAssetKey] and malformed bytes for
-  /// [_invalidSvgAssetKey].
+  /// fixture SVG bytes and malformed bytes for [_invalidSvgAssetKey].
   void mockAssets() {
-    final validBytes =
-        File('test/fixtures/icon.svg').readAsBytesSync();
+    final fixtureBytes = <String, Uint8List>{
+      for (final key in _svgFixtureKeys) key: File(key).readAsBytesSync(),
+    };
     final invalidBytes = Uint8List.fromList('<not-svg>'.codeUnits);
 
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMessageHandler('flutter/assets', (message) async {
       final key = utf8.decode(message!.buffer.asUint8List());
-      if (key == _svgAssetKey) {
-        return ByteData.view(Uint8List.fromList(validBytes).buffer);
+      final validBytes = fixtureBytes[key];
+      if (validBytes != null) {
+        return ByteData.view(validBytes.buffer);
       }
       if (key == _invalidSvgAssetKey) {
         return ByteData.view(invalidBytes.buffer);
@@ -85,6 +91,17 @@ void main() {
         bytes.sublist(0, 8),
         equals(<int>[137, 80, 78, 71, 13, 10, 26, 10]),
       );
+    });
+
+    test('returns PNG bytes for every bundled SVG fixture', () async {
+      for (final fixture in _svgFixtureKeys) {
+        final bytes = await rasterizeSvgAsset(fixture);
+        expect(bytes, isNotNull, reason: fixture);
+        expect(
+          bytes!.sublist(0, 8),
+          equals(<int>[137, 80, 78, 71, 13, 10, 26, 10]),
+        );
+      }
     });
 
     test('returns the same cached instance on repeat calls', () async {
@@ -220,8 +237,8 @@ void main() {
 
       await resolveSvgInPayload(payload);
 
-      final items = ((payload['templates'] as List)[0]
-          as Map)['sections'][0]['items'] as List;
+      final items = ((payload['templates'] as List)[0] as Map)['sections'][0]
+          ['items'] as List;
       expect((items[0] as Map)['imageData'], isA<Uint8List>());
       expect((items[1] as Map).containsKey('imageData'), isFalse);
     });
