@@ -56,15 +56,8 @@ final class FCPListItem {
     listItem.handler = self.handler
     if image != nil {
       listItem.setImage(makeSafeUIPlaceholder())
-      if let uiImage = makeUIImage(fromBytes: imageData) {
+      loadUIImage(from: image!, bytes: imageData) { uiImage in
         listItem.setImage(uiImage)
-      } else {
-        let imageSource = self.image!.toImageSource()
-        loadUIImageAsync(from: imageSource) { uiImage in
-          if let uiImage = uiImage {
-            listItem.setImage(uiImage)
-          }
-        }
       }
     }
     if playbackProgress != nil {
@@ -113,15 +106,8 @@ final class FCPListItem {
 
     if let image = image, image != self.image {
       self._super?.setImage(makeSafeUIPlaceholder())
-      if let uiImage = makeUIImage(fromBytes: imageData) {
+      loadUIImage(from: image, bytes: imageData) { uiImage in
         self._super?.setImage(uiImage)
-      } else {
-        let imageSource = image.toImageSource()
-        loadUIImageAsync(from: imageSource) { uiImage in
-          if let uiImage = uiImage {
-            self._super?.setImage(uiImage)
-          }
-        }
       }
       self.image = image
       self.imageData = imageData

@@ -17,6 +17,24 @@ func makeUIImage(fromBytes data: FlutterStandardTypedData?) -> UIImage? {
   return UIImage(data: data.data)
 }
 
+@available(iOS 14.0, *)
+func loadUIImage(
+  from imagePath: String,
+  bytes imageData: FlutterStandardTypedData?,
+  completion: @escaping (UIImage) -> Void
+) {
+  if let bytesImage = makeUIImage(fromBytes: imageData) {
+    completion(bytesImage)
+    return
+  }
+
+  loadUIImageAsync(from: imagePath.toImageSource()) { uiImage in
+    if let uiImage = uiImage {
+      completion(uiImage)
+    }
+  }
+}
+
 // Image Source (no UIImage creation here)
 enum ImageSource {
   case url(URL)

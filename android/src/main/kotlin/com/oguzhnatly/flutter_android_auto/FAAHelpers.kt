@@ -29,8 +29,7 @@ fun makeCarIconFromBytes(bytes: ByteArray?): CarIcon? {
     if (bytes == null || bytes.isEmpty()) return null
     return try {
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size) ?: return null
-        val iconCompat = IconCompat.createWithBitmap(bitmap)
-        CarIcon.Builder(iconCompat).build()
+        bitmap.toCarIcon()
     } catch (e: Exception) {
         e.printStackTrace()
         null
@@ -51,8 +50,7 @@ suspend fun loadCarImageFromAsset(context: Context, assetPath: String): CarIcon?
                 .getLookupKeyForAsset(assetPath)
             context.assets.open(key).use { inputStream ->
                 val bitmap = BitmapFactory.decodeStream(inputStream) ?: return@use null
-                val iconCompat = IconCompat.createWithBitmap(bitmap)
-                CarIcon.Builder(iconCompat).build()
+                bitmap.toCarIcon()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -73,8 +71,7 @@ suspend fun loadCarImageFromFile(path: String): CarIcon? {
             val file = File(filePath)
             if (!file.exists()) return@withContext null
             val bitmap = BitmapFactory.decodeFile(filePath) ?: return@withContext null
-            val iconCompat = IconCompat.createWithBitmap(bitmap)
-            CarIcon.Builder(iconCompat).build()
+            bitmap.toCarIcon()
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -117,12 +114,16 @@ suspend fun loadCarImageAsync(imageUrl: String): CarIcon? {
             connection.doInput = true
             connection.connect()
             val inputStream = connection.inputStream
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            val iconCompat = IconCompat.createWithBitmap(bitmap)
-            CarIcon.Builder(iconCompat).build()
+            val bitmap = BitmapFactory.decodeStream(inputStream) ?: return@withContext null
+            bitmap.toCarIcon()
         } catch (e: Exception) {
             e.printStackTrace()
             null
         }
     }
+}
+
+private fun android.graphics.Bitmap.toCarIcon(): CarIcon {
+    val iconCompat = IconCompat.createWithBitmap(this)
+    return CarIcon.Builder(iconCompat).build()
 }

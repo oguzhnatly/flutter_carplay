@@ -169,9 +169,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         pluginScope.launch {
             val template = when (runtimeType) {
-                "FAAListTemplate" -> getListTemplate(
-                    call, result, data
-                )
+                "FAAListTemplate" -> getListTemplate(data)
 
                 else -> null
             }
@@ -221,9 +219,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         pluginScope.launch {
             val template = when (runtimeType) {
-                "FAAListTemplate" -> getListTemplate(
-                    call, result, data, false
-                )
+                "FAAListTemplate" -> getListTemplate(data, false)
 
                 else -> null
             }
@@ -243,8 +239,6 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
     }
 
     private suspend fun getListTemplate(
-        call: MethodCall,
-        result: MethodChannel.Result,
         data: Map<String, Any?>,
         addBackButton: Boolean = true
     ): Template {
@@ -261,20 +255,12 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                 template.sections.size == 1 && template.sections.first().title.isEmpty()
 
             if (isSingleList) {
-                val itemListBuilder = ItemList.Builder()
                 val sectionItems = template.sections.first().items
-                for (item in sectionItems) {
-                    itemListBuilder.addItem(createRowFromItem(carContext, item))
-                }
-                listTemplateBuilder.setSingleList(itemListBuilder.build())
+                listTemplateBuilder.setSingleList(buildItemList(carContext, sectionItems))
             } else {
                 for (section in template.sections) {
-                    val itemListBuilder = ItemList.Builder()
-                    for (item in section.items) {
-                        itemListBuilder.addItem(createRowFromItem(carContext, item))
-                    }
                     val sectionedItemList = SectionedItemList.create(
-                        itemListBuilder.build(), section.title ?: ""
+                        buildItemList(carContext, section.items), section.title ?: ""
                     )
                     listTemplateBuilder.addSectionedList(sectionedItemList)
                 }
@@ -286,6 +272,14 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         }
 
         return listTemplateBuilder.build()
+    }
+
+    private suspend fun buildItemList(carContext: CarContext?, items: List<FAAListItem>): ItemList {
+        val itemListBuilder = ItemList.Builder()
+        for (item in items) {
+            itemListBuilder.addItem(createRowFromItem(carContext, item))
+        }
+        return itemListBuilder.build()
     }
 
     // Helper function to create a Row from an FAAListItem, avoiding code duplication

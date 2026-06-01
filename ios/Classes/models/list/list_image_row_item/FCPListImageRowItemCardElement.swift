@@ -40,15 +40,8 @@ final class FCPListImageRowItemCardElement {
       tintColor: tintColor,
     )
 
-    let imageSource = self.image.toImageSource()
-    if let bytesImage = makeUIImage(fromBytes: imageData) {
-      listImageRowItemElement.image = bytesImage
-    } else {
-      loadUIImageAsync(from: imageSource) { uiImage in
-        if let uiImage = uiImage {
-          listImageRowItemElement.image = uiImage
-        }
-      }
+    loadUIImage(from: image, bytes: imageData) { uiImage in
+      listImageRowItemElement.image = uiImage
     }
 
     self._super = listImageRowItemElement
@@ -64,15 +57,8 @@ final class FCPListImageRowItemCardElement {
 
     if let image = image, image != self.image {
       self._super?.image = makeSafeUIPlaceholder()
-      if let bytesImage = makeUIImage(fromBytes: imageData) {
-        self._super?.image = bytesImage
-      } else {
-        let imageSource = image.toImageSource()
-        loadUIImageAsync(from: imageSource) { uiImage in
-          if let uiImage = uiImage {
-            self._super?.image = uiImage
-          }
-        }
+      loadUIImage(from: image, bytes: imageData) { uiImage in
+        self._super?.image = uiImage
       }
       self.image = image
       self.imageData = imageData

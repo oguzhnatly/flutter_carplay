@@ -61,7 +61,6 @@ class _MyAppState extends State<MyApp> {
           detailText: 'Start progress bar',
           isPlaying: false,
           playbackProgress: 0,
-          // SVG asset: rasterized to PNG before being sent to the native side.
           image: 'images/icon.svg',
           onPress: (complete, self) {
             for (var i = 1; i <= 100; i++) {
@@ -222,8 +221,6 @@ class _MyAppState extends State<MyApp> {
               AAListItem(
                 title: 'Page 1',
                 subtitle: 'Click to open page 1',
-                // SVG asset: rasterized to PNG before being sent to the native
-                // side.
                 imageUrl: 'images/icon.svg',
                 onPress: (complete, AAListItem item) {
                   print('Item for Page 1 pressed');

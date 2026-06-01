@@ -125,46 +125,6 @@ Future<Uint8List?> _rasterize(
   }
 }
 
-/// Default suffix appended to an image key to form the sibling key that carries
-/// the rasterized PNG bytes (e.g. `image` -> `imageData`).
-const _dataKeySuffix = 'Data';
-
-/// Describes a single payload key that may hold an SVG asset reference.
-///
-/// Each descriptor maps a model's `toJson()` key (the value emitted by a model)
-/// to how its rasterized bytes should be attached. Keeping these as explicit,
-/// documented descriptors avoids the previous stringly-typed maps and makes the
-/// model -> walker relationship auditable (see the coverage test).
-@immutable
-class SvgImageKey {
-  const SvgImageKey(this.key, {required this.isList, String? dataKey})
-      : _dataKey = dataKey;
-
-  /// A descriptor for a key holding a single image asset string.
-  ///
-  /// [dataKey] defaults to `<key>Data`.
-  const SvgImageKey.single(String key, {String? dataKey})
-      : this(key, isList: false, dataKey: dataKey);
-
-  /// A descriptor for a key holding a `List<String>` of image asset strings.
-  ///
-  /// [dataKey] defaults to `<key>Data`.
-  const SvgImageKey.list(String key, {String? dataKey})
-      : this(key, isList: true, dataKey: dataKey);
-
-  /// The payload key emitted by a model's `toJson()`.
-  final String key;
-
-  /// Whether [key] holds a list of asset strings (vs. a single string).
-  final bool isList;
-
-  /// Explicit sibling-key override, or `null` to use `<key>Data`.
-  final String? _dataKey;
-
-  /// The sibling key that receives the rasterized bytes.
-  String get dataKey => _dataKey ?? '$key$_dataKeySuffix';
-}
-
 /// Every payload key that may reference a Flutter asset SVG, paired with how the
 /// rasterized bytes are attached.
 ///
@@ -182,11 +142,15 @@ class SvgImageKey {
 /// - `gridImages`-> CPListImageRowItem (legacy iOS grid images); the native
 ///                  contract expects the bytes under `gridImageData`.
 @visibleForTesting
-const svgImageKeys = <SvgImageKey>[
-  SvgImageKey.single('image'),
-  SvgImageKey.single('imageUrl', dataKey: 'imageData'),
-  SvgImageKey.list('gridImages', dataKey: 'gridImageData'),
-];
+const svgImageDataKeys = <String, String>{
+  'image': 'imageData',
+  'imageUrl': 'imageData',
+  'gridImages': 'gridImageData',
+};
+
+/// Image keys whose values are lists rather than a single asset string.
+@visibleForTesting
+const svgListImageKeys = <String>{'gridImages'};
 
 /// Keys that look image-related but must never be rasterized.
 ///
@@ -199,10 +163,10 @@ const svgIgnoredKeys = <String>{'systemIcon', 'imageTitles'};
 /// The sibling keys under which the walker attaches rasterized bytes (e.g.
 /// `imageData`, `gridImageData`). These hold raw byte payloads, so the walker
 /// must never recurse into them.
-final _svgDataKeys = <String>{for (final k in svgImageKeys) k.dataKey};
+final _svgDataKeys = svgImageDataKeys.values.toSet();
 
 /// Recursively walks a method-channel [node] (maps/lists), rasterizing any
-/// Flutter asset SVG referenced by an image-bearing key (see [svgImageKeys])
+/// Flutter asset SVG referenced by an image-bearing key (see [svgImageDataKeys])
 /// and attaching the PNG bytes to a sibling `<key>Data` key.
 ///
 /// Behavior:
@@ -220,9 +184,9 @@ Future<dynamic> resolveSvgInPayload(
   int size = defaultSvgRasterSize,
 }) async {
   if (node is Map) {
-    for (final imageKey in svgImageKeys) {
-      final value = node[imageKey.key];
-      if (imageKey.isList) {
+    for (final entry in svgImageDataKeys.entries) {
+      final value = node[entry.key];
+      if (svgListImageKeys.contains(entry.key)) {
         if (value is! List) continue;
         var hasSvg = false;
         final data = <Uint8List?>[];
@@ -231,10 +195,10 @@ Future<dynamic> resolveSvgInPayload(
           data.add(bytes);
           if (bytes != null) hasSvg = true;
         }
-        if (hasSvg) node[imageKey.dataKey] = data;
+        if (hasSvg) node[entry.value] = data;
       } else {
         final bytes = await _rasterizeIfSvg(value, size);
-        if (bytes != null) node[imageKey.dataKey] = bytes;
+        if (bytes != null) node[entry.value] = bytes;
       }
     }
 

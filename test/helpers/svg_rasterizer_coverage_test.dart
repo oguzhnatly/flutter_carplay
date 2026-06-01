@@ -4,20 +4,20 @@ import 'package:flutter_test/flutter_test.dart';
 /// Guards against silent drift between the models and the SVG walker.
 ///
 /// The walker ([resolveSvgInPayload]) only knows about image keys declared in
-/// [svgImageKeys] (rasterized) or [svgIgnoredKeys] (deliberately skipped). If a
+/// [svgImageDataKeys] (rasterized) or [svgIgnoredKeys] (deliberately skipped). If a
 /// model gains a new image-bearing `toJson()` key that isn't registered in
 /// either, SVG support would silently break for it. This test serializes real
 /// model instances and asserts every image-like key they emit is accounted for.
 void main() {
   /// Keys known to the walker (rasterized or deliberately ignored).
   final knownKeys = <String>{
-    ...svgImageKeys.map((k) => k.key),
+    ...svgImageDataKeys.keys,
     ...svgIgnoredKeys,
   };
 
   /// All sibling data keys the walker can write, which must never be flagged as
   /// unhandled image keys themselves.
-  final dataKeys = svgImageKeys.map((k) => k.dataKey).toSet();
+  final dataKeys = svgImageDataKeys.values.toSet();
 
   /// Heuristic: a key is "image-like" if it references an image/icon asset.
   /// Excludes booleans/enums/shape descriptors that merely contain "image".
@@ -56,15 +56,15 @@ void main() {
       unhandled,
       isEmpty,
       reason: '$label emits image key(s) $unhandled that the SVG walker does '
-          'not handle. Add them to svgImageKeys or svgIgnoredKeys in '
+          'not handle. Add them to svgImageDataKeys or svgIgnoredKeys in '
           'lib/helpers/svg_rasterizer.dart.',
     );
   }
 
   group('SVG walker key coverage', () {
-    test('svgImageKeys and svgIgnoredKeys do not overlap', () {
-      final imageKeySet = svgImageKeys.map((k) => k.key).toSet();
-      expect(imageKeySet.intersection(svgIgnoredKeys), isEmpty);
+    test('svgImageDataKeys and svgIgnoredKeys do not overlap', () {
+      expect(
+          svgImageDataKeys.keys.toSet().intersection(svgIgnoredKeys), isEmpty);
     });
 
     test('CPListItem image key is handled', () {
@@ -146,8 +146,7 @@ void main() {
 
     test('systemIcon is registered as ignored, not rasterized', () {
       expect(svgIgnoredKeys, contains('systemIcon'));
-      final imageKeyNames = svgImageKeys.map((k) => k.key).toSet();
-      expect(imageKeyNames, isNot(contains('systemIcon')));
+      expect(svgImageDataKeys.keys, isNot(contains('systemIcon')));
     });
 
     test('imageTitles is registered as ignored, not rasterized', () {

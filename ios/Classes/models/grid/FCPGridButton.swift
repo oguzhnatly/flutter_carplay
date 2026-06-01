@@ -30,6 +30,12 @@ class FCPGridButton {
     let image: UIImage
     let imageSource = self.image.toImageSource()
     let bytesImage = makeUIImage(fromBytes: imageData)
+    let usesAsyncImage: Bool
+    if #available(iOS 26.0, *), bytesImage == nil {
+      usesAsyncImage = true
+    } else {
+      usesAsyncImage = false
+    }
 
     if let bytesImage = bytesImage {
       image = bytesImage
@@ -54,11 +60,9 @@ class FCPGridButton {
       }
     )
 
-    if bytesImage == nil, #available(iOS 26.0, *) {
-      loadUIImageAsync(from: imageSource) { uiImage in
-        if let uiImage = uiImage {
-          gridButton.perform(Selector("updateImage:"), with: uiImage)
-        }
+    if usesAsyncImage {
+      loadUIImage(from: self.image, bytes: nil) { uiImage in
+        gridButton.perform(Selector("updateImage:"), with: uiImage)
       }
     }
 
