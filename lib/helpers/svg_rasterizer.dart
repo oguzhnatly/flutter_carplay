@@ -196,6 +196,11 @@ const svgImageKeys = <SvgImageKey>[
 @visibleForTesting
 const svgIgnoredKeys = <String>{'systemIcon', 'imageTitles'};
 
+/// The sibling keys under which the walker attaches rasterized bytes (e.g.
+/// `imageData`, `gridImageData`). These hold raw byte payloads, so the walker
+/// must never recurse into them.
+final _svgDataKeys = <String>{for (final k in svgImageKeys) k.dataKey};
+
 /// Recursively walks a method-channel [node] (maps/lists), rasterizing any
 /// Flutter asset SVG referenced by an image-bearing key (see [svgImageKeys])
 /// and attaching the PNG bytes to a sibling `<key>Data` key.
@@ -233,13 +238,20 @@ Future<dynamic> resolveSvgInPayload(
       }
     }
 
-    // Recurse into all values (skipping ignored keys).
+    // Recurse into all values, skipping ignored keys and the byte payloads we
+    // just attached. The latter are raster bytes ([Uint8List], which is itself
+    // a `List<int>`) or lists of them; descending into those would needlessly
+    // walk every individual byte.
     for (final key in node.keys.toList()) {
       if (svgIgnoredKeys.contains(key)) continue;
-      await resolveSvgInPayload(node[key], size: size);
+      if (_svgDataKeys.contains(key)) continue;
+      final value = node[key];
+      if (value is Uint8List) continue;
+      await resolveSvgInPayload(value, size: size);
     }
   } else if (node is List) {
     for (final item in node) {
+      if (item is Uint8List) continue;
       await resolveSvgInPayload(item, size: size);
     }
   }

@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -276,6 +277,52 @@ void main() {
     });
   });
 
+  group('does not recurse into image byte data', () {
+    test('skips a raw imageData byte payload', () async {
+      final spy = _SpyList(<int>[1, 2, 3, 4]);
+      final payload = <String, dynamic>{'imageData': spy};
+
+      await resolveSvgInPayload(payload);
+
+      expect(
+        spy.iterationCount,
+        0,
+        reason: 'the walker must treat raw image bytes as an opaque leaf and '
+            'never iterate over them',
+      );
+    });
+
+    test('skips a gridImageData byte list and its entries', () async {
+      final inner = _SpyList(<int>[1, 2, 3]);
+      final spy = _SpyList(<Object?>[inner, null]);
+      final payload = <String, dynamic>{'gridImageData': spy};
+
+      await resolveSvgInPayload(payload);
+
+      expect(spy.iterationCount, 0);
+      expect(inner.iterationCount, 0);
+    });
+
+    test('skips imageData attached after rasterizing a real .svg image',
+        () async {
+      // Drive the real flow to attach `imageData`, then swap in a spy (with the
+      // `image` key removed so a re-run does not regenerate it) to prove the
+      // walker leaves the attached byte payload untouched.
+      final payload = <String, dynamic>{'image': _svgAssetKey};
+      await resolveSvgInPayload(payload);
+      expect(payload['imageData'], isA<Uint8List>());
+
+      final produced = payload['imageData'] as Uint8List;
+      payload.remove('image');
+      final spy = _SpyList(produced);
+      payload['imageData'] = spy;
+
+      await resolveSvgInPayload(payload);
+
+      expect(spy.iterationCount, 0);
+    });
+  });
+
   group('configurable raster size', () {
     test('FlutterCarplay default is 120', () {
       expect(FlutterCarplay.svgRasterSize, defaultSvgRasterSize);
@@ -286,4 +333,38 @@ void main() {
       expect(FlutterAndroidAuto.svgRasterSize, defaultSvgRasterSize);
     });
   });
+}
+
+/// A [List] spy that records whether the SVG walker iterated over it.
+///
+/// The walker should treat raw image byte payloads (e.g. the `imageData` /
+/// `gridImageData` it attaches) as opaque leaves and never descend into them.
+/// Because byte payloads are lists, a walker that recurses into every list
+/// value would iterate every entry; this spy makes that observable by counting
+/// reads of [iterator].
+class _SpyList extends ListBase<Object?> {
+  _SpyList(this._delegate);
+
+  final List<Object?> _delegate;
+
+  /// Number of times something started iterating over this list.
+  int iterationCount = 0;
+
+  @override
+  Iterator<Object?> get iterator {
+    iterationCount++;
+    return _delegate.iterator;
+  }
+
+  @override
+  int get length => _delegate.length;
+
+  @override
+  set length(int newLength) => _delegate.length = newLength;
+
+  @override
+  Object? operator [](int index) => _delegate[index];
+
+  @override
+  void operator []=(int index, Object? value) => _delegate[index] = value;
 }
