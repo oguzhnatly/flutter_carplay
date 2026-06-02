@@ -342,6 +342,24 @@ Inside the `<application>` tag:
 
 For others use, please check official [Android Auto documentation](https://developer.android.com/training/cars/apps/auto).
 
+### Android Auto Message Template
+
+Use `AAMessageTemplate` for simple empty states, errors, or informational screens.
+
+```dart
+final template = AAMessageTemplate(
+  title: 'No saved places',
+  message: 'Save places on your phone to access them here.',
+);
+
+FlutterAndroidAuto.setRootTemplate(template: template);
+
+await template.update(
+  title: 'Saved places synced',
+  message: 'Your saved places are now available in Android Auto.',
+);
+```
+
 4. In your `MainActivity.kt` file, make the necessary to resuse and cache the engine as follow :
 
 On Android Auto Service, use the same engine as the app if the app is already running, otherwise create a new one and cache using the id `FAAConstants.flutterEngineId`.

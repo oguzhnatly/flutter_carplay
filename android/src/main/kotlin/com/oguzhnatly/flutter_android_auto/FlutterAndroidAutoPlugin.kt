@@ -6,6 +6,7 @@ import androidx.car.app.model.CarIcon
 import androidx.car.app.model.CarText
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
+import androidx.car.app.model.MessageTemplate
 import androidx.car.app.model.SectionedItemList
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
@@ -34,6 +35,9 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         var events: EventChannel.EventSink? = null
         var currentTemplate: Template? = null
         var currentScreen: Screen? = null
+        var currentTemplateElementId: String? = null
+        val templatesByElementId = mutableMapOf<String, Template>()
+        val screensByElementId = mutableMapOf<String, Screen>()
 
         fun sendEvent(type: String, data: Map<String, Any>) {
             events?.success(
@@ -91,6 +95,10 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     FAAChannelTypes.onListItemSelectedComplete.name
 
                         -> onListItemSelectedComplete(
+                        call, result
+                    )
+
+                    FAAChannelTypes.updateMessageTemplate.name -> updateMessageTemplate(
                         call, result
                     )
 
@@ -173,6 +181,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     call, result, data
                 )
 
+                "FAAMessageTemplate" -> getMessageTemplate(data)
+
                 else -> null
             }
             if (template == null) {
@@ -183,7 +193,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                 )
             } else {
                 val newScreen = object : Screen(carContext) {
-                    override fun onGetTemplate(): Template = template
+                    override fun onGetTemplate(): Template = templatesByElementId[elementId] ?: template
 
                     init {
                         lifecycle.addObserver(object : LifecycleEventObserver {
@@ -192,6 +202,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                             ) {
                                 when (event) {
                                     Lifecycle.Event.ON_DESTROY -> {
+                                        templatesByElementId.remove(elementId)
+                                        screensByElementId.remove(elementId)
                                         sendEvent(
                                             type = FAAChannelTypes.onScreenBackButtonPressed.name,
                                             data = mapOf("elementId" to elementId)
@@ -204,6 +216,9 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                         })
                     }
                 }
+
+                templatesByElementId[elementId] = template
+                screensByElementId[elementId] = newScreen
 
                 carContext.getCarService(ScreenManager::class.java)
                     .push(newScreen)
@@ -225,6 +240,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     call, result, data, false
                 )
 
+                "FAAMessageTemplate" -> getMessageTemplate(data, false)
+
                 else -> null
             }
 
@@ -235,11 +252,80 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     null,
                 )
             } else {
+                val elementId = data["_elementId"] as? String ?: ""
                 currentTemplate = template
+                currentTemplateElementId = elementId
+                templatesByElementId[elementId] = template
+                currentScreen?.let { screensByElementId[elementId] = it }
                 currentScreen?.invalidate()
                 result.success(true)
             }
         }
+    }
+
+    private fun updateMessageTemplate(
+        call: MethodCall, result: MethodChannel.Result
+    ) {
+        val elementId = call.argument<String>("elementId")
+        if (elementId.isNullOrEmpty()) {
+            result.error(
+                "Missing elementId",
+                "elementId is required to update a message template",
+                null,
+            )
+            return
+        }
+
+        val title = call.argument<String>("title") ?: ""
+        val message = call.argument<String>("message") ?: ""
+        val isRootTemplate = elementId == currentTemplateElementId
+        val updatedTemplate = getMessageTemplate(
+            mapOf(
+                "_elementId" to elementId,
+                "title" to title,
+                "message" to message,
+            ),
+            !isRootTemplate,
+        )
+
+        templatesByElementId[elementId] = updatedTemplate
+        if (isRootTemplate) {
+            currentTemplate = updatedTemplate
+            currentScreen?.let {
+                screensByElementId[elementId] = it
+                it.invalidate()
+            }
+            result.success(true)
+            return
+        }
+
+        val screen = screensByElementId[elementId]
+        if (screen == null) {
+            result.error(
+                "No screen found",
+                "No Android Auto screen found for template id: $elementId",
+                null,
+            )
+            return
+        }
+
+        screen.invalidate()
+        result.success(true)
+    }
+
+    private fun getMessageTemplate(
+        data: Map<String, Any?>,
+        addBackButton: Boolean = true,
+    ): Template {
+        val template = FAAMessageTemplate.fromJson(data)
+        val messageTemplateBuilder = MessageTemplate.Builder(template.message)
+            .setTitle(template.title)
+
+        if (addBackButton) {
+            messageTemplateBuilder.setHeaderAction(Action.BACK)
+        }
+
+        return messageTemplateBuilder.build()
     }
 
     private suspend fun getListTemplate(

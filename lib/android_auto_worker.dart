@@ -38,35 +38,38 @@ class FlutterAndroidAuto {
     _eventBroadcast = _androidAutoController.eventChannel
         .receiveBroadcastStream()
         .listen((event) {
-      final FAAChannelTypes receivedChannelType =
-          EnumUtils.enumFromString(FAAChannelTypes.values, event['type']);
+          final FAAChannelTypes receivedChannelType = EnumUtils.enumFromString(
+            FAAChannelTypes.values,
+            event['type'],
+          );
 
-      switch (receivedChannelType) {
-        case FAAChannelTypes.onAndroidAutoConnectionChange:
-          final ConnectionStatusTypes connectionStatus =
-              EnumUtils.enumFromString(
-            ConnectionStatusTypes.values,
-            event['data']['status'],
-          );
-          _connectionStatus = connectionStatus.name;
-          if (_onAndroidAutoConnectionChange != null) {
-            _onAndroidAutoConnectionChange!(connectionStatus);
+          switch (receivedChannelType) {
+            case FAAChannelTypes.onAndroidAutoConnectionChange:
+              final ConnectionStatusTypes connectionStatus =
+                  EnumUtils.enumFromString(
+                    ConnectionStatusTypes.values,
+                    event['data']['status'],
+                  );
+              _connectionStatus = connectionStatus.name;
+              if (_onAndroidAutoConnectionChange != null) {
+                _onAndroidAutoConnectionChange!(connectionStatus);
+              }
+              break;
+            case FAAChannelTypes.onListItemSelected:
+              _androidAutoController.processFAAListItemSelectedChannel(
+                event['data']['elementId'],
+              );
+              break;
+            case FAAChannelTypes.onScreenBackButtonPressed:
+              FlutterAndroidAutoController.templateHistory.removeWhere(
+                (AATemplate item) =>
+                    item.uniqueId == event['data']['elementId'],
+              );
+              break;
+            default:
+              break;
           }
-          break;
-        case FAAChannelTypes.onListItemSelected:
-          _androidAutoController.processFAAListItemSelectedChannel(
-            event['data']['elementId'],
-          );
-          break;
-        case FAAChannelTypes.onScreenBackButtonPressed:
-          FlutterAndroidAutoController.templateHistory.removeWhere(
-            (AATemplate item) => item.uniqueId == event['data']['elementId'],
-          );
-          break;
-        default:
-          break;
-      }
-    });
+        });
   }
 
   /// A function that will disconnect all event listeners from Android Auto. The action
@@ -110,14 +113,12 @@ class FlutterAndroidAuto {
     return _connectionStatus;
   }
 
-  static Future<void> setRootTemplate({
-    required AATemplate template,
-  }) async {
+  static Future<void> setRootTemplate({required AATemplate template}) async {
     final bool? isCompleted = await _androidAutoController
         .flutterToNativeModule(FAAChannelTypes.setRootTemplate, {
-      'template': template.toJson(),
-      'runtimeType': _getAARuntimeTypeString(template),
-    });
+          'template': template.toJson(),
+          'runtimeType': _getAARuntimeTypeString(template),
+        });
 
     if (isCompleted == true) {
       if (FlutterAndroidAutoController.templateHistory.isEmpty) {
@@ -147,7 +148,7 @@ class FlutterAndroidAuto {
   /// - If animated is true, CarPlay animates the presentation of the template.
   ///
   /// [!] CarPlay can only present one modal template at a time.
-/*static Future<void> showAlert({
+  /*static Future<void> showAlert({
     required CPAlertTemplate template,
     bool animated = true,
   }) {
@@ -171,7 +172,7 @@ class FlutterAndroidAuto {
   /// - If animated is true, CarPlay animates the presentation of the template.
   ///
   /// [!] CarPlay can only present one modal template at a time.
-/* static Future<void> showActionSheet({
+  /* static Future<void> showActionSheet({
     required CPActionSheetTemplate template,
     bool animated = true,
   }) {
@@ -192,10 +193,8 @@ class FlutterAndroidAuto {
   ///
   /// The history will be updated accordingly to the screen lifecycle.
   static Future<bool> pop() async {
-    final bool? isCompleted =
-        await _androidAutoController.flutterToNativeModule(
-      FAAChannelTypes.popTemplate,
-    );
+    final bool? isCompleted = await _androidAutoController
+        .flutterToNativeModule(FAAChannelTypes.popTemplate);
 
     return isCompleted ?? false;
   }
@@ -204,16 +203,14 @@ class FlutterAndroidAuto {
   ///
   /// The history will be updated accordingly to the screen lifecycle.
   static Future<bool> popToRoot() async {
-    final bool? isCompleted =
-        await _androidAutoController.flutterToNativeModule(
-      FAAChannelTypes.popToRootTemplate,
-    );
+    final bool? isCompleted = await _androidAutoController
+        .flutterToNativeModule(FAAChannelTypes.popToRootTemplate);
     return isCompleted ?? false;
   }
 
   /// Removes a modal template. Since [CPAlertTemplate] and [CPActionSheetTemplate] are both
   /// modals, they can be removed. If animated is true, CarPlay animates the transition between templates.
-/* static Future<bool> popModal({bool animated = true}) async {
+  /* static Future<bool> popModal({bool animated = true}) async {
     FlutterCarPlayController.currentPresentTemplate = null;
     return await _androidAutoController.flutterToNativeModule(
       FAAChannelTypes.closePresent,
@@ -224,18 +221,16 @@ class FlutterAndroidAuto {
   /// Adds a template to the navigation hierarchy and displays it.
   ///
   /// - template is to add to the navigation hierarchy. **Must be one of the type:**
-  /// [AAGridTemplate] or [AAListTemplate] [AAInformationTemplat] [AAPointOfInterestTemplate]
+  /// [AAGridTemplate] or [AAListTemplate] [AAInformationTemplat] [AAPointOfInterestTemplate] [AAMessageTemplate]
   ///
   /// Be aware of the restrictions : https://developer.android.com/training/cars/apps#template-restrictions
   /// - Max 5 templates in the navigation stack.
-  static Future<bool> push({
-    required AATemplate template,
-  }) async {
+  static Future<bool> push({required AATemplate template}) async {
     final bool? isCompleted = await _androidAutoController
         .flutterToNativeModule(FAAChannelTypes.pushTemplate, <String, dynamic>{
-      'template': template.toJson(),
-      'runtimeType': _getAARuntimeTypeString(template),
-    });
+          'template': template.toJson(),
+          'runtimeType': _getAARuntimeTypeString(template),
+        });
     if (isCompleted == true) {
       FlutterAndroidAutoController.templateHistory.add(template);
     }
@@ -250,6 +245,7 @@ class FlutterAndroidAuto {
   /// Uses explicit type checks to ensure compatibility with Dart obfuscation.
   static String _getAARuntimeTypeString(AATemplate template) {
     if (template is AAListTemplate) return 'FAAListTemplate';
+    if (template is AAMessageTemplate) return 'FAAMessageTemplate';
     return 'FAA${template.runtimeType}';
   }
 }
