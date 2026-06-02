@@ -42,7 +42,7 @@ For detailed guides and examples, check out the **[Wiki](https://github.com/oguz
 - [Requesting the CarPlay Entitlements](#requesting-the-carplay-entitlements)
 - [Disclaimer Before The Installation](#disclaimer-before-the-installation)
 - [Get Started](#get-started)
-- [Run on Android Automotive OS emulator](#run-on-android-automotive-os-emulator)
+- [Android Auto vs Android Automotive OS](#android-auto-vs-android-automotive-os)
 - [Solve problems configuring your project](#solve-problems-configuring-your-project)
 - [Usage & Features](#usage--features)
 - [Templates](#templates-1)
@@ -372,25 +372,22 @@ class MainActivity : FlutterActivity() {
 }
 ```
 
-## Run on Android Automotive OS emulator
+## Android Auto vs Android Automotive OS
 
-`flutter_carplay` uses the Android for Cars App Library for Android Auto. This lets the same `AndroidAutoService` run on Android Auto hosts and Android Automotive OS (AAOS) hosts, but the package does not turn your Flutter app into a full AAOS system app. The car screen is still rendered from the supported car app templates, and the current Android support is limited to the templates listed in [Android Auto Support](#android-auto-support).
+Android Auto and Android Automotive OS (AAOS) are different targets:
 
-To test on AAOS, start from the Android setup above and then run the app on an Automotive emulator:
+- **Android Auto** is a projected experience. The app runs on a phone, and the vehicle display is rendered by an Android Auto host using templates from the Android for Cars App Library. This is what `flutter_carplay` supports on Android through `AndroidAutoService`.
+- **Android Automotive OS** is Android running directly in the vehicle. A Flutter app can be installed and launched on AAOS like any other Android app, but that opens the app's normal Android activity and shows the regular Flutter UI.
 
-1. Install an Android Automotive OS system image in Android Studio. See [Test using the Android Automotive OS emulator](https://developer.android.com/training/cars/testing/emulator).
-2. Create and start an Automotive virtual device from Device Manager.
-3. Confirm your app declares the car app library service and `automotive_app_desc.xml` metadata shown in the Android setup section. The example project already includes these files.
-4. Run the Flutter app on the AAOS emulator:
+`flutter_carplay` does not convert a Flutter app into a native AAOS app and does not render Android Auto templates when the app is opened normally on AAOS. The templates are rendered only when a compatible Android for Cars host binds to the declared `CarAppService`.
 
-```shell
-flutter devices
-flutter run -d <automotive-emulator-id>
-```
+In practice:
 
-After the app is installed, open the launcher or car app host in the Automotive emulator and select your app. If it does not appear, verify that the manifest contains `com.oguzhnatly.flutter_android_auto.AndroidAutoService`, the `androidx.car.app.CarAppService` action, and the supported car app category for your app.
+- Use this package for Android Auto template apps.
+- Do not expect additional behavior for a normal Flutter app installed on AAOS.
+- If you are building a full native AAOS app, build and test the Flutter Android app UI directly for the vehicle environment instead of relying on Android Auto templates.
 
-For projected Android Auto testing from a phone emulator or device, use the Android Auto Desktop Head Unit instructions in the official [Android Auto testing documentation](https://developer.android.com/training/cars/testing).
+For Android Auto testing from a phone emulator or device, use the Android Auto Desktop Head Unit instructions in the official [Android Auto testing documentation](https://developer.android.com/training/cars/testing).
 
 ## Solve problems configuring your project
 
