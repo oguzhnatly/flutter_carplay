@@ -256,9 +256,9 @@ class _MyAppState extends State<MyApp> {
                                                 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
                                             onPress:
                                                 (complete, AAListItem item) {
-                                                  FlutterAndroidAuto.pop();
-                                                  complete();
-                                                },
+                                              FlutterAndroidAuto.pop();
+                                              complete();
+                                            },
                                           ),
                                           AAListItem(
                                             title: 'Page 2',
@@ -268,9 +268,9 @@ class _MyAppState extends State<MyApp> {
                                                 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
                                             onPress:
                                                 (complete, AAListItem item) {
-                                                  FlutterAndroidAuto.popToRoot();
-                                                  complete();
-                                                },
+                                              FlutterAndroidAuto.popToRoot();
+                                              complete();
+                                            },
                                           ),
                                         ],
                                       ),
@@ -301,6 +301,14 @@ class _MyAppState extends State<MyApp> {
                   complete();
                 },
               ),
+              AAListItem(
+                title: 'Long Message Template',
+                subtitle: 'Open and update a long message screen',
+                onPress: (complete, AAListItem item) {
+                  openAndroidAutoLongMessageTemplate();
+                  complete();
+                },
+              ),
               AAListItem(title: 'Test'),
             ],
           ),
@@ -322,6 +330,26 @@ class _MyAppState extends State<MyApp> {
       template.update(
         title: 'Saved places synced',
         message: 'Your saved places are now available in Android Auto.',
+      );
+    });
+  }
+
+  void openAndroidAutoLongMessageTemplate() {
+    final template = AALongMessageTemplate(
+      title: 'Safety information',
+      message: 'Keep your attention on the road. This longer Android Auto '
+          'message template is intended for content that needs more space than '
+          'a simple message screen can provide.',
+    );
+
+    FlutterAndroidAuto.push(template: template);
+
+    Future.delayed(const Duration(seconds: 3), () {
+      template.update(
+        title: 'Safety information updated',
+        message: 'The long message template has been rebuilt and refreshed. '
+            'Use this template for longer informational text that should remain '
+            'readable in Android Auto.',
       );
     });
   }

@@ -1,6 +1,7 @@
 ## Next
 
 - Add Android Auto `AAMessageTemplate` support with update APIs.
+- Add Android Auto `AALongMessageTemplate` support with update APIs.
 
 ## 1.3.3
 

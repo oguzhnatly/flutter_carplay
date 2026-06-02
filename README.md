@@ -361,6 +361,19 @@ await template.update(
 );
 ```
 
+Use `AALongMessageTemplate` for longer informational text that needs more room
+than a simple message template.
+
+```dart
+final template = AALongMessageTemplate(
+  title: 'Safety information',
+  message: 'Keep your attention on the road. This longer Android Auto message '
+      'template is intended for content that needs more space.',
+);
+
+await FlutterAndroidAuto.push(template: template);
+```
+
 4. In your `MainActivity.kt` file, make the necessary to resuse and cache the engine as follow :
 
 On Android Auto Service, use the same engine as the app if the app is already running, otherwise create a new one and cache using the id `FAAConstants.flutterEngineId`.

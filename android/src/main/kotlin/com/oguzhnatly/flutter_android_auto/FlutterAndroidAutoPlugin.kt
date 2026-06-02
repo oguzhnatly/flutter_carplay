@@ -6,6 +6,7 @@ import androidx.car.app.model.CarIcon
 import androidx.car.app.model.CarText
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
+import androidx.car.app.model.LongMessageTemplate
 import androidx.car.app.model.MessageTemplate
 import androidx.car.app.model.SectionedItemList
 import androidx.car.app.model.Row
@@ -102,6 +103,10 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                         call, result
                     )
 
+                    FAAChannelTypes.updateLongMessageTemplate.name -> updateLongMessageTemplate(
+                        call, result
+                    )
+
                     else -> result.notImplemented()
                 }
             } catch (e: Exception) {
@@ -183,6 +188,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
                 "FAAMessageTemplate" -> getMessageTemplate(data)
 
+                "FAALongMessageTemplate" -> getLongMessageTemplate(data)
+
                 else -> null
             }
             if (template == null) {
@@ -241,6 +248,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                 )
 
                 "FAAMessageTemplate" -> getMessageTemplate(data, false)
+
+                "FAALongMessageTemplate" -> getLongMessageTemplate(data, false)
 
                 else -> null
             }
@@ -313,6 +322,56 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         result.success(true)
     }
 
+    private fun updateLongMessageTemplate(
+        call: MethodCall, result: MethodChannel.Result
+    ) {
+        val elementId = call.argument<String>("elementId")
+        if (elementId.isNullOrEmpty()) {
+            result.error(
+                "Missing elementId",
+                "elementId is required to update a long message template",
+                null,
+            )
+            return
+        }
+
+        val title = call.argument<String>("title") ?: ""
+        val message = call.argument<String>("message") ?: ""
+        val isRootTemplate = elementId == currentTemplateElementId
+        val updatedTemplate = getLongMessageTemplate(
+            mapOf(
+                "_elementId" to elementId,
+                "title" to title,
+                "message" to message,
+            ),
+            !isRootTemplate,
+        )
+
+        templatesByElementId[elementId] = updatedTemplate
+        if (isRootTemplate) {
+            currentTemplate = updatedTemplate
+            currentScreen?.let {
+                screensByElementId[elementId] = it
+                it.invalidate()
+            }
+            result.success(true)
+            return
+        }
+
+        val screen = screensByElementId[elementId]
+        if (screen == null) {
+            result.error(
+                "No screen found",
+                "No Android Auto screen found for template id: $elementId",
+                null,
+            )
+            return
+        }
+
+        screen.invalidate()
+        result.success(true)
+    }
+
     private fun getMessageTemplate(
         data: Map<String, Any?>,
         addBackButton: Boolean = true,
@@ -326,6 +385,21 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         }
 
         return messageTemplateBuilder.build()
+    }
+
+    private fun getLongMessageTemplate(
+        data: Map<String, Any?>,
+        addBackButton: Boolean = true,
+    ): Template {
+        val template = FAALongMessageTemplate.fromJson(data)
+        val longMessageTemplateBuilder = LongMessageTemplate.Builder(template.message)
+            .setTitle(template.title)
+
+        if (addBackButton) {
+            longMessageTemplateBuilder.setHeaderAction(Action.BACK)
+        }
+
+        return longMessageTemplateBuilder.build()
     }
 
     private suspend fun getListTemplate(
