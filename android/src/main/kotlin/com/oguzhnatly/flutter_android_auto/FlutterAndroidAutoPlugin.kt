@@ -275,61 +275,36 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
     private fun updateMessageTemplate(
         call: MethodCall, result: MethodChannel.Result
     ) {
-        val elementId = call.argument<String>("elementId")
-        if (elementId.isNullOrEmpty()) {
-            result.error(
-                "Missing elementId",
-                "elementId is required to update a message template",
-                null,
-            )
-            return
-        }
-
-        val title = call.argument<String>("title") ?: ""
-        val message = call.argument<String>("message") ?: ""
-        val isRootTemplate = elementId == currentTemplateElementId
-        val updatedTemplate = getMessageTemplate(
-            mapOf(
-                "_elementId" to elementId,
-                "title" to title,
-                "message" to message,
-            ),
-            !isRootTemplate,
+        updateMessageTemplate(
+            call,
+            result,
+            "message",
+            ::getMessageTemplate,
         )
-
-        templatesByElementId[elementId] = updatedTemplate
-        if (isRootTemplate) {
-            currentTemplate = updatedTemplate
-            currentScreen?.let {
-                screensByElementId[elementId] = it
-                it.invalidate()
-            }
-            result.success(true)
-            return
-        }
-
-        val screen = screensByElementId[elementId]
-        if (screen == null) {
-            result.error(
-                "No screen found",
-                "No Android Auto screen found for template id: $elementId",
-                null,
-            )
-            return
-        }
-
-        screen.invalidate()
-        result.success(true)
     }
 
     private fun updateLongMessageTemplate(
         call: MethodCall, result: MethodChannel.Result
     ) {
-        val elementId = call.argument<String>("elementId")
-        if (elementId.isNullOrEmpty()) {
+        updateMessageTemplate(
+            call,
+            result,
+            "long message",
+            ::getLongMessageTemplate,
+        )
+    }
+
+    private fun updateMessageTemplate(
+        call: MethodCall,
+        result: MethodChannel.Result,
+        templateType: String,
+        buildTemplate: (Map<String, Any?>, Boolean) -> Template,
+    ) {
+        val templateElementId = call.argument<String>("elementId") ?: ""
+        if (templateElementId.isEmpty()) {
             result.error(
                 "Missing elementId",
-                "elementId is required to update a long message template",
+                "elementId is required to update a $templateType template",
                 null,
             )
             return
@@ -337,32 +312,32 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         val title = call.argument<String>("title") ?: ""
         val message = call.argument<String>("message") ?: ""
-        val isRootTemplate = elementId == currentTemplateElementId
-        val updatedTemplate = getLongMessageTemplate(
+        val isRootTemplate = templateElementId == currentTemplateElementId
+        val updatedTemplate = buildTemplate(
             mapOf(
-                "_elementId" to elementId,
+                "_elementId" to templateElementId,
                 "title" to title,
                 "message" to message,
             ),
             !isRootTemplate,
         )
 
-        templatesByElementId[elementId] = updatedTemplate
+        templatesByElementId[templateElementId] = updatedTemplate
         if (isRootTemplate) {
             currentTemplate = updatedTemplate
             currentScreen?.let {
-                screensByElementId[elementId] = it
+                screensByElementId[templateElementId] = it
                 it.invalidate()
             }
             result.success(true)
             return
         }
 
-        val screen = screensByElementId[elementId]
+        val screen = screensByElementId[templateElementId]
         if (screen == null) {
             result.error(
                 "No screen found",
-                "No Android Auto screen found for template id: $elementId",
+                "No Android Auto screen found for template id: $templateElementId",
                 null,
             )
             return
@@ -375,31 +350,44 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
     private fun getMessageTemplate(
         data: Map<String, Any?>,
         addBackButton: Boolean = true,
-    ): Template {
-        val template = FAAMessageTemplate.fromJson(data)
-        val messageTemplateBuilder = MessageTemplate.Builder(template.message)
-            .setTitle(template.title)
-
-        if (addBackButton) {
-            messageTemplateBuilder.setHeaderAction(Action.BACK)
-        }
-
-        return messageTemplateBuilder.build()
-    }
+    ): Template = buildMessageTemplate(
+        data,
+        addBackButton,
+        createBuilder = { MessageTemplate.Builder(it) },
+        setTitle = { title -> setTitle(title) },
+        setHeaderAction = { action -> setHeaderAction(action) },
+        build = { build() },
+    )
 
     private fun getLongMessageTemplate(
         data: Map<String, Any?>,
         addBackButton: Boolean = true,
+    ): Template = buildMessageTemplate(
+        data,
+        addBackButton,
+        createBuilder = { LongMessageTemplate.Builder(it) },
+        setTitle = { title -> setTitle(title) },
+        setHeaderAction = { action -> setHeaderAction(action) },
+        build = { build() },
+    )
+
+    private fun <Builder> buildMessageTemplate(
+        data: Map<String, Any?>,
+        addBackButton: Boolean,
+        createBuilder: (String) -> Builder,
+        setTitle: Builder.(String) -> Unit,
+        setHeaderAction: Builder.(Action) -> Unit,
+        build: Builder.() -> Template,
     ): Template {
-        val template = FAALongMessageTemplate.fromJson(data)
-        val longMessageTemplateBuilder = LongMessageTemplate.Builder(template.message)
-            .setTitle(template.title)
+        val template = FAAMessageTemplate.fromJson(data)
+        val builder = createBuilder(template.message)
+        builder.setTitle(template.title)
 
         if (addBackButton) {
-            longMessageTemplateBuilder.setHeaderAction(Action.BACK)
+            builder.setHeaderAction(Action.BACK)
         }
 
-        return longMessageTemplateBuilder.build()
+        return builder.build()
     }
 
     private suspend fun getListTemplate(

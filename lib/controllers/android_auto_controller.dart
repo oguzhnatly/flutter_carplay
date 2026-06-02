@@ -34,13 +34,11 @@ class FlutterAndroidAutoController {
     FAAChannelTypes type, [
     dynamic data,
   ]) async {
-    final bool? value = await _methodChannel.invokeMethod<bool>(
-      type.name,
-      data,
-    );
-    return value;
+    return FlutterAndroidAutoController.flutterToNativeModuleStatic(type, data);
   }
 
+  /// Templates update themselves without a controller instance, so this static
+  /// entry point shares the same MethodChannel path as [flutterToNativeModule].
   static Future<bool?> flutterToNativeModuleStatic(
     FAAChannelTypes type, [
     dynamic data,
@@ -181,13 +179,4 @@ class FlutterAndroidAutoController {
       }
     }
   }*/
-
-  static T? getTemplateFromHistory<T extends AATemplate>(String elementId) {
-    for (final template in templateHistory) {
-      if (template is T && template.uniqueId == elementId) {
-        return template;
-      }
-    }
-    return null;
-  }
 }
