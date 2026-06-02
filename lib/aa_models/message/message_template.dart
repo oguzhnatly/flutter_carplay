@@ -11,27 +11,44 @@ class AAMessageTemplate implements AATemplate {
   String title;
   String message;
 
+  /// Creates a message template for Android Auto.
+  ///
+  /// [message] must not be empty because Android Auto requires a non-empty
+  /// message when building the native template.
   AAMessageTemplate({required this.title, required this.message, String? id})
-    : _elementId = id ?? const Uuid().v4();
+      : _elementId = id ?? const Uuid().v4() {
+    _validateMessage(message);
+  }
 
   @override
   String get uniqueId => _elementId;
 
   @override
   Map<String, dynamic> toJson() => {
-    '_elementId': _elementId,
-    'title': title,
-    'message': message,
-  };
+        '_elementId': _elementId,
+        'title': title,
+        'message': message,
+      };
 
+  /// Updates the template content on Android Auto.
+  ///
+  /// Android Auto templates are immutable. This method asks the native side to
+  /// rebuild the message template and invalidate the current screen. Changing
+  /// the title or message is treated by Android Auto as a new template step,
+  /// not as a refresh of the existing template, and can count toward host
+  /// template limits.
+  ///
+  /// [message] must not be empty.
   Future<void> update({String? title, String? message}) async {
     final nextTitle = title ?? this.title;
     final nextMessage = message ?? this.message;
+    _validateMessage(nextMessage);
+
     final bool? isCompleted =
         await FlutterAndroidAutoController.flutterToNativeModuleStatic(
-          FAAChannelTypes.updateMessageTemplate,
-          {'elementId': _elementId, 'title': nextTitle, 'message': nextMessage},
-        );
+      FAAChannelTypes.updateMessageTemplate,
+      {'elementId': _elementId, 'title': nextTitle, 'message': nextMessage},
+    );
 
     if (isCompleted == true) {
       updateTemplate(title: nextTitle, message: nextMessage);
@@ -47,7 +64,14 @@ class AAMessageTemplate implements AATemplate {
   }
 
   void updateTemplate({required String title, required String message}) {
+    _validateMessage(message);
     this.title = title;
     this.message = message;
+  }
+
+  static void _validateMessage(String message) {
+    if (message.isEmpty) {
+      throw ArgumentError.value(message, 'message', 'Message cannot be empty');
+    }
   }
 }

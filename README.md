@@ -89,6 +89,7 @@ By evaluating this information, you can request for the relevant entitlement fro
 ## Android Auto Support
 
 - [x] List Template (limited support)
+- [x] Message Template
 - [x] Now Playing Template (Automatically handled by Android Auto system)
 
 # What's New in latest versions
@@ -352,7 +353,7 @@ final template = AAMessageTemplate(
   message: 'Save places on your phone to access them here.',
 );
 
-FlutterAndroidAuto.setRootTemplate(template: template);
+await FlutterAndroidAuto.setRootTemplate(template: template);
 
 await template.update(
   title: 'Saved places synced',

@@ -35,5 +35,24 @@ void main() {
         'Your saved places are now available in Android Auto.',
       );
     });
+
+    test('requires non-empty message', () {
+      expect(
+        () => AAMessageTemplate(title: 'No saved places', message: ''),
+        throwsArgumentError,
+      );
+    });
+
+    test('requires non-empty message when updating local values', () {
+      final template = AAMessageTemplate(
+        title: 'No saved places',
+        message: 'Save places on your phone to access them here.',
+      );
+
+      expect(
+        () => template.updateTemplate(title: 'No saved places', message: ''),
+        throwsArgumentError,
+      );
+    });
   });
 }
