@@ -376,10 +376,10 @@ class MainActivity : FlutterActivity() {
 
 Android Auto and Android Automotive OS (AAOS) are different targets:
 
-- **Android Auto** is a projected experience. The app runs on a phone, and the vehicle display is rendered by an Android Auto host using templates from the Android for Cars App Library. This is what `flutter_carplay` supports on Android through `AndroidAutoService`.
+- **Android Auto** is a projected experience. The app runs on a phone, and the vehicle display is rendered by an Android Auto host using templates from the Android for Cars App Library. This is what `flutter_carplay` supports on Android.
 - **Android Automotive OS** is Android running directly in the vehicle. A Flutter app can be installed and launched on AAOS like any other Android app, but that opens the app's normal Android activity and shows the regular Flutter UI.
 
-`flutter_carplay` does not convert a Flutter app into a native AAOS app and does not render Android Auto templates when the app is opened normally on AAOS. The templates are rendered only when a compatible Android for Cars host binds to the declared `CarAppService`.
+`flutter_carplay` does not convert a Flutter app into a native AAOS app and does not render Android Auto templates when the app is opened normally on AAOS. The templates are rendered only by a compatible Android Auto host.
 
 In practice:
 
