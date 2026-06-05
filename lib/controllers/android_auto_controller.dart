@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_carplay/constants/private_constants.dart';
 
 import '../aa_models/list/list_item.dart';
+import '../aa_models/list/list_section.dart';
 import '../aa_models/template.dart';
 import '../android_auto_worker.dart';
 import '../helpers/auto_android_helper.dart';
@@ -47,6 +48,24 @@ class FlutterAndroidAutoController {
       data,
     );
     return value;
+  }
+
+  static Future<bool?> updateAAListTemplateSections({
+    required String elementId,
+    required List<AAListSection> sections,
+  }) async {
+    final payload = <String, dynamic>{
+      'elementId': elementId,
+      'sections':
+          sections.map((AAListSection section) => section.toJson()).toList(),
+    };
+
+    await resolveSvgInPayload(payload, size: FlutterAndroidAuto.svgRasterSize);
+
+    return _methodChannel.invokeMethod<bool>(
+      FAAChannelTypes.updateListTemplateSections.name,
+      payload,
+    );
   }
 
   /* static void updateCPListItem(CPListItem updatedListItem) {

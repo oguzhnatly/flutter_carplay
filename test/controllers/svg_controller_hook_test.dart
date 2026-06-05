@@ -172,6 +172,34 @@ void main() {
       expect(args.containsKey('imageData'), isFalse);
     });
 
+    test('attaches imageData for updateListTemplateSections SVG imageUrl',
+        () async {
+      final captured = capturePayload(_androidAutoChannel);
+
+      await FlutterAndroidAutoController.updateAAListTemplateSections(
+        elementId: 'template-1',
+        sections: [
+          AAListSection(
+            items: [
+              AAListItem(title: 'svg', imageUrl: _svgAssetKey),
+              AAListItem(title: 'png', imageUrl: 'images/icon.png'),
+            ],
+          ),
+        ],
+      );
+
+      expect(captured['method'], 'updateListTemplateSections');
+      final args = captured['arguments'] as Map;
+      final items = ((args['sections'] as List)[0] as Map)['items'] as List;
+      final svgItem = items[0] as Map;
+      final pngItem = items[1] as Map;
+
+      expect(svgItem['imageUrl'], _svgAssetKey);
+      expect(svgItem['imageData'], isA<Uint8List>());
+      expect(pngItem['imageUrl'], 'images/icon.png');
+      expect(pngItem.containsKey('imageData'), isFalse);
+    });
+
     test('uses the global FlutterAndroidAuto.svgRasterSize for the walker',
         () async {
       final defaultBytes = await rasterizeSvgAsset(_svgAssetKey);
