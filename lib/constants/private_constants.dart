@@ -47,5 +47,8 @@ enum FAAChannelTypes {
   popToRootTemplate,
   onListItemSelected,
   onListItemSelectedComplete,
+  updateListTemplateSections,
+  onListSectionSelected,
+  onToggleCheckedChange,
   onScreenBackButtonPressed,
 }

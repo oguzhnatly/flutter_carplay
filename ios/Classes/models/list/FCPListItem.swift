@@ -16,6 +16,7 @@ final class FCPListItem {
   private var isOnPressListenerActive: Bool = false
   private var completeHandler: (() -> Void)?
   private var image: String?
+  private var accessoryImage: String?
   private var playbackProgress: CGFloat?
   private var isPlaying: Bool?
   private var playingIndicatorLocation: CPListItemPlayingIndicatorLocation?
@@ -27,6 +28,7 @@ final class FCPListItem {
     self.detailText = obj["detailText"] as? String
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
     self.image = obj["image"] as? String
+    self.accessoryImage = obj["accessoryImage"] as? String
     self.playbackProgress = obj["playbackProgress"] as? CGFloat
     self.isPlaying = obj["isPlaying"] as? Bool
     self.setPlayingIndicatorLocation(fromString: obj["playingIndicatorLocation"] as? String)
@@ -60,6 +62,15 @@ final class FCPListItem {
         }
       }
     }
+    if accessoryImage != nil {
+      listItem.setAccessoryImage(makeSafeUIPlaceholder())
+      let imageSource = self.accessoryImage!.toImageSource()
+      loadUIImageAsync(from: imageSource) { uiImage in
+        if let uiImage = uiImage {
+          listItem.setAccessoryImage(uiImage)
+        }
+      }
+    }
     if playbackProgress != nil {
       listItem.playbackProgress = playbackProgress!
     }
@@ -89,6 +100,7 @@ final class FCPListItem {
     let text = args["text"] as? String
     let detailText = args["detailText"] as? String
     let image = args["image"] as? String
+    let accessoryImage = args["accessoryImage"] as? String
     let playbackProgress = args["playbackProgress"] as? CGFloat
     let isPlaying = args["isPlaying"] as? Bool
     let playingIndicatorLocation = args["playingIndicatorLocation"] as? String
@@ -115,6 +127,20 @@ final class FCPListItem {
     } else if image == nil {
       self.image = nil
       self._super?.setImage(nil)
+    }
+
+    if let accessoryImage = accessoryImage, accessoryImage != self.accessoryImage {
+      self._super?.setAccessoryImage(makeSafeUIPlaceholder())
+      let imageSource = accessoryImage.toImageSource()
+      loadUIImageAsync(from: imageSource) { uiImage in
+        if let uiImage = uiImage {
+          self._super?.setAccessoryImage(uiImage)
+        }
+      }
+      self.accessoryImage = accessoryImage
+    } else if accessoryImage == nil && args.keys.contains("accessoryImage") {
+      self.accessoryImage = nil
+      self._super?.setAccessoryImage(nil)
     }
 
     if playbackProgress != nil {

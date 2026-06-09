@@ -26,4 +26,11 @@ class AAListTemplate implements AATemplate {
         'sections':
             sections.map((AAListSection section) => section.toJson()).toList(),
       };
+
+  void updateSections(List<AAListSection> newSections) {
+    final copy = List<AAListSection>.from(newSections);
+    sections
+      ..clear()
+      ..addAll(copy);
+  }
 }
