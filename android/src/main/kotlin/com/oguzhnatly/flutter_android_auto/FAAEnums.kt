@@ -19,4 +19,6 @@ enum class FAAChannelTypes {
     onListSectionSelected,
     onToggleCheckedChange,
     onScreenBackButtonPressed,
+    updateMessageTemplate,
+    updateLongMessageTemplate,
 }

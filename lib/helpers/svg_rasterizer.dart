@@ -139,14 +139,15 @@ Future<Uint8List?> _rasterize(
 ///                  under `imageData`.
 /// - `imageUrl`  -> AAListItem (Android Auto). The native contract expects the
 ///                  bytes under `imageData`.
-/// - `trailingImage` -> CPListItem and AAListItem trailing/accessory image.
-///                      Bytes are attached under `trailingImageData`.
+/// - `accessoryImage` / `trailingImage` -> CPListItem trailing/accessory image.
+///                  Bytes are attached under `trailingImageData`.
 /// - `gridImages`-> CPListImageRowItem (legacy iOS grid images); the native
 ///                  contract expects the bytes under `gridImageData`.
 @visibleForTesting
 const svgImageDataKeys = <String, String>{
   'image': 'imageData',
   'imageUrl': 'imageData',
+  'accessoryImage': 'trailingImageData',
   'trailingImage': 'trailingImageData',
   'gridImages': 'gridImageData',
 };

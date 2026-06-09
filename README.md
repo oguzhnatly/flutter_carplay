@@ -90,6 +90,7 @@ By evaluating this information, you can request for the relevant entitlement fro
 ## Android Auto Support
 
 - [x] List Template (limited support)
+- [x] Message Template
 - [x] Now Playing Template (Automatically handled by Android Auto system)
 
 # What's New in latest versions
@@ -342,6 +343,37 @@ Inside the `<application>` tag:
 ``` 
 
 For others use, please check official [Android Auto documentation](https://developer.android.com/training/cars/apps/auto).
+
+### Android Auto Message Template
+
+Use `AAMessageTemplate` for simple empty states, errors, or informational screens.
+
+```dart
+final template = AAMessageTemplate(
+  title: 'No saved places',
+  message: 'Save places on your phone to access them here.',
+);
+
+await FlutterAndroidAuto.setRootTemplate(template: template);
+
+await template.update(
+  title: 'Saved places synced',
+  message: 'Your saved places are now available in Android Auto.',
+);
+```
+
+Use `AALongMessageTemplate` for longer informational text that needs more room
+than a simple message template.
+
+```dart
+final template = AALongMessageTemplate(
+  title: 'Safety information',
+  message: 'Keep your attention on the road. This longer Android Auto message '
+      'template is intended for content that needs more space.',
+);
+
+await FlutterAndroidAuto.push(template: template);
+```
 
 4. In your `MainActivity.kt` file, make the necessary to resuse and cache the engine as follow :
 

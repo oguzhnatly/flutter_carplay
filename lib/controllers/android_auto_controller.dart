@@ -38,6 +38,15 @@ class FlutterAndroidAutoController {
     FAAChannelTypes type, [
     dynamic data,
   ]) async {
+    return FlutterAndroidAutoController.flutterToNativeModuleStatic(type, data);
+  }
+
+  /// Templates update themselves without a controller instance, so this static
+  /// entry point shares the same MethodChannel path as [flutterToNativeModule].
+  static Future<bool?> flutterToNativeModuleStatic(
+    FAAChannelTypes type, [
+    dynamic data,
+  ]) async {
     // Rasterize any Flutter asset SVGs referenced by image fields (e.g.
     // AAListItem.imageUrl) into PNG bytes before sending the payload to the
     // native side, which cannot render SVG directly. Non-collection payloads
@@ -61,8 +70,6 @@ class FlutterAndroidAutoController {
           .map((AAListSection section) => section.toJson())
           .toList(),
     };
-
-    await resolveSvgInPayload(payload, size: FlutterAndroidAuto.svgRasterSize);
 
     final bool? isCompleted = await flutterToNativeModuleStatic(
       FAAChannelTypes.updateListTemplateSections,
