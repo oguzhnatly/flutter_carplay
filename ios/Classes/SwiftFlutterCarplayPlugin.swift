@@ -94,6 +94,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       SwiftFlutterCarplayPlugin.objcRootTemplate = rootTemplate!
       let animated = args["animated"] as! Bool
       SwiftFlutterCarplayPlugin.animated = animated
+      FlutterCarPlaySceneDelegate.forceUpdateRootTemplate()
       result(true)
       break
     case FCPChannelTypes.forceUpdateRootTemplate:
