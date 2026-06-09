@@ -162,6 +162,14 @@ void main() {
       expect(payload['imageData'], isA<Uint8List>());
     });
 
+    test('adds trailingImageData next to an .svg trailingImage', () async {
+      final payload = <String, dynamic>{'trailingImage': _svgAssetKey};
+      await resolveSvgInPayload(payload);
+
+      expect(payload['trailingImage'], _svgAssetKey);
+      expect(payload['trailingImageData'], isA<Uint8List>());
+    });
+
     test('leaves non-SVG image untouched', () async {
       final payload = <String, dynamic>{'image': 'images/icon.png'};
       await resolveSvgInPayload(payload);
@@ -178,16 +186,20 @@ void main() {
       expect(payload.containsKey('imageData'), isFalse);
     });
 
-    test('skips systemIcon and imageTitles', () async {
+    test('skips systemIcon, imageTitles, and tint metadata', () async {
       final payload = <String, dynamic>{
         'systemIcon': 'something.svg',
         'imageTitles': <String>['a.svg', 'b.svg'],
+        'trailingImageTint': <String, dynamic>{
+          'color': 'not-an-image.svg',
+        },
       };
       await resolveSvgInPayload(payload);
 
       expect(payload['systemIcon'], 'something.svg');
       expect(payload.containsKey('imageData'), isFalse);
       expect(payload.containsKey('imageTitlesData'), isFalse);
+      expect(payload.containsKey('trailingImageTintData'), isFalse);
     });
 
     test('adds gridImageData with nulls for non-SVG entries', () async {

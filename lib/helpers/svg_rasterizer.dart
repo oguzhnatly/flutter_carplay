@@ -139,12 +139,15 @@ Future<Uint8List?> _rasterize(
 ///                  under `imageData`.
 /// - `imageUrl`  -> AAListItem (Android Auto). The native contract expects the
 ///                  bytes under `imageData`.
+/// - `trailingImage` -> CPListItem and AAListItem trailing/accessory image.
+///                      Bytes are attached under `trailingImageData`.
 /// - `gridImages`-> CPListImageRowItem (legacy iOS grid images); the native
 ///                  contract expects the bytes under `gridImageData`.
 @visibleForTesting
 const svgImageDataKeys = <String, String>{
   'image': 'imageData',
   'imageUrl': 'imageData',
+  'trailingImage': 'trailingImageData',
   'gridImages': 'gridImageData',
 };
 
@@ -157,12 +160,14 @@ const svgListImageKeys = <String>{'gridImages'};
 /// - `systemIcon`  -> CPTemplate tab image (resolved natively as an SF Symbol /
 ///                    tab image, not an asset SVG we rasterize).
 /// - `imageTitles` -> CPListImageRowItem labels (text, not images).
-/// - `imageTint`/`gridImageTints` -> tint metadata, not image references.
+/// - `imageTint`/`trailingImageTint`/`gridImageTints` -> tint metadata, not
+///   image references.
 @visibleForTesting
 const svgIgnoredKeys = <String>{
   'systemIcon',
   'imageTitles',
   'imageTint',
+  'trailingImageTint',
   'gridImageTints',
 };
 

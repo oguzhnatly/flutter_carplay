@@ -19,6 +19,9 @@ final class FCPListItem {
   private var image: String?
   private var imageData: FlutterStandardTypedData?
   private var imageTint: FCPImageTint?
+  private var trailingImage: String?
+  private var trailingImageData: FlutterStandardTypedData?
+  private var trailingImageTint: FCPImageTint?
   private var playbackProgress: CGFloat?
   private var isPlaying: Bool?
   private var playingIndicatorLocation: CPListItemPlayingIndicatorLocation?
@@ -32,6 +35,9 @@ final class FCPListItem {
     self.image = obj["image"] as? String
     self.imageData = obj["imageData"] as? FlutterStandardTypedData
     self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
+    self.trailingImage = obj["trailingImage"] as? String
+    self.trailingImageData = obj["trailingImageData"] as? FlutterStandardTypedData
+    self.trailingImageTint = FCPImageTint(from: obj["trailingImageTint"] as? [String: Any])
     self.playbackProgress = obj["playbackProgress"] as? CGFloat
     self.isPlaying = obj["isPlaying"] as? Bool
     self.setPlayingIndicatorLocation(fromString: obj["playingIndicatorLocation"] as? String)
@@ -62,6 +68,13 @@ final class FCPListItem {
         listItem.setImage(uiImage)
       }
     }
+    if trailingImage != nil {
+      listItem.setAccessoryImage(makeSafeUIPlaceholder())
+      loadUIImage(from: trailingImage!, bytes: trailingImageData, tint: trailingImageTint) {
+        uiImage in
+        listItem.setAccessoryImage(uiImage)
+      }
+    }
     if playbackProgress != nil {
       listItem.playbackProgress = playbackProgress!
     }
@@ -71,7 +84,7 @@ final class FCPListItem {
     if playingIndicatorLocation != nil {
       listItem.playingIndicatorLocation = playingIndicatorLocation!
     }
-    if accessoryType != nil {
+    if accessoryType != nil && trailingImage == nil {
       listItem.accessoryType = accessoryType!
     }
     self._super = listItem
@@ -93,6 +106,9 @@ final class FCPListItem {
     let image = args["image"] as? String
     let imageData = args["imageData"] as? FlutterStandardTypedData
     let imageTint = FCPImageTint(from: args["imageTint"] as? [String: Any])
+    let trailingImage = args["trailingImage"] as? String
+    let trailingImageData = args["trailingImageData"] as? FlutterStandardTypedData
+    let trailingImageTint = FCPImageTint(from: args["trailingImageTint"] as? [String: Any])
     let playbackProgress = args["playbackProgress"] as? CGFloat
     let isPlaying = args["isPlaying"] as? Bool
     let playingIndicatorLocation = args["playingIndicatorLocation"] as? String
@@ -123,6 +139,25 @@ final class FCPListItem {
       self._super?.setImage(nil)
     }
 
+    let trailingImageTintChanged = trailingImageTint != self.trailingImageTint
+    if let trailingImage = trailingImage,
+      trailingImage != self.trailingImage || trailingImageTintChanged
+    {
+      self._super?.setAccessoryImage(makeSafeUIPlaceholder())
+      loadUIImage(from: trailingImage, bytes: trailingImageData, tint: trailingImageTint) {
+        uiImage in
+        self._super?.setAccessoryImage(uiImage)
+      }
+      self.trailingImage = trailingImage
+      self.trailingImageData = trailingImageData
+      self.trailingImageTint = trailingImageTint
+    } else if trailingImage == nil {
+      self.trailingImage = nil
+      self.trailingImageData = nil
+      self.trailingImageTint = nil
+      self._super?.setAccessoryImage(nil)
+    }
+
     if playbackProgress != nil {
       self._super?.playbackProgress = playbackProgress!
       self.playbackProgress = playbackProgress
@@ -137,7 +172,7 @@ final class FCPListItem {
         self._super?.playingIndicatorLocation = self.playingIndicatorLocation!
       }
     }
-    if accessoryType != nil {
+    if accessoryType != nil && self.trailingImage == nil {
       self.setAccessoryType(fromString: accessoryType)
       if self.accessoryType != nil {
         self._super?.accessoryType = self.accessoryType!

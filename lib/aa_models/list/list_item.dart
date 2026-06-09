@@ -18,6 +18,27 @@ class AAListItem {
   /// - **Network URL**: `https://example.com/image.png` (remote image)
   final String? imageUrl;
   final AutoImageTint? imageTint;
+
+  /// The image displayed on the trailing side of this row when supported by the
+  /// Android Auto host.
+  ///
+  /// Android Auto `Row` does not expose a dedicated arbitrary trailing image
+  /// slot. This package renders [trailingImage] as a trailing row action icon,
+  /// which is the closest supported affordance. Use it for state indicators such
+  /// as the currently selected option while keeping [imageUrl] for the leading
+  /// user-selected icon.
+  ///
+  /// Supports these formats:
+  /// - **Asset path**: `images/check.png` (from pubspec.yaml assets)
+  /// - **SVG asset**: `images/check.svg` (rasterized to PNG before being sent to
+  ///   the native side; remote/`file://` SVGs are not supported)
+  /// - **File path**: `file:///path/to/image.png` (local file on device)
+  /// - **Network URL**: `https://example.com/image.png` (remote image)
+  final String? trailingImage;
+
+  /// Optional tint applied to [trailingImage].
+  final AutoImageTint? trailingImageTint;
+
   final Function(Function() complete, AAListItem self)? onPress;
 
   AAListItem({
@@ -25,6 +46,8 @@ class AAListItem {
     this.subtitle,
     this.imageUrl,
     this.imageTint,
+    this.trailingImage,
+    this.trailingImageTint,
     this.onPress,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
@@ -37,6 +60,8 @@ class AAListItem {
         'subtitle': subtitle,
         'imageUrl': imageUrl,
         'imageTint': imageTint?.toJson(),
+        'trailingImage': trailingImage,
+        'trailingImageTint': trailingImageTint?.toJson(),
         'onPress': onPress != null ? true : false,
       };
 }

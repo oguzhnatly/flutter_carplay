@@ -70,7 +70,11 @@ void main() {
     test('CPListItem image key is handled', () {
       expectAllImageKeysHandled(
         'CPListItem',
-        CPListItem(text: 'a', image: 'images/icon.svg').toJson(),
+        CPListItem(
+          text: 'a',
+          image: 'images/icon.svg',
+          trailingImage: 'images/check.svg',
+        ).toJson(),
       );
     });
 
@@ -109,7 +113,11 @@ void main() {
     test('AAListItem imageUrl key is handled', () {
       expectAllImageKeysHandled(
         'AAListItem',
-        AAListItem(title: 'a', imageUrl: 'images/icon.svg').toJson(),
+        AAListItem(
+          title: 'a',
+          imageUrl: 'images/icon.svg',
+          trailingImage: 'images/check.svg',
+        ).toJson(),
       );
     });
 
@@ -120,7 +128,11 @@ void main() {
             sections: [
               CPListSection(
                 items: [
-                  CPListItem(text: 'a', image: 'images/icon.svg'),
+                  CPListItem(
+                    text: 'a',
+                    image: 'images/icon.svg',
+                    trailingImage: 'images/check.svg',
+                  ),
                   CPListImageRowItem(
                     text: 'b',
                     gridImages: const ['images/icon.svg'],

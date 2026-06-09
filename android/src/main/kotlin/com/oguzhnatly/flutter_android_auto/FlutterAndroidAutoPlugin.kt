@@ -297,6 +297,16 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
             }
         }
 
+        val trailingIcon = makeCarIconFromBytes(item.trailingImageData, item.trailingImageTint)
+            ?: if (carContext != null && item.trailingImage != null) {
+                resolveCarIcon(carContext, null, item.trailingImage, item.trailingImageTint)
+            } else {
+                null
+            }
+        if (trailingIcon != null) {
+            rowBuilder.addAction(Action.Builder().setIcon(trailingIcon).build())
+        }
+
         if (item.isOnPressListenerActive) {
             rowBuilder.setOnClickListener {
                 sendEvent(

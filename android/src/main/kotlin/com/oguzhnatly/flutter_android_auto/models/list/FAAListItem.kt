@@ -7,6 +7,9 @@ data class FAAListItem(
     val imageUrl: String? = null,
     val imageData: ByteArray? = null,
     val imageTint: FAAImageTint? = null,
+    val trailingImage: String? = null,
+    val trailingImageData: ByteArray? = null,
+    val trailingImageTint: FAAImageTint? = null,
     val isOnPressListenerActive: Boolean,
 ) {
     companion object {
@@ -17,10 +20,22 @@ data class FAAListItem(
             val imageUrl = map["imageUrl"] as? String
             val imageData = map["imageData"] as? ByteArray
             val imageTint = FAAImageTint.fromJson(map["imageTint"] as? Map<String, Any?>)
+            val trailingImage = map["trailingImage"] as? String
+            val trailingImageData = map["trailingImageData"] as? ByteArray
+            val trailingImageTint = FAAImageTint.fromJson(map["trailingImageTint"] as? Map<String, Any?>)
             val isOnPressListenerActive = map["onPress"] as? Boolean ?: false
 
             return FAAListItem(
-                elementId, title, subtitle, imageUrl, imageData, imageTint, isOnPressListenerActive
+                elementId,
+                title,
+                subtitle,
+                imageUrl,
+                imageData,
+                imageTint,
+                trailingImage,
+                trailingImageData,
+                trailingImageTint,
+                isOnPressListenerActive,
             )
         }
     }
