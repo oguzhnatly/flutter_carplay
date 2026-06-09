@@ -6,6 +6,7 @@
 //
 
 import CarPlay
+import Flutter
 
 @available(iOS 14.0, *)
 final class FCPListItem {
@@ -16,6 +17,12 @@ final class FCPListItem {
   private var isOnPressListenerActive: Bool = false
   private var completeHandler: (() -> Void)?
   private var image: String?
+  private var imageData: FlutterStandardTypedData?
+  private var imageTint: FCPImageTint?
+  private var accessoryImage: String?
+  private var trailingImage: String?
+  private var trailingImageData: FlutterStandardTypedData?
+  private var trailingImageTint: FCPImageTint?
   private var playbackProgress: CGFloat?
   private var isPlaying: Bool?
   private var playingIndicatorLocation: CPListItemPlayingIndicatorLocation?
@@ -27,6 +34,12 @@ final class FCPListItem {
     self.detailText = obj["detailText"] as? String
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
     self.image = obj["image"] as? String
+    self.imageData = obj["imageData"] as? FlutterStandardTypedData
+    self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
+    self.accessoryImage = obj["accessoryImage"] as? String
+    self.trailingImage = obj["trailingImage"] as? String
+    self.trailingImageData = obj["trailingImageData"] as? FlutterStandardTypedData
+    self.trailingImageTint = FCPImageTint(from: obj["trailingImageTint"] as? [String: Any])
     self.playbackProgress = obj["playbackProgress"] as? CGFloat
     self.isPlaying = obj["isPlaying"] as? Bool
     self.setPlayingIndicatorLocation(fromString: obj["playingIndicatorLocation"] as? String)
@@ -53,13 +66,20 @@ final class FCPListItem {
     listItem.handler = self.handler
     if image != nil {
       listItem.setImage(makeSafeUIPlaceholder())
-      let imageSource = self.image!.toImageSource()
-      loadUIImageAsync(from: imageSource) { uiImage in
-        if let uiImage = uiImage {
-          listItem.setImage(uiImage)
-        }
+      loadUIImage(from: image!, bytes: imageData, tint: imageTint) { uiImage in
+        listItem.setImage(uiImage)
       }
     }
+
+    let accessorySource = trailingImage ?? accessoryImage
+    if accessorySource != nil {
+      listItem.setAccessoryImage(makeSafeUIPlaceholder())
+      loadUIImage(from: accessorySource!, bytes: trailingImageData, tint: trailingImageTint) {
+        uiImage in
+        listItem.setAccessoryImage(uiImage)
+      }
+    }
+
     if playbackProgress != nil {
       listItem.playbackProgress = playbackProgress!
     }
@@ -69,7 +89,7 @@ final class FCPListItem {
     if playingIndicatorLocation != nil {
       listItem.playingIndicatorLocation = playingIndicatorLocation!
     }
-    if accessoryType != nil {
+    if accessoryType != nil && accessorySource == nil {
       listItem.accessoryType = accessoryType!
     }
     self._super = listItem
@@ -85,10 +105,15 @@ final class FCPListItem {
   }
 
   public func update(args: [String: Any]) {
-    let elementId = args["_elementId"] as! String
     let text = args["text"] as? String
     let detailText = args["detailText"] as? String
     let image = args["image"] as? String
+    let imageData = args["imageData"] as? FlutterStandardTypedData
+    let imageTint = FCPImageTint(from: args["imageTint"] as? [String: Any])
+    let accessoryImage = args["accessoryImage"] as? String
+    let trailingImage = args["trailingImage"] as? String
+    let trailingImageData = args["trailingImageData"] as? FlutterStandardTypedData
+    let trailingImageTint = FCPImageTint(from: args["trailingImageTint"] as? [String: Any])
     let playbackProgress = args["playbackProgress"] as? CGFloat
     let isPlaying = args["isPlaying"] as? Bool
     let playingIndicatorLocation = args["playingIndicatorLocation"] as? String
@@ -103,18 +128,48 @@ final class FCPListItem {
       self.detailText = detailText
     }
 
-    if let image = image, image != self.image {
+    let imageTintChanged = imageTint != self.imageTint
+    if let image = image, image != self.image || imageTintChanged {
       self._super?.setImage(makeSafeUIPlaceholder())
-      let imageSource = image.toImageSource()
-      loadUIImageAsync(from: imageSource) { uiImage in
-        if let uiImage = uiImage {
-          self._super?.setImage(uiImage)
-        }
+      loadUIImage(from: image, bytes: imageData, tint: imageTint) { uiImage in
+        self._super?.setImage(uiImage)
       }
       self.image = image
-    } else if image == nil {
+      self.imageData = imageData
+      self.imageTint = imageTint
+    } else if image == nil && args.keys.contains("image") {
       self.image = nil
+      self.imageData = nil
+      self.imageTint = nil
       self._super?.setImage(nil)
+    }
+
+    let requestedAccessoryImage = trailingImage ?? accessoryImage
+    let currentAccessoryImage = self.trailingImage ?? self.accessoryImage
+    let trailingImageTintChanged = trailingImageTint != self.trailingImageTint
+    if let requestedAccessoryImage = requestedAccessoryImage,
+      requestedAccessoryImage != currentAccessoryImage || trailingImageTintChanged
+    {
+      self._super?.setAccessoryImage(makeSafeUIPlaceholder())
+      loadUIImage(
+        from: requestedAccessoryImage,
+        bytes: trailingImageData,
+        tint: trailingImageTint
+      ) { uiImage in
+        self._super?.setAccessoryImage(uiImage)
+      }
+      self.accessoryImage = accessoryImage
+      self.trailingImage = trailingImage
+      self.trailingImageData = trailingImageData
+      self.trailingImageTint = trailingImageTint
+    } else if requestedAccessoryImage == nil
+      && (args.keys.contains("accessoryImage") || args.keys.contains("trailingImage"))
+    {
+      self.accessoryImage = nil
+      self.trailingImage = nil
+      self.trailingImageData = nil
+      self.trailingImageTint = nil
+      self._super?.setAccessoryImage(nil)
     }
 
     if playbackProgress != nil {
@@ -131,7 +186,7 @@ final class FCPListItem {
         self._super?.playingIndicatorLocation = self.playingIndicatorLocation!
       }
     }
-    if accessoryType != nil {
+    if accessoryType != nil && (self.trailingImage ?? self.accessoryImage) == nil {
       self.setAccessoryType(fromString: accessoryType)
       if self.accessoryType != nil {
         self._super?.accessoryType = self.accessoryType!

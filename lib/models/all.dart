@@ -6,5 +6,6 @@ export 'grid/all.dart';
 export 'information/all.dart';
 export 'list/all.dart';
 export 'poi/all.dart';
+export 'search/all.dart';
 export 'tabbar/all.dart';
 export 'template.dart';

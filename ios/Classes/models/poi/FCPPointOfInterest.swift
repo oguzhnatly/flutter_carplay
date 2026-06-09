@@ -6,6 +6,7 @@
 //
 
 import CarPlay
+import Flutter
 
 @available(iOS 14.0, *)
 class FCPPointOfInterest {
@@ -20,6 +21,8 @@ class FCPPointOfInterest {
   private var detailSubtitle: String?
   private var detailSummary: String?
   private var image: String?
+  private var imageData: FlutterStandardTypedData?
+  private var imageTint: FCPImageTint?
 
   private var primaryButton: CPTextButton?
   private var objcPrimaryButton: FCPTextButton?
@@ -44,6 +47,8 @@ class FCPPointOfInterest {
     self.detailSubtitle = obj["detailSubtitle"] as? String
     self.detailSummary = obj["detailSummary"] as? String
     self.image = obj["image"] as? String
+    self.imageData = obj["imageData"] as? FlutterStandardTypedData
+    self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
 
     let primaryButtonData = obj["primaryButton"] as? [String: Any]
     if primaryButtonData != nil {
@@ -66,19 +71,21 @@ class FCPPointOfInterest {
         coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)))
     var pinImage: UIImage? = nil
 
-    if let image = self.image {
+    if let bytesImage = makeUIImage(fromBytes: imageData) {
+      pinImage = bytesImage.applyingImageTint(imageTint)
+    } else if let image = self.image {
       let key = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: image)
 
-      pinImage = UIImage(named: key!)
-      if let pImage = pinImage {
-        if pImage.size.height > FCPPointOfInterest.maxPinImageSize
-          || pImage.size.width > FCPPointOfInterest.maxPinImageSize
-        {
-          pinImage = pImage.resizeImageTo(
-            size: CGSize(
-              width: FCPPointOfInterest.maxPinImageSize, height: FCPPointOfInterest.maxPinImageSize)
-          )
-        }
+      pinImage = UIImage(named: key!)?.applyingImageTint(imageTint)
+    }
+    if let pImage = pinImage {
+      if pImage.size.height > FCPPointOfInterest.maxPinImageSize
+        || pImage.size.width > FCPPointOfInterest.maxPinImageSize
+      {
+        pinImage = pImage.resizeImageTo(
+          size: CGSize(
+            width: FCPPointOfInterest.maxPinImageSize, height: FCPPointOfInterest.maxPinImageSize)
+        )
       }
     }
     let poi = CPPointOfInterest(

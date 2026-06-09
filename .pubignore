@@ -8,3 +8,10 @@ flutter_carplay.iml
 .vscode/
 .idea/
 example/pubspec.lock
+
+# Local build and tool output
+.dart_tool/
+build/
+coverage/
+pubspec.lock
+.flutter-plugins-dependencies

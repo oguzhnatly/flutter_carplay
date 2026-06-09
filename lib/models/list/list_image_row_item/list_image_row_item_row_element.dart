@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import '../../../controllers/carplay_controller.dart';
+import '../../common/image_tint.dart';
 import 'list_image_row_item_element.dart';
 
 /// https://developer.apple.com/documentation/carplay/cplistimagerowitemrowelement
@@ -10,9 +11,16 @@ class CPListImageRowItemRowElement implements CPListImageRowItemElement {
   final String _elementId;
 
   /// The image to display in the card.
+  ///
+  /// Accepts an asset path, an SVG Flutter asset (`.svg`, rasterized to PNG
+  /// before reaching the native side), a `file://` path, or a network URL.
+  /// Remote/`file://` SVGs are not supported.
   /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
   @override
   String image;
+
+  @override
+  AutoImageTint? imageTint;
 
   /// The title associated with this element.
   /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
@@ -25,6 +33,7 @@ class CPListImageRowItemRowElement implements CPListImageRowItemElement {
   /// Creates [CPListImageRowItemRowElement]
   CPListImageRowItemRowElement({
     required this.image,
+    this.imageTint,
     this.title,
     this.subtitle,
     String? id,
@@ -34,14 +43,22 @@ class CPListImageRowItemRowElement implements CPListImageRowItemElement {
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'image': image,
+        'imageTint': imageTint?.toJson(),
         'title': title,
         'subtitle': subtitle,
         'runtimeType': 'FCPListImageRowItemRowElement',
       };
 
   @override
-  void setImage(String image) {
+  void setImage(String image, {AutoImageTint? imageTint}) {
     this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
+    FlutterCarPlayController.updateCPListImageRowItemElement(this);
+  }
+
+  @override
+  void setImageTint(AutoImageTint? imageTint) {
+    this.imageTint = imageTint;
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }
 
@@ -57,10 +74,12 @@ class CPListImageRowItemRowElement implements CPListImageRowItemElement {
 
   void update({
     String? image,
+    AutoImageTint? imageTint,
     String? title,
     String? subtitle,
   }) {
     if (image != null) this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
     if (title != null) this.title = title;
     if (subtitle != null) this.subtitle = subtitle;
 

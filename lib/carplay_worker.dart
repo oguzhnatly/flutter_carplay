@@ -27,6 +27,12 @@ class FlutterCarplay {
   /// Current CarPlay and mobile app connection status.
   static String _connectionStatus = ConnectionStatusTypes.unknown.name;
 
+  /// The size (in logical pixels, square) used when rasterizing Flutter asset
+  /// SVGs referenced by image fields (e.g. `CPListItem.image`,
+  /// `CPGridButton.image`, `CPPoi.image`) before they are sent to the native
+  /// side. Defaults to [defaultSvgRasterSize] (120).
+  static int svgRasterSize = defaultSvgRasterSize;
+
   /// A listener function, which will be triggered when CarPlay connection changes
   /// and will be transmitted to the main code, allowing the user to access
   /// the current connection status.
@@ -91,6 +97,23 @@ class FlutterCarplay {
           break;
         case FCPChannelTypes.onTextButtonPressed:
           _carPlayController.processFCPTextButtonPressed(
+            event['data']['elementId'],
+          );
+          break;
+        case FCPChannelTypes.onSearchTextUpdated:
+          _carPlayController.processFCPSearchTextUpdated(
+            event['data']['elementId'],
+            event['data']['searchText'],
+          );
+          break;
+        case FCPChannelTypes.onSearchResultSelected:
+          _carPlayController.processFCPSearchResultSelected(
+            event['data']['elementId'],
+            event['data']['itemElementId'],
+          );
+          break;
+        case FCPChannelTypes.onSearchButtonPressed:
+          _carPlayController.processFCPSearchButtonPressed(
             event['data']['elementId'],
           );
           break;
@@ -170,7 +193,8 @@ class FlutterCarplay {
         rootTemplate is CPGridTemplate ||
         rootTemplate is CPListTemplate ||
         rootTemplate is CPInformationTemplate ||
-        rootTemplate is CPPointOfInterestTemplate) {
+        rootTemplate is CPPointOfInterestTemplate ||
+        rootTemplate is CPSearchTemplate) {
       return FlutterCarPlayController.flutterToNativeModule(
           FCPChannelTypes.setRootTemplate, <String, dynamic>{
         'rootTemplate': rootTemplate.toJson(),
@@ -394,7 +418,8 @@ class FlutterCarplay {
     if (template is CPGridTemplate ||
         template is CPListTemplate ||
         template is CPInformationTemplate ||
-        template is CPPointOfInterestTemplate) {
+        template is CPPointOfInterestTemplate ||
+        template is CPSearchTemplate) {
       final bool? isCompleted =
           await FlutterCarPlayController.flutterToNativeModule(
         FCPChannelTypes.pushTemplate,

@@ -10,7 +10,7 @@
 
 Flutter Apps now on Apple CarPlay and Android Auto ! `flutter_carplay` aims to make it safe to use apps made with Flutter in the car by integrating with CarPlay and Android Auto. The package takes the things you want to do while driving and puts them on the car's built-in display.
 
-**✨ New in v1.2.0**: Android Auto support with limited list of feature. First step to future improvements.
+**✨ New in v1.4.0**: CarPlay search templates, Android Auto message, long message, and pane templates, richer Android Auto lists, and Flutter asset SVG image support.
 
 **✨ New in v1.1.0**: CarPlay apps can now launch automatically without requiring the Flutter app to be opened first, supporting true background launch capabilities.
 
@@ -42,6 +42,7 @@ For detailed guides and examples, check out the **[Wiki](https://github.com/oguz
 - [Requesting the CarPlay Entitlements](#requesting-the-carplay-entitlements)
 - [Disclaimer Before The Installation](#disclaimer-before-the-installation)
 - [Get Started](#get-started)
+- [Android Auto vs Android Automotive OS](#android-auto-vs-android-automotive-os)
 - [Solve problems configuring your project](#solve-problems-configuring-your-project)
 - [Usage & Features](#usage--features)
 - [Templates](#templates-1)
@@ -82,6 +83,7 @@ https://developer.android.com/design/ui/cars/guides/templates/overview
 - [x] Tab Bar Template
 - [x] Information Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
 - [x] Point of Interest Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
+- [x] Search Template
 - [x] Now Playing Template (v1.1.0)
 
 By evaluating this information, you can request for the relevant entitlement from Apple.
@@ -92,9 +94,20 @@ By evaluating this information, you can request for the relevant entitlement fro
 - [x] Grid Template
 - [x] Tab Bar Template (requires Car App API level 6+)
 - [x] Alert Template
+- [x] Message Template
+- [x] Long Message Template
+- [x] Pane Template
 - [x] Now Playing Template (Automatically handled by Android Auto system)
 
 # What's New in latest versions
+
+## v1.4.0
+
+- **🔎 CarPlay Search Template**: Added `CPSearchTemplate` with search text, result selection, and search button callbacks
+- **🤖 More Android Auto Templates**: Added `AAMessageTemplate`, `AALongMessageTemplate`, and `AAPaneTemplate`, including update APIs
+- **🧾 Better Android Auto Lists**: Added stable IDs, section selection, toggles, browsable rows, and trailing images
+- **🖼️ Flutter Asset SVG Support**: Flutter asset SVGs are rasterized before reaching native CarPlay and Android Auto image fields
+- **📚 Android Auto Docs**: Clarified that Android Auto template rendering is different from Android Automotive OS apps
 
 ## v1.3.0
 
@@ -125,13 +138,13 @@ Other templates will be supported in the future releases by `flutter_carplay`.
 ## Car Play Road Map
 
 - [ ] Map Template
-- [ ] Search Template
+- [x] Search Template
 - [ ] Voice Control & "Hey Siri" for hands-free voice activation
 - [ ] Contact Template
 
 ## Android Auto Road Map
 - [ ] Action Sheet Template
-- [ ] Information Template
+- [x] Information Template via Pane Template
 - [ ] Point of Interest Template
 - [ ] Map Template
 - [ ] Search Template
@@ -343,6 +356,37 @@ Inside the `<application>` tag:
 
 For others use, please check official [Android Auto documentation](https://developer.android.com/training/cars/apps/auto).
 
+### Android Auto Message Template
+
+Use `AAMessageTemplate` for simple empty states, errors, or informational screens.
+
+```dart
+final template = AAMessageTemplate(
+  title: 'No saved places',
+  message: 'Save places on your phone to access them here.',
+);
+
+await FlutterAndroidAuto.setRootTemplate(template: template);
+
+await template.update(
+  title: 'Saved places synced',
+  message: 'Your saved places are now available in Android Auto.',
+);
+```
+
+Use `AALongMessageTemplate` for longer informational text that needs more room
+than a simple message template.
+
+```dart
+final template = AALongMessageTemplate(
+  title: 'Safety information',
+  message: 'Keep your attention on the road. This longer Android Auto message '
+      'template is intended for content that needs more space.',
+);
+
+await FlutterAndroidAuto.push(template: template);
+```
+
 4. In your `MainActivity.kt` file, make the necessary to resuse and cache the engine as follow :
 
 On Android Auto Service, use the same engine as the app if the app is already running, otherwise create a new one and cache using the id `FAAConstants.flutterEngineId`.
@@ -372,6 +416,23 @@ class MainActivity : FlutterActivity() {
 }
 ```
 
+## Android Auto vs Android Automotive OS
+
+Android Auto and Android Automotive OS (AAOS) are different targets:
+
+- **Android Auto** is a projected experience. The app runs on a phone, and the vehicle display is rendered by an Android Auto host using templates from the Android for Cars App Library. This is what `flutter_carplay` supports on Android.
+- **Android Automotive OS** is Android running directly in the vehicle. A Flutter app can be installed and launched on AAOS like any other Android app, but that opens the app's normal Android activity and shows the regular Flutter UI.
+
+`flutter_carplay` does not convert a Flutter app into a native AAOS app and does not render Android Auto templates when the app is opened normally on AAOS. The templates are rendered only by a compatible Android Auto host.
+
+In practice:
+
+- Use this package for Android Auto template apps.
+- Do not expect additional behavior for a normal Flutter app installed on AAOS.
+- If you are building a full native AAOS app, build and test the Flutter Android app UI directly for the vehicle environment instead of relying on Android Auto templates.
+
+For Android Auto testing from a phone emulator or device, use the Android Auto Desktop Head Unit instructions in the official [Android Auto testing documentation](https://developer.android.com/training/cars/testing).
+
 ## Solve problems configuring your project
 
 Take a look at [this detailed issue reply](https://github.com/oguzhnatly/flutter_carplay/issues/3#issuecomment-926146126) if you got any error.
@@ -384,13 +445,13 @@ To see a complete example for both CarPlay and Android Auto, check the example p
 
 ### Basic Usage for Android Auto
 
-- Import all the classes you need from a single file:
+Import all the classes you need from a single file:
 
 ```dart
 import 'package:flutter_carplay/flutter_carplay.dart';
 ```
 
-- Initialize the Android Auto controller and set a root template:
+Initialize the Android Auto controller and set a root template:
 
 ```dart
 final FlutterAndroidAuto _androidAuto = FlutterAndroidAuto();
@@ -399,17 +460,16 @@ await FlutterAndroidAuto.setRootTemplate(
   template: AATabBarTemplate(
     tabs: [
       AAListTemplate(
-        title: "Home",
-        tabTitle: "Home",
-        systemIcon: "house.fill",
+        title: 'Home',
+        tabTitle: 'Home',
+        systemIcon: 'house.fill',
         sections: [
           AAListSection(
             items: [
               AAListItem(
-                title: "Item 1",
-                subtitle: "Detail Text",
-                onPress: (complete, self) async {
-                  await Future.delayed(const Duration(seconds: 1));
+                title: 'Item 1',
+                subtitle: 'Detail Text',
+                onPress: (complete, self) {
                   complete();
                 },
               ),
@@ -427,16 +487,14 @@ await FlutterAndroidAuto.setRootTemplate(
 ### Listen Connection Changes for Android Auto
 
 ```dart
-/// Add the listener
 _androidAuto.addListenerOnConnectionChange(onAndroidAutoConnectionChange);
 
 void onAndroidAutoConnectionChange(ConnectionStatusTypes status) {
-  // - ConnectionStatusTypes.connected
-  // - ConnectionStatusTypes.disconnected
-  // - ConnectionStatusTypes.unknown
+  // ConnectionStatusTypes.connected
+  // ConnectionStatusTypes.disconnected
+  // ConnectionStatusTypes.unknown
 }
 
-/// Remove the listener
 _androidAuto.removeListenerOnConnectionChange();
 ```
 
@@ -446,11 +504,11 @@ _androidAuto.removeListenerOnConnectionChange();
 
 Sets the root template of the navigation hierarchy. If one already exists, it replaces it entirely.
 
-- `template` must be one of: **AATabBarTemplate**, **AAGridTemplate**, **AAListTemplate**.
+The template must be one of: **AATabBarTemplate**, **AAGridTemplate**, **AAListTemplate**, **AAPaneTemplate**, **AAMessageTemplate**, or **AALongMessageTemplate**.
 
 ```dart
 await FlutterAndroidAuto.setRootTemplate(
-  template: /* AATabBarTemplate, AAGridTemplate or AAListTemplate */,
+  template: /* Android Auto template */,
 );
 ```
 
@@ -458,35 +516,17 @@ await FlutterAndroidAuto.setRootTemplate(
 
 Adds a template to the navigation hierarchy and displays it.
 
-- `template` must be one of: **AAGridTemplate**, **AAListTemplate**.
-
-> Android Auto limits the navigation stack to 5 templates in depth, including the root template.
+The template must be one of: **AAGridTemplate**, **AAListTemplate**, **AAPaneTemplate**, **AAMessageTemplate**, or **AALongMessageTemplate**.
 
 ```dart
 await FlutterAndroidAuto.push(
-  template: /* AAGridTemplate or AAListTemplate */,
+  template: /* Android Auto template */,
 );
-```
-
-#### **FlutterAndroidAuto.pop**
-
-Removes the top-most template from the navigation hierarchy.
-
-```dart
-await FlutterAndroidAuto.pop();
-```
-
-#### **FlutterAndroidAuto.popToRoot**
-
-Removes all templates from the navigation hierarchy except the root template.
-
-```dart
-await FlutterAndroidAuto.popToRoot();
 ```
 
 #### **FlutterAndroidAuto.showAlert**
 
-Presents an `AAAlertTemplate` as a full-screen modal. Because Android Auto does not support true overlay modals, the alert is pushed onto the navigation stack as a `MessageTemplate`.
+Presents an `AAAlertTemplate` as a full-screen modal. Android Auto does not support true overlay modals, so the alert is pushed onto the navigation stack as a `MessageTemplate`.
 
 ```dart
 await FlutterAndroidAuto.showAlert(template: alertTemplate);
@@ -502,21 +542,55 @@ await FlutterAndroidAuto.popModal();
 
 #### **FlutterAndroidAuto.updateTabBarTemplates**
 
-Updates the tabs of the currently displayed `AATabBarTemplate` without rebuilding the root.
+Updates the tabs of the currently displayed `AATabBarTemplate` without rebuilding the root from Dart.
 
 ```dart
 await FlutterAndroidAuto.updateTabBarTemplates(template: updatedTabBarTemplate);
 ```
 
-#### **FlutterAndroidAuto.connectionStatus**
+#### **FlutterAndroidAuto.updatePaneTemplate**
 
-Getter for the current Android Auto connection status.
+Updates an existing `AAPaneTemplate` and invalidates its Android Auto screen.
 
 ```dart
-FlutterAndroidAuto.connectionStatus // returns a ConnectionStatusTypes as String
+await FlutterAndroidAuto.updatePaneTemplate(template: paneTemplate);
 ```
 
----
+### Android Auto Pane Template
+
+Use `AAPaneTemplate` for compact informational screens on Android Auto. It maps to Android's native `PaneTemplate` and is the closest Android equivalent for CarPlay-style information screens.
+
+```dart
+await FlutterAndroidAuto.push(
+  template: AAPaneTemplate(
+    title: 'Vehicle Info',
+    items: [
+      AAPaneItem(title: 'Battery', detail: '82%'),
+      AAPaneItem(
+        title: 'Navigation',
+        detail: 'Route ready',
+        imageUrl: 'images/svg_navigation.svg',
+        imageTint: const AutoImageTint.platform(),
+      ),
+    ],
+    actions: [
+      AAPaneAction(
+        title: 'Refresh',
+        isPrimary: true,
+        onPress: () {
+          // Refresh content.
+        },
+      ),
+    ],
+  ),
+);
+```
+
+Pane rows are informational on Android and cannot be tapped. Use pane actions for user interaction.
+
+### Flutter Asset SVG Images
+
+Flutter asset SVGs can be used in image fields such as `CPListItem.image`, `CPGridButton.image`, `CPPointOfInterest.image`, `CPListImageRowItem` image collections, `AAListItem.imageUrl`, and `AAPaneTemplate` image fields. The package rasterizes local `.svg` assets to PNG bytes before sending them to the native CarPlay or Android Auto layer. Remote SVG URLs and `file://` SVGs are not rasterized.
 
 ### Basic Usage for Car Play
 
@@ -541,8 +615,10 @@ await FlutterCarplay.setRootTemplate(
               CPListItem(
                 text: "Item 1",
                 detailText: "Detail Text",
+                accessoryImage: 'images/logo_flutter_1080px_clr.png',
                 onPress: (complete, self) {
                   self.setDetailText("You can change the detail text.. 🚀");
+                  self.setAccessoryImage('images/logo_flutter_1080px_clr.png');
                   Future.delayed(const Duration(seconds: 1), () {
                     self.setDetailText("Customizable Detail Text");
                     complete();
@@ -564,9 +640,79 @@ await FlutterCarplay.setRootTemplate(
 _flutterCarplay.forceUpdateRootTemplate();
 ```
 
+### CarPlay Search Template
+
+Use `CPSearchTemplate` when your CarPlay app needs a native search screen. Return result rows from `onUpdatedSearchText`, handle row selection in `onSelectedResult`, and call the provided completion callback after your app finishes handling the selected result.
+
+```dart
+await FlutterCarplay.push(
+  template: CPSearchTemplate(
+    onUpdatedSearchText: (searchText, update) {
+      update([
+        CPListItem(
+          text: 'Result for $searchText',
+          detailText: 'Tap to select',
+        ),
+      ]);
+    },
+    onSelectedResult: (selectedItem, complete) {
+      complete();
+    },
+  ),
+);
+```
+
 > You can set a root template without initializing the CarPlay Controllers, but some callback functions may not work or most likely you will get an error.
 
 > It's recommended that you should set the root template in the first initState of your app.
+
+### Basic Usage for Android Auto
+
+Android Auto row/list affordances follow the AndroidX Car App API names. Selectable lists render radio buttons on every row, `isBrowsable` renders the system navigation affordance, and `toggle` renders a switch in the row.
+
+```dart
+final FlutterAndroidAuto flutterAndroidAuto = FlutterAndroidAuto();
+
+await FlutterAndroidAuto.setRootTemplate(
+  template: AAListTemplate(
+    title: 'Home',
+    sections: [
+      AAListSection(
+        selectedIndex: 0,
+        onSelected: (selectedIndex, selectedItem) {
+          print('Selected $selectedIndex: ${selectedItem.title}');
+        },
+        items: [
+          AAListItem(title: 'Radio option 1'),
+          AAListItem(title: 'Radio option 2'),
+        ],
+      ),
+      AAListSection(
+        title: 'Rows',
+        items: [
+          AAListItem(
+            title: 'Open details',
+            isBrowsable: true,
+            onPress: (complete, item) {
+              complete();
+            },
+          ),
+          AAListItem(
+            title: 'Toggle item',
+            toggle: AAToggle(
+              isChecked: true,
+              onCheckedChange: (checked, item) {
+                print('${item.title}: $checked');
+              },
+            ),
+          ),
+        ],
+      ),
+    ],
+  ),
+);
+flutterAndroidAuto.forceUpdateRootTemplate();
+```
 
 ### Listen Connection Changes
 
@@ -597,7 +743,7 @@ hierarchy already exists, CarPlay replaces the entire hierarchy.
 
 - rootTemplate is a template to use as the root of a new navigation hierarchy. If one exists,
   it will replace the current rootTemplate. **Must be one of the type:**
-  **CPTabBarTemplate**, **CPGridTemplate**, **CPListTemplate**. If not, it will throw an **TypeError**.
+  **CPTabBarTemplate**, **CPGridTemplate**, **CPListTemplate**, **CPInformationTemplate**, **CPPointOfInterestTemplate**, or **CPSearchTemplate**. If not, it will throw a **TypeError**.
 - If animated is true, CarPlay animates the presentation of the template, but will be ignored
   this flag when there isn’t an existing navigation hierarchy to replace.
 
@@ -605,7 +751,7 @@ hierarchy already exists, CarPlay replaces the entire hierarchy.
 
 ```dart
 FlutterCarplay.setRootTemplate(
-  rootTemplate: /* CPTabBarTemplate, CPGridTemplate or CPListTemplate */,
+  rootTemplate: /* CPTabBarTemplate, CPGridTemplate, CPListTemplate, CPInformationTemplate, CPPointOfInterestTemplate, or CPSearchTemplate */,
   animated: true,
 );
 // You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
@@ -615,14 +761,14 @@ FlutterCarplay.setRootTemplate(
 
 Adds a template to the navigation hierarchy and displays it.
 
-- template is to add to the navigation hierarchy. **Must be one of the type:** **CPGridTemplate**, **CPListTemplate**. If not, it will throw an **TypeError**.
+- template is to add to the navigation hierarchy. **Must be one of the type:** **CPGridTemplate**, **CPListTemplate**, **CPInformationTemplate**, **CPPointOfInterestTemplate**, or **CPSearchTemplate**. If not, it will throw a **TypeError**.
 - If animated is true, CarPlay animates the transition between templates.
 
 > There is a limit to the number of templates that you can push onto the screen. All apps are limited to pushing up to 5 templates in depth, including the root template.
 
 ```dart
 FlutterCarplay.push(
-  template: /* CPGridTemplate or CPListTemplate */,
+  template: /* CPGridTemplate, CPListTemplate, CPInformationTemplate, CPPointOfInterestTemplate, or CPSearchTemplate */,
   animated: true,
 );
 ```
@@ -886,6 +1032,7 @@ final CPListTemplate listTemplate = CPListTemplate(
             complete();
           },
           image: 'images/logo_flutter_1080px_clr.png',
+          accessoryImage: 'images/logo_flutter_1080px_clr.png',
         ),
         CPListItem(
           text: "Item 2",

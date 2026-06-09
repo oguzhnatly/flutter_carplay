@@ -31,6 +31,11 @@ enum FCPChannelTypes {
   getMaximumNumberOfGridImages,
   getMaximumSectionCount,
   getMaximumItemCount,
+  onSearchTextUpdated,
+  onSearchResultSelected,
+  onSearchButtonPressed,
+  updateSearchResults,
+  onSearchResultSelectedComplete,
 }
 
 enum FAAChannelTypes {
@@ -40,8 +45,13 @@ enum FAAChannelTypes {
   pushTemplate,
   popTemplate,
   popToRootTemplate,
+  updateListTemplateSections,
+  updatePaneTemplate,
   onListItemSelected,
   onListItemSelectedComplete,
+  onListSectionSelected,
+  onToggleCheckedChange,
+  onPaneActionPressed,
   onScreenBackButtonPressed,
   setAlert,
   closePresent,
@@ -51,4 +61,6 @@ enum FAAChannelTypes {
   onTabBarItemSelected,
   onGridButtonPressed,
   onGridButtonSelectedComplete,
+  updateMessageTemplate,
+  updateLongMessageTemplate,
 }

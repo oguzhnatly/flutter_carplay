@@ -4,6 +4,8 @@ data class FAAListSection(
     val elementId: String,
     val title: String,
     val items: List<FAAListItem>,
+    val selectedIndex: Int? = null,
+    val isOnSelectedListenerActive: Boolean = false,
 ) {
     companion object {
         fun fromJson(map: Map<String, Any?>): FAAListSection {
@@ -13,8 +15,13 @@ data class FAAListSection(
                 (it as? Map<*, *>)?.mapKeys { entry -> entry.key.toString() }
                     ?.let { FAAListItem.fromJson(it) }
             } ?: emptyList()
+            val selectedIndex = map["selectedIndex"] as? Int
+            val isOnSelectedListenerActive =
+                map["onSelected"] as? Boolean ?: false
 
-            return FAAListSection(elementId, title, items)
+            return FAAListSection(
+                elementId, title, items, selectedIndex, isOnSelectedListenerActive
+            )
         }
     }
 }

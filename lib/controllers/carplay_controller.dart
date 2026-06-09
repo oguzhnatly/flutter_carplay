@@ -34,6 +34,11 @@ class FlutterCarPlayController {
     FCPChannelTypes type, [
     dynamic data,
   ]) async {
+    // Rasterize any Flutter asset SVGs referenced by image fields into PNG
+    // bytes before sending the payload to the native side, which cannot render
+    // SVG directly. Non-collection payloads pass through unchanged.
+    await resolveSvgInPayload(data, size: FlutterCarplay.svgRasterSize);
+
     final value = await _methodChannel.invokeMethod<bool>(
       type.name,
       data,
@@ -212,7 +217,8 @@ class FlutterCarPlayController {
         template is CPGridTemplate ||
         template is CPInformationTemplate ||
         template is CPPointOfInterestTemplate ||
-        template is CPListTemplate) {
+        template is CPListTemplate ||
+        template is CPSearchTemplate) {
       templateHistory.add(template);
     } else {
       throw TypeError();
@@ -231,7 +237,11 @@ class FlutterCarPlayController {
           FCPChannelTypes.onFCPListItemSelectedComplete, item.uniqueId);
     }
 
-    await item.onPress?.call(complete, item).catchError((_) => complete());
+    try {
+      await Future.sync(() => item.onPress?.call(complete, item));
+    } catch (_) {
+      await complete();
+    }
   }
 
   Future<void> processFCPListImageRowItemSelectedChannel(
@@ -248,7 +258,11 @@ class FlutterCarPlayController {
           FCPChannelTypes.onFCPListImageRowItemSelectedComplete, item.uniqueId);
     }
 
-    await item.onPress?.call(complete, item).catchError((_) => complete());
+    try {
+      await Future.sync(() => item.onPress?.call(complete, item));
+    } catch (_) {
+      await complete();
+    }
   }
 
   Future<void> processFCPListImageRowItemElementSelectedChannel(
@@ -261,13 +275,19 @@ class FlutterCarPlayController {
     );
 
     if (item is! CPListImageRowItem) return;
-    void complete() {
-      flutterToNativeModule(
-          FCPChannelTypes.onFCPListImageRowItemElementSelectedComplete,
-          item.uniqueId);
+
+    Future<void> complete() async {
+      await flutterToNativeModule(
+        FCPChannelTypes.onFCPListImageRowItemElementSelectedComplete,
+        item.uniqueId,
+      );
     }
 
-    await item.onPress?.call(complete, item).catchError((_) => complete());
+    try {
+      await Future.sync(() => item.onItemPress?.call(complete, item, index));
+    } catch (_) {
+      await complete();
+    }
   }
 
   void processFCPAlertActionPressed(String elementId) {
@@ -347,6 +367,63 @@ class FlutterCarPlayController {
             }
           }
         }
+      }
+    }
+  }
+
+  void processFCPSearchTextUpdated(String elementId, String searchText) {
+    for (var t in templateHistory) {
+      if (t is CPSearchTemplate && t.uniqueId == elementId) {
+        t.onUpdatedSearchText?.call(
+          searchText,
+          (List<CPListItem> results) {
+            t.updateResults(results);
+            final items = results.map((e) => e.toJson()).toList();
+            FlutterCarPlayController.flutterToNativeModule(
+              FCPChannelTypes.updateSearchResults,
+              <String, dynamic>{
+                'elementId': elementId,
+                'searchResults': items,
+              },
+            );
+          },
+        );
+        return;
+      }
+    }
+  }
+
+  void processFCPSearchResultSelected(String elementId, String itemElementId) {
+    for (var t in templateHistory) {
+      if (t is CPSearchTemplate && t.uniqueId == elementId) {
+        CPListItem? selectedItem;
+        for (var item in t.currentResults) {
+          if (item.uniqueId == itemElementId) {
+            selectedItem = item;
+            break;
+          }
+        }
+        if (selectedItem != null) {
+          t.onSelectedResult?.call(
+            selectedItem,
+            () {
+              FlutterCarPlayController.flutterToNativeModule(
+                FCPChannelTypes.onSearchResultSelectedComplete,
+                <String, dynamic>{'elementId': elementId},
+              );
+            },
+          );
+        }
+        return;
+      }
+    }
+  }
+
+  void processFCPSearchButtonPressed(String elementId) {
+    for (var t in templateHistory) {
+      if (t is CPSearchTemplate && t.uniqueId == elementId) {
+        t.onSearchTemplateSearchButtonPressed?.call();
+        return;
       }
     }
   }

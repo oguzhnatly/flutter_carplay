@@ -22,14 +22,8 @@ class AAListTemplate implements AATemplate {
   final String? tabTitle;
 
   /// Icon displayed in the tab when this template is used inside an
-  /// [AATabBarTemplate]. Supports three formats:
-  ///
-  /// - System icon name (e.g., "star", "map") — mapped to a
-  /// built-in [CarIcon] from the Car App Library.
-  /// - Flutter asset (e.g., "images/logo.png") — loaded via the
-  /// APK AssetManager.
-  /// - Local file (e.g., "file:///path/to/icon.png") — read from disk.
-  /// - Network URL (e.g., "https://example.com/icon.png") — downloaded asynchronously.
+  /// [AATabBarTemplate]. Supports mapped system icon names, Flutter assets,
+  /// local files, and network URLs.
   ///
   /// When [iconUrl] is also set, [iconUrl] takes precedence.
   final String? systemIcon;
@@ -62,4 +56,11 @@ class AAListTemplate implements AATemplate {
         'systemIcon': systemIcon,
         'iconUrl': iconUrl,
       };
+
+  void updateSections(List<AAListSection> newSections) {
+    final copy = List<AAListSection>.from(newSections);
+    sections
+      ..clear()
+      ..addAll(copy);
+  }
 }
