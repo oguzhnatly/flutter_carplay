@@ -1,5 +1,7 @@
 import 'package:uuid/uuid.dart';
 
+import '../common/image_tint.dart';
+
 /// A menu item button displayed on a grid template.
 /// https://developer.apple.com/documentation/carplay/cpgridbutton
 /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
@@ -17,8 +19,10 @@ class CPGridButton {
 
   /// The image displayed on the button.
   ///
-  /// Supports three formats:
+  /// Supports these formats:
   /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
+  /// - **SVG asset**: `images/icon.svg` (rasterized to PNG before being sent to
+  ///   the native side; remote/`file://` SVGs are not supported)
   /// - **File path**: `file:///path/to/image.png` (local file on device)
   /// - **Network URL**: `https://example.com/image.png` (remote image)
   ///
@@ -26,6 +30,9 @@ class CPGridButton {
   /// uses the first image in the animation sequence.**
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   final String image;
+
+  /// Optional tint applied to [image].
+  final AutoImageTint? imageTint;
 
   /// The block invoked after the user taps the button.
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
@@ -35,6 +42,7 @@ class CPGridButton {
   CPGridButton({
     required this.titleVariants,
     required this.image,
+    this.imageTint,
     this.onPress,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
@@ -43,6 +51,7 @@ class CPGridButton {
         '_elementId': _elementId,
         'titleVariants': titleVariants,
         'image': image,
+        'imageTint': imageTint?.toJson(),
         'onPress': onPress != null ? true : false,
         'runtimeType': 'FCPGridButton',
       };

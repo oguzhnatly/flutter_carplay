@@ -5,7 +5,64 @@
 //  Created by Oğuzhan Atalay on 21.08.2021.
 //
 
+import Flutter
 import UIKit
+
+private let fcpTintedImageCache = NSCache<NSString, UIImage>()
+
+// Creates a UIImage from raw PNG bytes sent over the MethodChannel.
+// Used for Flutter asset SVGs that are rasterized to PNG on the Dart side,
+// since UIImage cannot decode SVG directly. Returns nil when the data is
+// missing or cannot be decoded so callers can fall back to string resolution.
+func makeUIImage(fromBytes data: FlutterStandardTypedData?) -> UIImage? {
+  guard let data = data else { return nil }
+  return UIImage(data: data.data)
+}
+
+@available(iOS 14.0, *)
+func loadUIImage(
+  from imagePath: String,
+  bytes imageData: FlutterStandardTypedData?,
+  tint imageTint: FCPImageTint? = nil,
+  completion: @escaping (UIImage) -> Void
+) {
+  let cacheKey = makeTintedImageCacheKey(imagePath: imagePath, imageData: imageData, tint: imageTint)
+  if let cacheKey = cacheKey,
+    let cachedImage = fcpTintedImageCache.object(forKey: cacheKey as NSString)
+  {
+    completion(cachedImage)
+    return
+  }
+
+  func complete(_ image: UIImage) {
+    let result = image.applyingImageTint(imageTint)
+    if let cacheKey = cacheKey {
+      fcpTintedImageCache.setObject(result, forKey: cacheKey as NSString)
+    }
+    completion(result)
+  }
+
+  if let bytesImage = makeUIImage(fromBytes: imageData) {
+    complete(bytesImage)
+    return
+  }
+
+  loadUIImageAsync(from: imagePath.toImageSource()) { uiImage in
+    if let uiImage = uiImage {
+      complete(uiImage)
+    }
+  }
+}
+
+private func makeTintedImageCacheKey(
+  imagePath: String,
+  imageData: FlutterStandardTypedData?,
+  tint imageTint: FCPImageTint?
+) -> String? {
+  guard let imageTint = imageTint else { return nil }
+  let bytesKey = imageData.map { "\($0.data.count):\($0.data.hashValue)" } ?? "nil"
+  return [imagePath, bytesKey, imageTint.cacheKey].joined(separator: "|")
+}
 
 // Image Source (no UIImage creation here)
 enum ImageSource {
@@ -177,6 +234,65 @@ extension UIImage {
     return renderer.image { _ in
       draw(in: CGRect(origin: .zero, size: size))
     }
+  }
+
+  func applyingImageTint(_ tint: FCPImageTint?) -> UIImage {
+    guard let tint = tint else { return self }
+
+    let lightTrait = UITraitCollection(userInterfaceStyle: .light)
+    let darkTrait = UITraitCollection(userInterfaceStyle: .dark)
+    let lightImage = tintedGlyph(
+      with: tint.color(for: .light).resolvedColor(with: lightTrait),
+      selectedSafe: tint.selectedSafe
+    )
+    let darkImage = tintedGlyph(
+      with: tint.color(for: .dark).resolvedColor(with: darkTrait),
+      selectedSafe: tint.selectedSafe
+    )
+
+    let imageAsset = UIImageAsset()
+    imageAsset.register(lightImage, with: lightTrait)
+    imageAsset.register(darkImage, with: darkTrait)
+    return imageAsset.image(with: UITraitCollection.current).withRenderingMode(.alwaysOriginal)
+  }
+
+  private func tintedGlyph(with color: UIColor, selectedSafe: Bool) -> UIImage {
+    let format = UIGraphicsImageRendererFormat()
+    format.scale = scale
+    format.opaque = false
+
+    let renderer = UIGraphicsImageRenderer(size: size, format: format)
+    let rect = CGRect(origin: .zero, size: size)
+    let glyph = renderer.image { _ in
+      color.setFill()
+      UIRectFill(rect)
+      draw(in: rect, blendMode: .destinationIn, alpha: 1)
+    }.withRenderingMode(.alwaysOriginal)
+
+    guard selectedSafe else { return glyph }
+
+    return renderer.image { context in
+      let shadowColor = contrastColor(for: color).cgColor
+      let blur = max(1, min(size.width, size.height) * 0.06)
+      context.cgContext.setShadow(offset: .zero, blur: blur, color: shadowColor)
+      glyph.draw(in: rect)
+      context.cgContext.setShadow(offset: .zero, blur: 0, color: nil)
+      glyph.draw(in: rect)
+    }.withRenderingMode(.alwaysOriginal)
+  }
+
+  private func contrastColor(for color: UIColor) -> UIColor {
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
+    var alpha: CGFloat = 0
+    color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+    let luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue
+    if luminance > 0.55 {
+      return UIColor.black.withAlphaComponent(0.85)
+    }
+    return UIColor.white.withAlphaComponent(0.95)
   }
 }
 

@@ -34,6 +34,11 @@ class FlutterCarPlayController {
     FCPChannelTypes type, [
     dynamic data,
   ]) async {
+    // Rasterize any Flutter asset SVGs referenced by image fields into PNG
+    // bytes before sending the payload to the native side, which cannot render
+    // SVG directly. Non-collection payloads pass through unchanged.
+    await resolveSvgInPayload(data, size: FlutterCarplay.svgRasterSize);
+
     final value = await _methodChannel.invokeMethod<bool>(
       type.name,
       data,

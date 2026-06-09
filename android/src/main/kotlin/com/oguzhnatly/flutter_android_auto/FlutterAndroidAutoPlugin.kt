@@ -315,6 +315,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
             (it as? Map<*, *>)?.mapKeys { entry -> entry.key.toString() }
                 ?.let { FAAListSection.fromJson(it) }
         } ?: emptyList()
+        val carContext = AndroidAutoService.session?.carContext
         val listTemplateBuilder =
             ListTemplate.Builder().setTitle(title)
 
@@ -327,12 +328,12 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
             if (isSingleList) {
                 listTemplateBuilder.setSingleList(
-                    createItemListFromSection(sections.first())
+                    createItemListFromSection(carContext, sections.first())
                 )
             } else {
                 for (section in sections) {
                     val sectionedItemList = SectionedItemList.create(
-                        createItemListFromSection(section), section.title ?: ""
+                        createItemListFromSection(carContext, section), section.title ?: ""
                     )
                     listTemplateBuilder.addSectionedList(sectionedItemList)
                 }
@@ -346,14 +347,21 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         return listTemplateBuilder.build()
     }
 
-    private suspend fun createItemListFromSection(section: FAAListSection): ItemList {
+    private suspend fun createItemListFromSection(
+        carContext: CarContext?,
+        section: FAAListSection
+    ): ItemList {
         val itemListBuilder = ItemList.Builder()
         val useSelectionListener =
             section.isOnSelectedListenerActive || section.selectedIndex != null
 
         for (item in section.items) {
             itemListBuilder.addItem(
-                createRowFromItem(item, enableOnClick = !useSelectionListener)
+                createRowFromItem(
+                    carContext,
+                    item,
+                    enableOnClick = !useSelectionListener
+                )
             )
         }
 
@@ -382,6 +390,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
     // Helper function to create a Row from an FAAListItem, avoiding code duplication
     private suspend fun createRowFromItem(
+        carContext: CarContext?,
         item: FAAListItem,
         enableOnClick: Boolean = true
     ): Row {
@@ -389,10 +398,34 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         item.subtitle?.let { rowBuilder.addText(CarText.create(it)) }
 
-        item.imageUrl?.let {
-            loadCarImageAsync(it)?.let { carIcon ->
-                rowBuilder.setImage(carIcon)
+        val imageIcon = makeCarIconFromBytes(item.imageData, item.imageTint)
+            ?: if (carContext != null && item.imageUrl != null) {
+                resolveCarIcon(carContext, null, item.imageUrl, item.imageTint)
+            } else {
+                null
             }
+        if (imageIcon != null) {
+            rowBuilder.setImage(
+                imageIcon,
+                if (item.imageTint != null) Row.IMAGE_TYPE_ICON else Row.IMAGE_TYPE_SMALL
+            )
+        }
+
+        val trailingIcon = makeCarIconFromBytes(
+            item.trailingImageData,
+            item.trailingImageTint
+        ) ?: if (carContext != null && item.trailingImage != null) {
+            resolveCarIcon(
+                carContext,
+                null,
+                item.trailingImage,
+                item.trailingImageTint
+            )
+        } else {
+            null
+        }
+        if (trailingIcon != null) {
+            rowBuilder.addAction(Action.Builder().setIcon(trailingIcon).build())
         }
 
         item.isBrowsable?.let {

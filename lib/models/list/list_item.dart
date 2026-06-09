@@ -1,4 +1,5 @@
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
+import 'package:flutter_carplay/models/common/image_tint.dart';
 import 'package:flutter_carplay/models/list/list_constants.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,21 +18,33 @@ class CPListItem extends CPListTemplateItem {
 
   /// The image that the list item displays in its leading region.
   ///
-  /// Supports three formats:
-  /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
-  /// - **File path**: `file:///path/to/image.png` (local file on device)
-  /// - **Network URL**: `https://example.com/image.png` (remote image)
+  /// Supports these formats:
+  /// * Asset path: `images/flutter_logo.png` from pubspec.yaml assets
+  /// * SVG asset: `images/icon.svg` rasterized to PNG before native display
+  /// * File path: `file:///path/to/image.png` local file on device
+  /// * Network URL: `https://example.com/image.png` remote image
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   String? image;
 
+  /// Optional tint applied to [image]. Use [AutoImageTint.platform] when the
+  /// host should choose a selected or focused row safe color.
+  AutoImageTint? imageTint;
+
+  /// Backward compatible trailing accessory image.
+  ///
+  /// New code should prefer [trailingImage], which also supports SVG assets and
+  /// tint metadata.
+  String? accessoryImage;
+
   /// The image that the list item displays in its trailing region.
   ///
-  /// Supports three formats:
-  /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
-  /// - **File path**: `file:///path/to/image.png` (local file on device)
-  /// - **Network URL**: `https://example.com/image.png` (remote image)
-  /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
-  String? accessoryImage;
+  /// This maps to CarPlay's `accessoryImage` and takes precedence over
+  /// [accessoryImage] and [accessoryType]. Use it for state indicators while
+  /// keeping [image] for the leading user selected icon.
+  String? trailingImage;
+
+  /// Optional tint applied to [trailingImage].
+  AutoImageTint? trailingImageTint;
 
   /// The playback progress status for the content that the list item represents.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
@@ -63,7 +76,10 @@ class CPListItem extends CPListTemplateItem {
     this.detailText,
     this.onPress,
     this.image,
+    this.imageTint,
     this.accessoryImage,
+    this.trailingImage,
+    this.trailingImageTint,
     this.playbackProgress,
     this.isPlaying,
     this.playingIndicatorLocation,
@@ -73,18 +89,21 @@ class CPListItem extends CPListTemplateItem {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'text': text,
-        'detailText': detailText,
-        'onPress': onPress != null ? true : false,
-        'image': image,
-        'accessoryImage': accessoryImage,
-        'playbackProgress': playbackProgress,
-        'isPlaying': isPlaying,
-        'playingIndicatorLocation': playingIndicatorLocation?.name,
-        'accessoryType': accessoryType?.name,
-        'runtimeType': 'FCPListItem',
-      };
+    '_elementId': _elementId,
+    'text': text,
+    'detailText': detailText,
+    'onPress': onPress != null ? true : false,
+    'image': image,
+    'imageTint': imageTint?.toJson(),
+    'accessoryImage': accessoryImage,
+    'trailingImage': trailingImage,
+    'trailingImageTint': trailingImageTint?.toJson(),
+    'playbackProgress': playbackProgress,
+    'isPlaying': isPlaying,
+    'playingIndicatorLocation': playingIndicatorLocation?.name,
+    'accessoryType': accessoryType?.name,
+    'runtimeType': 'FCPListItem',
+  };
 
   /// Updating the list item's primary text.
   void setText(String text) {
@@ -100,12 +119,35 @@ class CPListItem extends CPListTemplateItem {
 
   /// Updating the image which will be displayed on the leading edge of the list item cell.
   ///
-  /// Supports three formats:
-  /// - **Asset path**: `images/flutter_logo.png` (from pubspec.yaml assets)
-  /// - **File path**: `file:///path/to/image.png` (local file on device)
-  /// - **Network URL**: `https://example.com/image.png` (remote image)
-  void setImage(String image) {
+  /// Supports these formats:
+  /// * Asset path: `images/flutter_logo.png` from pubspec.yaml assets
+  /// * SVG asset: `images/icon.svg` rasterized to PNG before native display
+  /// * File path: `file:///path/to/image.png` local file on device
+  /// * Network URL: `https://example.com/image.png` remote image
+  void setImage(String image, {AutoImageTint? imageTint}) {
     this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
+  /// Updates the tint applied to [image]. Pass `null` to remove the tint.
+  void setImageTint(AutoImageTint? imageTint) {
+    this.imageTint = imageTint;
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
+  /// Updating the image displayed on the trailing edge of the list item cell.
+  ///
+  /// See [trailingImage] for supported formats, including SVG Flutter assets.
+  void setTrailingImage(String trailingImage, {AutoImageTint? imageTint}) {
+    this.trailingImage = trailingImage;
+    if (imageTint != null) trailingImageTint = imageTint;
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
+  /// Updates the tint applied to [trailingImage]. Pass `null` to remove it.
+  void setTrailingImageTint(AutoImageTint? imageTint) {
+    trailingImageTint = imageTint;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
@@ -152,7 +194,10 @@ class CPListItem extends CPListTemplateItem {
     String? text,
     String? detailText,
     String? image,
+    AutoImageTint? imageTint,
     String? accessoryImage,
+    String? trailingImage,
+    AutoImageTint? trailingImageTint,
     double? playbackProgress,
     bool? isPlaying,
     CPListItemPlayingIndicatorLocation? playingIndicatorLocation,
@@ -161,7 +206,10 @@ class CPListItem extends CPListTemplateItem {
     if (text != null) this.text = text;
     if (detailText != null) this.detailText = detailText;
     if (image != null) this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
     if (accessoryImage != null) this.accessoryImage = accessoryImage;
+    if (trailingImage != null) this.trailingImage = trailingImage;
+    if (trailingImageTint != null) this.trailingImageTint = trailingImageTint;
     if (playbackProgress != null) {
       if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
         this.playbackProgress = playbackProgress;

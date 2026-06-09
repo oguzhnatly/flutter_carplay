@@ -29,10 +29,10 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   static private var interfaceController: CPInterfaceController?
 
   static public func forceUpdateRootTemplate() {
-    let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
+    guard let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate else { return }
     let animated = SwiftFlutterCarplayPlugin.animated
 
-    self.interfaceController?.setRootTemplate(rootTemplate!, animated: animated)
+    self.interfaceController?.setRootTemplate(rootTemplate, animated: animated)
   }
 
   // https://developer.apple.com/documentation/carplay/cplisttemplate/updatesections(_:)

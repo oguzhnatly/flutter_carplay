@@ -5,7 +5,9 @@ import '../aa_models/list/list_item.dart';
 import '../aa_models/list/list_section.dart';
 import '../aa_models/list/list_template.dart';
 import '../aa_models/template.dart';
+import '../android_auto_worker.dart';
 import '../helpers/auto_android_helper.dart';
+import '../helpers/svg_rasterizer.dart';
 
 /// [FlutterAndroidAutoController] is an root object in order to control and communication
 /// system with the Android Auto and native functions.
@@ -36,61 +38,12 @@ class FlutterAndroidAutoController {
     FAAChannelTypes type, [
     dynamic data,
   ]) async {
-    final bool? value = await _methodChannel.invokeMethod<bool>(
-      type.name,
-      data,
-    );
-    return value;
-  }
+    // Rasterize any Flutter asset SVGs referenced by image fields (e.g.
+    // AAListItem.imageUrl) into PNG bytes before sending the payload to the
+    // native side, which cannot render SVG directly. Non-collection payloads
+    // pass through unchanged.
+    await resolveSvgInPayload(data, size: FlutterAndroidAuto.svgRasterSize);
 
-  /* static void updateCPListItem(CPListItem updatedListItem) {
-    _methodChannel.invokeMethod('updateListItem', <String, dynamic>{
-      ...updatedListItem.toJson(),
-    }).then((value) {
-      if (value) {
-        l1:
-        for (var h in templateHistory) {
-          switch (h.runtimeType) {
-            case CPTabBarTemplate _:
-              for (var t in (h as CPTabBarTemplate).templates) {
-                for (var s in t.sections) {
-                  for (var i in s.items) {
-                    if (i.uniqueId == updatedListItem.uniqueId) {
-                      currentRootTemplate!
-                          .templates[currentRootTemplate!.templates.indexOf(t)]
-                          .sections[t.sections.indexOf(s)]
-                          .items[s.items.indexOf(i)] = updatedListItem;
-                      break l1;
-                    }
-                  }
-                }
-              }
-              break;
-            case CPListTemplate _:
-              for (var s in (h as CPListTemplate).sections) {
-                for (var i in s.items) {
-                  if (i.uniqueId == updatedListItem.uniqueId) {
-                    currentRootTemplate!
-                        .sections[currentRootTemplate!.sections.indexOf(
-                      s,
-                    )]
-                        .items[s.items.indexOf(i)] = updatedListItem;
-                    break l1;
-                  }
-                }
-              }
-              break;
-            default:
-          }
-        }
-      }
-    });
-  }*/
-
-  static Future<bool?> flutterToNativeModuleStatic(
-    FAAChannelTypes type, [
-    dynamic data,
-  ]) async {
     final bool? value = await _methodChannel.invokeMethod<bool>(
       type.name,
       data,
@@ -102,13 +55,18 @@ class FlutterAndroidAutoController {
     required String elementId,
     required List<AAListSection> sections,
   }) async {
+    final payload = <String, dynamic>{
+      'elementId': elementId,
+      'sections': sections
+          .map((AAListSection section) => section.toJson())
+          .toList(),
+    };
+
+    await resolveSvgInPayload(payload, size: FlutterAndroidAuto.svgRasterSize);
+
     final bool? isCompleted = await flutterToNativeModuleStatic(
       FAAChannelTypes.updateListTemplateSections,
-      <String, dynamic>{
-        'elementId': elementId,
-        'sections':
-            sections.map((AAListSection section) => section.toJson()).toList(),
-      },
+      payload,
     );
 
     if (isCompleted == true) {
@@ -138,7 +96,9 @@ class FlutterAndroidAutoController {
   }
 
   void processFAAListSectionSelectedChannel(
-      String elementId, int selectedIndex) {
+    String elementId,
+    int selectedIndex,
+  ) {
     final AAListSection? listSection = _androidAutoHelper.findAAListSection(
       templates: templateHistory,
       elementId: elementId,
@@ -151,10 +111,7 @@ class FlutterAndroidAutoController {
     }
   }
 
-  void processFAAToggleCheckedChangeChannel(
-    String elementId,
-    bool checked,
-  ) {
+  void processFAAToggleCheckedChangeChannel(String elementId, bool checked) {
     final AAListItem? listItem = _androidAutoHelper.findAAListItem(
       templates: templateHistory,
       elementId: elementId,
@@ -169,19 +126,19 @@ class FlutterAndroidAutoController {
     }
   }
 
-/*void processFAAAlertActionPressed(String elementId) {
+  /*void processFAAAlertActionPressed(String elementId) {
     CAAAlertAction selectedAlertAction = currentPresentTemplate!.actions
         .firstWhere((e) => e.uniqueId == elementId);
     selectedAlertAction.onPress();
   }*/
 
-/*void processFCPAlertTemplateCompleted(bool completed) {
+  /*void processFCPAlertTemplateCompleted(bool completed) {
     if (currentPresentTemplate?.onPresent != null) {
       currentPresentTemplate!.onPresent!(completed);
     }
   }*/
 
-/*void processFCPGridButtonPressed(String elementId) {
+  /*void processFCPGridButtonPressed(String elementId) {
     CPGridButton? gridButton;
     l1:
     for (var t in templateHistory) {
@@ -197,7 +154,7 @@ class FlutterAndroidAutoController {
     if (gridButton != null) gridButton.onPress();
   }*/
 
-/*void processFCPBarButtonPressed(String elementId) {
+  /*void processFCPBarButtonPressed(String elementId) {
     CPBarButton? barButton;
     l1:
     for (var t in templateHistory) {
@@ -209,7 +166,7 @@ class FlutterAndroidAutoController {
     if (barButton != null) barButton.onPress();
   }*/
 
-/*void processFCPTextButtonPressed(String elementId) {
+  /*void processFCPTextButtonPressed(String elementId) {
     l1:
     for (var t in templateHistory) {
       if (t.runtimeType.toString() == "CPPointOfInterestTemplate") {
