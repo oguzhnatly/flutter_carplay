@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:uuid/uuid.dart';
 
 import '../../controllers/carplay_controller.dart';
@@ -43,12 +45,13 @@ class CPListImageRowItem extends CPListTemplateItem {
 
   /// An optional closure that CarPlay invokes when the user selects the list item.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
-  Function(Function() complete, CPListImageRowItem self)? onPress;
+  FutureOr<void> Function(Function() complete, CPListImageRowItem self)?
+      onPress;
 
   /// An optional closure that CarPlay invokes when the user selects an image.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
-  Function(Function() complete, CPListImageRowItem self, int? index)?
-      onItemPress;
+  FutureOr<void> Function(
+      Function() complete, CPListImageRowItem self, int? index)? onItemPress;
 
   /// Creates [CPListImageRowItem]
   CPListImageRowItem({

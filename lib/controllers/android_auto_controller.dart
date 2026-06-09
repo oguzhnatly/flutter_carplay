@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_carplay/constants/private_constants.dart';
 
+import '../aa_models/alert/alert_action.dart';
+import '../aa_models/alert/alert_template.dart';
+import '../aa_models/grid/grid_button.dart';
 import '../aa_models/list/list_item.dart';
 import '../aa_models/list/list_section.dart';
 import '../aa_models/list/list_template.dart';
@@ -10,8 +15,8 @@ import '../android_auto_worker.dart';
 import '../helpers/auto_android_helper.dart';
 import '../helpers/svg_rasterizer.dart';
 
-/// [FlutterAndroidAutoController] is an root object in order to control and communication
-/// system with the Android Auto and native functions.
+/// [FlutterAndroidAutoController] is a root object used to control and
+/// communicate with Android Auto native functions.
 class FlutterAndroidAutoController {
   static final FlutterAutoAndroidHelper _androidAutoHelper =
       const FlutterAutoAndroidHelper();
@@ -22,13 +27,13 @@ class FlutterAndroidAutoController {
     _androidAutoHelper.makeFAAChannelId(event: '/event'),
   );
 
-  /// [AATabBarTemplate], [AAGridTemplate], [AAListTemplate], [AAIInformationTemplate], [AAPointOfInterestTemplate] in a List
+  /// [AATabBarTemplate], [AAGridTemplate], [AAListTemplate], [AAPaneTemplate],
+  /// [AAMessageTemplate], and [AALongMessageTemplate] in a list.
   static List<AATemplate> templateHistory = [];
 
-  /// [AATabBarTemplate], [AAGridTemplate], [AAListTemplate], [AAIInformationTemplate], [AAPointOfInterestTemplate]
   static AATemplate? get currentRootTemplate => templateHistory.firstOrNull;
 
-  /// [AAAlertTemplate], [AAActionSheetTemplate]
+  /// The currently presented modal, i.e. [AAAlertTemplate].
   static AATemplate? currentPresentTemplate;
 
   MethodChannel get methodChannel => _methodChannel;
@@ -42,18 +47,11 @@ class FlutterAndroidAutoController {
     return FlutterAndroidAutoController.flutterToNativeModuleStatic(type, data);
   }
 
-  /// Templates update themselves without a controller instance, so this static
-  /// entry point shares the same MethodChannel path as [flutterToNativeModule].
   static Future<bool?> flutterToNativeModuleStatic(
     FAAChannelTypes type, [
     dynamic data,
   ]) async {
-    // Rasterize any Flutter asset SVGs referenced by image fields (e.g.
-    // AAListItem.imageUrl) into PNG bytes before sending the payload to the
-    // native side, which cannot render SVG directly. Non-collection payloads
-    // pass through unchanged.
     await resolveSvgInPayload(data, size: FlutterAndroidAuto.svgRasterSize);
-
     final bool? value = await _methodChannel.invokeMethod<bool>(
       type.name,
       data,
@@ -86,19 +84,45 @@ class FlutterAndroidAutoController {
     }
   }
 
-  void processFAAListItemSelectedChannel(String elementId) {
-    final AAListItem? listItem = _androidAutoHelper.findAAListItem(
+  Future<void> processFAAListItemSelectedChannel(String elementId) async {
+    final AAListItem? item = _androidAutoHelper.findAAListItem(
       templates: templateHistory,
       elementId: elementId,
     );
-    if (listItem != null) {
-      listItem.onPress!(
-        () => flutterToNativeModule(
-          FAAChannelTypes.onListItemSelectedComplete,
-          listItem.uniqueId,
-        ),
-        listItem,
+    if (item == null) return;
+
+    Future<void> complete() async {
+      await flutterToNativeModule(
+        FAAChannelTypes.onListItemSelectedComplete,
+        item.uniqueId,
       );
+    }
+
+    try {
+      await Future.sync(() => item.onPress?.call(complete, item));
+    } catch (_) {
+      await complete();
+    }
+  }
+
+  Future<void> processFAAGridButtonPressed(String elementId) async {
+    final AAGridButton? item = _androidAutoHelper.findAAGridButton(
+      templates: templateHistory,
+      elementId: elementId,
+    );
+    if (item == null) return;
+
+    Future<void> complete() async {
+      await flutterToNativeModule(
+        FAAChannelTypes.onGridButtonSelectedComplete,
+        item.uniqueId,
+      );
+    }
+
+    try {
+      await Future.sync(() => item.onPress?.call(complete, item));
+    } catch (_) {
+      await complete();
     }
   }
 
@@ -124,12 +148,10 @@ class FlutterAndroidAutoController {
       elementId: elementId,
     );
 
-    if (listItem != null) {
-      final toggle = listItem.toggle;
-      if (toggle != null) {
-        toggle.isChecked = checked;
-        toggle.onCheckedChange?.call(checked, listItem);
-      }
+    final toggle = listItem?.toggle;
+    if (toggle != null) {
+      toggle.isChecked = checked;
+      toggle.onCheckedChange?.call(checked, listItem!);
     }
   }
 
@@ -141,73 +163,23 @@ class FlutterAndroidAutoController {
     paneAction?.onPress?.call();
   }
 
-  /*void processFAAAlertActionPressed(String elementId) {
-    CAAAlertAction selectedAlertAction = currentPresentTemplate!.actions
-        .firstWhere((e) => e.uniqueId == elementId);
-    selectedAlertAction.onPress();
-  }*/
+  void processFAAAlertActionPressed(String elementId) {
+    final template = currentPresentTemplate;
+    if (template is! AAAlertTemplate) return;
 
-  /*void processFCPAlertTemplateCompleted(bool completed) {
-    if (currentPresentTemplate?.onPresent != null) {
-      currentPresentTemplate!.onPresent!(completed);
-    }
-  }*/
+    final AAAlertAction? action =
+        template.actions.cast<AAAlertAction?>().firstWhere(
+              (action) => action?.uniqueId == elementId,
+              orElse: () => null,
+            );
+    action?.onPress();
+  }
 
-  /*void processFCPGridButtonPressed(String elementId) {
-    CPGridButton? gridButton;
-    l1:
-    for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPGridTemplate") {
-        for (var b in t.buttons) {
-          if (b.uniqueId == elementId) {
-            gridButton = b;
-            break l1;
-          }
-        }
-      }
+  void processFAAPresentStateChanged(String elementId, bool completed) {
+    final template = currentPresentTemplate;
+    if (template is AAAlertTemplate && template.onPresent != null) {
+      template.onPresent!(completed);
     }
-    if (gridButton != null) gridButton.onPress();
-  }*/
-
-  /*void processFCPBarButtonPressed(String elementId) {
-    CPBarButton? barButton;
-    l1:
-    for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPListTemplate") {
-        barButton = t.backButton;
-        break l1;
-      }
-    }
-    if (barButton != null) barButton.onPress();
-  }*/
-
-  /*void processFCPTextButtonPressed(String elementId) {
-    l1:
-    for (var t in templateHistory) {
-      if (t.runtimeType.toString() == "CPPointOfInterestTemplate") {
-        for (CPPointOfInterest p in t.poi) {
-          if (p.primaryButton != null &&
-              p.primaryButton!.uniqueId == elementId) {
-            p.primaryButton!.onPress();
-            break l1;
-          }
-          if (p.secondaryButton != null &&
-              p.secondaryButton!.uniqueId == elementId) {
-            p.secondaryButton!.onPress();
-            break l1;
-          }
-        }
-      } else {
-        if (t.runtimeType.toString() == "CPInformationTemplate") {
-          l2:
-          for (CPTextButton b in t.actions) {
-            if (b.uniqueId == elementId) {
-              b.onPress();
-              break l2;
-            }
-          }
-        }
-      }
-    }
-  }*/
+    if (!completed) currentPresentTemplate = null;
+  }
 }

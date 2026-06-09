@@ -17,14 +17,6 @@ object FAAHelpers {
     }
 }
 
-/**
- * Builds a [CarIcon] from raw PNG bytes sent over the MethodChannel.
- *
- * Used for Flutter asset SVGs that are rasterized to PNG on the Dart side,
- * since [BitmapFactory] cannot decode SVG directly. Returns `null` when the
- * bytes are empty or cannot be decoded so callers can fall back to other
- * resolution strategies.
- */
 fun makeCarIconFromBytes(bytes: ByteArray?): CarIcon? {
     return makeCarIconFromBytes(bytes, null)
 }
@@ -40,13 +32,6 @@ fun makeCarIconFromBytes(bytes: ByteArray?, imageTint: FAAImageTint?): CarIcon? 
     }
 }
 
-/**
- * Loads a [CarIcon] from a Flutter asset path (e.g. `images/icon.png`).
- *
- * Resolves the asset's lookup key via the Flutter loader and reads the bytes
- * from the application's asset manager. Returns `null` when the asset cannot be
- * found or decoded.
- */
 suspend fun loadCarImageFromAsset(
     context: Context,
     assetPath: String,
@@ -67,11 +52,6 @@ suspend fun loadCarImageFromAsset(
     }
 }
 
-/**
- * Loads a [CarIcon] from a local file path (`file://...` or an absolute path).
- *
- * Returns `null` when the file does not exist or cannot be decoded.
- */
 suspend fun loadCarImageFromFile(
     path: String,
     imageTint: FAAImageTint? = null,
@@ -90,16 +70,6 @@ suspend fun loadCarImageFromFile(
     }
 }
 
-/**
- * Resolves a [CarIcon] for an image reference, preferring sources in order:
- *
- * 1. rasterized PNG [bytes] (e.g. from a Flutter asset SVG),
- * 2. a remote `http(s)` URL,
- * 3. a local `file://` path,
- * 4. a Flutter asset path.
- *
- * Returns `null` when nothing can be resolved.
- */
 suspend fun resolveCarIcon(
     context: Context,
     bytes: ByteArray?,

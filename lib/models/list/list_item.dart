@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
 import 'package:flutter_carplay/models/common/image_tint.dart';
 import 'package:flutter_carplay/models/list/list_constants.dart';
@@ -64,7 +66,7 @@ class CPListItem extends CPListTemplateItem {
 
   /// An optional closure that CarPlay invokes when the user selects the list item.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
-  final Function(Function() complete, CPListItem self)? onPress;
+  final FutureOr<void> Function(Function() complete, CPListItem self)? onPress;
 
   /// Creates [CPListItem] that manages the content of a single row in a [CPListTemplate].
   /// CarPlay manages the layout of a list item and may adjust its layout to allow for

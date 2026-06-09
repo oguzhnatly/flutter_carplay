@@ -225,58 +225,68 @@ class FlutterCarPlayController {
     }
   }
 
-  void processFCPListItemSelectedChannel(String elementId) {
+  Future<void> processFCPListItemSelectedChannel(String elementId) async {
+    final item = _carplayHelper.findCPListTemplateItem(
+      templates: templateHistory,
+      elementId: elementId,
+    );
+    if (item is! CPListItem) return;
+
+    Future<void> complete() async {
+      await flutterToNativeModule(
+          FCPChannelTypes.onFCPListItemSelectedComplete, item.uniqueId);
+    }
+
+    try {
+      await Future.sync(() => item.onPress?.call(complete, item));
+    } catch (_) {
+      await complete();
+    }
+  }
+
+  Future<void> processFCPListImageRowItemSelectedChannel(
+      String elementId) async {
     final item = _carplayHelper.findCPListTemplateItem(
       templates: templateHistory,
       elementId: elementId,
     );
 
-    if (item is CPListItem) {
-      item.onPress?.call(
-        () => flutterToNativeModule(
-          FCPChannelTypes.onFCPListItemSelectedComplete,
-          item.uniqueId,
-        ),
-        item,
-      );
+    if (item is! CPListImageRowItem) return;
+
+    Future<void> complete() async {
+      await flutterToNativeModule(
+          FCPChannelTypes.onFCPListImageRowItemSelectedComplete, item.uniqueId);
+    }
+
+    try {
+      await Future.sync(() => item.onPress?.call(complete, item));
+    } catch (_) {
+      await complete();
     }
   }
 
-  void processFCPListImageRowItemSelectedChannel(String elementId) {
-    final item = _carplayHelper.findCPListTemplateItem(
-      templates: templateHistory,
-      elementId: elementId,
-    );
-
-    if (item is CPListImageRowItem) {
-      item.onPress?.call(
-        () => flutterToNativeModule(
-          FCPChannelTypes.onFCPListImageRowItemSelectedComplete,
-          item.uniqueId,
-        ),
-        item,
-      );
-    }
-  }
-
-  void processFCPListImageRowItemElementSelectedChannel(
+  Future<void> processFCPListImageRowItemElementSelectedChannel(
     String elementId,
     int index,
-  ) {
+  ) async {
     final item = _carplayHelper.findCPListTemplateItem(
       templates: templateHistory,
       elementId: elementId,
     );
 
-    if (item is CPListImageRowItem) {
-      item.onItemPress?.call(
-        () => flutterToNativeModule(
-          FCPChannelTypes.onFCPListImageRowItemElementSelectedComplete,
-          item.uniqueId,
-        ),
-        item,
-        index,
+    if (item is! CPListImageRowItem) return;
+
+    Future<void> complete() async {
+      await flutterToNativeModule(
+        FCPChannelTypes.onFCPListImageRowItemElementSelectedComplete,
+        item.uniqueId,
       );
+    }
+
+    try {
+      await Future.sync(() => item.onItemPress?.call(complete, item, index));
+    } catch (_) {
+      await complete();
     }
   }
 

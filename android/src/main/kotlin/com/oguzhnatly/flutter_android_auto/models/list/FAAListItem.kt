@@ -10,6 +10,7 @@ data class FAAListItem(
     val trailingImage: String? = null,
     val trailingImageData: ByteArray? = null,
     val trailingImageTint: FAAImageTint? = null,
+    val loadingMessage: String? = null,
     val isBrowsable: Boolean? = null,
     val toggle: FAAToggle? = null,
     val isOnPressListenerActive: Boolean,
@@ -19,13 +20,14 @@ data class FAAListItem(
             val elementId = map["_elementId"] as? String ?: ""
             val title = map["title"] as? String ?: ""
             val subtitle = map["subtitle"] as? String
-            val imageUrl = map["imageUrl"] as? String
+            val imageUrl = map["imageUrl"] as? String ?: map["image"] as? String
             val imageData = map["imageData"] as? ByteArray
             val imageTint = FAAImageTint.fromJson(map["imageTint"] as? Map<String, Any?>)
             val trailingImage = map["trailingImage"] as? String
             val trailingImageData = map["trailingImageData"] as? ByteArray
             val trailingImageTint =
                 FAAImageTint.fromJson(map["trailingImageTint"] as? Map<String, Any?>)
+            val loadingMessage = map["loadingMessage"] as? String
             val isBrowsable = map["isBrowsable"] as? Boolean
             val toggle = (map["toggle"] as? Map<*, *>)?.mapKeys { entry ->
                 entry.key.toString()
@@ -42,6 +44,7 @@ data class FAAListItem(
                 trailingImage,
                 trailingImageData,
                 trailingImageTint,
+                loadingMessage,
                 isBrowsable,
                 toggle,
                 isOnPressListenerActive,

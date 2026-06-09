@@ -10,9 +10,35 @@ class AAListTemplate implements AATemplate {
   final String title;
   final List<AAListSection> sections;
 
+  /// An array of title variants displayed when the list is empty.
+  ///
+  /// Android Auto uses the first element as the message passed to
+  /// `ItemList.Builder.setNoItemsMessage()`. When [sections] is empty and
+  /// this list is null, the template falls back to a loading indicator.
+  final List<String>? emptyViewTitleVariants;
+
+  /// Label displayed on the tab bar item when this template is used as a tab
+  /// inside an [AATabBarTemplate]. Falls back to [title] when not set.
+  final String? tabTitle;
+
+  /// Icon displayed in the tab when this template is used inside an
+  /// [AATabBarTemplate]. Supports mapped system icon names, Flutter assets,
+  /// local files, and network URLs.
+  ///
+  /// When [iconUrl] is also set, [iconUrl] takes precedence.
+  final String? systemIcon;
+
+  /// URL of an image to use as the tab bar icon. Loaded asynchronously.
+  /// Takes precedence over [systemIcon] when set.
+  final String? iconUrl;
+
   AAListTemplate({
     required this.title,
     required this.sections,
+    this.emptyViewTitleVariants,
+    this.tabTitle,
+    this.systemIcon,
+    this.iconUrl,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
 
@@ -25,6 +51,10 @@ class AAListTemplate implements AATemplate {
         'title': title,
         'sections':
             sections.map((AAListSection section) => section.toJson()).toList(),
+        'emptyViewTitleVariants': emptyViewTitleVariants,
+        'tabTitle': tabTitle,
+        'systemIcon': systemIcon,
+        'iconUrl': iconUrl,
       };
 
   void updateSections(List<AAListSection> newSections) {

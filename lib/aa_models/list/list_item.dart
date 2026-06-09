@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_carplay/models/common/image_tint.dart';
 import 'package:uuid/uuid.dart';
 
@@ -24,41 +26,40 @@ class AAListItem {
 
   /// The image displayed for this row on Android Auto.
   ///
-  /// Supports these formats:
-  /// * Asset path: `images/flutter_logo.png` from pubspec.yaml assets
-  /// * SVG asset: `images/icon.svg` rasterized to PNG before native display
-  /// * File path: `file:///path/to/image.png` local file on device
-  /// * Network URL: `https://example.com/image.png` remote image
+  /// Supports asset paths, SVG assets, file paths, and network URLs.
   final String? imageUrl;
   final AutoImageTint? imageTint;
 
   /// The image displayed on the trailing side of this row when supported by the
   /// Android Auto host.
-  ///
-  /// Android Auto `Row` does not expose a dedicated arbitrary trailing image
-  /// slot. This package renders [trailingImage] as a trailing row action icon,
-  /// which is the closest supported affordance.
   final String? trailingImage;
 
   /// Optional tint applied to [trailingImage].
   final AutoImageTint? trailingImageTint;
 
+  /// Text displayed as the loading screen title while [onPress] is executing
+  /// until [complete] is called. When null, no title is shown.
+  final String? loadingMessage;
+
   final bool? isBrowsable;
   final AAToggle? toggle;
-  final Function(Function() complete, AAListItem self)? onPress;
+  final FutureOr<void> Function(Function() complete, AAListItem self)? onPress;
 
   AAListItem({
     required this.title,
     this.subtitle,
-    this.imageUrl,
+    String? image,
+    String? imageUrl,
     this.imageTint,
     this.trailingImage,
     this.trailingImageTint,
+    this.loadingMessage,
     this.isBrowsable,
     this.toggle,
     this.onPress,
     String? id,
-  })  : assert(
+  })  : imageUrl = imageUrl ?? image,
+        assert(
           isBrowsable != true || toggle == null,
           'A browsable row must not have a toggle set.',
         ),
@@ -82,6 +83,7 @@ class AAListItem {
         'imageTint': imageTint?.toJson(),
         'trailingImage': trailingImage,
         'trailingImageTint': trailingImageTint?.toJson(),
+        'loadingMessage': loadingMessage,
         'isBrowsable': isBrowsable,
         'toggle': toggle?.toJson(),
         'onPress': onPress != null ? true : false,
