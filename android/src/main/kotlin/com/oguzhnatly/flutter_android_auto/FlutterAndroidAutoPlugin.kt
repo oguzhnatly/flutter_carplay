@@ -8,6 +8,8 @@ import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.LongMessageTemplate
 import androidx.car.app.model.MessageTemplate
+import androidx.car.app.model.Pane
+import androidx.car.app.model.PaneTemplate
 import androidx.car.app.model.SectionedItemList
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
@@ -98,6 +100,10 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     )
 
                     FAAChannelTypes.updateListTemplateSections.name -> updateListTemplateSections(
+                        call, result
+                    )
+
+                    FAAChannelTypes.updatePaneTemplate.name -> updatePaneTemplate(
                         call, result
                     )
 
@@ -223,6 +229,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
             val template = when (runtimeType) {
                 "FAAListTemplate" -> getListTemplate(data)
 
+                "FAAPaneTemplate" -> getPaneTemplate(data)
+
                 "FAAMessageTemplate" -> getMessageTemplate(data)
 
                 "FAALongMessageTemplate" -> getLongMessageTemplate(data)
@@ -268,9 +276,11 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     }
                 }
 
-                listTemplateData[elementId] = data.toMutableMap()
-                listTemplateBackButtons[elementId] = true
-                listTemplateScreens[elementId] = newScreen
+                if (runtimeType == "FAAListTemplate") {
+                    listTemplateData[elementId] = data.toMutableMap()
+                    listTemplateBackButtons[elementId] = true
+                    listTemplateScreens[elementId] = newScreen
+                }
                 templatesByElementId[elementId] = template
                 screensByElementId[elementId] = newScreen
 
@@ -291,6 +301,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         pluginScope.launch {
             val template = when (runtimeType) {
                 "FAAListTemplate" -> getListTemplate(data, false)
+
+                "FAAPaneTemplate" -> getPaneTemplate(data, false)
 
                 "FAAMessageTemplate" -> getMessageTemplate(data, false)
 
@@ -322,6 +334,51 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         }
     }
 
+
+    private fun updatePaneTemplate(
+        call: MethodCall, result: MethodChannel.Result
+    ) {
+        val data = call.argument<Map<String, Any?>>("template")
+        if (data == null) {
+            result.error("Missing template", "A pane template payload is required", null)
+            return
+        }
+
+        val elementId = data["_elementId"] as? String ?: ""
+        if (elementId.isEmpty()) {
+            result.error("Missing elementId", "The pane template must have an element id", null)
+            return
+        }
+
+        pluginScope.launch {
+            val isRootTemplate = currentRootTemplateElementId == elementId
+            val template = getPaneTemplate(data, !isRootTemplate)
+            templatesByElementId[elementId] = template
+
+            if (isRootTemplate) {
+                currentTemplate = template
+                currentScreen?.let {
+                    screensByElementId[elementId] = it
+                    it.invalidate()
+                }
+                result.success(true)
+                return@launch
+            }
+
+            val screen = screensByElementId[elementId]
+            if (screen == null) {
+                result.error(
+                    "No screen found",
+                    "No Android Auto screen found for pane template id: $elementId",
+                    null,
+                )
+                return@launch
+            }
+
+            screen.invalidate()
+            result.success(true)
+        }
+    }
 
     private fun updateMessageTemplate(
         call: MethodCall, result: MethodChannel.Result
@@ -439,6 +496,102 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         }
 
         return builder.build()
+    }
+
+    private suspend fun getPaneTemplate(
+        data: Map<String, Any?>,
+        addBackButton: Boolean = true,
+    ): Template {
+        val carContext = AndroidAutoService.session?.carContext
+        val template = FAAPaneTemplate.fromJson(data)
+        val paneBuilder = Pane.Builder()
+
+        val isLoading = template.isLoading || template.items.isEmpty()
+        paneBuilder.setLoading(isLoading)
+        if (!isLoading) {
+            for (item in template.items) {
+                paneBuilder.addRow(createPaneRowFromItem(carContext, item))
+            }
+
+            val imageIcon = makeCarIconFromBytes(template.imageData, template.imageTint)
+                ?: if (carContext != null && template.imageUrl != null) {
+                    resolveCarIcon(carContext, null, template.imageUrl, template.imageTint)
+                } else {
+                    null
+                }
+            if (imageIcon != null) {
+                paneBuilder.setImage(imageIcon)
+            }
+
+            for (action in template.actions) {
+                paneBuilder.addAction(createPaneAction(carContext, action))
+            }
+        }
+
+        val paneTemplateBuilder =
+            PaneTemplate.Builder(paneBuilder.build()).setTitle(template.title)
+
+        if (addBackButton) {
+            paneTemplateBuilder.setHeaderAction(Action.BACK)
+        }
+
+        return paneTemplateBuilder.build()
+    }
+
+    private suspend fun createPaneRowFromItem(
+        carContext: CarContext?,
+        item: FAAPaneItem,
+    ): Row {
+        val rowBuilder = Row.Builder().setTitle(CarText.create(item.title))
+
+        item.detail?.let { rowBuilder.addText(CarText.create(it)) }
+
+        val imageIcon = makeCarIconFromBytes(item.imageData, item.imageTint)
+            ?: if (carContext != null && item.imageUrl != null) {
+                resolveCarIcon(carContext, null, item.imageUrl, item.imageTint)
+            } else {
+                null
+            }
+        if (imageIcon != null) {
+            rowBuilder.setImage(
+                imageIcon,
+                if (item.imageTint != null) Row.IMAGE_TYPE_ICON else Row.IMAGE_TYPE_SMALL,
+            )
+        }
+
+        return rowBuilder.build()
+    }
+
+    private suspend fun createPaneAction(
+        carContext: CarContext?,
+        action: FAAPaneAction,
+    ): Action {
+        val actionBuilder = Action.Builder().setTitle(action.title)
+
+        val imageIcon = makeCarIconFromBytes(action.imageData, action.imageTint)
+            ?: if (carContext != null && action.imageUrl != null) {
+                resolveCarIcon(carContext, null, action.imageUrl, action.imageTint)
+            } else {
+                null
+            }
+        if (imageIcon != null) {
+            actionBuilder.setIcon(imageIcon)
+        }
+
+        if (action.isPrimary) {
+            actionBuilder.setFlags(Action.FLAG_PRIMARY)
+        }
+
+        if (action.isOnPressListenerActive) {
+            actionBuilder.setOnClickListener {
+                sendEvent(
+                    type = FAAChannelTypes.onPaneActionPressed.name,
+                    data = mapOf("elementId" to action.elementId),
+                )
+            }
+        }
+
+        return actionBuilder.build()
     }
 
     private suspend fun getListTemplate(

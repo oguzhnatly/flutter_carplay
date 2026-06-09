@@ -91,6 +91,7 @@ By evaluating this information, you can request for the relevant entitlement fro
 
 - [x] List Template (limited support)
 - [x] Message Template
+- [x] Pane Template
 - [x] Now Playing Template (Automatically handled by Android Auto system)
 
 # What's New in latest versions
@@ -132,7 +133,7 @@ Other templates will be supported in the future releases by `flutter_carplay`.
 - [ ] Grid Template
 - [ ] Alert Template
 - [ ] Action Sheet Template
-- [ ] Information Template
+- [x] Information Template via Pane Template
 - [ ] Point of Interest Template
 - [ ] Map Template
 - [ ] Search Template
@@ -430,6 +431,38 @@ Take a look at [this detailed issue reply](https://github.com/oguzhnatly/flutter
 To see a complete example for both CarPlay and Android Auto, check the example project.
 
 [**See Full Example**](https://github.com/oguzhnatly/flutter_carplay/blob/master/example/lib/main.dart)
+
+### Android Auto Pane Template
+
+Use `AAPaneTemplate` for compact informational screens on Android Auto. It maps to Android's native `PaneTemplate` and is the closest Android equivalent for CarPlay-style information screens.
+
+```dart
+await FlutterAndroidAuto.push(
+  template: AAPaneTemplate(
+    title: 'Vehicle Info',
+    items: [
+      AAPaneItem(title: 'Battery', detail: '82%'),
+      AAPaneItem(
+        title: 'Navigation',
+        detail: 'Route ready',
+        imageUrl: 'images/svg_navigation.svg',
+        imageTint: const AutoImageTint.platform(),
+      ),
+    ],
+    actions: [
+      AAPaneAction(
+        title: 'Refresh',
+        isPrimary: true,
+        onPress: () {
+          // Refresh content.
+        },
+      ),
+    ],
+  ),
+);
+```
+
+Pane rows are informational on Android and cannot be tapped. Use pane actions for user interaction.
 
 ### Basic Usage for Car Play
 

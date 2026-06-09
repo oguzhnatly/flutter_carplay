@@ -278,9 +278,9 @@ class _MyAppState extends State<MyApp> {
                                                 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
                                             onPress:
                                                 (complete, AAListItem item) {
-                                                  FlutterAndroidAuto.pop();
-                                                  complete();
-                                                },
+                                              FlutterAndroidAuto.pop();
+                                              complete();
+                                            },
                                           ),
                                           AAListItem(
                                             title: 'Page 2',
@@ -290,9 +290,9 @@ class _MyAppState extends State<MyApp> {
                                                 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
                                             onPress:
                                                 (complete, AAListItem item) {
-                                                  FlutterAndroidAuto.popToRoot();
-                                                  complete();
-                                                },
+                                              FlutterAndroidAuto.popToRoot();
+                                              complete();
+                                            },
                                           ),
                                         ],
                                       ),
@@ -326,6 +326,16 @@ class _MyAppState extends State<MyApp> {
                 imageTint: const AutoImageTint.platform(),
                 onPress: (complete, AAListItem item) {
                   openImageTintExamplesTemplate();
+                  complete();
+                },
+              ),
+              AAListItem(
+                title: 'Pane Template',
+                subtitle: 'Compact Android Auto information screen',
+                imageUrl: 'images/svg_poi_glyph.svg',
+                imageTint: const AutoImageTint.platform(),
+                onPress: (complete, AAListItem item) {
+                  openAndroidAutoPaneTemplate();
                   complete();
                 },
               ),
@@ -402,8 +412,7 @@ class _MyAppState extends State<MyApp> {
   void openAndroidAutoLongMessageTemplate() {
     final template = AALongMessageTemplate(
       title: 'Safety information',
-      message:
-          'Keep your attention on the road. This longer Android Auto '
+      message: 'Keep your attention on the road. This longer Android Auto '
           'message template is intended for content that needs more space than '
           'a simple message screen can provide.',
     );
@@ -413,8 +422,7 @@ class _MyAppState extends State<MyApp> {
     Future.delayed(const Duration(seconds: 3), () {
       template.update(
         title: 'Safety information updated',
-        message:
-            'The long message template has been rebuilt and refreshed. '
+        message: 'The long message template has been rebuilt and refreshed. '
             'Use this template for longer informational text that should remain '
             'readable in Android Auto.',
       );
@@ -1081,30 +1089,122 @@ class _MyAppState extends State<MyApp> {
   }
 
   void openInformationTemplate() {
-    FlutterCarplay.push(
-      template: CPInformationTemplate(
-        title: 'Title',
-        layout: CPInformationTemplateLayout.twoColumn,
+    if (Platform.isIOS) {
+      FlutterCarplay.push(
+        template: CPInformationTemplate(
+          title: 'Title',
+          layout: CPInformationTemplateLayout.twoColumn,
+          actions: [
+            CPTextButton(
+              title: 'Button Title 1',
+              onPress: () {
+                print('Button 1');
+              },
+            ),
+            CPTextButton(
+              title: 'Button Title 2',
+              onPress: () {
+                print('Button 2');
+              },
+            ),
+          ],
+          informationItems: [
+            CPInformationItem(title: 'Item title 1', detail: 'detail 1'),
+            CPInformationItem(title: 'Item title 2', detail: 'detail 2'),
+          ],
+        ),
+      );
+    } else if (Platform.isAndroid) {
+      openAndroidAutoPaneTemplate();
+    }
+  }
+
+  Future<void> openAndroidAutoPaneTemplate() async {
+    late final AAPaneTemplate paneTemplate;
+    late final Future<void> Function() animateBattery;
+
+    // Keep the title static. Updating header fields (title) forces Android Auto
+    // to run its full fade transition, which flickers on every update. Only the
+    // battery row's `detail` changes here, which Android treats as a lightweight
+    // content refresh.
+    AAPaneTemplate loadedPaneTemplate({
+      required String id,
+      required int batteryLevel,
+      required String navigationDetail,
+    }) {
+      return AAPaneTemplate(
+        id: id,
+        title: 'Vehicle Info',
+        imageUrl: 'images/svg_navigation.svg',
+        items: [
+          AAPaneItem(
+            id: '$id-battery',
+            title: 'Battery',
+            detail: '$batteryLevel%',
+            imageUrl: 'images/svg_warning_glyph.svg',
+            imageTint: const AutoImageTint.green(),
+          ),
+          AAPaneItem(
+            id: '$id-navigation',
+            title: 'Navigation',
+            detail: navigationDetail,
+            imageUrl: 'images/svg_navigation_glyph.svg',
+            imageTint: const AutoImageTint.platform(),
+          ),
+        ],
         actions: [
-          CPTextButton(
-            title: 'Button Title 1',
-            onPress: () {
-              print('Button 1');
-            },
-          ),
-          CPTextButton(
-            title: 'Button Title 2',
-            onPress: () {
-              print('Button 2');
-            },
+          AAPaneAction(
+            id: '$id-refresh',
+            title: 'Refresh',
+            isPrimary: true,
+            onPress: () => animateBattery(),
           ),
         ],
-        informationItems: [
-          CPInformationItem(title: 'Item title 1', detail: 'detail 1'),
-          CPInformationItem(title: 'Item title 2', detail: 'detail 2'),
-        ],
+      );
+    }
+
+    // Drains the battery from 82% down to 0%, then charges it back up to 82%,
+    // updating only the battery row's detail on each step. The title is kept
+    // static (see above) so Android Auto skips its fade transition.
+    animateBattery = () async {
+      print('Pane refresh pressed');
+      final String id = paneTemplate.uniqueId;
+      final List<int> levels = <int>[
+        for (int level = 82; level >= 0; level -= 2) level,
+        for (int level = 2; level <= 82; level += 2) level,
+      ];
+      for (final int level in levels) {
+        await FlutterAndroidAuto.updatePaneTemplate(
+          template: loadedPaneTemplate(
+            id: id,
+            batteryLevel: level,
+            navigationDetail: 'Route ready',
+          ),
+        );
+        await Future.delayed(const Duration(milliseconds: 200));
+      }
+    };
+
+    paneTemplate = AAPaneTemplate(
+      title: 'Vehicle Info',
+      items: [],
+      isLoading: true,
+    );
+
+    final bool didPush = await FlutterAndroidAuto.push(template: paneTemplate);
+    if (!didPush) return;
+
+    await Future.delayed(const Duration(seconds: 1));
+    await FlutterAndroidAuto.updatePaneTemplate(
+      template: loadedPaneTemplate(
+        id: paneTemplate.uniqueId,
+        batteryLevel: 82,
+        navigationDetail: 'Route ready',
       ),
     );
+
+    // Kick off the drain/charge animation so the battery visibly moves.
+    await animateBattery();
   }
 
   void openPoiTemplate() {
@@ -1317,8 +1417,10 @@ class _MyAppState extends State<MyApp> {
                 ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 20,
+              runSpacing: 12,
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -1331,7 +1433,6 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () => openListTemplate(),
                   child: const Text('Open List\nTemplate'),
                 ),
-                const SizedBox(width: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),
@@ -1343,7 +1444,6 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () => openGridTemplate(),
                   child: const Text('Open Grid\nTemplate'),
                 ),
-                const SizedBox(width: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),
@@ -1354,6 +1454,23 @@ class _MyAppState extends State<MyApp> {
                   ),
                   onPressed: () => openSvgExamplesTemplate(),
                   child: const Text('Open SVG\nExamples'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 15),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 24,
+                    ),
+                  ),
+                  onPressed: () {
+                    if (Platform.isAndroid) {
+                      openAndroidAutoPaneTemplate();
+                    } else {
+                      openInformationTemplate();
+                    }
+                  },
+                  child: const Text('Open Info\nTemplate'),
                 ),
               ],
             ),
