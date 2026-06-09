@@ -1281,8 +1281,10 @@ class _MyAppState extends State<MyApp> {
                 ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 20,
+              runSpacing: 12,
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -1295,7 +1297,6 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () => openListTemplate(),
                   child: const Text('Open List\nTemplate'),
                 ),
-                const SizedBox(width: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),
@@ -1307,7 +1308,6 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () => openGridTemplate(),
                   child: const Text('Open Grid\nTemplate'),
                 ),
-                const SizedBox(width: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),
@@ -1319,7 +1319,6 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () => openSvgExamplesTemplate(),
                   child: const Text('Open SVG\nExamples'),
                 ),
-                const SizedBox(width: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),
