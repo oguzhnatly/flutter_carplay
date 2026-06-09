@@ -1039,21 +1039,33 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void openAndroidAutoPaneTemplate() {
-    FlutterAndroidAuto.push(
-      template: AAPaneTemplate(
+  Future<void> openAndroidAutoPaneTemplate() async {
+    late final AAPaneTemplate paneTemplate;
+    late final Future<void> Function() animateBattery;
+
+    // Keep the title static. Updating header fields (title) forces Android Auto
+    // to run its full fade transition, which flickers on every update. Only the
+    // battery row's `detail` changes here, which Android treats as a lightweight
+    // content refresh.
+    AAPaneTemplate loadedPaneTemplate({
+      required String id,
+      required int batteryLevel,
+      required String navigationDetail,
+    }) {
+      return AAPaneTemplate(
+        id: id,
         title: 'Vehicle Info',
         imageUrl: 'images/svg_navigation.svg',
         items: [
           AAPaneItem(
             title: 'Battery',
-            detail: '82%',
+            detail: '$batteryLevel%',
             imageUrl: 'images/svg_warning_glyph.svg',
             imageTint: const AutoImageTint.green(),
           ),
           AAPaneItem(
             title: 'Navigation',
-            detail: 'Route ready',
+            detail: navigationDetail,
             imageUrl: 'images/svg_navigation_glyph.svg',
             imageTint: const AutoImageTint.platform(),
           ),
@@ -1062,13 +1074,53 @@ class _MyAppState extends State<MyApp> {
           AAPaneAction(
             title: 'Refresh',
             isPrimary: true,
-            onPress: () {
-              print('Pane refresh pressed');
-            },
+            onPress: () => animateBattery(),
           ),
         ],
+      );
+    }
+
+    // Drains the battery from 82% down to 0%, then charges it back up to 82%,
+    // updating both the title and the battery row on every step.
+    animateBattery = () async {
+      print('Pane refresh pressed');
+      final String id = paneTemplate.uniqueId;
+      final List<int> levels = <int>[
+        for (int level = 82; level >= 0; level -= 2) level,
+        for (int level = 2; level <= 82; level += 2) level,
+      ];
+      for (final int level in levels) {
+        await _flutterAndroidAuto.updatePaneTemplate(
+          template: loadedPaneTemplate(
+            id: id,
+            batteryLevel: level,
+            navigationDetail: 'Route ready',
+          ),
+        );
+        await Future.delayed(const Duration(milliseconds: 200));
+      }
+    };
+
+    paneTemplate = AAPaneTemplate(
+      title: 'Vehicle Info',
+      items: [],
+      isLoading: true,
+    );
+
+    final bool didPush = await FlutterAndroidAuto.push(template: paneTemplate);
+    if (!didPush) return;
+
+    await Future.delayed(const Duration(seconds: 1));
+    await _flutterAndroidAuto.updatePaneTemplate(
+      template: loadedPaneTemplate(
+        id: paneTemplate.uniqueId,
+        batteryLevel: 82,
+        navigationDetail: 'Route ready',
       ),
     );
+
+    // Kick off the drain/charge animation so the battery visibly moves.
+    await animateBattery();
   }
 
   void openPoiTemplate() {

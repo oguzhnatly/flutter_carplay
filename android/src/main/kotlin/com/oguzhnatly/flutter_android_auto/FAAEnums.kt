@@ -13,6 +13,7 @@ enum class FAAChannelTypes {
     pushTemplate,
     popTemplate,
     popToRootTemplate,
+    updatePaneTemplate,
     onListItemSelected,
     onListItemSelectedComplete,
     onPaneActionPressed,

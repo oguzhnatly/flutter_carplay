@@ -35,7 +35,10 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
     companion object {
         var events: EventChannel.EventSink? = null
         var currentTemplate: Template? = null
+        var currentTemplateElementId: String? = null
         var currentScreen: Screen? = null
+        val pushedTemplates = mutableMapOf<String, Template>()
+        val pushedScreens = mutableMapOf<String, Screen>()
 
         fun sendEvent(type: String, data: Map<String, Any>) {
             events?.success(
@@ -87,6 +90,10 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     )
 
                     FAAChannelTypes.popToRootTemplate.name -> popToRootTemplate(
+                        call, result
+                    )
+
+                    FAAChannelTypes.updatePaneTemplate.name -> updatePaneTemplate(
                         call, result
                     )
 
@@ -184,8 +191,10 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                     null
                 )
             } else {
+                pushedTemplates[elementId] = template
+
                 val newScreen = object : Screen(carContext) {
-                    override fun onGetTemplate(): Template = template
+                    override fun onGetTemplate(): Template = pushedTemplates[elementId] ?: template
 
                     init {
                         lifecycle.addObserver(object : LifecycleEventObserver {
@@ -198,6 +207,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                                             type = FAAChannelTypes.onScreenBackButtonPressed.name,
                                             data = mapOf("elementId" to elementId)
                                         )
+                                        pushedTemplates.remove(elementId)
+                                        pushedScreens.remove(elementId)
                                     }
 
                                     else -> {}
@@ -206,6 +217,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                         })
                     }
                 }
+
+                pushedScreens[elementId] = newScreen
 
                 carContext.getCarService(ScreenManager::class.java)
                     .push(newScreen)
@@ -220,6 +233,7 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
     ) {
         val runtimeType = call.argument<String>("runtimeType") ?: ""
         val data = call.argument<Map<String, Any?>>("template")!!
+        val elementId = data["_elementId"] as? String ?: ""
 
         pluginScope.launch {
             val template = when (runtimeType) {
@@ -238,9 +252,52 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
                 )
             } else {
                 currentTemplate = template
+                currentTemplateElementId = elementId
                 currentScreen?.invalidate()
                 result.success(true)
             }
+        }
+    }
+
+    private fun updatePaneTemplate(
+        call: MethodCall, result: MethodChannel.Result
+    ) {
+        val data = call.argument<Map<String, Any?>>("template")
+        if (data == null) {
+            result.error("Missing template", "A pane template payload is required", null)
+            return
+        }
+
+        val elementId = data["_elementId"] as? String ?: ""
+        if (elementId.isEmpty()) {
+            result.error("Missing elementId", "The pane template must have an element id", null)
+            return
+        }
+
+        pluginScope.launch {
+            val isRootTemplate = currentTemplateElementId == elementId
+            val template = getPaneTemplate(data, !isRootTemplate)
+
+            if (isRootTemplate) {
+                currentTemplate = template
+                currentScreen?.invalidate()
+                result.success(true)
+                return@launch
+            }
+
+            val screen = pushedScreens[elementId]
+            if (screen == null) {
+                result.error(
+                    "No screen found",
+                    "No pushed pane template found for element id: $elementId",
+                    null
+                )
+                return@launch
+            }
+
+            pushedTemplates[elementId] = template
+            screen.invalidate()
+            result.success(true)
         }
     }
 
