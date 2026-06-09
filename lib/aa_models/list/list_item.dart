@@ -9,10 +9,10 @@ class AAToggle {
   AAToggle({this.isChecked = false, this.isEnabled, this.onCheckedChange});
 
   Map<String, dynamic> toJson() => {
-    'isChecked': isChecked,
-    'isEnabled': isEnabled,
-    'onCheckedChange': onCheckedChange != null ? true : false,
-  };
+        'isChecked': isChecked,
+        'isEnabled': isEnabled,
+        'onCheckedChange': onCheckedChange != null ? true : false,
+      };
 }
 
 class AAListItem {
@@ -58,32 +58,32 @@ class AAListItem {
     this.toggle,
     this.onPress,
     String? id,
-  }) : assert(
-         isBrowsable != true || toggle == null,
-         'A browsable row must not have a toggle set.',
-       ),
-       assert(
-         isBrowsable != true || onPress != null,
-         'A browsable row must have an onClickListener set.',
-       ),
-       assert(
-         toggle == null || onPress == null,
-         'If a row contains a toggle, it must not have an onClickListener set.',
-       ),
-       _elementId = id ?? const Uuid().v4();
+  })  : assert(
+          isBrowsable != true || toggle == null,
+          'A browsable row must not have a toggle set.',
+        ),
+        assert(
+          isBrowsable != true || onPress != null,
+          'A browsable row must have an onClickListener set.',
+        ),
+        assert(
+          toggle == null || onPress == null,
+          'If a row contains a toggle, it must not have an onClickListener set.',
+        ),
+        _elementId = id ?? const Uuid().v4();
 
   String get uniqueId => _elementId;
 
   Map<String, dynamic> toJson() => {
-    '_elementId': _elementId,
-    'title': title,
-    'subtitle': subtitle,
-    'imageUrl': imageUrl,
-    'imageTint': imageTint?.toJson(),
-    'trailingImage': trailingImage,
-    'trailingImageTint': trailingImageTint?.toJson(),
-    'isBrowsable': isBrowsable,
-    'toggle': toggle?.toJson(),
-    'onPress': onPress != null ? true : false,
-  };
+        '_elementId': _elementId,
+        'title': title,
+        'subtitle': subtitle,
+        'imageUrl': imageUrl,
+        'imageTint': imageTint?.toJson(),
+        'trailingImage': trailingImage,
+        'trailingImageTint': trailingImageTint?.toJson(),
+        'isBrowsable': isBrowsable,
+        'toggle': toggle?.toJson(),
+        'onPress': onPress != null ? true : false,
+      };
 }

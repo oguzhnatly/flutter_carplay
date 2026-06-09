@@ -257,8 +257,8 @@ class FlutterCarplay {
     );
 
     if (isCompleted == true) {
-      final template = FlutterCarPlayController
-          .getTemplateFromHistory<CPInformationTemplate>(elementId);
+      final template = FlutterCarPlayController.getTemplateFromHistory<
+          CPInformationTemplate>(elementId);
       template?.updateInformationItems(items);
     }
     return;
@@ -280,8 +280,8 @@ class FlutterCarplay {
     );
 
     if (isCompleted == true) {
-      final template = FlutterCarPlayController
-          .getTemplateFromHistory<CPInformationTemplate>(elementId);
+      final template = FlutterCarPlayController.getTemplateFromHistory<
+          CPInformationTemplate>(elementId);
       template?.updateActions(actions);
     }
     return;

@@ -10,7 +10,7 @@
 
 Flutter Apps now on Apple CarPlay and Android Auto ! `flutter_carplay` aims to make it safe to use apps made with Flutter in the car by integrating with CarPlay and Android Auto. The package takes the things you want to do while driving and puts them on the car's built-in display.
 
-**✨ New in v1.2.0**: Android Auto support with limited list of feature. First step to future improvements.
+**✨ New in v1.4.0**: CarPlay search templates, Android Auto message, long message, and pane templates, richer Android Auto lists, and Flutter asset SVG image support.
 
 **✨ New in v1.1.0**: CarPlay apps can now launch automatically without requiring the Flutter app to be opened first, supporting true background launch capabilities.
 
@@ -83,6 +83,7 @@ https://developer.android.com/design/ui/cars/guides/templates/overview
 - [x] Tab Bar Template
 - [x] Information Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
 - [x] Point of Interest Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
+- [x] Search Template
 - [x] Now Playing Template (v1.1.0)
 
 By evaluating this information, you can request for the relevant entitlement from Apple.
@@ -91,10 +92,19 @@ By evaluating this information, you can request for the relevant entitlement fro
 
 - [x] List Template (limited support)
 - [x] Message Template
+- [x] Long Message Template
 - [x] Pane Template
 - [x] Now Playing Template (Automatically handled by Android Auto system)
 
 # What's New in latest versions
+
+## v1.4.0
+
+- **🔎 CarPlay Search Template**: Added `CPSearchTemplate` with search text, result selection, and search button callbacks
+- **🤖 More Android Auto Templates**: Added `AAMessageTemplate`, `AALongMessageTemplate`, and `AAPaneTemplate`, including update APIs
+- **🧾 Better Android Auto Lists**: Added stable IDs, section selection, toggles, browsable rows, and trailing images
+- **🖼️ Flutter Asset SVG Support**: Flutter asset SVGs are rasterized before reaching native CarPlay and Android Auto image fields
+- **📚 Android Auto Docs**: Clarified that Android Auto template rendering is different from Android Automotive OS apps
 
 ## v1.3.0
 
@@ -125,7 +135,7 @@ Other templates will be supported in the future releases by `flutter_carplay`.
 ## Car Play Road Map
 
 - [ ] Map Template
-- [ ] Search Template
+- [x] Search Template
 - [ ] Voice Control & "Hey Siri" for hands-free voice activation
 - [ ] Contact Template
 
@@ -464,6 +474,10 @@ await FlutterAndroidAuto.push(
 
 Pane rows are informational on Android and cannot be tapped. Use pane actions for user interaction.
 
+### Flutter Asset SVG Images
+
+Flutter asset SVGs can be used in image fields such as `CPListItem.image`, `CPGridButton.image`, `CPPointOfInterest.image`, `CPListImageRowItem` image collections, `AAListItem.imageUrl`, and `AAPaneTemplate` image fields. The package rasterizes local `.svg` assets to PNG bytes before sending them to the native CarPlay or Android Auto layer. Remote SVG URLs and `file://` SVGs are not rasterized.
+
 ### Basic Usage for Car Play
 
 - Import the all classes that you need from just one file:
@@ -510,6 +524,28 @@ await FlutterCarplay.setRootTemplate(
   animated: true,
 );
 _flutterCarplay.forceUpdateRootTemplate();
+```
+
+### CarPlay Search Template
+
+Use `CPSearchTemplate` when your CarPlay app needs a native search screen. Return result rows from `onUpdatedSearchText`, handle row selection in `onSelectedResult`, and call the provided completion callback after your app finishes handling the selected result.
+
+```dart
+await FlutterCarplay.push(
+  template: CPSearchTemplate(
+    onUpdatedSearchText: (searchText, update) {
+      update([
+        CPListItem(
+          text: 'Result for $searchText',
+          detailText: 'Tap to select',
+        ),
+      ]);
+    },
+    onSelectedResult: (selectedItem, complete) {
+      complete();
+    },
+  ),
+);
 ```
 
 > You can set a root template without initializing the CarPlay Controllers, but some callback functions may not work or most likely you will get an error.
@@ -593,7 +629,7 @@ hierarchy already exists, CarPlay replaces the entire hierarchy.
 
 - rootTemplate is a template to use as the root of a new navigation hierarchy. If one exists,
   it will replace the current rootTemplate. **Must be one of the type:**
-  **CPTabBarTemplate**, **CPGridTemplate**, **CPListTemplate**. If not, it will throw an **TypeError**.
+  **CPTabBarTemplate**, **CPGridTemplate**, **CPListTemplate**, **CPInformationTemplate**, **CPPointOfInterestTemplate**, or **CPSearchTemplate**. If not, it will throw a **TypeError**.
 - If animated is true, CarPlay animates the presentation of the template, but will be ignored
   this flag when there isn’t an existing navigation hierarchy to replace.
 
@@ -601,7 +637,7 @@ hierarchy already exists, CarPlay replaces the entire hierarchy.
 
 ```dart
 FlutterCarplay.setRootTemplate(
-  rootTemplate: /* CPTabBarTemplate, CPGridTemplate or CPListTemplate */,
+  rootTemplate: /* CPTabBarTemplate, CPGridTemplate, CPListTemplate, CPInformationTemplate, CPPointOfInterestTemplate, or CPSearchTemplate */,
   animated: true,
 );
 // You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
@@ -611,14 +647,14 @@ FlutterCarplay.setRootTemplate(
 
 Adds a template to the navigation hierarchy and displays it.
 
-- template is to add to the navigation hierarchy. **Must be one of the type:** **CPGridTemplate**, **CPListTemplate**. If not, it will throw an **TypeError**.
+- template is to add to the navigation hierarchy. **Must be one of the type:** **CPGridTemplate**, **CPListTemplate**, **CPInformationTemplate**, **CPPointOfInterestTemplate**, or **CPSearchTemplate**. If not, it will throw a **TypeError**.
 - If animated is true, CarPlay animates the transition between templates.
 
 > There is a limit to the number of templates that you can push onto the screen. All apps are limited to pushing up to 5 templates in depth, including the root template.
 
 ```dart
 FlutterCarplay.push(
-  template: /* CPGridTemplate or CPListTemplate */,
+  template: /* CPGridTemplate, CPListTemplate, CPInformationTemplate, CPPointOfInterestTemplate, or CPSearchTemplate */,
   animated: true,
 );
 ```

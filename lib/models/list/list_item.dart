@@ -89,21 +89,21 @@ class CPListItem extends CPListTemplateItem {
 
   @override
   Map<String, dynamic> toJson() => {
-    '_elementId': _elementId,
-    'text': text,
-    'detailText': detailText,
-    'onPress': onPress != null ? true : false,
-    'image': image,
-    'imageTint': imageTint?.toJson(),
-    'accessoryImage': accessoryImage,
-    'trailingImage': trailingImage,
-    'trailingImageTint': trailingImageTint?.toJson(),
-    'playbackProgress': playbackProgress,
-    'isPlaying': isPlaying,
-    'playingIndicatorLocation': playingIndicatorLocation?.name,
-    'accessoryType': accessoryType?.name,
-    'runtimeType': 'FCPListItem',
-  };
+        '_elementId': _elementId,
+        'text': text,
+        'detailText': detailText,
+        'onPress': onPress != null ? true : false,
+        'image': image,
+        'imageTint': imageTint?.toJson(),
+        'accessoryImage': accessoryImage,
+        'trailingImage': trailingImage,
+        'trailingImageTint': trailingImageTint?.toJson(),
+        'playbackProgress': playbackProgress,
+        'isPlaying': isPlaying,
+        'playingIndicatorLocation': playingIndicatorLocation?.name,
+        'accessoryType': accessoryType?.name,
+        'runtimeType': 'FCPListItem',
+      };
 
   /// Updating the list item's primary text.
   void setText(String text) {

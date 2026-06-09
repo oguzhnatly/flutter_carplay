@@ -1,7 +1,13 @@
 ## Next
 
-- Add Android Auto `AAMessageTemplate` support with update APIs.
-- Add Android Auto `AALongMessageTemplate` support with update APIs.
+## 1.4.0
+
+- Add `CPSearchTemplate` support for CarPlay search flows (#96) (ty @sINFdorako)
+- Add Android Auto list item, section, and template IDs, including selection and toggle handling (#105) (ty @JulianBissekkou)
+- Add Flutter asset SVG support across CarPlay and Android Auto image fields (#112) (ty @JulianBissekkou)
+- Add Android Auto `AAMessageTemplate` and `AALongMessageTemplate` support with update APIs (#116) (ty @JulianBissekkou)
+- Add Android Auto `AAPaneTemplate` support with update APIs (#119) (ty @JulianBissekkou)
+- Clarify the difference between Android Auto and Android Automotive OS in the README (#115) (ty @JulianBissekkou)
 
 ## 1.3.3
 

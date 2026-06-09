@@ -26,10 +26,10 @@ abstract class AAMessageTemplateBase implements AATemplate {
 
   @override
   Map<String, dynamic> toJson() => {
-    '_elementId': _elementId,
-    'title': title,
-    'message': message,
-  };
+        '_elementId': _elementId,
+        'title': title,
+        'message': message,
+      };
 
   /// Updates the template content on Android Auto.
   ///
