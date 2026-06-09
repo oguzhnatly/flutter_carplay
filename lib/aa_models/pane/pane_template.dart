@@ -38,7 +38,8 @@ class AAPaneTemplate implements AATemplate {
     this.imageTint,
     this.isLoading = false,
     String? id,
-  })  : assert(
+  })  : assert(title.isNotEmpty, 'AAPaneTemplate.title cannot be empty'),
+        assert(
           isLoading || items.isNotEmpty,
           'AAPaneTemplate.items cannot be empty unless isLoading is true',
         ),

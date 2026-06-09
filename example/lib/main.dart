@@ -1058,12 +1058,14 @@ class _MyAppState extends State<MyApp> {
         imageUrl: 'images/svg_navigation.svg',
         items: [
           AAPaneItem(
+            id: '$id-battery',
             title: 'Battery',
             detail: '$batteryLevel%',
             imageUrl: 'images/svg_warning_glyph.svg',
             imageTint: const AutoImageTint.green(),
           ),
           AAPaneItem(
+            id: '$id-navigation',
             title: 'Navigation',
             detail: navigationDetail,
             imageUrl: 'images/svg_navigation_glyph.svg',
@@ -1072,6 +1074,7 @@ class _MyAppState extends State<MyApp> {
         ],
         actions: [
           AAPaneAction(
+            id: '$id-refresh',
             title: 'Refresh',
             isPrimary: true,
             onPress: () => animateBattery(),
@@ -1081,7 +1084,8 @@ class _MyAppState extends State<MyApp> {
     }
 
     // Drains the battery from 82% down to 0%, then charges it back up to 82%,
-    // updating both the title and the battery row on every step.
+    // updating only the battery row's detail on each step. The title is kept
+    // static (see above) so Android Auto skips its fade transition.
     animateBattery = () async {
       print('Pane refresh pressed');
       final String id = paneTemplate.uniqueId;
@@ -1090,7 +1094,7 @@ class _MyAppState extends State<MyApp> {
         for (int level = 2; level <= 82; level += 2) level,
       ];
       for (final int level in levels) {
-        await _flutterAndroidAuto.updatePaneTemplate(
+        await FlutterAndroidAuto.updatePaneTemplate(
           template: loadedPaneTemplate(
             id: id,
             batteryLevel: level,
@@ -1111,7 +1115,7 @@ class _MyAppState extends State<MyApp> {
     if (!didPush) return;
 
     await Future.delayed(const Duration(seconds: 1));
-    await _flutterAndroidAuto.updatePaneTemplate(
+    await FlutterAndroidAuto.updatePaneTemplate(
       template: loadedPaneTemplate(
         id: paneTemplate.uniqueId,
         batteryLevel: 82,

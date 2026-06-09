@@ -153,7 +153,9 @@ class FlutterAndroidAuto {
   /// Android as a template refresh. A transition from already-loaded content
   /// back to loading changes the row count, so Android may count it against the
   /// template quota.
-  Future<bool> updatePaneTemplate({required AAPaneTemplate template}) async {
+  static Future<bool> updatePaneTemplate({
+    required AAPaneTemplate template,
+  }) async {
     final bool? isCompleted = await _androidAutoController
         .flutterToNativeModule(FAAChannelTypes.updatePaneTemplate, {
       'template': template.toJson(),
