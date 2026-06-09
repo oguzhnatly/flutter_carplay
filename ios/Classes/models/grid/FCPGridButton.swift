@@ -15,6 +15,7 @@ class FCPGridButton {
   private var titleVariants: [String]
   private var image: String
   private var imageData: FlutterStandardTypedData?
+  private var imageTint: FCPImageTint?
   private var isOnPressListenerActive: Bool
 
   init(obj: [String: Any]) {
@@ -22,6 +23,7 @@ class FCPGridButton {
     self.titleVariants = obj["titleVariants"] as! [String]
     self.image = obj["image"] as! String
     self.imageData = obj["imageData"] as? FlutterStandardTypedData
+    self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
   }
 
@@ -38,11 +40,11 @@ class FCPGridButton {
     }
 
     if let bytesImage = bytesImage {
-      image = bytesImage
+      image = bytesImage.applyingImageTint(imageTint)
     } else if #available(iOS 26.0, *) {
       image = makeSafeUIPlaceholder()
     } else {
-      image = makeUIImage(from: imageSource)
+      image = makeUIImage(from: imageSource).applyingImageTint(imageTint)
     }
 
     gridButton = CPGridButton(
@@ -61,7 +63,7 @@ class FCPGridButton {
     )
 
     if usesAsyncImage {
-      loadUIImage(from: self.image, bytes: nil) { uiImage in
+      loadUIImage(from: self.image, bytes: nil, tint: imageTint) { uiImage in
         gridButton.perform(Selector("updateImage:"), with: uiImage)
       }
     }

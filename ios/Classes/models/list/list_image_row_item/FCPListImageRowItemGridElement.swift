@@ -12,11 +12,13 @@ final class FCPListImageRowItemGridElement {
   private(set) var elementId: String
   private(set) var image: String
   private var imageData: FlutterStandardTypedData?
+  private var imageTint: FCPImageTint?
 
   init(obj: [String: Any]) {
     self.elementId = obj["_elementId"] as! String
     self.image = obj["image"] as! String
     self.imageData = obj["imageData"] as? FlutterStandardTypedData
+    self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
   }
 
   var get: CPListImageRowItemElement {
@@ -24,7 +26,7 @@ final class FCPListImageRowItemGridElement {
       image: makeSafeUIPlaceholder(),
     )
 
-    loadUIImage(from: image, bytes: imageData) { uiImage in
+    loadUIImage(from: image, bytes: imageData, tint: imageTint) { uiImage in
       listImageRowItemElement.image = uiImage
     }
 
@@ -35,14 +37,17 @@ final class FCPListImageRowItemGridElement {
   public func update(args: [String: Any]) {
     let image = args["image"] as? String
     let imageData = args["imageData"] as? FlutterStandardTypedData
+    let imageTint = FCPImageTint(from: args["imageTint"] as? [String: Any])
 
-    if let image = image, image != self.image {
+    let imageTintChanged = imageTint != self.imageTint
+    if let image = image, image != self.image || imageTintChanged {
       self._super?.image = makeSafeUIPlaceholder()
-      loadUIImage(from: image, bytes: imageData) { uiImage in
+      loadUIImage(from: image, bytes: imageData, tint: imageTint) { uiImage in
         self._super?.image = uiImage
       }
       self.image = image
       self.imageData = imageData
+      self.imageTint = imageTint
     }
   }
 }

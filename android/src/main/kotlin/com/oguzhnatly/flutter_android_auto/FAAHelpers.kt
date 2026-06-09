@@ -26,10 +26,14 @@ object FAAHelpers {
  * resolution strategies.
  */
 fun makeCarIconFromBytes(bytes: ByteArray?): CarIcon? {
+    return makeCarIconFromBytes(bytes, null)
+}
+
+fun makeCarIconFromBytes(bytes: ByteArray?, imageTint: FAAImageTint?): CarIcon? {
     if (bytes == null || bytes.isEmpty()) return null
     return try {
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size) ?: return null
-        bitmap.toCarIcon()
+        bitmap.toCarIcon(imageTint)
     } catch (e: Exception) {
         e.printStackTrace()
         null
@@ -43,14 +47,18 @@ fun makeCarIconFromBytes(bytes: ByteArray?): CarIcon? {
  * from the application's asset manager. Returns `null` when the asset cannot be
  * found or decoded.
  */
-suspend fun loadCarImageFromAsset(context: Context, assetPath: String): CarIcon? {
+suspend fun loadCarImageFromAsset(
+    context: Context,
+    assetPath: String,
+    imageTint: FAAImageTint? = null,
+): CarIcon? {
     return withContext(Dispatchers.IO) {
         try {
             val key = FlutterInjector.instance().flutterLoader()
                 .getLookupKeyForAsset(assetPath)
             context.assets.open(key).use { inputStream ->
                 val bitmap = BitmapFactory.decodeStream(inputStream) ?: return@use null
-                bitmap.toCarIcon()
+                bitmap.toCarIcon(imageTint)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -64,14 +72,17 @@ suspend fun loadCarImageFromAsset(context: Context, assetPath: String): CarIcon?
  *
  * Returns `null` when the file does not exist or cannot be decoded.
  */
-suspend fun loadCarImageFromFile(path: String): CarIcon? {
+suspend fun loadCarImageFromFile(
+    path: String,
+    imageTint: FAAImageTint? = null,
+): CarIcon? {
     return withContext(Dispatchers.IO) {
         try {
             val filePath = path.removePrefix("file://")
             val file = File(filePath)
             if (!file.exists()) return@withContext null
             val bitmap = BitmapFactory.decodeFile(filePath) ?: return@withContext null
-            bitmap.toCarIcon()
+            bitmap.toCarIcon(imageTint)
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -93,20 +104,24 @@ suspend fun resolveCarIcon(
     context: Context,
     bytes: ByteArray?,
     imageUrl: String?,
+    imageTint: FAAImageTint? = null,
 ): CarIcon? {
-    makeCarIconFromBytes(bytes)?.let { return it }
+    makeCarIconFromBytes(bytes, imageTint)?.let { return it }
 
     val source = imageUrl?.trim()
     if (source.isNullOrEmpty()) return null
 
     return when {
-        source.startsWith("http") -> loadCarImageAsync(source)
-        source.startsWith("file://") -> loadCarImageFromFile(source)
-        else -> loadCarImageFromAsset(context, source)
+        source.startsWith("http") -> loadCarImageAsync(source, imageTint)
+        source.startsWith("file://") -> loadCarImageFromFile(source, imageTint)
+        else -> loadCarImageFromAsset(context, source, imageTint)
     }
 }
 
-suspend fun loadCarImageAsync(imageUrl: String): CarIcon? {
+suspend fun loadCarImageAsync(
+    imageUrl: String,
+    imageTint: FAAImageTint? = null,
+): CarIcon? {
     return withContext(Dispatchers.IO) {
         try {
             val url = URL(imageUrl)
@@ -115,7 +130,7 @@ suspend fun loadCarImageAsync(imageUrl: String): CarIcon? {
             connection.connect()
             val inputStream = connection.inputStream
             val bitmap = BitmapFactory.decodeStream(inputStream) ?: return@withContext null
-            bitmap.toCarIcon()
+            bitmap.toCarIcon(imageTint)
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -123,7 +138,11 @@ suspend fun loadCarImageAsync(imageUrl: String): CarIcon? {
     }
 }
 
-private fun android.graphics.Bitmap.toCarIcon(): CarIcon {
+private fun android.graphics.Bitmap.toCarIcon(imageTint: FAAImageTint? = null): CarIcon {
     val iconCompat = IconCompat.createWithBitmap(this)
-    return CarIcon.Builder(iconCompat).build()
+    val builder = CarIcon.Builder(iconCompat)
+    if (imageTint != null) {
+        builder.setTint(imageTint.toCarColor())
+    }
+    return builder.build()
 }

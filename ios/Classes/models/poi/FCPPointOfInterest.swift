@@ -22,6 +22,7 @@ class FCPPointOfInterest {
   private var detailSummary: String?
   private var image: String?
   private var imageData: FlutterStandardTypedData?
+  private var imageTint: FCPImageTint?
 
   private var primaryButton: CPTextButton?
   private var objcPrimaryButton: FCPTextButton?
@@ -47,6 +48,7 @@ class FCPPointOfInterest {
     self.detailSummary = obj["detailSummary"] as? String
     self.image = obj["image"] as? String
     self.imageData = obj["imageData"] as? FlutterStandardTypedData
+    self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
 
     let primaryButtonData = obj["primaryButton"] as? [String: Any]
     if primaryButtonData != nil {
@@ -70,11 +72,11 @@ class FCPPointOfInterest {
     var pinImage: UIImage? = nil
 
     if let bytesImage = makeUIImage(fromBytes: imageData) {
-      pinImage = bytesImage
+      pinImage = bytesImage.applyingImageTint(imageTint)
     } else if let image = self.image {
       let key = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: image)
 
-      pinImage = UIImage(named: key!)
+      pinImage = UIImage(named: key!)?.applyingImageTint(imageTint)
     }
     if let pImage = pinImage {
       if pImage.size.height > FCPPointOfInterest.maxPinImageSize

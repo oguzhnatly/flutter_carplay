@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 
+import '../common/image_tint.dart';
 import '../button/text_button.dart';
 
 /// A section object of list items that appear in a list template.
@@ -50,6 +51,9 @@ class CPPointOfInterest {
   /// - **Network URL**: `https://example.com/image.png` (remote image)
   String? image;
 
+  /// Optional tint applied to [image].
+  AutoImageTint? imageTint;
+
   /// The detail card’s primary action button.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   CPTextButton? primaryButton;
@@ -69,6 +73,7 @@ class CPPointOfInterest {
     this.detailSubtitle,
     this.detailSummary,
     this.image,
+    this.imageTint,
     this.primaryButton,
     this.secondaryButton,
     String? id,
@@ -85,6 +90,7 @@ class CPPointOfInterest {
         'detailSubtitle': detailSubtitle,
         'detailSummary': detailSummary,
         'image': image,
+        'imageTint': imageTint?.toJson(),
         'primaryButton': primaryButton?.toJson(),
         'secondaryButton': secondaryButton?.toJson(),
         'runtimeType': 'FCPPointOfInterest',

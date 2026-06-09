@@ -1,3 +1,4 @@
+import 'package:flutter_carplay/models/common/image_tint.dart';
 import 'package:uuid/uuid.dart';
 
 class AAListItem {
@@ -16,12 +17,14 @@ class AAListItem {
   /// - **File path**: `file:///path/to/image.png` (local file on device)
   /// - **Network URL**: `https://example.com/image.png` (remote image)
   final String? imageUrl;
+  final AutoImageTint? imageTint;
   final Function(Function() complete, AAListItem self)? onPress;
 
   AAListItem({
     required this.title,
     this.subtitle,
     this.imageUrl,
+    this.imageTint,
     this.onPress,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
@@ -33,6 +36,7 @@ class AAListItem {
         'title': title,
         'subtitle': subtitle,
         'imageUrl': imageUrl,
+        'imageTint': imageTint?.toJson(),
         'onPress': onPress != null ? true : false,
       };
 }

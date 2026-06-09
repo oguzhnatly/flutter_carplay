@@ -288,12 +288,12 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
 
         item.subtitle?.let { rowBuilder.addText(CarText.create(it)) }
 
-        val imageIcon = makeCarIconFromBytes(item.imageData)
+        val imageIcon = makeCarIconFromBytes(item.imageData, item.imageTint)
         if (imageIcon != null) {
-            rowBuilder.setImage(imageIcon)
+            rowBuilder.setImage(imageIcon, if (item.imageTint != null) Row.IMAGE_TYPE_ICON else Row.IMAGE_TYPE_SMALL)
         } else if (carContext != null && item.imageUrl != null) {
-            resolveCarIcon(carContext, null, item.imageUrl)?.let { carIcon ->
-                rowBuilder.setImage(carIcon)
+            resolveCarIcon(carContext, null, item.imageUrl, item.imageTint)?.let { carIcon ->
+                rowBuilder.setImage(carIcon, if (item.imageTint != null) Row.IMAGE_TYPE_ICON else Row.IMAGE_TYPE_SMALL)
             }
         }
 

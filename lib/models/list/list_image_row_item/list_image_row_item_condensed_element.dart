@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import '../../../controllers/carplay_controller.dart';
+import '../../common/image_tint.dart';
 import 'list_image_row_item_constants.dart';
 import 'list_image_row_item_element.dart';
 
@@ -18,6 +19,9 @@ class CPListImageRowItemCondensedElement implements CPListImageRowItemElement {
   /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
   @override
   String image;
+
+  @override
+  AutoImageTint? imageTint;
 
   /// The title associated with this element.
   /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
@@ -39,6 +43,7 @@ class CPListImageRowItemCondensedElement implements CPListImageRowItemElement {
   CPListImageRowItemCondensedElement({
     required this.image,
     required this.title,
+    this.imageTint,
     this.subtitle,
     this.accessorySymbolName,
     this.imageShape = CPListImageRowItemCondensedElementShape.roundedRectangle,
@@ -49,6 +54,7 @@ class CPListImageRowItemCondensedElement implements CPListImageRowItemElement {
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'image': image,
+        'imageTint': imageTint?.toJson(),
         'title': title,
         'subtitle': subtitle,
         'accessorySymbolName': accessorySymbolName,
@@ -57,8 +63,15 @@ class CPListImageRowItemCondensedElement implements CPListImageRowItemElement {
       };
 
   @override
-  void setImage(String image) {
+  void setImage(String image, {AutoImageTint? imageTint}) {
     this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
+    FlutterCarPlayController.updateCPListImageRowItemElement(this);
+  }
+
+  @override
+  void setImageTint(AutoImageTint? imageTint) {
+    this.imageTint = imageTint;
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }
 
@@ -79,11 +92,13 @@ class CPListImageRowItemCondensedElement implements CPListImageRowItemElement {
 
   void update({
     String? image,
+    AutoImageTint? imageTint,
     String? title,
     String? subtitle,
     String? accessorySymbolName,
   }) {
     if (image != null) this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
     if (title != null) this.title = title;
     if (subtitle != null) this.subtitle = subtitle;
     if (accessorySymbolName != null) {

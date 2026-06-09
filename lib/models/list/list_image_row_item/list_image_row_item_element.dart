@@ -1,3 +1,5 @@
+import '../../common/image_tint.dart';
+
 /// Abstract superclass for a a row item element object.
 /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
 /// https://developer.apple.com/documentation/carplay/cplistimagerowitemelement
@@ -10,11 +12,17 @@ abstract interface class CPListImageRowItemElement {
   /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
   String? get image;
 
+  /// Optional tint applied to [image].
+  AutoImageTint? get imageTint;
+
   Map<String, dynamic> toJson();
 
   String get uniqueId;
 
   /// Updates the element's image. See [image] for supported formats (including
   /// `.svg` Flutter assets).
-  void setImage(String image);
+  void setImage(String image, {AutoImageTint? imageTint});
+
+  /// Updates the tint applied to [image]. Pass `null` to remove the tint.
+  void setImageTint(AutoImageTint? imageTint);
 }

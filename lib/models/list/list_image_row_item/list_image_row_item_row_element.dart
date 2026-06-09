@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import '../../../controllers/carplay_controller.dart';
+import '../../common/image_tint.dart';
 import 'list_image_row_item_element.dart';
 
 /// https://developer.apple.com/documentation/carplay/cplistimagerowitemrowelement
@@ -18,6 +19,9 @@ class CPListImageRowItemRowElement implements CPListImageRowItemElement {
   @override
   String image;
 
+  @override
+  AutoImageTint? imageTint;
+
   /// The title associated with this element.
   /// iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst 26.0+
   String? title;
@@ -29,6 +33,7 @@ class CPListImageRowItemRowElement implements CPListImageRowItemElement {
   /// Creates [CPListImageRowItemRowElement]
   CPListImageRowItemRowElement({
     required this.image,
+    this.imageTint,
     this.title,
     this.subtitle,
     String? id,
@@ -38,14 +43,22 @@ class CPListImageRowItemRowElement implements CPListImageRowItemElement {
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'image': image,
+        'imageTint': imageTint?.toJson(),
         'title': title,
         'subtitle': subtitle,
         'runtimeType': 'FCPListImageRowItemRowElement',
       };
 
   @override
-  void setImage(String image) {
+  void setImage(String image, {AutoImageTint? imageTint}) {
     this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
+    FlutterCarPlayController.updateCPListImageRowItemElement(this);
+  }
+
+  @override
+  void setImageTint(AutoImageTint? imageTint) {
+    this.imageTint = imageTint;
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }
 
@@ -61,10 +74,12 @@ class CPListImageRowItemRowElement implements CPListImageRowItemElement {
 
   void update({
     String? image,
+    AutoImageTint? imageTint,
     String? title,
     String? subtitle,
   }) {
     if (image != null) this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
     if (title != null) this.title = title;
     if (subtitle != null) this.subtitle = subtitle;
 

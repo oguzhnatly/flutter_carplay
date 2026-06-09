@@ -1,4 +1,5 @@
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
+import 'package:flutter_carplay/models/common/image_tint.dart';
 import 'package:flutter_carplay/models/list/list_constants.dart';
 import 'package:uuid/uuid.dart';
 
@@ -26,6 +27,10 @@ class CPListItem extends CPListTemplateItem {
   /// - **Network URL**: `https://example.com/image.png` (remote image)
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   String? image;
+
+  /// Optional tint applied to [image]. Use [AutoImageTint.platform] when the
+  /// host should choose a selected/focused-row-safe color.
+  AutoImageTint? imageTint;
 
   /// The playback progress status for the content that the list item represents.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
@@ -57,6 +62,7 @@ class CPListItem extends CPListTemplateItem {
     this.detailText,
     this.onPress,
     this.image,
+    this.imageTint,
     this.playbackProgress,
     this.isPlaying,
     this.playingIndicatorLocation,
@@ -71,6 +77,7 @@ class CPListItem extends CPListTemplateItem {
         'detailText': detailText,
         'onPress': onPress != null ? true : false,
         'image': image,
+        'imageTint': imageTint?.toJson(),
         'playbackProgress': playbackProgress,
         'isPlaying': isPlaying,
         'playingIndicatorLocation': playingIndicatorLocation?.name,
@@ -98,8 +105,15 @@ class CPListItem extends CPListTemplateItem {
   ///   the native side; remote/`file://` SVGs are not supported)
   /// - **File path**: `file:///path/to/image.png` (local file on device)
   /// - **Network URL**: `https://example.com/image.png` (remote image)
-  void setImage(String image) {
+  void setImage(String image, {AutoImageTint? imageTint}) {
     this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
+  /// Updates the tint applied to [image]. Pass `null` to remove the tint.
+  void setImageTint(AutoImageTint? imageTint) {
+    this.imageTint = imageTint;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
@@ -138,6 +152,7 @@ class CPListItem extends CPListTemplateItem {
     String? text,
     String? detailText,
     String? image,
+    AutoImageTint? imageTint,
     double? playbackProgress,
     bool? isPlaying,
     CPListItemPlayingIndicatorLocation? playingIndicatorLocation,
@@ -146,6 +161,7 @@ class CPListItem extends CPListTemplateItem {
     if (text != null) this.text = text;
     if (detailText != null) this.detailText = detailText;
     if (image != null) this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
     if (playbackProgress != null) {
       if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
         this.playbackProgress = playbackProgress;

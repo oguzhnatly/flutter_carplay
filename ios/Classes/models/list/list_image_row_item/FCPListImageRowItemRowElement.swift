@@ -12,6 +12,7 @@ final class FCPListImageRowItemRowElement {
   private(set) var elementId: String
   private(set) var image: String
   private var imageData: FlutterStandardTypedData?
+  private var imageTint: FCPImageTint?
   var title: String?
   var subtitle: String?
 
@@ -19,6 +20,7 @@ final class FCPListImageRowItemRowElement {
     self.elementId = obj["_elementId"] as! String
     self.image = obj["image"] as! String
     self.imageData = obj["imageData"] as? FlutterStandardTypedData
+    self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
     self.title = obj["title"] as? String
     self.subtitle = obj["subtitle"] as? String
   }
@@ -30,7 +32,7 @@ final class FCPListImageRowItemRowElement {
       subtitle: subtitle,
     )
 
-    loadUIImage(from: image, bytes: imageData) { uiImage in
+    loadUIImage(from: image, bytes: imageData, tint: imageTint) { uiImage in
       listImageRowItemElement.image = uiImage
     }
 
@@ -41,16 +43,19 @@ final class FCPListImageRowItemRowElement {
   public func update(args: [String: Any]) {
     let image = args["image"] as? String
     let imageData = args["imageData"] as? FlutterStandardTypedData
+    let imageTint = FCPImageTint(from: args["imageTint"] as? [String: Any])
     let title = args["title"] as? String
     let subtitle = args["subtitle"] as? String
 
-    if let image = image, image != self.image {
+    let imageTintChanged = imageTint != self.imageTint
+    if let image = image, image != self.image || imageTintChanged {
       self._super?.image = makeSafeUIPlaceholder()
-      loadUIImage(from: image, bytes: imageData) { uiImage in
+      loadUIImage(from: image, bytes: imageData, tint: imageTint) { uiImage in
         self._super?.image = uiImage
       }
       self.image = image
       self.imageData = imageData
+      self.imageTint = imageTint
     }
 
     if let title = title {

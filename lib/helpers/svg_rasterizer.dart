@@ -157,8 +157,14 @@ const svgListImageKeys = <String>{'gridImages'};
 /// - `systemIcon`  -> CPTemplate tab image (resolved natively as an SF Symbol /
 ///                    tab image, not an asset SVG we rasterize).
 /// - `imageTitles` -> CPListImageRowItem labels (text, not images).
+/// - `imageTint`/`gridImageTints` -> tint metadata, not image references.
 @visibleForTesting
-const svgIgnoredKeys = <String>{'systemIcon', 'imageTitles'};
+const svgIgnoredKeys = <String>{
+  'systemIcon',
+  'imageTitles',
+  'imageTint',
+  'gridImageTints',
+};
 
 /// The sibling keys under which the walker attaches rasterized bytes (e.g.
 /// `imageData`, `gridImageData`). These hold raw byte payloads, so the walker

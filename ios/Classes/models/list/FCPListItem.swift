@@ -18,6 +18,7 @@ final class FCPListItem {
   private var completeHandler: (() -> Void)?
   private var image: String?
   private var imageData: FlutterStandardTypedData?
+  private var imageTint: FCPImageTint?
   private var playbackProgress: CGFloat?
   private var isPlaying: Bool?
   private var playingIndicatorLocation: CPListItemPlayingIndicatorLocation?
@@ -30,6 +31,7 @@ final class FCPListItem {
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
     self.image = obj["image"] as? String
     self.imageData = obj["imageData"] as? FlutterStandardTypedData
+    self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
     self.playbackProgress = obj["playbackProgress"] as? CGFloat
     self.isPlaying = obj["isPlaying"] as? Bool
     self.setPlayingIndicatorLocation(fromString: obj["playingIndicatorLocation"] as? String)
@@ -56,7 +58,7 @@ final class FCPListItem {
     listItem.handler = self.handler
     if image != nil {
       listItem.setImage(makeSafeUIPlaceholder())
-      loadUIImage(from: image!, bytes: imageData) { uiImage in
+      loadUIImage(from: image!, bytes: imageData, tint: imageTint) { uiImage in
         listItem.setImage(uiImage)
       }
     }
@@ -90,6 +92,7 @@ final class FCPListItem {
     let detailText = args["detailText"] as? String
     let image = args["image"] as? String
     let imageData = args["imageData"] as? FlutterStandardTypedData
+    let imageTint = FCPImageTint(from: args["imageTint"] as? [String: Any])
     let playbackProgress = args["playbackProgress"] as? CGFloat
     let isPlaying = args["isPlaying"] as? Bool
     let playingIndicatorLocation = args["playingIndicatorLocation"] as? String
@@ -104,16 +107,19 @@ final class FCPListItem {
       self.detailText = detailText
     }
 
-    if let image = image, image != self.image {
+    let imageTintChanged = imageTint != self.imageTint
+    if let image = image, image != self.image || imageTintChanged {
       self._super?.setImage(makeSafeUIPlaceholder())
-      loadUIImage(from: image, bytes: imageData) { uiImage in
+      loadUIImage(from: image, bytes: imageData, tint: imageTint) { uiImage in
         self._super?.setImage(uiImage)
       }
       self.image = image
       self.imageData = imageData
+      self.imageTint = imageTint
     } else if image == nil {
       self.image = nil
       self.imageData = nil
+      self.imageTint = nil
       self._super?.setImage(nil)
     }
 

@@ -158,6 +158,16 @@ class _MyAppState extends State<MyApp> {
             complete();
           },
         ),
+        CPListItem(
+          text: 'Image Tint Examples',
+          detailText: 'Platform, standard, and custom icon tints.',
+          image: 'images/svg_media_glyph.svg',
+          imageTint: const AutoImageTint.platform(),
+          onPress: (complete, self) {
+            openImageTintExamplesTemplate();
+            complete();
+          },
+        ),
       ],
       header: 'Features',
     ));
@@ -298,6 +308,16 @@ class _MyAppState extends State<MyApp> {
                 imageUrl: 'images/svg_navigation.svg',
                 onPress: (complete, AAListItem item) {
                   openSvgExamplesTemplate();
+                  complete();
+                },
+              ),
+              AAListItem(
+                title: 'Image Tint Examples',
+                subtitle: 'Platform, standard, and custom icon tints',
+                imageUrl: 'images/svg_media_glyph.svg',
+                imageTint: const AutoImageTint.platform(),
+                onPress: (complete, AAListItem item) {
+                  openImageTintExamplesTemplate();
                   complete();
                 },
               ),
@@ -609,6 +629,239 @@ class _MyAppState extends State<MyApp> {
         ),
       );
     }
+  }
+
+  void openImageTintExamplesTemplate() {
+    const customPurpleTint = AutoImageTint.custom(
+      color: UIColor(red: 129, green: 83, blue: 255),
+      darkColor: UIColor(red: 196, green: 181, blue: 253),
+    );
+
+    if (Platform.isIOS) {
+      FlutterCarplay.push(
+        template: CPListTemplate(
+          title: 'Image Tints',
+          sections: [
+            CPListSection(
+              header: 'CarPlay List Items',
+              items: [
+                CPListItem(
+                  text: 'Platform tint',
+                  detailText: 'Host-style color with selected-safe contrast',
+                  image: 'images/svg_navigation_glyph.svg',
+                  imageTint: const AutoImageTint.platform(),
+                ),
+                CPListItem(
+                  text: 'Blue tint',
+                  detailText: 'Standard blue glyph tint',
+                  image: 'images/svg_media_glyph.svg',
+                  imageTint: const AutoImageTint.blue(),
+                ),
+                CPListItem(
+                  text: 'Green tint',
+                  detailText: 'Standard green glyph tint',
+                  image: 'images/svg_poi_glyph.svg',
+                  imageTint: const AutoImageTint.green(),
+                ),
+                CPListItem(
+                  text: 'Custom purple tint',
+                  detailText: 'Separate light and dark tint colors',
+                  image: 'images/svg_warning_glyph.svg',
+                  imageTint: customPurpleTint,
+                ),
+                CPListItem(
+                  text: 'Yellow without safety halo',
+                  detailText: 'Shows why selected-safe contrast can matter',
+                  image: 'images/svg_warning_glyph.svg',
+                  imageTint: const AutoImageTint.yellow(selectedSafe: false),
+                ),
+                CPListItem(
+                  text: 'Tinted Grid Template',
+                  detailText: 'CPGridButton images with different tints',
+                  image: 'images/svg_media_glyph.svg',
+                  imageTint: const AutoImageTint.secondary(),
+                  onPress: (complete, self) {
+                    openTintedGridTemplate();
+                    complete();
+                  },
+                ),
+                CPListItem(
+                  text: 'Tinted POI Template',
+                  detailText: 'CPPointOfInterest pin images with tints',
+                  image: 'images/svg_poi_glyph.svg',
+                  imageTint: const AutoImageTint.red(),
+                  onPress: (complete, self) {
+                    openTintedPoiTemplate();
+                    complete();
+                  },
+                ),
+              ],
+            ),
+            CPListSection(
+              header: 'iOS 26 Elements',
+              items: [
+                CPListImageRowItem(
+                  text: 'Legacy tinted gridImages row',
+                  gridImages: const [
+                    'images/svg_navigation_glyph.svg',
+                    'images/svg_media_glyph.svg',
+                    'images/svg_poi_glyph.svg',
+                    'images/svg_warning_glyph.svg',
+                  ],
+                  gridImageTints: const [
+                    AutoImageTint.platform(),
+                    AutoImageTint.blue(),
+                    AutoImageTint.green(),
+                    AutoImageTint.yellow(),
+                  ],
+                  imageTitles: const ['Host', 'Blue', 'Green', 'Yellow'],
+                ),
+                CPListImageRowItem(
+                  text: 'Tinted iOS 26 elements',
+                  elements: [
+                    CPListImageRowItemCardElement(
+                      image: 'images/svg_navigation_glyph.svg',
+                      imageTint: const AutoImageTint.blue(),
+                      title: 'Blue',
+                      subtitle: 'Card',
+                    ),
+                    CPListImageRowItemGridElement(
+                      image: 'images/svg_media_glyph.svg',
+                      imageTint: const AutoImageTint.green(),
+                    ),
+                    CPListImageRowItemImageGridElement(
+                      image: 'images/svg_poi_glyph.svg',
+                      imageTint: customPurpleTint,
+                      title: 'Purple',
+                      accessorySymbolName: 'paintpalette.fill',
+                    ),
+                    CPListImageRowItemRowElement(
+                      image: 'images/svg_warning_glyph.svg',
+                      imageTint: const AutoImageTint.yellow(),
+                      title: 'Yellow',
+                      subtitle: 'Row',
+                    ),
+                  ],
+                  allowsMultipleLines: true,
+                ),
+              ],
+            ),
+          ],
+          systemIcon: 'paintpalette',
+        ),
+      );
+    } else if (Platform.isAndroid) {
+      FlutterAndroidAuto.push(
+        template: AAListTemplate(
+          title: 'Image Tints',
+          sections: [
+            AAListSection(
+              title: 'Android Auto Rows',
+              items: [
+                AAListItem(
+                  title: 'Platform tint',
+                  subtitle: 'CarColor.DEFAULT lets the host pick contrast',
+                  imageUrl: 'images/svg_navigation_glyph.svg',
+                  imageTint: const AutoImageTint.platform(),
+                ),
+                AAListItem(
+                  title: 'Blue tint',
+                  subtitle: 'Standard CarColor.BLUE',
+                  imageUrl: 'images/svg_media_glyph.svg',
+                  imageTint: const AutoImageTint.blue(),
+                ),
+                AAListItem(
+                  title: 'Green tint',
+                  subtitle: 'Standard CarColor.GREEN',
+                  imageUrl: 'images/svg_poi_glyph.svg',
+                  imageTint: const AutoImageTint.green(),
+                ),
+                AAListItem(
+                  title: 'Custom purple tint',
+                  subtitle: 'Custom light and dark CarColor variants',
+                  imageUrl: 'images/svg_warning_glyph.svg',
+                  imageTint: customPurpleTint,
+                ),
+                AAListItem(
+                  title: 'Yellow tint',
+                  subtitle: 'Standard CarColor.YELLOW',
+                  imageUrl: 'images/svg_warning_glyph.svg',
+                  imageTint: const AutoImageTint.yellow(),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void openTintedGridTemplate() {
+    FlutterCarplay.push(
+      template: CPGridTemplate(
+        title: 'Tinted Grid',
+        buttons: [
+          CPGridButton(
+            titleVariants: ['Platform'],
+            image: 'images/svg_navigation_glyph.svg',
+            imageTint: const AutoImageTint.platform(),
+          ),
+          CPGridButton(
+            titleVariants: ['Blue'],
+            image: 'images/svg_media_glyph.svg',
+            imageTint: const AutoImageTint.blue(),
+          ),
+          CPGridButton(
+            titleVariants: ['Green'],
+            image: 'images/svg_poi_glyph.svg',
+            imageTint: const AutoImageTint.green(),
+          ),
+          CPGridButton(
+            titleVariants: ['Purple'],
+            image: 'images/svg_warning_glyph.svg',
+            imageTint: const AutoImageTint.custom(
+              color: UIColor(red: 129, green: 83, blue: 255),
+              darkColor: UIColor(red: 196, green: 181, blue: 253),
+            ),
+          ),
+        ],
+        systemIcon: 'paintpalette',
+      ),
+    );
+  }
+
+  void openTintedPoiTemplate() {
+    FlutterCarplay.push(
+      template: CPPointOfInterestTemplate(
+        title: 'Tinted POI',
+        poi: [
+          CPPointOfInterest(
+            latitude: 51.5052,
+            longitude: 7.4938,
+            title: 'Blue Pin',
+            subtitle: 'Tinted SVG pin image',
+            summary: 'Uses AutoImageTint.blue',
+            detailTitle: 'Blue Pin',
+            detailSubtitle: 'Tinted POI example',
+            detailSummary: 'The pin image is pre-rendered on CarPlay.',
+            image: 'images/svg_poi_glyph.svg',
+            imageTint: const AutoImageTint.blue(),
+          ),
+          CPPointOfInterest(
+            latitude: 51.5074,
+            longitude: 7.4970,
+            title: 'Red Warning',
+            subtitle: 'Tinted warning marker',
+            summary: 'Uses AutoImageTint.red',
+            detailTitle: 'Red Warning',
+            detailSubtitle: 'Tinted POI example',
+            detailSummary: 'The pin image keeps selected-safe contrast.',
+            image: 'images/svg_warning_glyph.svg',
+            imageTint: const AutoImageTint.red(),
+          ),
+        ],
+      ),
+    );
   }
 
   void openSvgGridTemplate() {

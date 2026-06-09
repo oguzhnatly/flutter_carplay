@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import '../../../controllers/carplay_controller.dart';
+import '../../common/image_tint.dart';
 import 'list_image_row_item_element.dart';
 
 /// https://developer.apple.com/documentation/carplay/cplistimagerowitemgridelement
@@ -18,9 +19,13 @@ class CPListImageRowItemGridElement implements CPListImageRowItemElement {
   @override
   String image;
 
+  @override
+  AutoImageTint? imageTint;
+
   /// Creates [CPListImageRowItemGridElement]
   CPListImageRowItemGridElement({
     required this.image,
+    this.imageTint,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
 
@@ -28,19 +33,29 @@ class CPListImageRowItemGridElement implements CPListImageRowItemElement {
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'image': image,
+        'imageTint': imageTint?.toJson(),
         'runtimeType': 'FCPListImageRowItemGridElement',
       };
 
   @override
-  void setImage(String image) {
+  void setImage(String image, {AutoImageTint? imageTint}) {
     this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
+    FlutterCarPlayController.updateCPListImageRowItemElement(this);
+  }
+
+  @override
+  void setImageTint(AutoImageTint? imageTint) {
+    this.imageTint = imageTint;
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }
 
   void update({
     String? image,
+    AutoImageTint? imageTint,
   }) {
     if (image != null) this.image = image;
+    if (imageTint != null) this.imageTint = imageTint;
 
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }
