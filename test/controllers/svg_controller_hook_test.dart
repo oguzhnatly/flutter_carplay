@@ -10,8 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 const _svgAssetKey = 'test/fixtures/icon.svg';
 
 const _carplayChannel = MethodChannel('com.oguzhnatly.flutter_carplay');
-const _androidAutoChannel =
-    MethodChannel('com.oguzhnatly.flutter_android_auto');
+const _androidAutoChannel = MethodChannel(
+  'com.oguzhnatly.flutter_android_auto',
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -133,30 +134,60 @@ void main() {
   group('android_auto_controller flutterToNativeModule', () {
     final controller = FlutterAndroidAutoController();
 
-    test('attaches imageData for an .svg imageUrl before invokeMethod',
-        () async {
+    test(
+      'attaches imageData for an .svg imageUrl before invokeMethod',
+      () async {
+        final captured = capturePayload(_androidAutoChannel);
+
+        await controller.flutterToNativeModule(
+          FAAChannelTypes.setRootTemplate,
+          <String, dynamic>{
+            'template': <String, dynamic>{
+              'sections': <dynamic>[
+                <String, dynamic>{
+                  'items': <dynamic>[
+                    <String, dynamic>{'title': 'a', 'imageUrl': _svgAssetKey},
+                  ],
+                },
+              ],
+            },
+          },
+        );
+
+        final args = captured['arguments'] as Map;
+        final item = (((args['template'] as Map)['sections'] as List)[0]
+            as Map)['items'][0] as Map;
+        expect(item['imageUrl'], _svgAssetKey);
+        expect(item['imageData'], isA<Uint8List>());
+      },
+    );
+
+    test('attaches imageData for nested AAPaneTemplate imageUrls', () async {
       final captured = capturePayload(_androidAutoChannel);
 
       await controller.flutterToNativeModule(
-        FAAChannelTypes.setRootTemplate,
+        FAAChannelTypes.pushTemplate,
         <String, dynamic>{
-          'template': <String, dynamic>{
-            'sections': <dynamic>[
-              <String, dynamic>{
-                'items': <dynamic>[
-                  <String, dynamic>{'title': 'a', 'imageUrl': _svgAssetKey},
-                ],
-              },
-            ],
-          },
+          'template': AAPaneTemplate(
+            title: 'Info',
+            imageUrl: _svgAssetKey,
+            items: [AAPaneItem(title: 'Status', imageUrl: _svgAssetKey)],
+            actions: [AAPaneAction(title: 'Refresh', imageUrl: _svgAssetKey)],
+          ).toJson(),
         },
       );
 
       final args = captured['arguments'] as Map;
-      final item = (((args['template'] as Map)['sections'] as List)[0]
-          as Map)['items'][0] as Map;
+      final template = args['template'] as Map;
+      final item = (template['items'] as List).first as Map;
+      final action = (template['actions'] as List).first as Map;
+
+      expect(template['imageUrl'], _svgAssetKey);
+      expect(template['imageData'], isA<Uint8List>());
       expect(item['imageUrl'], _svgAssetKey);
       expect(item['imageData'], isA<Uint8List>());
+      expect(action['imageUrl'], _svgAssetKey);
+      expect(action['imageData'], isA<Uint8List>());
     });
 
     test('leaves payload unchanged for a non-SVG imageUrl', () async {
@@ -172,56 +203,64 @@ void main() {
       expect(args.containsKey('imageData'), isFalse);
     });
 
-    test('attaches imageData for updateListTemplateSections SVG imageUrl',
-        () async {
-      final captured = capturePayload(_androidAutoChannel);
+    test(
+      'attaches imageData for updateListTemplateSections SVG imageUrl',
+      () async {
+        final captured = capturePayload(_androidAutoChannel);
 
-      await FlutterAndroidAutoController.updateAAListTemplateSections(
-        elementId: 'template-1',
-        sections: [
-          AAListSection(
-            items: [
-              AAListItem(title: 'svg', imageUrl: _svgAssetKey),
-              AAListItem(title: 'png', imageUrl: 'images/icon.png'),
-            ],
-          ),
-        ],
-      );
+        await FlutterAndroidAutoController.updateAAListTemplateSections(
+          elementId: 'template-1',
+          sections: [
+            AAListSection(
+              items: [
+                AAListItem(title: 'svg', imageUrl: _svgAssetKey),
+                AAListItem(title: 'png', imageUrl: 'images/icon.png'),
+              ],
+            ),
+          ],
+        );
 
-      expect(captured['method'], 'updateListTemplateSections');
-      final args = captured['arguments'] as Map;
-      final items = ((args['sections'] as List)[0] as Map)['items'] as List;
-      final svgItem = items[0] as Map;
-      final pngItem = items[1] as Map;
+        expect(captured['method'], 'updateListTemplateSections');
+        final args = captured['arguments'] as Map;
+        final items = ((args['sections'] as List)[0] as Map)['items'] as List;
+        final svgItem = items[0] as Map;
+        final pngItem = items[1] as Map;
 
-      expect(svgItem['imageUrl'], _svgAssetKey);
-      expect(svgItem['imageData'], isA<Uint8List>());
-      expect(pngItem['imageUrl'], 'images/icon.png');
-      expect(pngItem.containsKey('imageData'), isFalse);
-    });
+        expect(svgItem['imageUrl'], _svgAssetKey);
+        expect(svgItem['imageData'], isA<Uint8List>());
+        expect(pngItem['imageUrl'], 'images/icon.png');
+        expect(pngItem.containsKey('imageData'), isFalse);
+      },
+    );
 
-    test('uses the global FlutterAndroidAuto.svgRasterSize for the walker',
-        () async {
-      final defaultBytes = await rasterizeSvgAsset(_svgAssetKey);
+    test(
+      'uses the global FlutterAndroidAuto.svgRasterSize for the walker',
+      () async {
+        final defaultBytes = await rasterizeSvgAsset(_svgAssetKey);
 
-      const customSize = 64;
-      expect(customSize, isNot(defaultSvgRasterSize));
-      FlutterAndroidAuto.svgRasterSize = customSize;
-      addTearDown(
-          () => FlutterAndroidAuto.svgRasterSize = defaultSvgRasterSize);
+        const customSize = 64;
+        expect(customSize, isNot(defaultSvgRasterSize));
+        FlutterAndroidAuto.svgRasterSize = customSize;
+        addTearDown(
+          () => FlutterAndroidAuto.svgRasterSize = defaultSvgRasterSize,
+        );
 
-      final captured = capturePayload(_androidAutoChannel);
-      await controller.flutterToNativeModule(
-        FAAChannelTypes.pushTemplate,
-        <String, dynamic>{'title': 'a', 'imageUrl': _svgAssetKey},
-      );
+        final captured = capturePayload(_androidAutoChannel);
+        await controller.flutterToNativeModule(
+          FAAChannelTypes.pushTemplate,
+          <String, dynamic>{'title': 'a', 'imageUrl': _svgAssetKey},
+        );
 
-      final args = captured['arguments'] as Map;
-      final emitted = args['imageData'] as Uint8List;
+        final args = captured['arguments'] as Map;
+        final emitted = args['imageData'] as Uint8List;
 
-      final expected = await rasterizeSvgAsset(_svgAssetKey, size: customSize);
-      expect(emitted, equals(expected));
-      expect(emitted, isNot(equals(defaultBytes)));
-    });
+        final expected = await rasterizeSvgAsset(
+          _svgAssetKey,
+          size: customSize,
+        );
+        expect(emitted, equals(expected));
+        expect(emitted, isNot(equals(defaultBytes)));
+      },
+    );
   });
 }

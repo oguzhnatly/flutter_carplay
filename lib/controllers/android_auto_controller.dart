@@ -3,6 +3,7 @@ import 'package:flutter_carplay/constants/private_constants.dart';
 
 import '../aa_models/list/list_item.dart';
 import '../aa_models/list/list_section.dart';
+import '../aa_models/pane/pane_action.dart';
 import '../aa_models/template.dart';
 import '../android_auto_worker.dart';
 import '../helpers/auto_android_helper.dart';
@@ -128,19 +129,27 @@ class FlutterAndroidAutoController {
     }
   }
 
-/*void processFAAAlertActionPressed(String elementId) {
+  void processFAAPaneActionPressedChannel(String elementId) {
+    final AAPaneAction? paneAction = _androidAutoHelper.findAAPaneAction(
+      templates: templateHistory,
+      elementId: elementId,
+    );
+    paneAction?.onPress?.call();
+  }
+
+  /*void processFAAAlertActionPressed(String elementId) {
     CAAAlertAction selectedAlertAction = currentPresentTemplate!.actions
         .firstWhere((e) => e.uniqueId == elementId);
     selectedAlertAction.onPress();
   }*/
 
-/*void processFCPAlertTemplateCompleted(bool completed) {
+  /*void processFCPAlertTemplateCompleted(bool completed) {
     if (currentPresentTemplate?.onPresent != null) {
       currentPresentTemplate!.onPresent!(completed);
     }
   }*/
 
-/*void processFCPGridButtonPressed(String elementId) {
+  /*void processFCPGridButtonPressed(String elementId) {
     CPGridButton? gridButton;
     l1:
     for (var t in templateHistory) {
@@ -156,7 +165,7 @@ class FlutterAndroidAutoController {
     if (gridButton != null) gridButton.onPress();
   }*/
 
-/*void processFCPBarButtonPressed(String elementId) {
+  /*void processFCPBarButtonPressed(String elementId) {
     CPBarButton? barButton;
     l1:
     for (var t in templateHistory) {
@@ -168,7 +177,7 @@ class FlutterAndroidAutoController {
     if (barButton != null) barButton.onPress();
   }*/
 
-/*void processFCPTextButtonPressed(String elementId) {
+  /*void processFCPTextButtonPressed(String elementId) {
     l1:
     for (var t in templateHistory) {
       if (t.runtimeType.toString() == "CPPointOfInterestTemplate") {

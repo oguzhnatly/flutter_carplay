@@ -32,6 +32,22 @@ class FlutterAutoAndroidHelper {
     return null;
   }
 
+  AAPaneAction? findAAPaneAction({
+    required List<AATemplate> templates,
+    required String elementId,
+  }) {
+    for (var t in templates) {
+      if (t is! AAPaneTemplate) continue;
+
+      for (var action in t.actions) {
+        if (action.uniqueId == elementId) {
+          return action;
+        }
+      }
+    }
+    return null;
+  }
+
   String makeFAAChannelId({String event = ''}) =>
       'com.oguzhnatly.flutter_android_auto$event';
 }
