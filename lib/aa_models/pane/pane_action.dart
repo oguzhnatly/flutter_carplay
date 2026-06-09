@@ -23,7 +23,8 @@ class AAPaneAction {
     this.isPrimary = false,
     this.onPress,
     String? id,
-  }) : _elementId = id ?? const Uuid().v4();
+  })  : assert(title.isNotEmpty, 'AAPaneAction.title cannot be empty'),
+        _elementId = id ?? const Uuid().v4();
 
   String get uniqueId => _elementId;
 

@@ -22,8 +22,12 @@ class AAPaneTemplate implements AATemplate {
 
   /// Shows Android Auto's loading state instead of rows.
   ///
-  /// Android requires pane content to be either loading or non-empty. Native
-  /// Android will also use loading automatically when [items] is empty.
+  /// Android requires pane content to be either loading with no rows, or
+  /// non-loading with at least one row.
+  ///
+  /// Android treats a loading pane followed by loaded content as a template
+  /// refresh. Switching an already-loaded pane back to loading changes the row
+  /// count, so it may count as a new template in Android Auto's template quota.
   final bool isLoading;
 
   AAPaneTemplate({
@@ -34,7 +38,23 @@ class AAPaneTemplate implements AATemplate {
     this.imageTint,
     this.isLoading = false,
     String? id,
-  }) : _elementId = id ?? const Uuid().v4();
+  })  : assert(
+          isLoading || items.isNotEmpty,
+          'AAPaneTemplate.items cannot be empty unless isLoading is true',
+        ),
+        assert(
+          !isLoading || items.isEmpty,
+          'AAPaneTemplate.items must be empty when isLoading is true',
+        ),
+        assert(
+          actions.length <= 2,
+          'AAPaneTemplate.actions cannot contain more than 2 actions',
+        ),
+        assert(
+          actions.where((AAPaneAction action) => action.isPrimary).length <= 1,
+          'AAPaneTemplate.actions cannot contain more than 1 primary action',
+        ),
+        _elementId = id ?? const Uuid().v4();
 
   @override
   String get uniqueId => _elementId;

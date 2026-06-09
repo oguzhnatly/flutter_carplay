@@ -56,5 +56,77 @@ void main() {
         'isLoading': false,
       });
     });
+
+    test('asserts Android pane loading/content constraints', () {
+      final template = AAPaneTemplate(
+        id: 'pane-loading',
+        title: 'Info',
+        items: [],
+        isLoading: true,
+      );
+
+      expect(template.toJson(), <String, dynamic>{
+        '_elementId': 'pane-loading',
+        'title': 'Info',
+        'items': [],
+        'actions': [],
+        'imageUrl': null,
+        'imageTint': null,
+        'isLoading': true,
+      });
+
+      expect(
+        () => AAPaneTemplate(title: 'Info', items: []),
+        throwsA(isA<AssertionError>()),
+      );
+
+      expect(
+        () => AAPaneTemplate(
+          title: 'Info',
+          items: [AAPaneItem(title: 'Status')],
+          isLoading: true,
+        ),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
+    test('asserts Android pane action constraints', () {
+      expect(
+        () => AAPaneTemplate(
+          title: 'Info',
+          items: [AAPaneItem(title: 'Status')],
+          actions: [
+            AAPaneAction(title: 'One'),
+            AAPaneAction(title: 'Two'),
+            AAPaneAction(title: 'Three'),
+          ],
+        ),
+        throwsA(isA<AssertionError>()),
+      );
+
+      expect(
+        () => AAPaneTemplate(
+          title: 'Info',
+          items: [AAPaneItem(title: 'Status')],
+          actions: [
+            AAPaneAction(title: 'One', isPrimary: true),
+            AAPaneAction(title: 'Two', isPrimary: true),
+          ],
+        ),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
+    test('asserts Android row and action title constraints', () {
+      expect(
+        () => AAPaneItem(title: ''),
+        throwsA(isA<AssertionError>()),
+      );
+
+      expect(
+        () => AAPaneAction(title: ''),
+        throwsA(isA<AssertionError>()),
+      );
+    });
   });
 }

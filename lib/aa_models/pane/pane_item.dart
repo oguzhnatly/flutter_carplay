@@ -25,7 +25,8 @@ class AAPaneItem {
     this.imageUrl,
     this.imageTint,
     String? id,
-  }) : _elementId = id ?? const Uuid().v4();
+  })  : assert(title.isNotEmpty, 'AAPaneItem.title cannot be empty'),
+        _elementId = id ?? const Uuid().v4();
 
   String get uniqueId => _elementId;
 
