@@ -10,7 +10,7 @@ let package = Package(
         .library(name: "flutter-carplay", targets: ["flutter_carplay"])
     ],
     dependencies: [
-        .package(name: "FlutterFramework", path: "../FlutterFramework")
+        .package(name: "FlutterFramework", path: "FlutterFramework")
     ],
     targets: [
         .target(
