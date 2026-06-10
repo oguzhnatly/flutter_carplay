@@ -40,10 +40,34 @@ class AAListTemplate implements AATemplate {
     this.systemIcon,
     this.iconUrl,
     String? id,
-  }) : _elementId = id ?? const Uuid().v4();
+  })  : assert(
+          _hasValidSelectableList(sections),
+          'A selectable AAListSection must be the only section in an '
+          'AAListTemplate and must not have a title.',
+        ),
+        _elementId = id ?? const Uuid().v4();
 
   @override
   String get uniqueId => _elementId;
+
+  static bool _hasValidSelectableList(List<AAListSection> sections) {
+    final selectableSections = sections.where(
+      (AAListSection section) => section.isSelectable,
+    );
+    if (selectableSections.isEmpty) return true;
+
+    return sections.length == 1 &&
+        (selectableSections.single.title == null ||
+            selectableSections.single.title!.isEmpty);
+  }
+
+  static void _validateSelectableList(List<AAListSection> sections) {
+    assert(
+      _hasValidSelectableList(sections),
+      'A selectable AAListSection must be the only section in an '
+      'AAListTemplate and must not have a title.',
+    );
+  }
 
   @override
   Map<String, dynamic> toJson() => {
@@ -58,6 +82,7 @@ class AAListTemplate implements AATemplate {
       };
 
   void updateSections(List<AAListSection> newSections) {
+    _validateSelectableList(newSections);
     final copy = List<AAListSection>.from(newSections);
     sections
       ..clear()

@@ -7,6 +7,9 @@ data class FAAListSection(
     val selectedIndex: Int? = null,
     val isOnSelectedListenerActive: Boolean = false,
 ) {
+    val isSelectable: Boolean
+        get() = selectedIndex != null || isOnSelectedListenerActive
+
     companion object {
         fun fromJson(map: Map<String, Any?>): FAAListSection {
             val elementId = map["_elementId"] as? String ?: ""

@@ -42,6 +42,8 @@ class AAListSection {
 
   String get uniqueId => _elementId;
 
+  bool get isSelectable => selectedIndex != null || onSelected != null;
+
   Map<String, dynamic> toJson() => {
         '_elementId': _elementId,
         'title': title,
