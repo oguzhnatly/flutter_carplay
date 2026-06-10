@@ -1,5 +1,11 @@
 ## Next
 
+## 1.5.0
+
+- Add Android Auto alert, grid, and tab bar templates (#102) (ty @Gabriellsp)
+- Add Android Auto modal alert presentation and dismissal APIs (#102) (ty @Gabriellsp)
+- Add Android Auto list loading messages and empty view titles (#102) (ty @Gabriellsp)
+
 ## 1.4.0
 
 - Add `CPSearchTemplate` support for CarPlay search flows (#96) (ty @sINFdorako)

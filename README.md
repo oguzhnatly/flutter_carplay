@@ -10,7 +10,7 @@
 
 Flutter Apps now on Apple CarPlay and Android Auto ! `flutter_carplay` aims to make it safe to use apps made with Flutter in the car by integrating with CarPlay and Android Auto. The package takes the things you want to do while driving and puts them on the car's built-in display.
 
-**✨ New in v1.4.0**: CarPlay search templates, Android Auto message, long message, and pane templates, richer Android Auto lists, and Flutter asset SVG image support.
+**✨ New in v1.5.0**: Android Auto alert, grid, and tab bar templates, modal alert APIs, and richer Android Auto list loading states.
 
 **✨ New in v1.1.0**: CarPlay apps can now launch automatically without requiring the Flutter app to be opened first, supporting true background launch capabilities.
 
@@ -100,6 +100,12 @@ By evaluating this information, you can request for the relevant entitlement fro
 - [x] Now Playing Template (Automatically handled by Android Auto system)
 
 # What's New in latest versions
+
+## v1.5.0
+
+- **🚘 More Android Auto Templates**: Added alert, grid, and tab bar templates, including tab selection handling
+- **⚠️ Android Auto Alerts**: Added modal alert presentation and dismissal APIs for Android Auto flows
+- **🧾 Better Android Auto Lists**: Added loading messages and empty view title support for list templates
 
 ## v1.4.0
 
