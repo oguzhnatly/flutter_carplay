@@ -464,6 +464,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     elementId: String, actionWhenFound: (_ item: FCPListTemplateItem) -> Void
   ) {
     var collected: [FCPListTemplate] = []
+    var found = false
 
     for template in SwiftFlutterCarplayPlugin.templateStack {
       if let tabBar = template as? FCPTabBarTemplate {
@@ -478,7 +479,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         for item in search.getCurrentResultItems() {
           if item.elementId == elementId {
             actionWhenFound(item)
-            return
+            found = true
           }
         }
       }
@@ -489,12 +490,15 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         for i in s.getFCPListTemplateItems() {
           if i.elementId == elementId {
             actionWhenFound(i)
-            return
+            found = true
           }
         }
       }
     }
-    NSLog("FCP: FCPListTemplateItem not found with elementId: \(elementId)")
+
+    if !found {
+      NSLog("FCP: FCPListTemplateItem not found with elementId: \(elementId)")
+    }
   }
 
   @available(iOS 26.0, *)
