@@ -1,5 +1,9 @@
 ## Next
 
+## 1.5.1
+
+- Fix CarPlay tab templates when the same list item ID appears in multiple tabs (#121) (ty @Gabriellsp)
+
 ## 1.5.0
 
 - Add Android Auto alert, grid, and tab bar templates (#102) (ty @Gabriellsp)
