@@ -1,5 +1,10 @@
 ## Next
 
+## 1.6.0 - 2026-06-13
+
+- Add Swift Package Manager support for iOS package consumers (#111) (ty @justinbeatz)
+- Keep `FCPImageTint.swift` in the SwiftPM source path and align CocoaPods source files with the new package layout (#111) (ty @justinbeatz)
+
 ## 1.5.1
 
 - Fix CarPlay tab templates when the same list item ID appears in multiple tabs (#121) (ty @Gabriellsp)
