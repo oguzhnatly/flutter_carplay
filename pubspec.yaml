@@ -24,7 +24,7 @@ flutter:
   plugin:
     platforms:
       ios:
-        pluginClass: FlutterCarplayPlugin
+        pluginClass: SwiftFlutterCarplayPlugin
       android:
         package: com.oguzhnatly.flutter_android_auto
         pluginClass: FlutterAndroidAutoPlugin

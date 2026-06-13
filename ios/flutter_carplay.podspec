@@ -13,7 +13,9 @@ Flutter Apps are now on Apple CarPlay. This package aims to make it safe to use 
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Oğuzhan Atalay' => 'info@oguzhanatalay.com' }
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  s.source_files     = 'flutter_carplay/Sources/flutter_carplay/**/*.swift',
+                        'flutter_carplay/Sources/flutter_carplay/**/*.m',
+                        'flutter_carplay/Sources/flutter_carplay/**/*.h'
   s.dependency 'Flutter'
   s.platform = :ios, '14.0'
 
