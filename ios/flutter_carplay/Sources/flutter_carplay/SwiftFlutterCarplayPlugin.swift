@@ -80,9 +80,6 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       case String(describing: FCPListTemplate.self):
         rootTemplate = FCPListTemplate(obj: data)
         break
-      case String(describing: FCPSearchTemplate.self):
-        rootTemplate = FCPSearchTemplate(obj: data)
-        break
       default:
         result(false)
         return
@@ -97,12 +94,14 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       SwiftFlutterCarplayPlugin.objcRootTemplate = rootTemplate!
       let animated = args["animated"] as! Bool
       SwiftFlutterCarplayPlugin.animated = animated
-      FlutterCarPlaySceneDelegate.forceUpdateRootTemplate()
-      result(true)
+      FlutterCarPlaySceneDelegate.forceUpdateRootTemplate { completed, error in
+        result(completed && error == nil)
+      }
       break
     case FCPChannelTypes.forceUpdateRootTemplate:
-      FlutterCarPlaySceneDelegate.forceUpdateRootTemplate()
-      result(true)
+      FlutterCarPlaySceneDelegate.forceUpdateRootTemplate { completed, error in
+        result(completed && error == nil)
+      }
       break
     case FCPChannelTypes.updateListTemplateSections:
       guard let args = call.arguments as? [String: Any] else {
