@@ -80,6 +80,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       case String(describing: FCPListTemplate.self):
         rootTemplate = FCPListTemplate(obj: data)
         break
+      case String(describing: FCPSearchTemplate.self):
+        rootTemplate = FCPSearchTemplate(obj: data)
+        break
       default:
         result(false)
         return
