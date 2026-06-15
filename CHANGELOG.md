@@ -1,5 +1,10 @@
 ## Next
 
+## 1.6.1 - 2026-06-15
+
+- Fix Swift Package Manager builds by keeping `FCPSearchTemplate.swift` inside the SwiftPM source path (#123, #124) (ty @Gabriellsp)
+- Reject unsupported `CPSearchTemplate` root templates before CarPlay receives an invalid root template.
+
 ## 1.6.0 - 2026-06-13
 
 - Add Swift Package Manager support for iOS package consumers (#111) (ty @justinbeatz)

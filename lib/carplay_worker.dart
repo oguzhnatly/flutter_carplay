@@ -179,7 +179,8 @@ class FlutterCarplay {
   ///
   /// - rootTemplate is a template to use as the root of a new navigation hierarchy. If one exists,
   /// it will replace the current rootTemplate. **Must be one of the type:**
-  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate] If not, it will throw an [TypeError]
+  /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate],
+  /// [CPInformationTemplate], [CPPointOfInterestTemplate] If not, it will throw an [TypeError]
   ///
   /// - If animated is true, CarPlay animates the presentation of the template, but will be ignored
   /// this flag when there isn’t an existing navigation hierarchy to replace.
@@ -193,8 +194,7 @@ class FlutterCarplay {
         rootTemplate is CPGridTemplate ||
         rootTemplate is CPListTemplate ||
         rootTemplate is CPInformationTemplate ||
-        rootTemplate is CPPointOfInterestTemplate ||
-        rootTemplate is CPSearchTemplate) {
+        rootTemplate is CPPointOfInterestTemplate) {
       return FlutterCarPlayController.flutterToNativeModule(
           FCPChannelTypes.setRootTemplate, <String, dynamic>{
         'rootTemplate': rootTemplate.toJson(),
@@ -208,6 +208,8 @@ class FlutterCarplay {
           }
         }
       });
+    } else {
+      throw TypeError();
     }
   }
 

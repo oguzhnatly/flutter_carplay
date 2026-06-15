@@ -28,11 +28,28 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 {
   static private var interfaceController: CPInterfaceController?
 
-  static public func forceUpdateRootTemplate() {
-    guard let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate else { return }
+  static public func forceUpdateRootTemplate(
+    completion: ((_ completed: Bool, _ error: Error?) -> Void)? = nil
+  ) {
+    guard let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate else {
+      completion?(true, nil)
+      return
+    }
     let animated = SwiftFlutterCarplayPlugin.animated
 
-    self.interfaceController?.setRootTemplate(rootTemplate, animated: animated)
+    guard let interfaceController = self.interfaceController else {
+      completion?(true, nil)
+      return
+    }
+
+    interfaceController.setRootTemplate(rootTemplate, animated: animated) { completed, error in
+      if let error = error {
+        NSLog(
+          "FlutterCarPlaySceneDelegate setRootTemplate failed: \(error.localizedDescription)"
+        )
+      }
+      completion?(completed, error)
+    }
   }
 
   // https://developer.apple.com/documentation/carplay/cplisttemplate/updatesections(_:)
@@ -164,11 +181,16 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     interfaceController.delegate = self
 
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
-    let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate
-
-    if rootTemplate != nil {
-      FlutterCarPlaySceneDelegate.interfaceController?.setRootTemplate(
-        rootTemplate!, animated: SwiftFlutterCarplayPlugin.animated, completion: nil)
+    if let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate {
+      interfaceController.setRootTemplate(
+        rootTemplate, animated: SwiftFlutterCarplayPlugin.animated
+      ) { completed, error in
+        if let error = error {
+          NSLog(
+            "FlutterCarPlaySceneDelegate didConnect setRootTemplate failed: \(error.localizedDescription)"
+          )
+        }
+      }
     }
   }
 
