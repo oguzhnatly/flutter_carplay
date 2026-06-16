@@ -182,6 +182,8 @@ After you receive the entitlement, you need to configure your Xcode project to u
 
 For more detailed instructions about how to create and import the CarPlay Provisioning Profile and add an Entitlements File to Xcode Project, go to [Configure your CarPlay-enabled app with the entitlements it requires.](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements)
 
+Choose the CarPlay entitlement that matches the app category Apple approved for your project. The example app keeps `com.apple.developer.carplay-parking` so the Point of Interest demo remains available. If your app uses a different CarPlay category, replace it with the matching entitlement, for example `com.apple.developer.carplay-maps` for maps and navigation, `com.apple.developer.carplay-quick-ordering` for quick ordering, `com.apple.developer.carplay-charging` for EV charging, `com.apple.developer.carplay-fueling` for fuel stations, `com.apple.developer.carplay-driving-task` for driving tasks, `com.apple.developer.carplay-communication` for calling or messaging, or `com.apple.developer.carplay-audio` for audio playback.
+
 # Disclaimer Before The Installation
 
 You are about to make some minor changes to your Xcode project after installing this package. This is due to the fact that It requires bitcode compilation which is missing in Flutter. You will procedure that will relocate (we won't remove or edit) some Flutter and its package engines. If you're planning to add this package to a critical project for you, you should proceed cautiously.
@@ -650,7 +652,7 @@ _flutterCarplay.forceUpdateRootTemplate();
 
 ![Flutter CarPlay Search Template](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/search_template.png)
 
-Use `CPSearchTemplate` when your CarPlay navigation app needs a native search screen. Apple only allows this template for apps signed with the CarPlay maps/navigation entitlement (`com.apple.developer.carplay-maps`), so configure that entitlement before presenting a search template. Return result rows from `onUpdatedSearchText`, handle row selection in `onSelectedResult`, and call the provided completion callback after your app finishes handling the selected result.
+Use `CPSearchTemplate` when your CarPlay app needs a native search screen. Your app's CarPlay entitlement controls which templates are available for its approved category. The example app keeps the parking entitlement for Point of Interest support; switch the entitlement in your app target if Apple approved a different category. Return result rows from `onUpdatedSearchText`, handle row selection in `onSelectedResult`, and call the provided completion callback after your app finishes handling the selected result.
 
 ```dart
 await FlutterCarplay.push(
