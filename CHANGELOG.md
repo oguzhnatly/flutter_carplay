@@ -1,8 +1,8 @@
-## Next
+## 1.6.2 - 2026-06-16
 
-- Align `setRootTemplate` with documented `CPSearchTemplate` root support.
-- Add a CarPlay example row that opens Search through the root template path.
-- Configure the iOS example with the CarPlay maps entitlement so the Search Template demo uses a valid CarPlay category.
+- Support setting `CPSearchTemplate` as the CarPlay root template.
+- Add a Search Template row to the example app and a README preview image.
+- Document CarPlay entitlement options while keeping parking as the example default for Point of Interest support.
 
 ## 1.6.1 - 2026-06-15
 
