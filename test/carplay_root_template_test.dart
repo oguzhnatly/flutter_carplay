@@ -14,19 +14,19 @@ void main() {
     messenger.setMockMethodCallHandler(_carplayChannel, null);
   });
 
-  test('rejects CPSearchTemplate as a root template before native call',
-      () async {
-    var invokedNative = false;
+  test('allows CPSearchTemplate as a root template', () async {
+    MethodCall? capturedCall;
     messenger.setMockMethodCallHandler(_carplayChannel, (call) async {
-      invokedNative = true;
+      capturedCall = call;
       return true;
     });
 
-    await expectLater(
-      FlutterCarplay.setRootTemplate(rootTemplate: CPSearchTemplate()),
-      throwsA(isA<TypeError>()),
-    );
+    await FlutterCarplay.setRootTemplate(rootTemplate: CPSearchTemplate());
 
-    expect(invokedNative, isFalse);
+    expect(capturedCall, isNotNull);
+    expect(capturedCall!.method, 'setRootTemplate');
+    final args = capturedCall!.arguments as Map<Object?, Object?>;
+    final rootTemplate = args['rootTemplate'] as Map<Object?, Object?>;
+    expect(rootTemplate['runtimeType'], 'FCPSearchTemplate');
   });
 }

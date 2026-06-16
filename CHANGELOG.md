@@ -1,5 +1,9 @@
 ## Next
 
+- Align `setRootTemplate` with documented `CPSearchTemplate` root support.
+- Add a CarPlay example row that opens Search through the root template path.
+- Configure the iOS example with the CarPlay maps entitlement so the Search Template demo uses a valid CarPlay category.
+
 ## 1.6.1 - 2026-06-15
 
 - Fix Swift Package Manager builds by keeping `FCPSearchTemplate.swift` inside the SwiftPM source path (#123, #124) (ty @Gabriellsp)
