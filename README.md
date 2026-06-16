@@ -648,7 +648,7 @@ _flutterCarplay.forceUpdateRootTemplate();
 
 ### CarPlay Search Template
 
-Use `CPSearchTemplate` when your CarPlay app needs a native search screen. Return result rows from `onUpdatedSearchText`, handle row selection in `onSelectedResult`, and call the provided completion callback after your app finishes handling the selected result.
+Use `CPSearchTemplate` when your CarPlay navigation app needs a native search screen. Apple only allows this template for apps signed with the CarPlay maps/navigation entitlement (`com.apple.developer.carplay-maps`), so configure that entitlement before presenting a search template. Return result rows from `onUpdatedSearchText`, handle row selection in `onSelectedResult`, and call the provided completion callback after your app finishes handling the selected result.
 
 ```dart
 await FlutterCarplay.push(

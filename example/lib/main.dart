@@ -125,6 +125,14 @@ class _MyAppState extends State<MyApp> {
             },
           ),
           CPListItem(
+            text: 'Search Template',
+            detailText: 'Search destinations from a CarPlay root template',
+            onPress: (complete, self) async {
+              await complete();
+              await openSearchTemplate();
+            },
+          ),
+          CPListItem(
             text: 'Action Sheet',
             detailText: 'A template that displays a modal action sheet',
             onPress: (complete, self) {
@@ -595,6 +603,50 @@ class _MyAppState extends State<MyApp> {
             ),
         ],
         systemIcon: 'systemIcon',
+      ),
+    );
+  }
+
+  Future<void> openSearchTemplate() async {
+    if (!Platform.isIOS) {
+      print('This example has not been yet updated for Android');
+      return;
+    }
+
+    const destinations = [
+      'Apple Park',
+      'Golden Gate Bridge',
+      'San Francisco Ferry Building',
+      'Ocean Beach',
+      'Twin Peaks',
+    ];
+
+    await FlutterCarplay.setRootTemplate(
+      rootTemplate: CPSearchTemplate(
+        onUpdatedSearchText: (searchText, update) {
+          final query = searchText.trim().toLowerCase();
+          final results = destinations
+              .where(
+                (destination) =>
+                    query.isEmpty || destination.toLowerCase().contains(query),
+              )
+              .map(
+                (destination) => CPListItem(
+                  text: destination,
+                  detailText: 'Search result',
+                  accessoryType: CPListItemAccessoryType.disclosureIndicator,
+                ),
+              )
+              .toList();
+          update(results);
+        },
+        onSelectedResult: (selectedItem, complete) {
+          print('Selected search result: ${selectedItem.text}');
+          complete();
+        },
+        onSearchTemplateSearchButtonPressed: () {
+          print('CarPlay search button pressed');
+        },
       ),
     );
   }
