@@ -110,10 +110,8 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
     }
 
     private fun forceUpdateRootTemplate(call: MethodCall, result: MethodChannel.Result) {
-        currentScreen?.let {
-            it.invalidate()
-            result.success(true)
-        } ?: result.error("No screen found", "You must set a RootTemplate first", null)
+        currentScreen?.invalidate()
+        result.success(true)
     }
 
     private fun popTemplate(call: MethodCall, result: MethodChannel.Result) {
