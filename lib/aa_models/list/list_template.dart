@@ -40,7 +40,12 @@ class AAListTemplate implements AATemplate {
     this.systemIcon,
     this.iconUrl,
     String? id,
-  }) : _elementId = id ?? const Uuid().v4();
+  })  : assert(
+          !sections.any((section) => section.isSelectable) ||
+              sections.length == 1,
+          'Android Auto selectable list sections cannot be mixed with other sections.',
+        ),
+        _elementId = id ?? const Uuid().v4();
 
   @override
   String get uniqueId => _elementId;

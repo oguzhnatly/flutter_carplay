@@ -320,6 +320,14 @@ class _MyAppState extends State<MyApp> {
                 },
               ),
               AAListItem(
+                title: 'Selectable List',
+                subtitle: 'Open Android Auto radio options',
+                onPress: (complete, AAListItem item) {
+                  openAndroidAutoSelectableListTemplate();
+                  complete();
+                },
+              ),
+              AAListItem(
                 title: 'SVG Examples',
                 subtitle: 'Open Android Auto rows backed by SVG assets',
                 imageUrl: 'images/svg_navigation.svg',
@@ -348,17 +356,6 @@ class _MyAppState extends State<MyApp> {
                   complete();
                 },
               ),
-            ],
-          ),
-          AAListSection(
-            title: 'Second Section',
-            selectedIndex: 0,
-            onSelected: (selectedIndex, selectedItem) {
-              print('Selected index: $selectedIndex (${selectedItem.title})');
-            },
-            items: [
-              AAListItem(title: 'Radio option 1'),
-              AAListItem(title: 'Radio option 2'),
             ],
           ),
           AAListSection(
@@ -400,6 +397,26 @@ class _MyAppState extends State<MyApp> {
       ),
     );
     _flutterAndroidAuto.forceUpdateRootTemplate();
+  }
+
+  void openAndroidAutoSelectableListTemplate() {
+    FlutterAndroidAuto.push(
+      template: AAListTemplate(
+        title: 'Selectable List',
+        sections: [
+          AAListSection(
+            selectedIndex: 0,
+            onSelected: (selectedIndex, selectedItem) {
+              print('Selected index: $selectedIndex (${selectedItem.title})');
+            },
+            items: [
+              AAListItem(title: 'Radio option 1'),
+              AAListItem(title: 'Radio option 2'),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   void openAndroidAutoMessageTemplate() {
