@@ -1,3 +1,8 @@
+## 1.6.3 - 2026-06-22
+
+- Fix Android Auto example release launches by allowing root template refresh before the car screen is attached (#127, #128) (ty @deandreamatias)
+- Keep the Android Auto selectable list demo in its own template so it follows host validation rules (#128)
+
 ## 1.6.2 - 2026-06-16
 
 - Support setting `CPSearchTemplate` as the CarPlay root template.
