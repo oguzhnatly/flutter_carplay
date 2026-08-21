@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import '../../../controllers/carplay_controller.dart';
+import '../../common/image_size.dart';
 import '../../common/image_tint.dart';
 import 'list_image_row_item_element.dart';
 
@@ -22,10 +23,14 @@ class CPListImageRowItemGridElement implements CPListImageRowItemElement {
   @override
   AutoImageTint? imageTint;
 
+  @override
+  AutoImageSize? imageSize;
+
   /// Creates [CPListImageRowItemGridElement]
   CPListImageRowItemGridElement({
     required this.image,
     this.imageTint,
+    this.imageSize,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
 
@@ -34,13 +39,19 @@ class CPListImageRowItemGridElement implements CPListImageRowItemElement {
         '_elementId': _elementId,
         'image': image,
         'imageTint': imageTint?.toJson(),
+        'imageSize': imageSize?.toJson(),
         'runtimeType': 'FCPListImageRowItemGridElement',
       };
 
   @override
-  void setImage(String image, {AutoImageTint? imageTint}) {
+  void setImage(
+    String image, {
+    AutoImageTint? imageTint,
+    AutoImageSize? imageSize,
+  }) {
     this.image = image;
     if (imageTint != null) this.imageTint = imageTint;
+    if (imageSize != null) this.imageSize = imageSize;
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }
 
@@ -50,12 +61,20 @@ class CPListImageRowItemGridElement implements CPListImageRowItemElement {
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }
 
+  @override
+  void setImageSize(AutoImageSize? imageSize) {
+    this.imageSize = imageSize;
+    FlutterCarPlayController.updateCPListImageRowItemElement(this);
+  }
+
   void update({
     String? image,
     AutoImageTint? imageTint,
+    AutoImageSize? imageSize,
   }) {
     if (image != null) this.image = image;
     if (imageTint != null) this.imageTint = imageTint;
+    if (imageSize != null) this.imageSize = imageSize;
 
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }

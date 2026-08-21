@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
+import 'package:flutter_carplay/models/common/image_size.dart';
 import 'package:flutter_carplay/models/common/image_tint.dart';
 import 'package:flutter_carplay/models/list/list_constants.dart';
 import 'package:uuid/uuid.dart';
@@ -32,6 +33,11 @@ class CPListItem extends CPListTemplateItem {
   /// host should choose a selected or focused row safe color.
   AutoImageTint? imageTint;
 
+  /// How much of the slot CarPlay reserves for [image] the artwork fills.
+  ///
+  /// Defaults to `FlutterCarplay.iconSize` when omitted.
+  AutoImageSize? imageSize;
+
   /// Backward compatible trailing accessory image.
   ///
   /// New code should prefer [trailingImage], which also supports SVG assets and
@@ -47,6 +53,10 @@ class CPListItem extends CPListTemplateItem {
 
   /// Optional tint applied to [trailingImage].
   AutoImageTint? trailingImageTint;
+
+  /// How much of the slot CarPlay reserves for [trailingImage] the artwork
+  /// fills. Defaults to `FlutterCarplay.iconSize` when omitted.
+  AutoImageSize? trailingImageSize;
 
   /// The playback progress status for the content that the list item represents.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
@@ -79,9 +89,11 @@ class CPListItem extends CPListTemplateItem {
     this.onPress,
     this.image,
     this.imageTint,
+    this.imageSize,
     this.accessoryImage,
     this.trailingImage,
     this.trailingImageTint,
+    this.trailingImageSize,
     this.playbackProgress,
     this.isPlaying,
     this.playingIndicatorLocation,
@@ -97,9 +109,11 @@ class CPListItem extends CPListTemplateItem {
         'onPress': onPress != null ? true : false,
         'image': image,
         'imageTint': imageTint?.toJson(),
+        'imageSize': imageSize?.toJson(),
         'accessoryImage': accessoryImage,
         'trailingImage': trailingImage,
         'trailingImageTint': trailingImageTint?.toJson(),
+        'trailingImageSize': trailingImageSize?.toJson(),
         'playbackProgress': playbackProgress,
         'isPlaying': isPlaying,
         'playingIndicatorLocation': playingIndicatorLocation?.name,
@@ -126,9 +140,15 @@ class CPListItem extends CPListTemplateItem {
   /// * SVG asset: `images/icon.svg` rasterized to PNG before native display
   /// * File path: `file:///path/to/image.png` local file on device
   /// * Network URL: `https://example.com/image.png` remote image
-  void setImage(String image, {AutoImageTint? imageTint}) {
+  void setImage(
+    String image, {
+    AutoImageTint? imageTint,
+    AutoImageSize? imageSize,
+  }) {
     this.image = image;
     if (imageTint != null) this.imageTint = imageTint;
+    if (imageSize != null) this.imageSize = imageSize;
+    if (imageSize != null) this.imageSize = imageSize;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
@@ -138,18 +158,37 @@ class CPListItem extends CPListTemplateItem {
     FlutterCarPlayController.updateCPListItem(this);
   }
 
+  /// Updates how much of its reserved slot [image] fills. Pass `null` to fall
+  /// back to `FlutterCarplay.iconSize`.
+  void setImageSize(AutoImageSize? imageSize) {
+    this.imageSize = imageSize;
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
   /// Updating the image displayed on the trailing edge of the list item cell.
   ///
   /// See [trailingImage] for supported formats, including SVG Flutter assets.
-  void setTrailingImage(String trailingImage, {AutoImageTint? imageTint}) {
+  void setTrailingImage(
+    String trailingImage, {
+    AutoImageTint? imageTint,
+    AutoImageSize? imageSize,
+  }) {
     this.trailingImage = trailingImage;
     if (imageTint != null) trailingImageTint = imageTint;
+    if (imageSize != null) trailingImageSize = imageSize;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
   /// Updates the tint applied to [trailingImage]. Pass `null` to remove it.
   void setTrailingImageTint(AutoImageTint? imageTint) {
     trailingImageTint = imageTint;
+    FlutterCarPlayController.updateCPListItem(this);
+  }
+
+  /// Updates how much of its reserved slot [trailingImage] fills. Pass `null`
+  /// to fall back to `FlutterCarplay.iconSize`.
+  void setTrailingImageSize(AutoImageSize? imageSize) {
+    trailingImageSize = imageSize;
     FlutterCarPlayController.updateCPListItem(this);
   }
 
@@ -197,9 +236,11 @@ class CPListItem extends CPListTemplateItem {
     String? detailText,
     String? image,
     AutoImageTint? imageTint,
+    AutoImageSize? imageSize,
     String? accessoryImage,
     String? trailingImage,
     AutoImageTint? trailingImageTint,
+    AutoImageSize? trailingImageSize,
     double? playbackProgress,
     bool? isPlaying,
     CPListItemPlayingIndicatorLocation? playingIndicatorLocation,
@@ -212,6 +253,7 @@ class CPListItem extends CPListTemplateItem {
     if (accessoryImage != null) this.accessoryImage = accessoryImage;
     if (trailingImage != null) this.trailingImage = trailingImage;
     if (trailingImageTint != null) this.trailingImageTint = trailingImageTint;
+    if (trailingImageSize != null) this.trailingImageSize = trailingImageSize;
     if (playbackProgress != null) {
       if (playbackProgress >= 0.0 && playbackProgress <= 1.0) {
         this.playbackProgress = playbackProgress;

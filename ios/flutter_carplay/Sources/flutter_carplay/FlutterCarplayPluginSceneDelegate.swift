@@ -28,6 +28,15 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 {
   static private var interfaceController: CPInterfaceController?
 
+  /// The connected car screen's trait collection.
+  ///
+  /// This is what CarPlay artwork must be sized against: it carries the car's
+  /// `displayScale` (2x or 3x depending on the vehicle), which is unrelated to
+  /// the iPhone's. See FCPImageSizing.swift.
+  static var carTraitCollection: UITraitCollection? {
+    interfaceController?.carTraitCollection
+  }
+
   static public func forceUpdateRootTemplate(
     completion: ((_ completed: Bool, _ error: Error?) -> Void)? = nil
   ) {
@@ -180,6 +189,12 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     FlutterCarPlaySceneDelegate.interfaceController = interfaceController
     interfaceController.delegate = self
 
+    // Images are rendered at the car's display scale, so anything cached before
+    // this point (or for a previously connected car) is sized against the wrong
+    // scale and must be discarded.
+    fcpClearPreparedImageCache()
+    FCPImageDiagnostics.logEnvironment()
+
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
     if let rootTemplate = SwiftFlutterCarplayPlugin.rootTemplate {
       interfaceController.setRootTemplate(
@@ -202,6 +217,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 
     interfaceController.delegate = nil
     FlutterCarPlaySceneDelegate.interfaceController = nil
+    fcpClearPreparedImageCache()
   }
 
   func templateApplicationScene(
@@ -212,5 +228,6 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 
     interfaceController.delegate = nil
     FlutterCarPlaySceneDelegate.interfaceController = nil
+    fcpClearPreparedImageCache()
   }
 }

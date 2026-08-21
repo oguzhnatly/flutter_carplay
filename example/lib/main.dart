@@ -183,6 +183,16 @@ class _MyAppState extends State<MyApp> {
               complete();
             },
           ),
+          CPListItem(
+            text: 'Image Size Examples',
+            detailText: 'The same artwork at every AutoImageSize preset.',
+            image: 'images/svg_poi_glyph.svg',
+            imageSize: const AutoImageSize.medium(),
+            onPress: (complete, self) {
+              openImageSizeExamplesTemplate();
+              complete();
+            },
+          ),
         ],
         header: 'Features',
       ),
@@ -951,6 +961,82 @@ class _MyAppState extends State<MyApp> {
         ),
       );
     }
+  }
+
+  /// Renders one identical asset at every [AutoImageSize] preset.
+  ///
+  /// This is the direct check that icon size is actually controllable: all five
+  /// rows draw `images/svg_navigation.svg`, and only `imageSize` differs. If
+  /// they render at the same size, sizing is broken.
+  void openImageSizeExamplesTemplate() {
+    if (!Platform.isIOS) return;
+
+    const asset = 'images/svg_navigation.svg';
+    const sizes = <(String, String, AutoImageSize)>[
+      ('Small', '0.5 of the reserved slot', AutoImageSize.small()),
+      ('Medium (default)', '0.7 — matches SF Symbol padding',
+          AutoImageSize.medium()),
+      ('Large', '0.85 of the reserved slot', AutoImageSize.large()),
+      ('Max', '1.0 — fills the slot edge to edge', AutoImageSize.max()),
+      ('Custom 0.35', 'AutoImageSize.fraction(0.35)',
+          AutoImageSize.fraction(0.35)),
+    ];
+
+    FlutterCarplay.push(
+      template: CPListTemplate(
+        title: 'Image Sizes',
+        systemIcon: 'arrow.up.left.and.arrow.down.right',
+        sections: [
+          CPListSection(
+            header: 'Same asset, different imageSize',
+            items: [
+              for (final (title, detail, size) in sizes)
+                CPListItem(
+                  text: title,
+                  detailText: detail,
+                  image: asset,
+                  imageSize: size,
+                ),
+            ],
+          ),
+          CPListSection(
+            header: 'Compared with a system icon',
+            items: [
+              CPListItem(
+                text: 'SF Symbol trailing',
+                detailText: 'Default size should read like the system glyph',
+                image: asset,
+                accessoryType: CPListItemAccessoryType.disclosureIndicator,
+              ),
+            ],
+          ),
+          CPListSection(
+            header: 'Every source type at one size',
+            items: [
+              CPListItem(
+                text: 'SVG asset',
+                detailText: 'Rasterized to PNG before reaching native',
+                image: asset,
+                imageSize: const AutoImageSize.medium(),
+              ),
+              CPListItem(
+                text: 'PNG asset',
+                detailText: '842x1043, non-square',
+                image: 'images/logo_flutter_1080px_clr.png',
+                imageSize: const AutoImageSize.medium(),
+              ),
+              CPListItem(
+                text: 'Network URL',
+                detailText: 'Loaded asynchronously',
+                image:
+                    'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
+                imageSize: const AutoImageSize.medium(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   void openTintedGridTemplate() {

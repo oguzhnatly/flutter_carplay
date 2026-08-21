@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 
+import '../common/image_size.dart';
 import '../common/image_tint.dart';
 
 /// A menu item button displayed on a grid template.
@@ -34,6 +35,11 @@ class CPGridButton {
   /// Optional tint applied to [image].
   final AutoImageTint? imageTint;
 
+  /// How much of the slot CarPlay reserves for [image] the artwork fills.
+  ///
+  /// Defaults to `FlutterCarplay.iconSize` when omitted.
+  final AutoImageSize? imageSize;
+
   /// The block invoked after the user taps the button.
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   final Function()? onPress;
@@ -43,6 +49,7 @@ class CPGridButton {
     required this.titleVariants,
     required this.image,
     this.imageTint,
+    this.imageSize,
     this.onPress,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
@@ -52,6 +59,7 @@ class CPGridButton {
         'titleVariants': titleVariants,
         'image': image,
         'imageTint': imageTint?.toJson(),
+        'imageSize': imageSize?.toJson(),
         'onPress': onPress != null ? true : false,
         'runtimeType': 'FCPGridButton',
       };

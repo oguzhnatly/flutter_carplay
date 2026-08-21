@@ -39,6 +39,14 @@ class FlutterCarPlayController {
     // SVG directly. Non-collection payloads pass through unchanged.
     await resolveSvgInPayload(data, size: FlutterCarplay.svgRasterSize);
 
+    // Stamp the global icon size onto every image that did not set its own, so
+    // FlutterCarplay.iconSize applies without models reading global state.
+    applyDefaultImageSize(data, FlutterCarplay.iconSize);
+
+    if (data is Map) {
+      data['debugImageSizing'] = FlutterCarplay.debugImageSizing;
+    }
+
     final value = await _methodChannel.invokeMethod<bool>(
       type.name,
       data,

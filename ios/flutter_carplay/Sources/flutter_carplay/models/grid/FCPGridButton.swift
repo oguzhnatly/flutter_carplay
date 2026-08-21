@@ -16,6 +16,7 @@ class FCPGridButton {
   private var image: String
   private var imageData: FlutterStandardTypedData?
   private var imageTint: FCPImageTint?
+  private var imageSize: FCPImageSize
   private var isOnPressListenerActive: Bool
 
   init(obj: [String: Any]) {
@@ -24,13 +25,14 @@ class FCPGridButton {
     self.image = obj["image"] as! String
     self.imageData = obj["imageData"] as? FlutterStandardTypedData
     self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
+    self.imageSize = FCPImageSize(from: obj["imageSize"] as? [String: Any])
     self.isOnPressListenerActive = obj["onPress"] as? Bool ?? false
   }
 
   var get: CPGridButton {
     var gridButton: CPGridButton!
+    let slot = FCPImageSlot.gridButton(imageSize)
     let image: UIImage
-    let imageSource = self.image.toImageSource()
     let bytesImage = makeUIImage(fromBytes: imageData)
     let usesAsyncImage: Bool
     if #available(iOS 26.0, *), bytesImage == nil {
@@ -40,11 +42,12 @@ class FCPGridButton {
     }
 
     if let bytesImage = bytesImage {
-      image = bytesImage.applyingImageTint(imageTint)
-    } else if #available(iOS 26.0, *) {
-      image = makeSafeUIPlaceholder()
+      image = bytesImage.preparedForCarPlay(slot: slot, tint: imageTint)
+    } else if usesAsyncImage {
+      image = makeSafeUIPlaceholder(slot: slot)
     } else {
-      image = makeUIImage(from: imageSource).applyingImageTint(imageTint)
+      image = makeUIImage(from: self.image.toImageSource())
+        .preparedForCarPlay(slot: slot, tint: imageTint)
     }
 
     gridButton = CPGridButton(
@@ -63,7 +66,7 @@ class FCPGridButton {
     )
 
     if usesAsyncImage {
-      loadUIImage(from: self.image, bytes: nil, tint: imageTint) { uiImage in
+      loadUIImage(from: self.image, bytes: imageData, slot: slot, tint: imageTint) { uiImage in
         gridButton.perform(Selector("updateImage:"), with: uiImage)
       }
     }

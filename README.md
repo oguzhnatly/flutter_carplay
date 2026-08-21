@@ -600,6 +600,56 @@ Pane rows are informational on Android and cannot be tapped. Use pane actions fo
 
 Flutter asset SVGs can be used in image fields such as `CPListItem.image`, `CPGridButton.image`, `CPPointOfInterest.image`, `CPListImageRowItem` image collections, `AAListItem.imageUrl`, and `AAPaneTemplate` image fields. The package rasterizes local `.svg` assets to PNG bytes before sending them to the native CarPlay or Android Auto layer. Remote SVG URLs and `file://` SVGs are not rasterized.
 
+`FlutterCarplay.svgRasterSize` (default `180`) controls the resolution the SVG is rasterized at. This is a *source* resolution only — it does not affect how large the icon appears on screen. Raise it if large icons look soft; use `iconSize` below to change the display size.
+
+### Icon Size
+
+CarPlay reserves a fixed slot for each icon and exposes its size at runtime (`CPListItem.maximumImageSize` and friends). That slot differs per car and per app category, so this package expresses icon size as a **fraction of the reserved slot** rather than in absolute points — the result stays correct on any head unit and can never overflow the slot.
+
+The artwork is drawn centred on a transparent canvas of exactly the reserved size, resampled to the car screen's own display scale (`CPInterfaceController.carTraitCollection`), so the fraction is what controls the icon's visual weight.
+
+Set a default for every CarPlay icon:
+
+```dart
+FlutterCarplay.iconSize = const AutoImageSize.small();
+```
+
+Or override it per image:
+
+```dart
+CPListItem(
+  text: 'Navigation',
+  image: 'images/nav.svg',
+  imageSize: const AutoImageSize.large(),
+);
+
+CPGridButton(
+  titleVariants: ['Media'],
+  image: 'images/media.svg',
+  imageSize: const AutoImageSize.fraction(0.6),
+);
+```
+
+| Preset | Fraction | Use for |
+| --- | --- | --- |
+| `AutoImageSize.small()` | 0.5 | Small, clearly inset glyphs |
+| `AutoImageSize.medium()` | 0.7 | **Default.** Matches the padding built into SF Symbols |
+| `AutoImageSize.large()` | 0.85 | Fills most of the slot, small margin remains |
+| `AutoImageSize.max()` | 1.0 | Edge-to-edge tiles and photos |
+| `AutoImageSize.fraction(x)` | 0.05–1.0 | Anything in between |
+
+`medium` is the default because SF Symbols carry roughly 25–30% internal padding, while artwork exported edge-to-edge does not. Rendering such artwork at full slot size makes it read as noticeably larger than the system's own icons even when its point size is correct.
+
+`imageSize` is available on `CPListItem` (plus `trailingImageSize`), `CPGridButton`, `CPPointOfInterest`, every `CPListImageRowItemElement` subtype, and per entry via `CPListImageRowItem.gridImageSizes`.
+
+If icons still look wrong, enable sizing diagnostics and read the values off the device log:
+
+```dart
+FlutterCarplay.debugImageSizing = true;
+```
+
+This logs the car's `displayScale`, the reserved slot sizes, and each image's pixel dimensions before and after rendering. The values differ between the Xcode CarPlay simulator and a real head unit, so compare both.
+
 ### Basic Usage for Car Play
 
 - Import the all classes that you need from just one file:

@@ -30,8 +30,33 @@ class FlutterCarplay {
   /// The size (in logical pixels, square) used when rasterizing Flutter asset
   /// SVGs referenced by image fields (e.g. `CPListItem.image`,
   /// `CPGridButton.image`, `CPPoi.image`) before they are sent to the native
-  /// side. Defaults to [defaultSvgRasterSize] (120).
+  /// side. Defaults to [defaultSvgRasterSize] (180).
+  ///
+  /// This is a source resolution, not a display size. To change how large icons
+  /// appear on the CarPlay screen, use [iconSize].
   static int svgRasterSize = defaultSvgRasterSize;
+
+  /// Default display size for every CarPlay icon that does not set its own
+  /// `imageSize`.
+  ///
+  /// CarPlay reserves a fixed slot per icon whose size it exposes at runtime
+  /// (`CPListItem.maximumImageSize` and friends). [AutoImageSize] expresses how
+  /// much of that slot the artwork fills, so the result stays correct on any
+  /// head unit.
+  ///
+  /// ```dart
+  /// FlutterCarplay.iconSize = const AutoImageSize.small();
+  /// ```
+  static AutoImageSize iconSize = const AutoImageSize.medium();
+
+  /// Logs the values that drive CarPlay image sizing — the car's `displayScale`,
+  /// `CPListItem.maximumImageSize`, and each image's pixel dimensions before and
+  /// after rendering — to the iOS system log.
+  ///
+  /// These numbers differ between the Xcode CarPlay simulator and a real head
+  /// unit, so enable this when icon sizing looks wrong on one but not the other.
+  /// Takes effect on the next template sent to the native side.
+  static bool debugImageSizing = false;
 
   /// A listener function, which will be triggered when CarPlay connection changes
   /// and will be transmitted to the main code, allowing the user to access

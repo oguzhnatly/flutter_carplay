@@ -336,13 +336,19 @@ void main() {
   });
 
   group('configurable raster size', () {
-    test('FlutterCarplay default is 120', () {
+    test('FlutterCarplay defaults to defaultSvgRasterSize', () {
       expect(FlutterCarplay.svgRasterSize, defaultSvgRasterSize);
-      expect(defaultSvgRasterSize, 120);
     });
 
-    test('FlutterAndroidAuto default is 120', () {
+    test('FlutterAndroidAuto defaults to defaultSvgRasterSize', () {
       expect(FlutterAndroidAuto.svgRasterSize, defaultSvgRasterSize);
+    });
+
+    test('the default leaves headroom for a 3x head unit', () {
+      // The raster size is a source resolution; native code downsamples it to
+      // the car's display scale. It must stay comfortably above the largest
+      // slot a 3x car can ask for, or icons soften.
+      expect(defaultSvgRasterSize, greaterThanOrEqualTo(180));
     });
   });
 }

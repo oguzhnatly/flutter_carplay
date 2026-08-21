@@ -8,10 +8,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// Default raster size (in logical pixels, square) used when an SVG asset is
 /// rasterized to PNG bytes for native consumption.
 ///
+/// This is a *source* resolution only. Native code resamples the bytes to the
+/// car screen's display scale (see `FCPImageSizing.swift`), so this value no
+/// longer participates in any point-size calculation — it only needs enough
+/// pixels for that downsampling step to stay sharp. 180 covers a 60pt slot on a
+/// 3x head unit.
+///
 /// This can be overridden globally via [FlutterCarplay.svgRasterSize] /
 /// [FlutterAndroidAuto.svgRasterSize], which are forwarded to
 /// [resolveSvgInPayload].
-const defaultSvgRasterSize = 120;
+const defaultSvgRasterSize = 180;
 
 /// In-memory cache of rasterized SVG assets keyed by `assetPath|size`.
 final _svgRasterCache = <String, Uint8List>{};
@@ -163,6 +169,8 @@ const svgListImageKeys = <String>{'gridImages'};
 /// - `imageTitles` -> CPListImageRowItem labels (text, not images).
 /// - `imageTint`/`trailingImageTint`/`gridImageTints` -> tint metadata, not
 ///   image references.
+/// - `imageSize`/`trailingImageSize`/`gridImageSizes` -> size metadata, not
+///   image references. See `image_size_resolver.dart`.
 @visibleForTesting
 const svgIgnoredKeys = <String>{
   'systemIcon',
@@ -170,6 +178,9 @@ const svgIgnoredKeys = <String>{
   'imageTint',
   'trailingImageTint',
   'gridImageTints',
+  'imageSize',
+  'trailingImageSize',
+  'gridImageSizes',
 };
 
 /// The sibling keys under which the walker attaches rasterized bytes (e.g.

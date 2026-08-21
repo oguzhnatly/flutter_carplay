@@ -23,14 +23,13 @@ class FCPPointOfInterest {
   private var image: String?
   private var imageData: FlutterStandardTypedData?
   private var imageTint: FCPImageTint?
+  private var imageSize: FCPImageSize
 
   private var primaryButton: CPTextButton?
   private var objcPrimaryButton: FCPTextButton?
 
   private var secondaryButton: CPTextButton?
   private var objcSecondaryButton: FCPTextButton?
-
-  static let maxPinImageSize: CGFloat = 40
 
   init(obj: [String: Any]) {
     self.elementId = obj["_elementId"] as! String
@@ -49,6 +48,7 @@ class FCPPointOfInterest {
     self.image = obj["image"] as? String
     self.imageData = obj["imageData"] as? FlutterStandardTypedData
     self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
+    self.imageSize = FCPImageSize(from: obj["imageSize"] as? [String: Any])
 
     let primaryButtonData = obj["primaryButton"] as? [String: Any]
     if primaryButtonData != nil {
@@ -69,24 +69,18 @@ class FCPPointOfInterest {
     let location = MKMapItem(
       placemark: MKPlacemark(
         coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)))
+    // Pin artwork is sized against CPButton.maximumImageSize, the SDK constant
+    // for button artwork, rather than a hardcoded point value.
+    let slot = FCPImageSlot.poiPin(imageSize)
     var pinImage: UIImage? = nil
 
     if let bytesImage = makeUIImage(fromBytes: imageData) {
-      pinImage = bytesImage.applyingImageTint(imageTint)
-    } else if let image = self.image {
-      let key = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: image)
-
-      pinImage = UIImage(named: key!)?.applyingImageTint(imageTint)
-    }
-    if let pImage = pinImage {
-      if pImage.size.height > FCPPointOfInterest.maxPinImageSize
-        || pImage.size.width > FCPPointOfInterest.maxPinImageSize
-      {
-        pinImage = pImage.resizeImageTo(
-          size: CGSize(
-            width: FCPPointOfInterest.maxPinImageSize, height: FCPPointOfInterest.maxPinImageSize)
-        )
-      }
+      pinImage = bytesImage.preparedForCarPlay(slot: slot, tint: imageTint)
+    } else if let image = self.image,
+      let key = SwiftFlutterCarplayPlugin.registrar?.lookupKey(forAsset: image),
+      let assetImage = UIImage(named: key)
+    {
+      pinImage = assetImage.preparedForCarPlay(slot: slot, tint: imageTint)
     }
     let poi = CPPointOfInterest(
       location: location, title: title, subtitle: subtitle, summary: summary,

@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 
+import '../common/image_size.dart';
 import '../common/image_tint.dart';
 import '../button/text_button.dart';
 
@@ -54,6 +55,11 @@ class CPPointOfInterest {
   /// Optional tint applied to [image].
   AutoImageTint? imageTint;
 
+  /// How much of the slot CarPlay reserves for [image] the artwork fills.
+  ///
+  /// Defaults to `FlutterCarplay.iconSize` when omitted.
+  AutoImageSize? imageSize;
+
   /// The detail card’s primary action button.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   CPTextButton? primaryButton;
@@ -74,6 +80,7 @@ class CPPointOfInterest {
     this.detailSummary,
     this.image,
     this.imageTint,
+    this.imageSize,
     this.primaryButton,
     this.secondaryButton,
     String? id,
@@ -91,6 +98,7 @@ class CPPointOfInterest {
         'detailSummary': detailSummary,
         'image': image,
         'imageTint': imageTint?.toJson(),
+        'imageSize': imageSize?.toJson(),
         'primaryButton': primaryButton?.toJson(),
         'secondaryButton': secondaryButton?.toJson(),
         'runtimeType': 'FCPPointOfInterest',
