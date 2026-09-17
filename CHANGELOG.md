@@ -1,3 +1,11 @@
+## 1.6.6 - Unreleased
+
+- Add `loadingImage` to `AAGridButton` for API parity with `CPGridButton`. SVG assets are rasterized automatically, exactly like `image`. On Android Auto the Car App Library cannot animate custom template images (the host renders them as static bitmaps and throttles refreshes), so while loading the tapped cell enters the platform loading state instead.
+- Android Auto grid button loading now keeps the grid on screen and shows the host's native clockwise spinner inside the tapped cell (unchanged slot size) instead of replacing the whole template with a blank loading screen. `loadingMessage` is shown as the template title while loading, and all cells are non-clickable until `complete()` restores the template.
+
+-Fix CPGridTemplate is in CPTabBarTemplate,and CPGridButton is in CPGridTemplate ,and then click CPGridButton button, that CPGridButton can not receive onPress event.This is so important.
+
+
 ## 1.6.5 - 2026-08-21
 
 - Fix Android Auto list template startup by validating selectable lists before they reach the host (#120) (ty @JulianBissekkou)

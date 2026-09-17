@@ -137,6 +137,8 @@ Future<Uint8List?> _rasterize(
 /// - `image`     -> CPListItem, CPGridButton, CPPointOfInterest, and all
 ///                  CPListImageRowItem*Element subtypes. Bytes are attached
 ///                  under `imageData`.
+/// - `loadingImage` -> CPGridButton loading-state image. Bytes are attached
+///                  under `loadingImageData`.
 /// - `imageUrl`  -> AAListItem (Android Auto). The native contract expects the
 ///                  bytes under `imageData`.
 /// - `accessoryImage` / `trailingImage` -> CPListItem trailing/accessory image.
@@ -146,7 +148,9 @@ Future<Uint8List?> _rasterize(
 @visibleForTesting
 const svgImageDataKeys = <String, String>{
   'image': 'imageData',
+  'loadingImage': 'loadingImageData',
   'imageUrl': 'imageData',
+  'iconUrl': 'iconData', // 新增：AAListTemplate/AAGridTemplate 的 tab 图标
   'accessoryImage': 'trailingImageData',
   'trailingImage': 'trailingImageData',
   'gridImages': 'gridImageData',

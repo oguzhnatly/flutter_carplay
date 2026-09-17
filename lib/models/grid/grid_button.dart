@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:uuid/uuid.dart';
 
 import '../common/image_tint.dart';
@@ -34,15 +36,32 @@ class CPGridButton {
   /// Optional tint applied to [image].
   final AutoImageTint? imageTint;
 
+  /// Optional image swapped in while the button is in its loading state
+  /// (after the user taps and before [onPress]'s `complete` is called).
+  ///
+  /// While loading, this image rotates clockwise on the CarPlay display.
+  /// When omitted, the button rotates its normal [image] instead.
+  ///
+  /// Accepts the same formats as [image] (asset path, SVG asset, `file://`
+  /// path, or network URL). **In-place image updates require iOS 26.0+** —
+  /// on earlier systems the loading rotation is skipped natively.
+  final String? loadingImage;
+
+  /// Optional tint applied to [loadingImage] while it is displayed.
+  final AutoImageTint? loadingImageTint;
+
   /// The block invoked after the user taps the button.
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
-  final Function()? onPress;
+  //final Function? onPress;
+  final FutureOr<void> Function(Function() complete, CPGridButton self)? onPress;
 
   /// Creates [CPGridButton]
   CPGridButton({
     required this.titleVariants,
     required this.image,
     this.imageTint,
+    this.loadingImage,
+    this.loadingImageTint,
     this.onPress,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
@@ -52,6 +71,9 @@ class CPGridButton {
         'titleVariants': titleVariants,
         'image': image,
         'imageTint': imageTint?.toJson(),
+        if (loadingImage != null) 'loadingImage': loadingImage,
+        if (loadingImageTint != null)
+          'loadingImageTint': loadingImageTint!.toJson(),
         'onPress': onPress != null ? true : false,
         'runtimeType': 'FCPGridButton',
       };

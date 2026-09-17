@@ -1314,6 +1314,26 @@ await FlutterAndroidAuto.push(template: gridTemplate);
 await FlutterAndroidAuto.setRootTemplate(template: gridTemplate);
 ```
 
+
+While `onPress` is executing (until `complete()` is called), the tapped cell shows the host's native loading spinner — clockwise, size-stable, and animated by the car system itself — while the rest of the grid stays on screen. `loadingMessage` is shown as the template title during loading.
+
+`AAGridButton` also accepts a `loadingImage`:
+
+```dart
+AAGridButton(
+  titleVariants: ["Button 1"],
+  image: 'assets/images/carplay/1.svg',
+  loadingImage: 'assets/images/carplay/loading.svg',
+  onPress: (complete, self) async {
+    await Future.delayed(const Duration(seconds: 2));
+    complete();
+  },
+);
+```
+
+`loadingImage` accepts the same formats as `image` (asset, `file://`, network URL; SVG assets are rasterized automatically) and exists for API parity with the CarPlay `CPGridButton`, where it is swapped in and rotated clockwise while loading. **On Android Auto it cannot rotate**: the Car App Library renders template images as static bitmaps and the host throttles template refreshes (about once per second), so frame-by-frame rotation of a custom image is not possible — the platform loading spinner above is used instead.
+
+
 ### Alert Template (Android Auto)
 
 Alerts present important information as a full-screen message with one or more action buttons. Because Android Auto does not support true overlay modals, the alert is pushed onto the navigation stack as a `MessageTemplate`.
