@@ -45,6 +45,15 @@ class FCPGridTemplate {
     return gridTemplate
   }
 
+  /// The mutable wrappers backing this template's grid buttons.
+  ///
+  /// Each element's `_super` is the very `CPGridButton` instance handed to
+  /// `CPGridTemplate`, which is what allows a single button to be updated in
+  /// place by `elementId`.
+  public func getFCPGridButtons() -> [FCPGridButton] {
+    return objcButtons
+  }
+
   public func update(with: any FCPTemplate) {
     guard let with = with as? FCPGridTemplate else {
       return

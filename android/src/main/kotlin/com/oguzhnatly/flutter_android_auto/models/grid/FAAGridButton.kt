@@ -6,6 +6,8 @@ data class FAAGridButton(
     val image: String?,
     val imageData: ByteArray?,
     val loadingMessage: String?,
+    val loadingImage: String?,
+    val loadingImageData: ByteArray?,
     val isOnPressListenerActive: Boolean,
 ) {
     val title: String get() = titleVariants.firstOrNull() ?: ""
@@ -18,6 +20,8 @@ data class FAAGridButton(
             val image = map["image"] as? String
             val imageData = map["imageData"] as? ByteArray
             val loadingMessage = map["loadingMessage"] as? String
+            val loadingImage = map["loadingImage"] as? String
+            val loadingImageData = map["loadingImageData"] as? ByteArray
             val isOnPressListenerActive = map["onPress"] as? Boolean ?: false
 
             return FAAGridButton(
@@ -26,6 +30,8 @@ data class FAAGridButton(
                 image,
                 imageData,
                 loadingMessage,
+                loadingImage,
+                loadingImageData,
                 isOnPressListenerActive,
             )
         }

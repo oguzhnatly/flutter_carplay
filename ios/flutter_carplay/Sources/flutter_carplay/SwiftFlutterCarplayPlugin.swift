@@ -199,6 +199,21 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       result(true)
       break
 
+    case FCPChannelTypes.onGridButtonPressedComplete:
+      // Dart finished handling a grid button press; stop the loading
+      // rotation and restore the button's original image.
+      guard let elementId = call.arguments as? String else {
+        result(false)
+        return
+      }
+      SwiftFlutterCarplayPlugin.findGridButton(
+        elementId: elementId,
+        actionWhenFound: { button in
+          button.stopLoadingRotation()
+        })
+      result(true)
+      break
+
     case FCPChannelTypes.updateListImageRowItemElement:
       guard #available(iOS 26, *) else { break }
       guard let args = call.arguments as? [String: Any] else {
@@ -501,6 +516,39 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     if !found {
       NSLog("FCP: FCPListTemplateItem not found with elementId: \(elementId)")
     }
+  }
+
+  /// Locates a grid button by its `elementId` and hands it to
+  /// [actionWhenFound].
+  ///
+  /// Grid templates can be the root template or a child of a
+  /// `CPTabBarTemplate`, so both positions are searched — mirroring what
+  /// `getTemplateFromHistory(elementId:)` does for templates.
+  static func findGridButton(
+    elementId: String, actionWhenFound: (_ button: FCPGridButton) -> Void
+  ) {
+    var gridTemplates: [FCPGridTemplate] = []
+
+    for template in SwiftFlutterCarplayPlugin.templateStack {
+      if let tabBar = template as? FCPTabBarTemplate {
+        for child in tabBar.getFCPTemplates() {
+          if let grid = child as? FCPGridTemplate {
+            gridTemplates.append(grid)
+          }
+        }
+      } else if let grid = template as? FCPGridTemplate {
+        gridTemplates.append(grid)
+      }
+    }
+
+    for grid in gridTemplates {
+      for button in grid.getFCPGridButtons() where button.elementId == elementId {
+        actionWhenFound(button)
+        return
+      }
+    }
+
+    NSLog("FCP: FCPGridButton not found with elementId: \(elementId)")
   }
 
   @available(iOS 26.0, *)

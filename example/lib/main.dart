@@ -614,7 +614,7 @@ class _MyAppState extends State<MyApp> {
                 1 => 'images/icon.svg',
                 _ => 'images/logo_flutter_1080px_clr.png',
               },
-              onPress: () {
+              onPress: (Function() complete, CPGridButton self) {
                 print('Grid Button $i pressed');
               },
             ),
@@ -1029,22 +1029,26 @@ class _MyAppState extends State<MyApp> {
           CPGridButton(
             titleVariants: ['Navigation'],
             image: 'images/svg_navigation.svg',
-            onPress: () => print('Navigation SVG grid button pressed'),
+            onPress: (Function() complete, CPGridButton self) =>
+                print('Navigation SVG grid button pressed'),
           ),
           CPGridButton(
             titleVariants: ['Media'],
             image: 'images/svg_media.svg',
-            onPress: () => print('Media SVG grid button pressed'),
+            onPress: (Function() complete, CPGridButton self) =>
+                print('Media SVG grid button pressed'),
           ),
           CPGridButton(
             titleVariants: ['POI'],
             image: 'images/svg_poi.svg',
-            onPress: () => print('POI SVG grid button pressed'),
+            onPress: (Function() complete, CPGridButton self) =>
+                print('POI SVG grid button pressed'),
           ),
           CPGridButton(
             titleVariants: ['Warning'],
             image: 'images/svg_warning.svg',
-            onPress: () => print('Warning SVG grid button pressed'),
+            onPress: (Function() complete, CPGridButton self) =>
+                print('Warning SVG grid button pressed'),
           ),
         ],
         systemIcon: 'square.grid.2x2',
