@@ -1,8 +1,8 @@
-## 1.6.6 - Unreleased
+## 1.6.6 - 2026-09-30
 
-- Migrate the Android build to Flutter's built-in Kotlin: the plugin no longer applies the Kotlin Gradle Plugin itself, silencing Flutter's "plugins that apply KGP" warning and staying compatible with AGP 9 / `android.builtInKotlin=true` (#138)
-- Raise the minimum supported versions to Flutter 3.44 / Dart 3.12, as required by the built-in Kotlin migration
-- Update the example app's Android toolchain to current Flutter minimums (Gradle 8.14, AGP 8.11.1, Kotlin 2.2.20)
+- Migrate the Android plugin to Flutter's built-in Kotlin so it no longer applies the Kotlin Gradle Plugin, which clears the KGP warning and keeps AGP 9 builds with `android.builtInKotlin=true` working (#138, #139) (ty @pierrejean75)
+- Raise the minimum supported versions to Flutter 3.44 and Dart 3.12, as required by the built-in Kotlin migration (#139)
+- Update the example app Android toolchain to Gradle 8.14, AGP 8.11.1 and Kotlin 2.2.20 (#139)
 
 ## 1.6.5 - 2026-08-21
 
