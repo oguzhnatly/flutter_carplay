@@ -13,12 +13,12 @@ class CPSearchTemplate extends CPTemplate {
   /// Tells the delegate that the user updated the search criteria text.
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   final Function(String searchText, Function(List<CPListItem> results) update)?
-      onUpdatedSearchText;
+  onUpdatedSearchText;
 
   /// Tells the delegate that the user selected an item from the search result.
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   final Function(CPListItem selectedItem, Function() complete)?
-      onSelectedResult;
+  onSelectedResult;
 
   /// Tells the delegate that the user tapped the keyboard's search button.
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
@@ -32,18 +32,18 @@ class CPSearchTemplate extends CPTemplate {
     this.onUpdatedSearchText,
     this.onSelectedResult,
     this.onSearchTemplateSearchButtonPressed,
-  })  : _elementId = id ?? const Uuid().v4(),
-        super();
+  }) : _elementId = id ?? const Uuid().v4(),
+       super();
 
   @override
   Map<String, dynamic> toJson() => {
-        'runtimeType': 'FCPSearchTemplate',
-        '_elementId': _elementId,
-        'onUpdatedSearchText': onUpdatedSearchText != null,
-        'onSelectedResult': onSelectedResult != null,
-        'onSearchTemplateSearchButtonPressed':
-            onSearchTemplateSearchButtonPressed != null,
-      };
+    'runtimeType': 'FCPSearchTemplate',
+    '_elementId': _elementId,
+    'onUpdatedSearchText': onUpdatedSearchText != null,
+    'onSelectedResult': onSelectedResult != null,
+    'onSearchTemplateSearchButtonPressed':
+        onSearchTemplateSearchButtonPressed != null,
+  };
 
   @override
   String get uniqueId => _elementId;

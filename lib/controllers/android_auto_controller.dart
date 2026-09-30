@@ -65,8 +65,9 @@ class FlutterAndroidAutoController {
   }) async {
     final payload = <String, dynamic>{
       'elementId': elementId,
-      'sections':
-          sections.map((AAListSection section) => section.toJson()).toList(),
+      'sections': sections
+          .map((AAListSection section) => section.toJson())
+          .toList(),
     };
 
     final bool? isCompleted = await flutterToNativeModuleStatic(
@@ -167,11 +168,12 @@ class FlutterAndroidAutoController {
     final template = currentPresentTemplate;
     if (template is! AAAlertTemplate) return;
 
-    final AAAlertAction? action =
-        template.actions.cast<AAAlertAction?>().firstWhere(
-              (action) => action?.uniqueId == elementId,
-              orElse: () => null,
-            );
+    final AAAlertAction? action = template.actions
+        .cast<AAAlertAction?>()
+        .firstWhere(
+          (action) => action?.uniqueId == elementId,
+          orElse: () => null,
+        );
     action?.onPress();
   }
 

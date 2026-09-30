@@ -75,8 +75,10 @@ void main() {
       );
 
       final args = captured['arguments'] as Map;
-      final item = (((args['rootTemplate'] as Map)['sections'] as List)[0]
-          as Map)['items'][0] as Map;
+      final item =
+          (((args['rootTemplate'] as Map)['sections'] as List)[0]
+                  as Map)['items'][0]
+              as Map;
       expect(item['image'], _svgAssetKey);
       expect(item['imageData'], isA<Uint8List>());
     });
@@ -105,8 +107,7 @@ void main() {
       expect(captured['arguments'], isTrue);
     });
 
-    test('uses the global FlutterCarplay.svgRasterSize for the walker',
-        () async {
+    test('uses the global FlutterCarplay.svgRasterSize for the walker', () async {
       // Bytes produced at the default size vs. a custom global size must differ,
       // proving the controller forwards the global setting to the walker.
       final defaultBytes = await rasterizeSvgAsset(_svgAssetKey);
@@ -155,8 +156,10 @@ void main() {
         );
 
         final args = captured['arguments'] as Map;
-        final item = (((args['template'] as Map)['sections'] as List)[0]
-            as Map)['items'][0] as Map;
+        final item =
+            (((args['template'] as Map)['sections'] as List)[0]
+                    as Map)['items'][0]
+                as Map;
         expect(item['imageUrl'], _svgAssetKey);
         expect(item['imageData'], isA<Uint8List>());
       },

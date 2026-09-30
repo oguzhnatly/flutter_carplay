@@ -31,52 +31,31 @@ class AutoImageTint {
 
   /// Uses the host platform's default icon tint.
   const AutoImageTint.platform({bool selectedSafe = true})
-      : this._(
-          type: AutoImageTintType.platform,
-          selectedSafe: selectedSafe,
-        );
+    : this._(type: AutoImageTintType.platform, selectedSafe: selectedSafe);
 
   /// Uses the host platform's primary tint color.
   const AutoImageTint.primary({bool selectedSafe = true})
-      : this._(
-          type: AutoImageTintType.primary,
-          selectedSafe: selectedSafe,
-        );
+    : this._(type: AutoImageTintType.primary, selectedSafe: selectedSafe);
 
   /// Uses the host platform's secondary tint color.
   const AutoImageTint.secondary({bool selectedSafe = true})
-      : this._(
-          type: AutoImageTintType.secondary,
-          selectedSafe: selectedSafe,
-        );
+    : this._(type: AutoImageTintType.secondary, selectedSafe: selectedSafe);
 
   /// Uses a platform-standard red tint.
   const AutoImageTint.red({bool selectedSafe = true})
-      : this._(
-          type: AutoImageTintType.red,
-          selectedSafe: selectedSafe,
-        );
+    : this._(type: AutoImageTintType.red, selectedSafe: selectedSafe);
 
   /// Uses a platform-standard green tint.
   const AutoImageTint.green({bool selectedSafe = true})
-      : this._(
-          type: AutoImageTintType.green,
-          selectedSafe: selectedSafe,
-        );
+    : this._(type: AutoImageTintType.green, selectedSafe: selectedSafe);
 
   /// Uses a platform-standard blue tint.
   const AutoImageTint.blue({bool selectedSafe = true})
-      : this._(
-          type: AutoImageTintType.blue,
-          selectedSafe: selectedSafe,
-        );
+    : this._(type: AutoImageTintType.blue, selectedSafe: selectedSafe);
 
   /// Uses a platform-standard yellow tint.
   const AutoImageTint.yellow({bool selectedSafe = true})
-      : this._(
-          type: AutoImageTintType.yellow,
-          selectedSafe: selectedSafe,
-        );
+    : this._(type: AutoImageTintType.yellow, selectedSafe: selectedSafe);
 
   /// Uses custom RGB byte colors for light and optional dark mode.
   ///
@@ -87,18 +66,18 @@ class AutoImageTint {
     UIColor? darkColor,
     bool selectedSafe = true,
   }) : this._(
-          type: AutoImageTintType.custom,
-          color: color,
-          darkColor: darkColor,
-          selectedSafe: selectedSafe,
-        );
+         type: AutoImageTintType.custom,
+         color: color,
+         darkColor: darkColor,
+         selectedSafe: selectedSafe,
+       );
 
   Map<String, dynamic> toJson() => {
-        'type': type.name,
-        'color': color?.toJson(),
-        'darkColor': darkColor?.toJson(),
-        'selectedSafe': selectedSafe,
-      };
+    'type': type.name,
+    'color': color?.toJson(),
+    'darkColor': darkColor?.toJson(),
+    'selectedSafe': selectedSafe,
+  };
 }
 
 /// Convenience helpers for configuring [AutoImageTint].

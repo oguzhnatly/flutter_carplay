@@ -74,14 +74,14 @@ void main() {
 
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (methodCall) async {
-        expect(methodCall.method, 'updateMessageTemplate');
-        expect(methodCall.arguments, {
-          'elementId': '<AAMessageTemplate>',
-          'title': 'Saved places synced',
-          'message': 'Your saved places are now available in Android Auto.',
-        });
-        return true;
-      });
+            expect(methodCall.method, 'updateMessageTemplate');
+            expect(methodCall.arguments, {
+              'elementId': '<AAMessageTemplate>',
+              'title': 'Saved places synced',
+              'message': 'Your saved places are now available in Android Auto.',
+            });
+            return true;
+          });
 
       await template.update(
         title: 'Saved places synced',
@@ -104,11 +104,11 @@ void main() {
 
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (_) async {
-        throw PlatformException(
-          code: 'No screen found',
-          message: 'No Android Auto screen found for template id',
-        );
-      });
+            throw PlatformException(
+              code: 'No screen found',
+              message: 'No Android Auto screen found for template id',
+            );
+          });
 
       expect(
         template.setTitle('Saved places synced'),
@@ -117,7 +117,9 @@ void main() {
 
       expect(template.title, 'No saved places');
       expect(
-          template.message, 'Save places on your phone to access them here.');
+        template.message,
+        'Save places on your phone to access them here.',
+      );
     });
   });
 }

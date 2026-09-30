@@ -31,11 +31,11 @@ class CPListImageRowItemGridElement implements CPListImageRowItemElement {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'image': image,
-        'imageTint': imageTint?.toJson(),
-        'runtimeType': 'FCPListImageRowItemGridElement',
-      };
+    '_elementId': _elementId,
+    'image': image,
+    'imageTint': imageTint?.toJson(),
+    'runtimeType': 'FCPListImageRowItemGridElement',
+  };
 
   @override
   void setImage(String image, {AutoImageTint? imageTint}) {
@@ -50,10 +50,7 @@ class CPListImageRowItemGridElement implements CPListImageRowItemElement {
     FlutterCarPlayController.updateCPListImageRowItemElement(this);
   }
 
-  void update({
-    String? image,
-    AutoImageTint? imageTint,
-  }) {
+  void update({String? image, AutoImageTint? imageTint}) {
     if (image != null) this.image = image;
     if (imageTint != null) this.imageTint = imageTint;
 

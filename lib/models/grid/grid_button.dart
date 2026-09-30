@@ -48,13 +48,13 @@ class CPGridButton {
   }) : _elementId = id ?? const Uuid().v4();
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'titleVariants': titleVariants,
-        'image': image,
-        'imageTint': imageTint?.toJson(),
-        'onPress': onPress != null ? true : false,
-        'runtimeType': 'FCPGridButton',
-      };
+    '_elementId': _elementId,
+    'titleVariants': titleVariants,
+    'image': image,
+    'imageTint': imageTint?.toJson(),
+    'onPress': onPress != null ? true : false,
+    'runtimeType': 'FCPGridButton',
+  };
 
   String get uniqueId {
     return _elementId;

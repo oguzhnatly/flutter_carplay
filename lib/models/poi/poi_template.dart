@@ -31,14 +31,14 @@ class CPPointOfInterestTemplate extends CPTemplate {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'poi': poi.map((e) => e.toJson()).toList(),
-        'tabTitle': tabTitle,
-        'showsTabBadge': showsTabBadge,
-        'systemIcon': systemIcon,
-        'runtimeType': 'FCPPointOfInterestTemplate',
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'poi': poi.map((e) => e.toJson()).toList(),
+    'tabTitle': tabTitle,
+    'showsTabBadge': showsTabBadge,
+    'systemIcon': systemIcon,
+    'runtimeType': 'FCPPointOfInterestTemplate',
+  };
 
   @override
   String get uniqueId {

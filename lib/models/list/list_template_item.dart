@@ -2,9 +2,7 @@
 /// https://developer.apple.com/documentation/carplay/cplisttemplateitem
 /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
 abstract class CPListTemplateItem {
-  CPListTemplateItem({
-    this.text,
-  });
+  CPListTemplateItem({this.text});
 
   /// The item’s primary text.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+

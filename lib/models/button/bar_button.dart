@@ -31,11 +31,11 @@ class CPBarButton {
   }) : _elementId = id ?? const Uuid().v4();
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'buttonStyle': buttonStyle.name,
-        'runtimeType': 'FCPBarButton',
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'buttonStyle': buttonStyle.name,
+    'runtimeType': 'FCPBarButton',
+  };
 
   String get uniqueId {
     return _elementId;

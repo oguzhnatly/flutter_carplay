@@ -23,17 +23,17 @@ class AAPaneAction {
     this.isPrimary = false,
     this.onPress,
     String? id,
-  })  : assert(title.isNotEmpty, 'AAPaneAction.title cannot be empty'),
-        _elementId = id ?? const Uuid().v4();
+  }) : assert(title.isNotEmpty, 'AAPaneAction.title cannot be empty'),
+       _elementId = id ?? const Uuid().v4();
 
   String get uniqueId => _elementId;
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'imageUrl': imageUrl,
-        'imageTint': imageTint?.toJson(),
-        'isPrimary': isPrimary,
-        'onPress': onPress != null,
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'imageUrl': imageUrl,
+    'imageTint': imageTint?.toJson(),
+    'isPrimary': isPrimary,
+    'onPress': onPress != null,
+  };
 }

@@ -16,18 +16,15 @@ class CPInformationItem {
   final String? detail;
 
   /// Creates [CPInformationItem]
-  CPInformationItem({
-    this.title,
-    this.detail,
-    String? id,
-  }) : _elementId = id ?? const Uuid().v4();
+  CPInformationItem({this.title, this.detail, String? id})
+    : _elementId = id ?? const Uuid().v4();
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'detail': detail,
-        'runtimeType': 'FCPInformationItem',
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'detail': detail,
+    'runtimeType': 'FCPInformationItem',
+  };
 
   String get uniqueId {
     return _elementId;

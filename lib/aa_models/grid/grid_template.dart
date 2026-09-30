@@ -55,12 +55,12 @@ class AAGridTemplate implements AATemplate {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'buttons': buttons.map((b) => b.toJson()).toList(),
-        'emptyViewTitleVariants': emptyViewTitleVariants,
-        'tabTitle': tabTitle,
-        'systemIcon': systemIcon,
-        'iconUrl': iconUrl,
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'buttons': buttons.map((b) => b.toJson()).toList(),
+    'emptyViewTitleVariants': emptyViewTitleVariants,
+    'tabTitle': tabTitle,
+    'systemIcon': systemIcon,
+    'iconUrl': iconUrl,
+  };
 }

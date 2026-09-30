@@ -31,11 +31,11 @@ class CPTextButton {
   }) : _elementId = id ?? const Uuid().v4();
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'textstyle': textstyle.name,
-        'runtimeType': 'FCPTextButton',
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'textstyle': textstyle.name,
+    'runtimeType': 'FCPTextButton',
+  };
 
   String get uniqueId {
     return _elementId;

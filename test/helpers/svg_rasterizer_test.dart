@@ -30,18 +30,18 @@ void main() {
 
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMessageHandler('flutter/assets', (message) async {
-      final key = utf8.decode(message!.buffer.asUint8List());
-      final validBytes = fixtureBytes[key];
-      if (validBytes != null) {
-        return ByteData.view(validBytes.buffer);
-      }
-      if (key == _invalidSvgAssetKey) {
-        return ByteData.view(invalidBytes.buffer);
-      }
-      // Unknown asset -> the real `flutter/assets` channel returns null for a
-      // missing asset, which causes the asset bundle to report "not found".
-      return null;
-    });
+          final key = utf8.decode(message!.buffer.asUint8List());
+          final validBytes = fixtureBytes[key];
+          if (validBytes != null) {
+            return ByteData.view(validBytes.buffer);
+          }
+          if (key == _invalidSvgAssetKey) {
+            return ByteData.view(invalidBytes.buffer);
+          }
+          // Unknown asset -> the real `flutter/assets` channel returns null for a
+          // missing asset, which causes the asset bundle to report "not found".
+          return null;
+        });
   }
 
   setUp(() {
@@ -145,14 +145,16 @@ void main() {
   });
 
   group('resolveSvgInPayload', () {
-    test('adds imageData next to an .svg image and preserves the original',
-        () async {
-      final payload = <String, dynamic>{'image': _svgAssetKey};
-      await resolveSvgInPayload(payload);
+    test(
+      'adds imageData next to an .svg image and preserves the original',
+      () async {
+        final payload = <String, dynamic>{'image': _svgAssetKey};
+        await resolveSvgInPayload(payload);
 
-      expect(payload['image'], _svgAssetKey);
-      expect(payload['imageData'], isA<Uint8List>());
-    });
+        expect(payload['image'], _svgAssetKey);
+        expect(payload['imageData'], isA<Uint8List>());
+      },
+    );
 
     test('adds imageData next to an .svg imageUrl', () async {
       final payload = <String, dynamic>{'imageUrl': _svgAssetKey};
@@ -190,9 +192,7 @@ void main() {
       final payload = <String, dynamic>{
         'systemIcon': 'something.svg',
         'imageTitles': <String>['a.svg', 'b.svg'],
-        'trailingImageTint': <String, dynamic>{
-          'color': 'not-an-image.svg',
-        },
+        'trailingImageTint': <String, dynamic>{'color': 'not-an-image.svg'},
       };
       await resolveSvgInPayload(payload);
 
@@ -233,14 +233,8 @@ void main() {
             'sections': <dynamic>[
               <String, dynamic>{
                 'items': <dynamic>[
-                  <String, dynamic>{
-                    'text': 'Item 1',
-                    'image': _svgAssetKey,
-                  },
-                  <String, dynamic>{
-                    'text': 'Item 2',
-                    'image': 'icon.png',
-                  },
+                  <String, dynamic>{'text': 'Item 1', 'image': _svgAssetKey},
+                  <String, dynamic>{'text': 'Item 2', 'image': 'icon.png'},
                 ],
               },
             ],
@@ -250,8 +244,9 @@ void main() {
 
       await resolveSvgInPayload(payload);
 
-      final items = ((payload['templates'] as List)[0] as Map)['sections'][0]
-          ['items'] as List;
+      final items =
+          ((payload['templates'] as List)[0] as Map)['sections'][0]['items']
+              as List;
       expect((items[0] as Map)['imageData'], isA<Uint8List>());
       expect((items[1] as Map).containsKey('imageData'), isFalse);
     });
@@ -299,7 +294,8 @@ void main() {
       expect(
         spy.iterationCount,
         0,
-        reason: 'the walker must treat raw image bytes as an opaque leaf and '
+        reason:
+            'the walker must treat raw image bytes as an opaque leaf and '
             'never iterate over them',
       );
     });
@@ -315,24 +311,26 @@ void main() {
       expect(inner.iterationCount, 0);
     });
 
-    test('skips imageData attached after rasterizing a real .svg image',
-        () async {
-      // Drive the real flow to attach `imageData`, then swap in a spy (with the
-      // `image` key removed so a re-run does not regenerate it) to prove the
-      // walker leaves the attached byte payload untouched.
-      final payload = <String, dynamic>{'image': _svgAssetKey};
-      await resolveSvgInPayload(payload);
-      expect(payload['imageData'], isA<Uint8List>());
+    test(
+      'skips imageData attached after rasterizing a real .svg image',
+      () async {
+        // Drive the real flow to attach `imageData`, then swap in a spy (with the
+        // `image` key removed so a re-run does not regenerate it) to prove the
+        // walker leaves the attached byte payload untouched.
+        final payload = <String, dynamic>{'image': _svgAssetKey};
+        await resolveSvgInPayload(payload);
+        expect(payload['imageData'], isA<Uint8List>());
 
-      final produced = payload['imageData'] as Uint8List;
-      payload.remove('image');
-      final spy = _SpyList(produced);
-      payload['imageData'] = spy;
+        final produced = payload['imageData'] as Uint8List;
+        payload.remove('image');
+        final spy = _SpyList(produced);
+        payload['imageData'] = spy;
 
-      await resolveSvgInPayload(payload);
+        await resolveSvgInPayload(payload);
 
-      expect(spy.iterationCount, 0);
-    });
+        expect(spy.iterationCount, 0);
+      },
+    );
   });
 
   group('configurable raster size', () {

@@ -22,26 +22,26 @@ class AATabBarTemplate implements AATemplate {
   /// The templates shown in each tab (max 5, per Android Auto restrictions).
   final List<AATemplate> tabs;
 
-  AATabBarTemplate({
-    required List<AATemplate> tabs,
-    String? id,
-  })  : tabs = List<AATemplate>.from(tabs),
-        _elementId = id ?? const Uuid().v4();
+  AATabBarTemplate({required List<AATemplate> tabs, String? id})
+    : tabs = List<AATemplate>.from(tabs),
+      _elementId = id ?? const Uuid().v4();
 
   @override
   String get uniqueId => _elementId;
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'tabs': tabs
-            .map((t) => {
-                  'elementId': t.uniqueId,
-                  'runtimeType': _runtimeTypeOf(t),
-                  'template': t.toJson(),
-                })
-            .toList(),
-      };
+    '_elementId': _elementId,
+    'tabs': tabs
+        .map(
+          (t) => {
+            'elementId': t.uniqueId,
+            'runtimeType': _runtimeTypeOf(t),
+            'template': t.toJson(),
+          },
+        )
+        .toList(),
+  };
 
   /// Updates the tabs list in-place (mirrors CPTabBarTemplate.updateTemplates).
   void updateTabs(List<AATemplate> newTabs) {

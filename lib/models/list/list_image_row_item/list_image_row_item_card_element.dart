@@ -52,15 +52,15 @@ class CPListImageRowItemCardElement implements CPListImageRowItemElement {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'image': image,
-        'imageTint': imageTint?.toJson(),
-        'title': title,
-        'subtitle': subtitle,
-        'tintColor': tintColor?.toJson(),
-        'showsImageFullHeight': showsImageFullHeight,
-        'runtimeType': 'FCPListImageRowItemCardElement',
-      };
+    '_elementId': _elementId,
+    'image': image,
+    'imageTint': imageTint?.toJson(),
+    'title': title,
+    'subtitle': subtitle,
+    'tintColor': tintColor?.toJson(),
+    'showsImageFullHeight': showsImageFullHeight,
+    'runtimeType': 'FCPListImageRowItemCardElement',
+  };
 
   @override
   void setImage(String image, {AutoImageTint? imageTint}) {

@@ -75,15 +75,15 @@ void main() {
 
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (methodCall) async {
-        expect(methodCall.method, 'updateLongMessageTemplate');
-        expect(methodCall.arguments, {
-          'elementId': '<AALongMessageTemplate>',
-          'title': 'Safety information updated',
-          'message':
-              'These updated safety notes are now available in Android Auto.',
-        });
-        return true;
-      });
+            expect(methodCall.method, 'updateLongMessageTemplate');
+            expect(methodCall.arguments, {
+              'elementId': '<AALongMessageTemplate>',
+              'title': 'Safety information updated',
+              'message':
+                  'These updated safety notes are now available in Android Auto.',
+            });
+            return true;
+          });
 
       await template.update(
         title: 'Safety information updated',
@@ -107,11 +107,11 @@ void main() {
 
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (_) async {
-        throw PlatformException(
-          code: 'No screen found',
-          message: 'No Android Auto screen found for template id',
-        );
-      });
+            throw PlatformException(
+              code: 'No screen found',
+              message: 'No Android Auto screen found for template id',
+            );
+          });
 
       expect(
         template.setMessage(

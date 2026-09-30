@@ -30,11 +30,11 @@ class CPAlertAction {
   }) : _elementId = id ?? const Uuid().v4();
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'style': style.name,
-        'runtimeType': 'FCPAlertAction',
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'style': style.name,
+    'runtimeType': 'FCPAlertAction',
+  };
 
   String get uniqueId {
     return _elementId;

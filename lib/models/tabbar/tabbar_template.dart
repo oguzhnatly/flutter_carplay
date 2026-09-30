@@ -38,18 +38,18 @@ class CPTabBarTemplate extends CPTemplate {
     super.systemIcon,
     super.onPop,
     String? id,
-  })  : templates = List<CPTemplate>.from(templates),
-        _elementId = id ?? const Uuid().v4();
+  }) : templates = List<CPTemplate>.from(templates),
+       _elementId = id ?? const Uuid().v4();
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'tabTitle': tabTitle,
-        'templates': templates.map((e) => e.toJson()).toList(),
-        'showsTabBadge': showsTabBadge,
-        'systemIcon': systemIcon,
-        'runtimeType': 'FCPTabBarTemplate',
-      };
+    '_elementId': _elementId,
+    'tabTitle': tabTitle,
+    'templates': templates.map((e) => e.toJson()).toList(),
+    'showsTabBadge': showsTabBadge,
+    'systemIcon': systemIcon,
+    'runtimeType': 'FCPTabBarTemplate',
+  };
 
   @override
   String get uniqueId {

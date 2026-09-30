@@ -6,12 +6,7 @@ void main() {
     test('serializes RGB as clamped byte channels', () {
       expect(
         const UIColor(red: -1, green: 128, blue: 300).toJson(),
-        <String, dynamic>{
-          'red': 0,
-          'green': 128,
-          'blue': 255,
-          'alpha': 1.0,
-        },
+        <String, dynamic>{'red': 0, 'green': 128, 'blue': 255, 'alpha': 1.0},
       );
     });
   });

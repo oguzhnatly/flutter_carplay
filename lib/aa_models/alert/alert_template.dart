@@ -40,10 +40,10 @@ class AAAlertTemplate implements AATemplate {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'message': message,
-        'actions': actions.map((e) => e.toJson()).toList(),
-        'onPresent': onPresent != null,
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'message': message,
+    'actions': actions.map((e) => e.toJson()).toList(),
+    'onPresent': onPresent != null,
+  };
 }

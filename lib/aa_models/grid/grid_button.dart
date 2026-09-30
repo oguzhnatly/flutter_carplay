@@ -37,16 +37,16 @@ class AAGridButton {
     this.image,
     this.loadingMessage,
     this.onPress,
-  })  : assert(titleVariants.isNotEmpty, 'titleVariants must not be empty'),
-        _elementId = const Uuid().v4();
+  }) : assert(titleVariants.isNotEmpty, 'titleVariants must not be empty'),
+       _elementId = const Uuid().v4();
 
   String get uniqueId => _elementId;
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'titleVariants': titleVariants,
-        'image': image,
-        'loadingMessage': loadingMessage,
-        'onPress': onPress != null,
-      };
+    '_elementId': _elementId,
+    'titleVariants': titleVariants,
+    'image': image,
+    'loadingMessage': loadingMessage,
+    'onPress': onPress != null,
+  };
 }

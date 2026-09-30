@@ -80,21 +80,21 @@ class CPPointOfInterest {
   }) : _elementId = id ?? const Uuid().v4();
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'latitude': latitude,
-        'longitude': longitude,
-        'title': title,
-        'subtitle': subtitle,
-        'summary': summary,
-        'detailTitle': detailTitle,
-        'detailSubtitle': detailSubtitle,
-        'detailSummary': detailSummary,
-        'image': image,
-        'imageTint': imageTint?.toJson(),
-        'primaryButton': primaryButton?.toJson(),
-        'secondaryButton': secondaryButton?.toJson(),
-        'runtimeType': 'FCPPointOfInterest',
-      };
+    '_elementId': _elementId,
+    'latitude': latitude,
+    'longitude': longitude,
+    'title': title,
+    'subtitle': subtitle,
+    'summary': summary,
+    'detailTitle': detailTitle,
+    'detailSubtitle': detailSubtitle,
+    'detailSummary': detailSummary,
+    'image': image,
+    'imageTint': imageTint?.toJson(),
+    'primaryButton': primaryButton?.toJson(),
+    'secondaryButton': secondaryButton?.toJson(),
+    'runtimeType': 'FCPPointOfInterest',
+  };
 
   String get uniqueId {
     return _elementId;
