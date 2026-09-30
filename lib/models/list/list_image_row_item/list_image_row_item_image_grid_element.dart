@@ -47,14 +47,14 @@ class CPListImageRowItemImageGridElement implements CPListImageRowItemElement {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'image': image,
-        'imageTint': imageTint?.toJson(),
-        'title': title,
-        'accessorySymbolName': accessorySymbolName,
-        'imageShape': imageShape.name,
-        'runtimeType': 'FCPListImageRowItemImageGridElement',
-      };
+    '_elementId': _elementId,
+    'image': image,
+    'imageTint': imageTint?.toJson(),
+    'title': title,
+    'accessorySymbolName': accessorySymbolName,
+    'imageShape': imageShape.name,
+    'runtimeType': 'FCPListImageRowItemImageGridElement',
+  };
 
   @override
   void setImage(String image, {AutoImageTint? imageTint}) {

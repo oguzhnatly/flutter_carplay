@@ -285,11 +285,14 @@ class _MyAppState extends State<MyApp> {
                                             subtitle: 'Click to pop',
                                             image:
                                                 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
-                                            onPress: (complete,
-                                                AAListItem item) async {
-                                              FlutterAndroidAuto.pop();
-                                              complete();
-                                            },
+                                            onPress:
+                                                (
+                                                  complete,
+                                                  AAListItem item,
+                                                ) async {
+                                                  FlutterAndroidAuto.pop();
+                                                  complete();
+                                                },
                                           ),
                                           AAListItem(
                                             title: 'Page 2',
@@ -297,11 +300,14 @@ class _MyAppState extends State<MyApp> {
                                                 'Click to open pop to root',
                                             image:
                                                 'https://storage.googleapis.com/cms-storage-bucket/icon_flutter.0dbfcc7a59cd1cf16282.png',
-                                            onPress: (complete,
-                                                AAListItem item) async {
-                                              FlutterAndroidAuto.popToRoot();
-                                              complete();
-                                            },
+                                            onPress:
+                                                (
+                                                  complete,
+                                                  AAListItem item,
+                                                ) async {
+                                                  FlutterAndroidAuto.popToRoot();
+                                                  complete();
+                                                },
                                           ),
                                         ],
                                       ),
@@ -438,7 +444,8 @@ class _MyAppState extends State<MyApp> {
   void openAndroidAutoLongMessageTemplate() {
     final template = AALongMessageTemplate(
       title: 'Safety information',
-      message: 'Keep your attention on the road. This longer Android Auto '
+      message:
+          'Keep your attention on the road. This longer Android Auto '
           'message template is intended for content that needs more space than '
           'a simple message screen can provide.',
     );
@@ -448,7 +455,8 @@ class _MyAppState extends State<MyApp> {
     Future.delayed(const Duration(seconds: 3), () {
       template.update(
         title: 'Safety information updated',
-        message: 'The long message template has been rebuilt and refreshed. '
+        message:
+            'The long message template has been rebuilt and refreshed. '
             'Use this template for longer informational text that should remain '
             'readable in Android Auto.',
       );

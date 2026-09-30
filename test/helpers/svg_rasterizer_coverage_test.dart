@@ -52,7 +52,8 @@ void main() {
     expect(
       unhandled,
       isEmpty,
-      reason: '$label emits image key(s) $unhandled that the SVG walker does '
+      reason:
+          '$label emits image key(s) $unhandled that the SVG walker does '
           'not handle. Add them to svgImageDataKeys or svgIgnoredKeys in '
           'lib/helpers/svg_rasterizer.dart.',
     );

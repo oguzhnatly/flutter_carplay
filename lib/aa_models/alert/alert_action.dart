@@ -30,8 +30,8 @@ class AAAlertAction {
   String get uniqueId => _elementId;
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'style': style.name,
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'style': style.name,
+  };
 }

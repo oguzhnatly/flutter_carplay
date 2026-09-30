@@ -39,56 +39,48 @@ class FlutterCarPlayController {
     // SVG directly. Non-collection payloads pass through unchanged.
     await resolveSvgInPayload(data, size: FlutterCarplay.svgRasterSize);
 
-    final value = await _methodChannel.invokeMethod<bool>(
-      type.name,
-      data,
-    );
+    final value = await _methodChannel.invokeMethod<bool>(type.name, data);
     return value;
   }
 
-  static void updateCPListItem(
-    CPListItem updatedListItem,
-  ) {
+  static void updateCPListItem(CPListItem updatedListItem) {
     flutterToNativeModule(
       FCPChannelTypes.updateListItem,
       updatedListItem.toJson(),
-    ).then(
-      (value) {
-        if (value != true) return;
+    ).then((value) {
+      if (value != true) return;
 
-        for (var h in templateHistory) {
-          switch (h) {
-            case CPTabBarTemplate _:
-              for (var t in h.templates) {
-                if (t is CPListTemplate) {
-                  for (var s in t.sections) {
-                    for (var i in s.items) {
-                      if (i.uniqueId == updatedListItem.uniqueId &&
-                          i is CPListItem) {
-                        s.items[s.items.indexOf(i)] = updatedListItem;
-                        return;
-                      }
+      for (var h in templateHistory) {
+        switch (h) {
+          case CPTabBarTemplate _:
+            for (var t in h.templates) {
+              if (t is CPListTemplate) {
+                for (var s in t.sections) {
+                  for (var i in s.items) {
+                    if (i.uniqueId == updatedListItem.uniqueId &&
+                        i is CPListItem) {
+                      s.items[s.items.indexOf(i)] = updatedListItem;
+                      return;
                     }
                   }
                 }
               }
-              break;
-            case CPListTemplate _:
-              for (var s in h.sections) {
-                for (var i in s.items) {
-                  if (i.uniqueId == updatedListItem.uniqueId &&
-                      i is CPListItem) {
-                    s.items[s.items.indexOf(i)] = updatedListItem;
-                    return;
-                  }
+            }
+            break;
+          case CPListTemplate _:
+            for (var s in h.sections) {
+              for (var i in s.items) {
+                if (i.uniqueId == updatedListItem.uniqueId && i is CPListItem) {
+                  s.items[s.items.indexOf(i)] = updatedListItem;
+                  return;
                 }
               }
-              break;
-            default:
-          }
+            }
+            break;
+          default:
         }
-      },
-    );
+      }
+    });
   }
 
   static void updateCPListImageRowItemElement(
@@ -97,53 +89,50 @@ class FlutterCarPlayController {
     flutterToNativeModule(
       FCPChannelTypes.updateListImageRowItemElement,
       updatedListImageRowItemElement.toJson(),
-    ).then(
-      (value) {
-        if (value != true) return;
+    ).then((value) {
+      if (value != true) return;
 
-        for (var h in templateHistory) {
-          switch (h) {
-            case CPTabBarTemplate _:
-              for (var t in h.templates) {
-                if (t is CPListTemplate) {
-                  for (var s in t.sections) {
-                    for (var i in s.items) {
-                      if (i is CPListImageRowItem) {
-                        for (var e in i.elements ?? []) {
-                          if (e.uniqueId ==
-                              updatedListImageRowItemElement.uniqueId) {
-                            i.elements![i.elements!.indexOf(e)] =
-                                updatedListImageRowItemElement;
-                            return;
-                          }
+      for (var h in templateHistory) {
+        switch (h) {
+          case CPTabBarTemplate _:
+            for (var t in h.templates) {
+              if (t is CPListTemplate) {
+                for (var s in t.sections) {
+                  for (var i in s.items) {
+                    if (i is CPListImageRowItem) {
+                      for (var e in i.elements ?? []) {
+                        if (e.uniqueId ==
+                            updatedListImageRowItemElement.uniqueId) {
+                          i.elements![i.elements!.indexOf(e)] =
+                              updatedListImageRowItemElement;
+                          return;
                         }
                       }
                     }
                   }
                 }
               }
-              break;
-            case CPListTemplate _:
-              for (var s in h.sections) {
-                for (var i in s.items) {
-                  if (i is CPListImageRowItem) {
-                    for (var e in i.elements ?? []) {
-                      if (e.uniqueId ==
-                          updatedListImageRowItemElement.uniqueId) {
-                        i.elements![i.elements!.indexOf(e)] =
-                            updatedListImageRowItemElement;
-                        return;
-                      }
+            }
+            break;
+          case CPListTemplate _:
+            for (var s in h.sections) {
+              for (var i in s.items) {
+                if (i is CPListImageRowItem) {
+                  for (var e in i.elements ?? []) {
+                    if (e.uniqueId == updatedListImageRowItemElement.uniqueId) {
+                      i.elements![i.elements!.indexOf(e)] =
+                          updatedListImageRowItemElement;
+                      return;
                     }
                   }
                 }
               }
-              break;
-            default:
-          }
+            }
+            break;
+          default:
         }
-      },
-    );
+      }
+    });
   }
 
   static void updateCPListImageRowItem(
@@ -152,43 +141,41 @@ class FlutterCarPlayController {
     flutterToNativeModule(
       FCPChannelTypes.updateListImageRowItem,
       updatedListImageItem.toJson(),
-    ).then(
-      (value) {
-        if (value != true) return;
+    ).then((value) {
+      if (value != true) return;
 
-        for (var h in templateHistory) {
-          switch (h) {
-            case CPTabBarTemplate _:
-              for (var t in h.templates) {
-                if (t is CPListTemplate) {
-                  for (var s in t.sections) {
-                    for (var i in s.items) {
-                      if (i.uniqueId == updatedListImageItem.uniqueId &&
-                          i is CPListImageRowItem) {
-                        s.items[s.items.indexOf(i)] = updatedListImageItem;
-                        return;
-                      }
+      for (var h in templateHistory) {
+        switch (h) {
+          case CPTabBarTemplate _:
+            for (var t in h.templates) {
+              if (t is CPListTemplate) {
+                for (var s in t.sections) {
+                  for (var i in s.items) {
+                    if (i.uniqueId == updatedListImageItem.uniqueId &&
+                        i is CPListImageRowItem) {
+                      s.items[s.items.indexOf(i)] = updatedListImageItem;
+                      return;
                     }
                   }
                 }
               }
-              break;
-            case CPListTemplate _:
-              for (var s in h.sections) {
-                for (var i in s.items) {
-                  if (i.uniqueId == updatedListImageItem.uniqueId &&
-                      i is CPListImageRowItem) {
-                    s.items[s.items.indexOf(i)] = updatedListImageItem;
-                    return;
-                  }
+            }
+            break;
+          case CPListTemplate _:
+            for (var s in h.sections) {
+              for (var i in s.items) {
+                if (i.uniqueId == updatedListImageItem.uniqueId &&
+                    i is CPListImageRowItem) {
+                  s.items[s.items.indexOf(i)] = updatedListImageItem;
+                  return;
                 }
               }
-              break;
-            default:
-          }
+            }
+            break;
+          default:
         }
-      },
-    );
+      }
+    });
   }
 
   static Future<int?> getMaximumNumberOfGridImages() async {
@@ -234,7 +221,9 @@ class FlutterCarPlayController {
 
     Future<void> complete() async {
       await flutterToNativeModule(
-          FCPChannelTypes.onFCPListItemSelectedComplete, item.uniqueId);
+        FCPChannelTypes.onFCPListItemSelectedComplete,
+        item.uniqueId,
+      );
     }
 
     try {
@@ -245,7 +234,8 @@ class FlutterCarPlayController {
   }
 
   Future<void> processFCPListImageRowItemSelectedChannel(
-      String elementId) async {
+    String elementId,
+  ) async {
     final item = _carplayHelper.findCPListTemplateItem(
       templates: templateHistory,
       elementId: elementId,
@@ -255,7 +245,9 @@ class FlutterCarPlayController {
 
     Future<void> complete() async {
       await flutterToNativeModule(
-          FCPChannelTypes.onFCPListImageRowItemSelectedComplete, item.uniqueId);
+        FCPChannelTypes.onFCPListImageRowItemSelectedComplete,
+        item.uniqueId,
+      );
     }
 
     try {
@@ -374,20 +366,14 @@ class FlutterCarPlayController {
   void processFCPSearchTextUpdated(String elementId, String searchText) {
     for (var t in templateHistory) {
       if (t is CPSearchTemplate && t.uniqueId == elementId) {
-        t.onUpdatedSearchText?.call(
-          searchText,
-          (List<CPListItem> results) {
-            t.updateResults(results);
-            final items = results.map((e) => e.toJson()).toList();
-            FlutterCarPlayController.flutterToNativeModule(
-              FCPChannelTypes.updateSearchResults,
-              <String, dynamic>{
-                'elementId': elementId,
-                'searchResults': items,
-              },
-            );
-          },
-        );
+        t.onUpdatedSearchText?.call(searchText, (List<CPListItem> results) {
+          t.updateResults(results);
+          final items = results.map((e) => e.toJson()).toList();
+          FlutterCarPlayController.flutterToNativeModule(
+            FCPChannelTypes.updateSearchResults,
+            <String, dynamic>{'elementId': elementId, 'searchResults': items},
+          );
+        });
         return;
       }
     }
@@ -404,15 +390,12 @@ class FlutterCarPlayController {
           }
         }
         if (selectedItem != null) {
-          t.onSelectedResult?.call(
-            selectedItem,
-            () {
-              FlutterCarPlayController.flutterToNativeModule(
-                FCPChannelTypes.onSearchResultSelectedComplete,
-                <String, dynamic>{'elementId': elementId},
-              );
-            },
-          );
+          t.onSelectedResult?.call(selectedItem, () {
+            FlutterCarPlayController.flutterToNativeModule(
+              FCPChannelTypes.onSearchResultSelectedComplete,
+              <String, dynamic>{'elementId': elementId},
+            );
+          });
         }
         return;
       }

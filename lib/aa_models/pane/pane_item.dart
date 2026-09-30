@@ -25,16 +25,16 @@ class AAPaneItem {
     this.imageUrl,
     this.imageTint,
     String? id,
-  })  : assert(title.isNotEmpty, 'AAPaneItem.title cannot be empty'),
-        _elementId = id ?? const Uuid().v4();
+  }) : assert(title.isNotEmpty, 'AAPaneItem.title cannot be empty'),
+       _elementId = id ?? const Uuid().v4();
 
   String get uniqueId => _elementId;
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'detail': detail,
-        'imageUrl': imageUrl,
-        'imageTint': imageTint?.toJson(),
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'detail': detail,
+    'imageUrl': imageUrl,
+    'imageTint': imageTint?.toJson(),
+  };
 }

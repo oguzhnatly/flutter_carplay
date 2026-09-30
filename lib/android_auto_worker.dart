@@ -27,81 +27,83 @@ class FlutterAndroidAuto {
     _eventBroadcast = _androidAutoController.eventChannel
         .receiveBroadcastStream()
         .listen((event) async {
-      final FAAChannelTypes receivedChannelType = EnumUtils.enumFromString(
-        FAAChannelTypes.values,
-        event['type'],
-      );
-
-      switch (receivedChannelType) {
-        case FAAChannelTypes.onAndroidAutoConnectionChange:
-          final ConnectionStatusTypes connectionStatus =
-              EnumUtils.enumFromString(
-            ConnectionStatusTypes.values,
-            event['data']['status'],
+          final FAAChannelTypes receivedChannelType = EnumUtils.enumFromString(
+            FAAChannelTypes.values,
+            event['type'],
           );
-          _connectionStatus = connectionStatus.name;
-          _onAndroidAutoConnectionChange?.call(connectionStatus);
-          break;
 
-        case FAAChannelTypes.onListItemSelected:
-          await _androidAutoController.processFAAListItemSelectedChannel(
-            event['data']['elementId'],
-          );
-          break;
+          switch (receivedChannelType) {
+            case FAAChannelTypes.onAndroidAutoConnectionChange:
+              final ConnectionStatusTypes connectionStatus =
+                  EnumUtils.enumFromString(
+                    ConnectionStatusTypes.values,
+                    event['data']['status'],
+                  );
+              _connectionStatus = connectionStatus.name;
+              _onAndroidAutoConnectionChange?.call(connectionStatus);
+              break;
 
-        case FAAChannelTypes.onListSectionSelected:
-          _androidAutoController.processFAAListSectionSelectedChannel(
-            event['data']['elementId'],
-            event['data']['selectedIndex'],
-          );
-          break;
+            case FAAChannelTypes.onListItemSelected:
+              await _androidAutoController.processFAAListItemSelectedChannel(
+                event['data']['elementId'],
+              );
+              break;
 
-        case FAAChannelTypes.onToggleCheckedChange:
-          _androidAutoController.processFAAToggleCheckedChangeChannel(
-            event['data']['elementId'],
-            event['data']['checked'],
-          );
-          break;
+            case FAAChannelTypes.onListSectionSelected:
+              _androidAutoController.processFAAListSectionSelectedChannel(
+                event['data']['elementId'],
+                event['data']['selectedIndex'],
+              );
+              break;
 
-        case FAAChannelTypes.onPaneActionPressed:
-          _androidAutoController.processFAAPaneActionPressedChannel(
-            event['data']['elementId'],
-          );
-          break;
+            case FAAChannelTypes.onToggleCheckedChange:
+              _androidAutoController.processFAAToggleCheckedChangeChannel(
+                event['data']['elementId'],
+                event['data']['checked'],
+              );
+              break;
 
-        case FAAChannelTypes.onScreenBackButtonPressed:
-          FlutterAndroidAutoController.templateHistory.removeWhere(
-            (AATemplate item) => item.uniqueId == event['data']['elementId'],
-          );
-          break;
+            case FAAChannelTypes.onPaneActionPressed:
+              _androidAutoController.processFAAPaneActionPressedChannel(
+                event['data']['elementId'],
+              );
+              break;
 
-        case FAAChannelTypes.onAlertActionPressed:
-          _androidAutoController.processFAAAlertActionPressed(
-            event['data']['elementId'],
-          );
-          break;
+            case FAAChannelTypes.onScreenBackButtonPressed:
+              FlutterAndroidAutoController.templateHistory.removeWhere(
+                (AATemplate item) =>
+                    item.uniqueId == event['data']['elementId'],
+              );
+              break;
 
-        case FAAChannelTypes.onPresentStateChanged:
-          final bool completed = event['data']['completed'] as bool? ?? false;
-          _androidAutoController.processFAAPresentStateChanged(
-            event['data']['elementId'],
-            completed,
-          );
-          break;
+            case FAAChannelTypes.onAlertActionPressed:
+              _androidAutoController.processFAAAlertActionPressed(
+                event['data']['elementId'],
+              );
+              break;
 
-        case FAAChannelTypes.onTabBarItemSelected:
-          break;
+            case FAAChannelTypes.onPresentStateChanged:
+              final bool completed =
+                  event['data']['completed'] as bool? ?? false;
+              _androidAutoController.processFAAPresentStateChanged(
+                event['data']['elementId'],
+                completed,
+              );
+              break;
 
-        case FAAChannelTypes.onGridButtonPressed:
-          await _androidAutoController.processFAAGridButtonPressed(
-            event['data']['elementId'],
-          );
-          break;
+            case FAAChannelTypes.onTabBarItemSelected:
+              break;
 
-        default:
-          break;
-      }
-    });
+            case FAAChannelTypes.onGridButtonPressed:
+              await _androidAutoController.processFAAGridButtonPressed(
+                event['data']['elementId'],
+              );
+              break;
+
+            default:
+              break;
+          }
+        });
   }
 
   void closeConnection() {
@@ -131,9 +133,9 @@ class FlutterAndroidAuto {
   static Future<void> setRootTemplate({required AATemplate template}) async {
     final bool? isCompleted = await _androidAutoController
         .flutterToNativeModule(FAAChannelTypes.setRootTemplate, {
-      'template': template.toJson(),
-      'runtimeType': _getAARuntimeTypeString(template),
-    });
+          'template': template.toJson(),
+          'runtimeType': _getAARuntimeTypeString(template),
+        });
 
     if (isCompleted == true) {
       if (FlutterAndroidAutoController.templateHistory.isEmpty) {
@@ -159,8 +161,8 @@ class FlutterAndroidAuto {
   }) async {
     final bool? isCompleted = await _androidAutoController
         .flutterToNativeModule(FAAChannelTypes.updatePaneTemplate, {
-      'template': template.toJson(),
-    });
+          'template': template.toJson(),
+        });
 
     if (isCompleted == true) {
       final int index = FlutterAndroidAutoController.templateHistory.indexWhere(
@@ -183,13 +185,11 @@ class FlutterAndroidAuto {
   static dynamic get rootTemplate =>
       FlutterAndroidAutoController.currentRootTemplate;
 
-  static Future<void> showAlert({
-    required AAAlertTemplate template,
-  }) async {
+  static Future<void> showAlert({required AAAlertTemplate template}) async {
     final bool? isCompleted = await _androidAutoController
         .flutterToNativeModule(FAAChannelTypes.setAlert, {
-      'template': template.toJson(),
-    });
+          'template': template.toJson(),
+        });
 
     if (isCompleted == true) {
       FlutterAndroidAutoController.currentPresentTemplate = template;
@@ -207,13 +207,14 @@ class FlutterAndroidAuto {
   static Future<void> updateTabBarTemplates({
     required AATabBarTemplate template,
   }) async {
-    await _androidAutoController
-        .flutterToNativeModule(FAAChannelTypes.updateTabBarTemplates, {
-      'template': template.toJson(),
-    });
+    await _androidAutoController.flutterToNativeModule(
+      FAAChannelTypes.updateTabBarTemplates,
+      {'template': template.toJson()},
+    );
 
-    final index = FlutterAndroidAutoController.templateHistory
-        .indexWhere((item) => item.uniqueId == template.uniqueId);
+    final index = FlutterAndroidAutoController.templateHistory.indexWhere(
+      (item) => item.uniqueId == template.uniqueId,
+    );
     if (index >= 0) {
       FlutterAndroidAutoController.templateHistory[index] = template;
     }
@@ -234,9 +235,9 @@ class FlutterAndroidAuto {
   static Future<bool> push({required AATemplate template}) async {
     final bool? isCompleted = await _androidAutoController
         .flutterToNativeModule(FAAChannelTypes.pushTemplate, <String, dynamic>{
-      'template': template.toJson(),
-      'runtimeType': _getAARuntimeTypeString(template),
-    });
+          'template': template.toJson(),
+          'runtimeType': _getAARuntimeTypeString(template),
+        });
     if (isCompleted == true) {
       FlutterAndroidAutoController.templateHistory.add(template);
     }

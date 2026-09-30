@@ -38,15 +38,15 @@ class CPAlertTemplate extends CPTemplate implements CPActionsTemplate {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'titleVariants': titleVariants,
-        'actions': actions.map((e) => e.toJson()).toList(),
-        'onPresent': onPresent != null ? true : false,
-        'tabTitle': tabTitle,
-        'showsTabBadge': showsTabBadge,
-        'systemIcon': systemIcon,
-        'runtimeType': 'FCPAlertTemplate',
-      };
+    '_elementId': _elementId,
+    'titleVariants': titleVariants,
+    'actions': actions.map((e) => e.toJson()).toList(),
+    'onPresent': onPresent != null ? true : false,
+    'tabTitle': tabTitle,
+    'showsTabBadge': showsTabBadge,
+    'systemIcon': systemIcon,
+    'runtimeType': 'FCPAlertTemplate',
+  };
 
   @override
   String get uniqueId {

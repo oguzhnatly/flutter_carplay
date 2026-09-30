@@ -34,14 +34,14 @@ class CPGridTemplate extends CPTemplate {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'buttons': buttons.map((e) => e.toJson()).toList(),
-        'tabTitle': tabTitle,
-        'showsTabBadge': showsTabBadge,
-        'systemIcon': systemIcon,
-        'runtimeType': 'FCPGridTemplate',
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'buttons': buttons.map((e) => e.toJson()).toList(),
+    'tabTitle': tabTitle,
+    'showsTabBadge': showsTabBadge,
+    'systemIcon': systemIcon,
+    'runtimeType': 'FCPGridTemplate',
+  };
 
   @override
   String get uniqueId {

@@ -28,26 +28,24 @@ void main() {
     });
 
     test('find CPListItem from dynamic list item and element id', () {
-      final CPListTemplateItem? item =
-          flutterCarplayHelper.findCPListTemplateItem(
-        templates: templates,
-        elementId: cpListItem.uniqueId,
-      );
+      final CPListTemplateItem? item = flutterCarplayHelper
+          .findCPListTemplateItem(
+            templates: templates,
+            elementId: cpListItem.uniqueId,
+          );
 
       expect(item, cpListItem);
 
-      final CPListTemplateItem? nullableItem =
-          flutterCarplayHelper.findCPListTemplateItem(
-        templates: templates,
-        elementId: '',
-      );
+      final CPListTemplateItem? nullableItem = flutterCarplayHelper
+          .findCPListTemplateItem(templates: templates, elementId: '');
 
       expect(nullableItem, null);
     });
 
     test('make FCP channel id', () {
-      final String channelId =
-          flutterCarplayHelper.makeFCPChannelId(event: '/event');
+      final String channelId = flutterCarplayHelper.makeFCPChannelId(
+        event: '/event',
+      );
 
       expect(channelId, 'com.oguzhnatly.flutter_carplay/event');
     });

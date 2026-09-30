@@ -29,16 +29,16 @@ class CPListSection {
     this.sectionIndexEnabled,
     required List<CPListTemplateItem> items,
     String? id,
-  })  : items = List<CPListTemplateItem>.from(items),
-        _elementId = id ?? const Uuid().v4();
+  }) : items = List<CPListTemplateItem>.from(items),
+       _elementId = id ?? const Uuid().v4();
 
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'header': header,
-        'items': items.map((e) => e.toJson()).toList(),
-        'sectionIndexEnabled': sectionIndexEnabled,
-        'runtimeType': 'FCPListSection',
-      };
+    '_elementId': _elementId,
+    'header': header,
+    'items': items.map((e) => e.toJson()).toList(),
+    'sectionIndexEnabled': sectionIndexEnabled,
+    'runtimeType': 'FCPListSection',
+  };
 
   String get uniqueId {
     return _elementId;

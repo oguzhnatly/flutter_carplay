@@ -53,17 +53,17 @@ class CPListTemplate extends CPTemplate {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'sections': sections.map((e) => e.toJson()).toList(),
-        'emptyViewTitleVariants': emptyViewTitleVariants,
-        'emptyViewSubtitleVariants': emptyViewSubtitleVariants,
-        'tabTitle': tabTitle,
-        'showsTabBadge': showsTabBadge,
-        'systemIcon': systemIcon,
-        'backButton': backButton?.toJson(),
-        'runtimeType': 'FCPListTemplate',
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'sections': sections.map((e) => e.toJson()).toList(),
+    'emptyViewTitleVariants': emptyViewTitleVariants,
+    'emptyViewSubtitleVariants': emptyViewSubtitleVariants,
+    'tabTitle': tabTitle,
+    'showsTabBadge': showsTabBadge,
+    'systemIcon': systemIcon,
+    'backButton': backButton?.toJson(),
+    'runtimeType': 'FCPListTemplate',
+  };
 
   /// The maximum number of sections that the template can display.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+

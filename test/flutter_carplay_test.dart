@@ -9,7 +9,7 @@ void main() {
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall channel) async {
-      return '42';
-    });
+          return '42';
+        });
   });
 }

@@ -46,12 +46,16 @@ class CPListImageRowItem extends CPListTemplateItem {
   /// An optional closure that CarPlay invokes when the user selects the list item.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   FutureOr<void> Function(Function() complete, CPListImageRowItem self)?
-      onPress;
+  onPress;
 
   /// An optional closure that CarPlay invokes when the user selects an image.
   /// iOS 14.0+ | iPadOS 14.0+ | Mac Catalyst 14.0+
   FutureOr<void> Function(
-      Function() complete, CPListImageRowItem self, int? index)? onItemPress;
+    Function() complete,
+    CPListImageRowItem self,
+    int? index,
+  )?
+  onItemPress;
 
   /// Creates [CPListImageRowItem]
   CPListImageRowItem({
@@ -68,18 +72,17 @@ class CPListImageRowItem extends CPListTemplateItem {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'text': text,
-        'gridImages': gridImages,
-        'gridImageTints':
-            gridImageTints?.map((tint) => tint?.toJson()).toList(),
-        'imageTitles': imageTitles,
-        'elements': elements?.map((e) => e.toJson()).toList(),
-        'allowsMultipleLines': allowsMultipleLines,
-        'onPress': onPress != null ? true : false,
-        'onItemPress': onItemPress != null ? true : false,
-        'runtimeType': 'FCPListImageRowItem',
-      };
+    '_elementId': _elementId,
+    'text': text,
+    'gridImages': gridImages,
+    'gridImageTints': gridImageTints?.map((tint) => tint?.toJson()).toList(),
+    'imageTitles': imageTitles,
+    'elements': elements?.map((e) => e.toJson()).toList(),
+    'allowsMultipleLines': allowsMultipleLines,
+    'onPress': onPress != null ? true : false,
+    'onItemPress': onItemPress != null ? true : false,
+    'runtimeType': 'FCPListImageRowItem',
+  };
 
   void setText(String text) {
     this.text = text;

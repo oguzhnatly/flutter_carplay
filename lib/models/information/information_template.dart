@@ -43,16 +43,16 @@ class CPInformationTemplate extends CPTemplate {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'layout': layout.name,
-        'title': title,
-        'actions': actions.map((e) => e.toJson()).toList(),
-        'informationItems': informationItems.map((e) => e.toJson()).toList(),
-        'tabTitle': tabTitle,
-        'showsTabBadge': showsTabBadge,
-        'systemIcon': systemIcon,
-        'runtimeType': 'FCPInformationTemplate',
-      };
+    '_elementId': _elementId,
+    'layout': layout.name,
+    'title': title,
+    'actions': actions.map((e) => e.toJson()).toList(),
+    'informationItems': informationItems.map((e) => e.toJson()).toList(),
+    'tabTitle': tabTitle,
+    'showsTabBadge': showsTabBadge,
+    'systemIcon': systemIcon,
+    'runtimeType': 'FCPInformationTemplate',
+  };
 
   @override
   String get uniqueId {

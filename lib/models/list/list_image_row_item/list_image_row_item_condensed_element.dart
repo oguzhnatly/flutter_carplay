@@ -52,15 +52,15 @@ class CPListImageRowItemCondensedElement implements CPListImageRowItemElement {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'image': image,
-        'imageTint': imageTint?.toJson(),
-        'title': title,
-        'subtitle': subtitle,
-        'accessorySymbolName': accessorySymbolName,
-        'imageShape': imageShape.name,
-        'runtimeType': 'FCPListImageRowItemCondensedElement',
-      };
+    '_elementId': _elementId,
+    'image': image,
+    'imageTint': imageTint?.toJson(),
+    'title': title,
+    'subtitle': subtitle,
+    'accessorySymbolName': accessorySymbolName,
+    'imageShape': imageShape.name,
+    'runtimeType': 'FCPListImageRowItemCondensedElement',
+  };
 
   @override
   void setImage(String image, {AutoImageTint? imageTint}) {

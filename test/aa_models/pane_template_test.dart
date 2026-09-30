@@ -119,19 +119,16 @@ void main() {
 
     test('asserts Android template, row and action title constraints', () {
       expect(
-        () => AAPaneTemplate(title: '', items: [AAPaneItem(title: 'Status')]),
+        () => AAPaneTemplate(
+          title: '',
+          items: [AAPaneItem(title: 'Status')],
+        ),
         throwsA(isA<AssertionError>()),
       );
 
-      expect(
-        () => AAPaneItem(title: ''),
-        throwsA(isA<AssertionError>()),
-      );
+      expect(() => AAPaneItem(title: ''), throwsA(isA<AssertionError>()));
 
-      expect(
-        () => AAPaneAction(title: ''),
-        throwsA(isA<AssertionError>()),
-      );
+      expect(() => AAPaneAction(title: ''), throwsA(isA<AssertionError>()));
     });
   });
 }

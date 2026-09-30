@@ -9,7 +9,7 @@ void main() {
         sections: [
           AAListSection(
             selectedIndex: 0,
-            onSelected: (_, __) {},
+            onSelected: (_, _) {},
             items: [
               AAListItem(title: 'Radio option 1'),
               AAListItem(title: 'Radio option 2'),
@@ -33,7 +33,7 @@ void main() {
             AAListSection(
               title: 'Radio options',
               selectedIndex: 0,
-              onSelected: (_, __) {},
+              onSelected: (_, _) {},
               items: [
                 AAListItem(title: 'Radio option 1'),
                 AAListItem(title: 'Radio option 2'),

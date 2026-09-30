@@ -36,15 +36,15 @@ class CPActionSheetTemplate extends CPTemplate implements CPActionsTemplate {
 
   @override
   Map<String, dynamic> toJson() => {
-        '_elementId': _elementId,
-        'title': title,
-        'message': message,
-        'actions': actions.map((e) => e.toJson()).toList(),
-        'tabTitle': tabTitle,
-        'showsTabBadge': showsTabBadge,
-        'systemIcon': systemIcon,
-        'runtimeType': 'FCPActionSheetTemplate',
-      };
+    '_elementId': _elementId,
+    'title': title,
+    'message': message,
+    'actions': actions.map((e) => e.toJson()).toList(),
+    'tabTitle': tabTitle,
+    'showsTabBadge': showsTabBadge,
+    'systemIcon': systemIcon,
+    'runtimeType': 'FCPActionSheetTemplate',
+  };
 
   @override
   String get uniqueId {
