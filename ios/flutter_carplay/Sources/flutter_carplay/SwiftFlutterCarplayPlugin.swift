@@ -14,9 +14,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   private(set) static var registrar: FlutterPluginRegistrar?
   private static var objcRootTemplate: FCPTemplate?
   static var templateStack: [FCPTemplate] = []
+  private(set) static var connectionStatus = FCPConnectionTypes.disconnected
   private static var _rootTemplate: CPTemplate?
   public static var animated: Bool = false
-  private var objcPresentTemplate: FCPPresentTemplate?
 
   public static var rootTemplate: CPTemplate? {
     get {
@@ -56,6 +56,11 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
 
       switch runtimeType {
       case String(describing: FCPTabBarTemplate.self):
+        if let children = data["templates"] as? [[String: Any]],
+          children.contains(where: { $0["runtimeType"] as? String == "FCPVoiceControlTemplate" }) {
+          result(FCPModalController.flutterError(FCPVoiceControlTemplate.invalid("Voice control templates must be presented modally.")))
+          return
+        }
         rootTemplate = FCPTabBarTemplate(obj: data)
         let tabBarTemplate = rootTemplate as! FCPTabBarTemplate
         if tabBarTemplate.getFCPTemplates().count > CPTabBarTemplate.maximumTabCount {
@@ -125,6 +130,11 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         return
       }
       let elementId = args["elementId"] as! String
+      if let children = args["templates"] as? [[String: Any]],
+        children.contains(where: { $0["runtimeType"] as? String == "FCPVoiceControlTemplate" }) {
+        result(FCPModalController.flutterError(FCPVoiceControlTemplate.invalid("Voice control templates must be presented modally.")))
+        return
+      }
       let templates = (args["templates"] as! [[String: Any]]).map {
         FCPTabBarTemplate.parseTemplate(obj: $0)
       }
@@ -267,53 +277,35 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         })
       result(true)
       break
-    case FCPChannelTypes.setAlert:
-      guard self.objcPresentTemplate == nil else {
-        result(
-          FlutterError(
-            code: "ERROR",
-            message: "CarPlay can only present one modal template at a time.",
-            details: nil))
-        return
+    case FCPChannelTypes.setVoiceControlTemplate:
+      guard let args = call.arguments as? [String: Any],
+        let data = args["template"] as? [String: Any], let animated = FCPVoiceControlTemplate.boolValue(args["animated"])
+      else { result(FCPModalController.flutterError(FCPVoiceControlTemplate.invalid("Expected template and animated."))); return }
+      do {
+        let voice = try FCPVoiceControlTemplate(obj: data)
+        FlutterCarPlaySceneDelegate.modals.showVoice(voice, animated: animated, result: result)
+      } catch { result(FCPModalController.flutterError(error)) }
+    case FCPChannelTypes.activateVoiceControlState:
+      guard let args = call.arguments as? [String: Any],
+        let elementId = args["elementId"] as? String, !elementId.isEmpty,
+        let identifier = args["identifier"] as? String, !identifier.isEmpty
+      else { result(false); return }
+      result(FlutterCarPlaySceneDelegate.modals.activate(elementId: elementId, identifier: identifier))
+    case FCPChannelTypes.setAlert, FCPChannelTypes.setActionSheet:
+      guard let args = call.arguments as? [String: Any],
+        let data = args["rootTemplate"] as? [String: Any], let animated = args["animated"] as? Bool
+      else { result(false); return }
+      if call.method == FCPChannelTypes.setAlert {
+        let alert = FCPAlertTemplate(obj: data)
+        FlutterCarPlaySceneDelegate.modals.show(alert.get, owner: alert, animated: animated) { value in
+          FCPStreamHandlerPlugin.sendEvent(type: FCPChannelTypes.onPresentStateChanged,
+            data: ["completed": value as? Bool ?? false])
+          result(value)
+        }
+      } else {
+        let sheet = FCPActionSheetTemplate(obj: data)
+        FlutterCarPlaySceneDelegate.modals.show(sheet.get, owner: sheet, animated: animated, result: result)
       }
-      guard let args = call.arguments as? [String: Any] else {
-        result(false)
-        return
-      }
-      let alertTemplate = FCPAlertTemplate.init(obj: args["rootTemplate"] as! [String: Any])
-      self.objcPresentTemplate = alertTemplate
-      let animated = args["animated"] as! Bool
-      FlutterCarPlaySceneDelegate
-        .presentTemplate(
-          template: alertTemplate.get, animated: animated,
-          onPresent: { completed in
-            FCPStreamHandlerPlugin.sendEvent(
-              type: FCPChannelTypes.onPresentStateChanged,
-              data: ["completed": completed])
-          })
-      result(true)
-      break
-    case FCPChannelTypes.setActionSheet:
-      guard self.objcPresentTemplate == nil else {
-        result(
-          FlutterError(
-            code: "ERROR",
-            message: "CarPlay can only present one modal template at a time.",
-            details: nil))
-        return
-      }
-      guard let args = call.arguments as? [String: Any] else {
-        result(false)
-        return
-      }
-      let actionSheetTemplate = FCPActionSheetTemplate.init(
-        obj: args["rootTemplate"] as! [String: Any])
-      self.objcPresentTemplate = actionSheetTemplate
-      let animated = args["animated"] as! Bool
-      FlutterCarPlaySceneDelegate.presentTemplate(
-        template: actionSheetTemplate.get, animated: animated, onPresent: { _ in })
-      result(true)
-      break
     case FCPChannelTypes.popTemplate:
       guard let args = call.arguments as? [String: Any],
         SwiftFlutterCarplayPlugin.templateStack.count >= 2
@@ -331,10 +323,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         result(false)
         return
       }
-      FlutterCarPlaySceneDelegate.closePresent(animated: animated)
-      self.objcPresentTemplate = nil
-      result(true)
-      break
+      FlutterCarPlaySceneDelegate.modals.close(animated: animated, result: result)
     case FCPChannelTypes.showNowPlaying:
       guard let animated = call.arguments as? Bool else {
         result(false)
@@ -431,7 +420,6 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       }
 
       FlutterCarPlaySceneDelegate.popToRootTemplate(animated: animated)
-      self.objcPresentTemplate = nil
       result(true)
       break
     case FCPChannelTypes.getMaximumNumberOfGridImages:
@@ -457,6 +445,7 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   }
 
   static func onCarplayConnectionChange(status: String) {
+    connectionStatus = status
     FCPStreamHandlerPlugin.sendEvent(
       type: FCPChannelTypes.onCarplayConnectionChange,
       data: ["status": status])

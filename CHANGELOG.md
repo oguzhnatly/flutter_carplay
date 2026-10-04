@@ -1,3 +1,11 @@
+## 1.7.0 - 2026-10-04
+
+* Add modal CarPlay voice control states, activation and dismissal callbacks (#140, #2).
+* Support iOS 26.4 voice action buttons and navigation buttons with availability checks.
+* Validate state and button limits, wait for images, and handle modal cancellation and disconnect.
+* Add an optional speech recognition and TTS example with a separate conversational entry point and entitlement file.
+* Document category restrictions, rate limiting, audio ownership and contribution standards.
+
 ## 1.6.6 - 2026-09-30
 
 - Migrate the Android plugin to Flutter's built-in Kotlin so it no longer applies the Kotlin Gradle Plugin, which clears the KGP warning and keeps AGP 9 builds with `android.builtInKotlin=true` working (#138, #139) (ty @pierrejean75)

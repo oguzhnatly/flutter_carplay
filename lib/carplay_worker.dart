@@ -57,9 +57,23 @@ class FlutterCarplay {
                     event['data']['status'],
                   );
               _connectionStatus = connectionStatus.name;
+              if (connectionStatus == ConnectionStatusTypes.disconnected) {
+                FlutterCarPlayController.dismissCurrentModal();
+              }
               if (_onCarplayConnectionChange != null) {
                 _onCarplayConnectionChange!(connectionStatus);
               }
+              break;
+            case FCPChannelTypes.onVoiceControlDismissed:
+              FlutterCarPlayController.dismissCurrentModal(
+                elementId: event['data']['elementId'],
+              );
+              break;
+            case FCPChannelTypes.onVoiceControlButtonPressed:
+              _carPlayController.processVoiceControlButtonPressed(
+                event['data']['templateId'],
+                event['data']['elementId'],
+              );
               break;
             case FCPChannelTypes.onFCPListItemSelected:
               await _carPlayController.processFCPListItemSelectedChannel(
@@ -314,6 +328,9 @@ class FlutterCarplay {
     required String elementId,
     required List<CPTemplate> templates,
   }) async {
+    if (templates.any((template) => template is CPVoiceControlTemplate)) {
+      throw ArgumentError('Voice control templates must be presented modally.');
+    }
     final bool? isCompleted =
         await FlutterCarPlayController.flutterToNativeModule(
           FCPChannelTypes.updateTabBarTemplates,
@@ -351,41 +368,73 @@ class FlutterCarplay {
     required CPAlertTemplate template,
     bool animated = true,
   }) {
-    return FlutterCarPlayController.flutterToNativeModule(
+    return FlutterCarPlayController.presentModal(
+      template,
       FCPChannelTypes.setAlert,
-      <String, dynamic>{
+      {
         'rootTemplate': template.toJson(),
         'animated': animated,
-        'onPresent': template.onPresent != null ? true : false,
+        'onPresent': template.onPresent != null,
       },
-    ).then((value) {
-      if (value == true) {
-        FlutterCarPlayController.currentPresentTemplate = template;
-      }
-    });
+    ).then((_) {});
   }
 
-  /// It will present [CPActionSheetTemplate] modally.
-  ///
-  /// - template is to present modally.
-  /// - If animated is true, CarPlay animates the presentation of the template.
-  ///
-  /// [!] CarPlay can only present one modal template at a time.
+  /// Presents an action sheet if no modal is already open or being prepared.
   static Future<void> showActionSheet({
     required CPActionSheetTemplate template,
     bool animated = true,
   }) {
-    return FlutterCarPlayController.flutterToNativeModule(
+    return FlutterCarPlayController.presentModal(
+      template,
       FCPChannelTypes.setActionSheet,
-      <String, dynamic>{
-        'rootTemplate': template.toJson(),
-        'animated': animated,
-      },
-    ).then((value) {
-      if (value == true) {
-        FlutterCarPlayController.currentPresentTemplate = template;
-      }
-    });
+      {'rootTemplate': template.toJson(), 'animated': animated},
+    ).then((_) {});
+  }
+
+  /// Presents a voice indicator modally and returns the native presentation result.
+  ///
+  /// Returns false if disconnected, cancelled or another modal is pending/open.
+  /// Invalid native inputs and unsupported controls throw PlatformException.
+  /// The app's approved category must support this template. This method does
+  /// not request microphone permission, record audio or start Siri.
+  static Future<bool> showVoiceControl({
+    required CPVoiceControlTemplate template,
+    bool animated = true,
+  }) async {
+    if (defaultTargetPlatform != TargetPlatform.iOS ||
+        _connectionStatus == ConnectionStatusTypes.disconnected.name) {
+      return false;
+    }
+    return FlutterCarPlayController.presentModal(
+      template,
+      FCPChannelTypes.setVoiceControlTemplate,
+      {'template': template.toJson(), 'animated': animated},
+    );
+  }
+
+  /// Activates a state only on the currently presented voice template.
+  /// CarPlay rate limits state changes. True means the host's active identifier
+  /// matches the requested identifier immediately after activation.
+  static Future<bool> activateVoiceControlState({
+    required String elementId,
+    required String identifier,
+  }) async {
+    final template = FlutterCarPlayController.currentPresentTemplate;
+    if (template is! CPVoiceControlTemplate ||
+        template.uniqueId != elementId ||
+        !template.voiceControlStates.any(
+          (state) => state.identifier == identifier,
+        )) {
+      return false;
+    }
+    final completed = await FlutterCarPlayController.flutterToNativeModule(
+      FCPChannelTypes.activateVoiceControlState,
+      {'elementId': elementId, 'identifier': identifier},
+      () =>
+          identical(FlutterCarPlayController.currentPresentTemplate, template),
+    );
+    return completed == true &&
+        identical(FlutterCarPlayController.currentPresentTemplate, template);
   }
 
   /// Removes the top-most template from the navigation hierarchy.
@@ -414,17 +463,10 @@ class FlutterCarplay {
     return isCompleted ?? false;
   }
 
-  /// Removes a modal template. Since [CPAlertTemplate] and [CPActionSheetTemplate] are both
-  /// modals, they can be removed. If animated is true, CarPlay animates the transition between templates.
-  static Future<bool> popModal({bool animated = true}) async {
-    FlutterCarPlayController.currentPresentTemplate = null;
-    final bool? isCompleted =
-        await FlutterCarPlayController.flutterToNativeModule(
-          FCPChannelTypes.closePresent,
-          animated,
-        );
-
-    return isCompleted ?? false;
+  /// Dismisses the current modal, including voice control, or cancels its loading.
+  /// A failed dismissal of a presented modal preserves its callbacks.
+  static Future<bool> popModal({bool animated = true}) {
+    return FlutterCarPlayController.dismissModal(animated);
   }
 
   /// Adds a template to the navigation hierarchy and displays it.

@@ -1,4 +1,8 @@
 enum FCPChannelTypes {
+  setVoiceControlTemplate,
+  activateVoiceControlState,
+  onVoiceControlDismissed,
+  onVoiceControlButtonPressed,
   onCarplayConnectionChange,
   setRootTemplate,
   forceUpdateRootTemplate,

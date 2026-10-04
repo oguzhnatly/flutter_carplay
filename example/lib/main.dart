@@ -2,6 +2,8 @@
 
 import 'dart:io';
 
+import 'voice_control_example.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_carplay/controllers/android_auto_controller.dart';
 import 'package:flutter_carplay/controllers/carplay_controller.dart';
@@ -19,6 +21,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final VoiceControlExample? _voiceExample = Platform.isIOS
+      ? VoiceControlExample()
+      : null;
   ConnectionStatusTypes connectionStatus = ConnectionStatusTypes.unknown;
   final FlutterCarplay _flutterCarplay = FlutterCarplay();
   final FlutterAndroidAuto _flutterAndroidAuto = FlutterAndroidAuto();
@@ -220,11 +225,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    _voiceExample?.dispose();
     _flutterCarplay.removeListenerOnConnectionChange();
     super.dispose();
   }
 
   void onConnectionChange(ConnectionStatusTypes status) {
+    _voiceExample?.connectionChanged(status);
     // Do things when carplay/android auto state is connected, background or disconnected
     setState(() {
       connectionStatus = status;
@@ -1331,6 +1338,18 @@ class _MyAppState extends State<MyApp> {
               spacing: 20,
               runSpacing: 20,
               children: [
+                if (Platform.isIOS)
+                  Builder(
+                    builder: (context) => ElevatedButton(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) =>
+                              VoiceControlExamplePage(example: _voiceExample!),
+                        ),
+                      ),
+                      child: const Text('Voice control'),
+                    ),
+                  ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(fontSize: 15),

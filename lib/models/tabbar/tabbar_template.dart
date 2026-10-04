@@ -7,6 +7,7 @@ import 'package:flutter_carplay/models/poi/poi_template.dart';
 import 'package:uuid/uuid.dart';
 
 import '../template.dart';
+import '../voice_control/voice_control_template.dart';
 
 /// A container template that displays and manages other templates, presenting them as tabs.
 /// Supported template types: [CPListTemplate], [CPPointOfInterestTemplate],
@@ -42,14 +43,19 @@ class CPTabBarTemplate extends CPTemplate {
        _elementId = id ?? const Uuid().v4();
 
   @override
-  Map<String, dynamic> toJson() => {
-    '_elementId': _elementId,
-    'tabTitle': tabTitle,
-    'templates': templates.map((e) => e.toJson()).toList(),
-    'showsTabBadge': showsTabBadge,
-    'systemIcon': systemIcon,
-    'runtimeType': 'FCPTabBarTemplate',
-  };
+  Map<String, dynamic> toJson() {
+    if (templates.any((template) => template is CPVoiceControlTemplate)) {
+      throw ArgumentError('Voice control templates must be presented modally.');
+    }
+    return {
+      '_elementId': _elementId,
+      'tabTitle': tabTitle,
+      'templates': templates.map((e) => e.toJson()).toList(),
+      'showsTabBadge': showsTabBadge,
+      'systemIcon': systemIcon,
+      'runtimeType': 'FCPTabBarTemplate',
+    };
+  }
 
   @override
   String get uniqueId {
