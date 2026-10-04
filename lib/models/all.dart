@@ -9,3 +9,4 @@ export 'poi/all.dart';
 export 'search/all.dart';
 export 'tabbar/all.dart';
 export 'template.dart';
+export 'voice_control/all.dart';

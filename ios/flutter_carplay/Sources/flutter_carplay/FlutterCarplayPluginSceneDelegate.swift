@@ -27,6 +27,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   CPInterfaceControllerDelegate
 {
   static private var interfaceController: CPInterfaceController?
+  static let modals = FCPModalController()
 
   static public func forceUpdateRootTemplate(
     completion: ((_ completed: Bool, _ error: Error?) -> Void)? = nil
@@ -141,6 +142,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   }
 
   func templateDidDisappear(_ template: CPTemplate, animated: Bool) {
+    Self.modals.didDisappear(template)
     guard let interfaceController = FlutterCarPlaySceneDelegate.interfaceController else { return }
 
     let currentTemplates = interfaceController.templates
@@ -154,30 +156,12 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     }
   }
 
-  static public func closePresent(animated: Bool) {
-    self.interfaceController?.dismissTemplate(animated: animated)
-  }
-
-  static public func presentTemplate(
-    template: CPTemplate, animated: Bool,
-    onPresent: @escaping (_ completed: Bool) -> Void
-  ) {
-    self.interfaceController?.presentTemplate(
-      template, animated: animated,
-      completion: { completed, error in
-        if error != nil {
-          onPresent(false)
-          return
-        }
-        onPresent(completed)
-      })
-  }
-
   func templateApplicationScene(
     _ templateApplicationScene: CPTemplateApplicationScene,
     didConnect interfaceController: CPInterfaceController
   ) {
     FlutterCarPlaySceneDelegate.interfaceController = interfaceController
+    Self.modals.connect(interfaceController)
     interfaceController.delegate = self
 
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
@@ -198,6 +182,8 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     _ templateApplicationScene: CPTemplateApplicationScene,
     didDisconnect interfaceController: CPInterfaceController, from window: CPWindow
   ) {
+    guard FlutterCarPlaySceneDelegate.interfaceController === interfaceController else { return }
+    Self.modals.connect(nil)
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.disconnected)
 
     interfaceController.delegate = nil
@@ -208,6 +194,8 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     _ templateApplicationScene: CPTemplateApplicationScene,
     didDisconnectInterfaceController interfaceController: CPInterfaceController
   ) {
+    guard FlutterCarPlaySceneDelegate.interfaceController === interfaceController else { return }
+    Self.modals.connect(nil)
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.disconnected)
 
     interfaceController.delegate = nil

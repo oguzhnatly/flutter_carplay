@@ -12,6 +12,10 @@ enum FCPConnectionTypes {
 }
 
 enum FCPChannelTypes {
+  static let setVoiceControlTemplate = "setVoiceControlTemplate"
+  static let activateVoiceControlState = "activateVoiceControlState"
+  static let onVoiceControlDismissed = "onVoiceControlDismissed"
+  static let onVoiceControlButtonPressed = "onVoiceControlButtonPressed"
   static let onCarplayConnectionChange = "onCarplayConnectionChange"
   static let setRootTemplate = "setRootTemplate"
   static let forceUpdateRootTemplate = "forceUpdateRootTemplate"

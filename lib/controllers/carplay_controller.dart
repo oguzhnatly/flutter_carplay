@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 
@@ -19,7 +21,7 @@ class FlutterCarPlayController {
   /// [CPTabBarTemplate], [CPGridTemplate], [CPListTemplate], [CPIInformationTemplate], [CPPointOfInterestTemplate]
   static CPTemplate? get currentRootTemplate => templateHistory.firstOrNull;
 
-  /// [CPAlertTemplate], [CPActionSheetTemplate]
+  /// The currently presented modal, including voice control.
   static CPTemplate? currentPresentTemplate;
 
   MethodChannel get methodChannel {
@@ -33,14 +35,117 @@ class FlutterCarPlayController {
   static Future<bool?> flutterToNativeModule(
     FCPChannelTypes type, [
     dynamic data,
+    bool Function()? isCurrent,
   ]) async {
     // Rasterize any Flutter asset SVGs referenced by image fields into PNG
     // bytes before sending the payload to the native side, which cannot render
     // SVG directly. Non-collection payloads pass through unchanged.
     await resolveSvgInPayload(data, size: FlutterCarplay.svgRasterSize);
 
+    if (isCurrent != null && !isCurrent()) return false;
     final value = await _methodChannel.invokeMethod<bool>(type.name, data);
     return value;
+  }
+
+  static _ModalRequest? _modalRequest;
+
+  static Future<bool> presentModal(
+    CPTemplate template,
+    FCPChannelTypes method,
+    Map<String, dynamic> arguments,
+  ) async {
+    if (_modalRequest != null || currentPresentTemplate != null) return false;
+    final request = _ModalRequest(template);
+    _modalRequest = request;
+    try {
+      final completed = await Future.any<bool?>([
+        flutterToNativeModule(method, arguments, () {
+          if (!identical(_modalRequest, request)) return false;
+          request.invoked = true;
+          return true;
+        }),
+        request.cancelled.future,
+      ]);
+      if (!identical(_modalRequest, request)) return false;
+      if (completed != true) {
+        _modalRequest = null;
+        return false;
+      }
+      currentPresentTemplate = template;
+      return true;
+    } catch (_) {
+      if (identical(_modalRequest, request)) _modalRequest = null;
+      rethrow;
+    }
+  }
+
+  static void dismissCurrentModal({String? elementId}) {
+    final template = _modalRequest?.template ?? currentPresentTemplate;
+    if (template == null ||
+        (elementId != null && template.uniqueId != elementId)) {
+      return;
+    }
+    final request = _modalRequest;
+    _modalRequest = null;
+    currentPresentTemplate = null;
+    if (request != null && !request.cancelled.isCompleted) {
+      request.cancelled.complete(false);
+    }
+    if (template is CPVoiceControlTemplate) template.onDismiss?.call();
+  }
+
+  static Future<bool> dismissModal(bool animated) {
+    final request = _modalRequest;
+    if (request == null) return Future.value(false);
+    if (!request.invoked) {
+      dismissCurrentModal();
+      return Future.value(true);
+    }
+    return request.dismissal ??= _dismissModalRequest(request, animated);
+  }
+
+  static Future<bool> _dismissModalRequest(
+    _ModalRequest request,
+    bool animated,
+  ) async {
+    try {
+      final completed = await flutterToNativeModule(
+        FCPChannelTypes.closePresent,
+        animated,
+        () => identical(_modalRequest, request),
+      );
+      if (completed == true && identical(_modalRequest, request)) {
+        dismissCurrentModal();
+      }
+      return completed == true;
+    } finally {
+      request.dismissal = null;
+    }
+  }
+
+  void processVoiceControlButtonPressed(String templateId, String elementId) {
+    final template = currentPresentTemplate;
+    if (template is! CPVoiceControlTemplate ||
+        template.uniqueId != templateId) {
+      return;
+    }
+    for (final state in template.voiceControlStates) {
+      for (final button in state.actionButtons) {
+        if (button.uniqueId == elementId) {
+          if (button.isEnabled) button.onPress();
+          return;
+        }
+      }
+    }
+    for (final button in [
+      ...template.leadingNavigationBarButtons,
+      ...template.trailingNavigationBarButtons,
+    ]) {
+      if (button.uniqueId == elementId) {
+        button.onPress();
+        return;
+      }
+    }
   }
 
   static void updateCPListItem(CPListItem updatedListItem) {
@@ -295,9 +400,8 @@ class FlutterCarPlayController {
   }
 
   void processFCPAlertTemplateCompleted(bool completed) {
-    if (currentPresentTemplate is CPAlertTemplate) {
-      (currentPresentTemplate as CPAlertTemplate).onPresent?.call(completed);
-    }
+    final template = _modalRequest?.template ?? currentPresentTemplate;
+    if (template is CPAlertTemplate) template.onPresent?.call(completed);
   }
 
   void processFCPGridButtonPressed(String elementId) {
@@ -423,4 +527,12 @@ class FlutterCarPlayController {
     }
     return null;
   }
+}
+
+class _ModalRequest {
+  _ModalRequest(this.template);
+  final CPTemplate template;
+  final cancelled = Completer<bool>();
+  Future<bool>? dismissal;
+  bool invoked = false;
 }

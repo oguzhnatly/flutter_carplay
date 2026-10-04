@@ -54,7 +54,7 @@ For detailed guides and examples, check out the **[Wiki](https://github.com/oguz
 
 Before you begin CarPlay integration, you must carefully read this section.
 
-[_The official App Programming Guidelines from Apple_](https://developer.apple.com/carplay/documentation/CarPlay-App-Programming-Guide.pdf) is the most valuable resource for understanding the needs, limits, and capabilities of CarPlay Apps. This documentation is a 49-page which clearly spells out the some actions required, and you are strongly advised to read it. If you are interested in a CarPlay System, [learn more about the MFi Program](https://mfi.apple.com/).
+[The official CarPlay Developer Guide](https://developer.apple.com/download/files/CarPlay-Developer-Guide.pdf) describes supported app categories, entitlements and template restrictions. Consult the current guide when choosing a category. If you are interested in a CarPlay System, [learn more about the MFi Program](https://mfi.apple.com/).
 
 # Templates
 
@@ -84,6 +84,7 @@ https://developer.android.com/design/ui/cars/guides/templates/overview
 - [x] Information Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
 - [x] Point of Interest Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
 - [x] Search Template
+- [x] Voice Control Template, including conversational app support on iOS 26.4
 - [x] Now Playing Template (v1.1.0)
 
 By evaluating this information, you can request for the relevant entitlement from Apple.
@@ -145,7 +146,8 @@ Other templates will be supported in the future releases by `flutter_carplay`.
 
 - [ ] Map Template
 - [x] Search Template
-- [ ] Voice Control & "Hey Siri" for hands-free voice activation
+- [x] Voice control indicator and state activation
+- [ ] Siri integration and hands free activation, separate from the voice control template
 - [ ] Contact Template
 
 ## Android Auto Road Map
@@ -648,6 +650,80 @@ await FlutterCarplay.setRootTemplate(
 _flutterCarplay.forceUpdateRootTemplate();
 ```
 
+### Voice control and conversational apps
+
+`CPVoiceControlTemplate` provides native visual feedback for voice interaction. It is a modal template, presented with `showVoiceControl`. It cannot be a root template, a tab or a pushed screen. It does not capture audio, transcribe speech, activate Siri or grant microphone access.
+
+![Native CarPlay voice control with an explicit microphone action](previews/voice_control_template.png)
+
+The June 2026 [CarPlay Developer Guide](https://developer.apple.com/download/files/CarPlay-Developer-Guide.pdf) includes voice based conversational apps with entitlement `com.apple.developer.carplay-voice-based-conversation`, available from iOS 26.4. This is a separate approved category from navigation. Navigation apps use `com.apple.developer.carplay-maps` when that category applies. The guide also lists voice template availability for driving task apps from iOS 26.4 and additional categories from iOS 27. Template availability does not grant recording permission: the guide's recording exception applies to navigation and conversational apps while the voice control template is visible. Use the category Apple approved and a matching provisioning profile.
+
+The package minimum remains iOS 14. The basic voice indicator can be used by eligible navigation apps on that minimum. Action buttons and navigation bar buttons require iOS 26.4 and Xcode 26.4 or later. Native runtime and compiler guards reject those controls on older systems or SDKs with `PlatformException(code: 'unsupported_version')`, rather than silently removing them.
+
+Create one to five states with distinct, nonempty identifiers. The first state appears on presentation. Supplied title variants must be nonempty. Collections are copied and immutable. Each state supports at most two `CPButton` actions. This image button wraps Apple's `CPButton`; `CPTextButton` is a different native type. Each side of the navigation bar supports at most two `CPBarButton` controls.
+
+```dart
+final carplay = FlutterCarplay(); // Keep the event listener alive.
+final voice = CPVoiceControlTemplate(
+  voiceControlStates: [
+    CPVoiceControlState(
+      identifier: 'listening',
+      titleVariants: ['Listening'],
+      image: 'images/listening.svg',
+      repeats: false,
+    ),
+    CPVoiceControlState(
+      identifier: 'processing',
+      titleVariants: ['Processing'],
+    ),
+  ],
+  onDismiss: () {
+    // Stop your speech recognizer and speech playback here.
+  },
+);
+
+try {
+  final shown = await FlutterCarplay.showVoiceControl(template: voice);
+  if (shown) {
+    // Start an authorized voice operation only after presentation succeeds.
+    final activated = await voice.activateState('processing');
+    // False means the host did not confirm the requested state.
+    print('Processing state active: $activated');
+    await FlutterCarplay.popModal();
+  }
+} on PlatformException catch (error) {
+  // Import package:flutter/services.dart for PlatformException.
+  print(error.message);
+}
+```
+
+Alternatively, use `FlutterCarplay.activateVoiceControlState(elementId: voice.uniqueId, identifier: 'processing')`. Unknown state or template IDs return `false`. Activation is accepted only for the currently presented voice template. CarPlay rate limits state changes and may ignore rapid requests. The result compares the native `activeStateIdentifier` with the requested identifier immediately after activation; it is not an acknowledgement from a speech service. Avoid rapid transitions and handle `false` without starting an operation that requires an unconfirmed indicator.
+
+`showVoiceControl` returns the actual native presentation result. It returns `false` when disconnected, busy with another modal, or successfully cancelled before presentation completes. Invalid native payloads produce `invalid_argument`; native CarPlay presentation errors produce `carplay_error`. A category rejected by the host is reported through its presentation completion. Keep a `FlutterCarplay` instance listening to receive button, dismissal and connection events. `onDismiss` runs once for native user dismissal, successful programmatic dismissal or cancellation, or disconnect. Rejected presentation and failed dismissal do not invoke it. If cancellation fails and the template is still visible, its ownership and controls remain available, and dismissal can be retried. Stop audio immediately when your app initiates cancellation, and on background transitions as appropriate for your app.
+
+Images accept Flutter assets, file URLs and remote raster image URLs. Local asset SVGs are rasterized using the existing SVG pipeline, including nested action button images. Native presentation waits for all images; an image loading error fails presentation. Remote SVGs and file SVGs are not rasterized. Voice state images may be at most 150 by 150 points. `repeats` applies to an animated native image and does not animate a static PNG or rasterized SVG.
+
+#### Optional speech example
+
+The package has no speech provider dependency. The example alone uses `speech_to_text` and `flutter_tts` to recognize a short question and speak a local response, such as the current time. The phone's Voice control button opens `example/lib/voice_control_example.dart` on iOS. Recording starts only after a microphone action, permission approval and successful voice template presentation. Errors and denied permissions are shown on the phone. Cancel, modal dismissal, background and disconnect stop recording and TTS. Recognition text and response text stay on the phone UI, never in the CarPlay template. Speech recognition may use the provider's remote services; this is not a promise of on device processing.
+
+For an approved conversational app, use the dedicated `example/lib/voice_control_main.dart` entry point. It opens the voice interface when CarPlay launches, with an explicit microphone action to begin capture. This follows the guide's voice as primary modality requirement while avoiding unsolicited recording. Responses are spoken; CarPlay displays only generic activity states. The default `main.dart` and parking entitlement retain the existing parking demo.
+
+The example includes `NSMicrophoneUsageDescription` and `NSSpeechRecognitionUsageDescription` in `Runner/Info.plist`. Grant these on iPhone before driving. The example controls require iOS 26.4. Select the approved conversational entitlement file using `CARPLAY_ENTITLEMENTS_FILE`. This build setting changes only the app target, not the embedded speech frameworks, and defaults to `Runner.entitlements` for the parking demo:
+
+```sh
+cd example
+flutter pub get
+flutter build ios --config-only --simulator --debug --target lib/voice_control_main.dart
+cd ios
+pod install
+xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Debug \
+  -sdk iphonesimulator FLUTTER_TARGET=lib/voice_control_main.dart \
+  CARPLAY_ENTITLEMENTS_FILE=Conversational.entitlements
+```
+
+For a device build, use an approved bundle identifier and provisioning profile containing the conversational entitlement. Only use a navigation entitlement override for an approved navigation app. Car microphone selection, Bluetooth or USB routing, audio interruption handling and audio session behavior belong to the selected speech provider and host integration. Validate those in a real vehicle; a simulator does not establish car microphone routing. Activate audio sessions only while voice features are in use.
+
 ### CarPlay Search Template
 
 ![Flutter CarPlay Search Template](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/search_template.png)
@@ -808,7 +884,7 @@ FlutterCarplay.popToRoot(animated: true);
 
 #### **CarPlay.popModal**
 
-Removes a modal template. Since **CPAlertTemplate** and **CPActionSheetTemplate** are both modals, they can be removed.
+Removes a modal template, including **CPAlertTemplate**, **CPActionSheetTemplate** and **CPVoiceControlTemplate**. For voice control, dismissal also cancels pending presentation and invokes `onDismiss` for cleanup. A failed native dismissal returns `false`.
 
 - If animated is true, CarPlay animates the transition between templates.
 

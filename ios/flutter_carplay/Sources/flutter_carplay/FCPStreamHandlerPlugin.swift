@@ -25,6 +25,10 @@ class FCPStreamHandlerPlugin: NSObject, FlutterStreamHandler {
     eventSink: @escaping FlutterEventSink
   ) -> FlutterError? {
     FCPStreamHandlerPlugin.eventSink = eventSink
+    // A headless CarPlay launch can connect before Dart starts listening.
+    DispatchQueue.main.async {
+      SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: SwiftFlutterCarplayPlugin.connectionStatus)
+    }
     return nil
   }
 
