@@ -660,7 +660,7 @@ The June 2026 [CarPlay Developer Guide](https://developer.apple.com/download/fil
 
 The package minimum remains iOS 14. The basic voice indicator can be used by eligible navigation apps on that minimum. Action buttons and navigation bar buttons require iOS 26.4 and Xcode 26.4 or later. Native runtime and compiler guards reject those controls on older systems or SDKs with `PlatformException(code: 'unsupported_version')`, rather than silently removing them.
 
-Create one to five states with distinct, nonempty identifiers. The first state appears on presentation. Supplied title variants must be nonempty. Collections are copied and immutable. Each state supports at most two `CPButton` actions. This image button wraps Apple's `CPButton`; `CPTextButton` is a different native type. Each side of the navigation bar supports at most two `CPBarButton` controls.
+Create one to five states with distinct, nonempty identifiers. The first state appears on presentation. Supplied title variants must be nonempty. Collections are copied and immutable. The native host validates each state's `CPButton` action count against Apple's `CPVoiceControlState.maximumActionButtonCount`; exceeding the supported maximum is rejected rather than silently truncated. Dart preserves the supplied actions and rejects duplicate button identifiers without imposing a fixed platform limit. This image button wraps Apple's `CPButton`; `CPTextButton` is a different native type. Each side of the navigation bar supports at most two `CPBarButton` controls.
 
 ```dart
 final carplay = FlutterCarplay(); // Keep the event listener alive.

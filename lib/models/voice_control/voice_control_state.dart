@@ -26,12 +26,9 @@ class CPVoiceControlState {
     if (image != null && image!.trim().isEmpty) {
       throw ArgumentError.value(image, 'image', 'Must not be empty.');
     }
-    if (actionButtons.length > 2 ||
-        actionButtons.map((b) => b.uniqueId).toSet().length !=
-            actionButtons.length) {
-      throw ArgumentError(
-        'A voice state supports up to two distinct action buttons.',
-      );
+    if (actionButtons.map((b) => b.uniqueId).toSet().length !=
+        actionButtons.length) {
+      throw ArgumentError('A voice state requires distinct action buttons.');
     }
   }
 
@@ -46,6 +43,7 @@ class CPVoiceControlState {
   final bool repeats;
 
   /// Requires iOS 26.4. Older systems reject templates that include buttons.
+  /// The native host validates the count against its supported maximum.
   final List<CPButton> actionButtons;
 
   Map<String, dynamic> toJson() => {

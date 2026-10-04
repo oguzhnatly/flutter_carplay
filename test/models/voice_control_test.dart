@@ -117,23 +117,27 @@ void main() {
     );
   });
 
-  test('rejects excess and ambiguous buttons', () {
+  test('preserves action buttons for native platform limit validation', () {
+    final buttons = List.generate(
+      3,
+      (i) => CPButton(id: 'action_$i', image: 'mic.png', onPress: () {}),
+    );
+    final voice = CPVoiceControlState(
+      identifier: 'ready',
+      actionButtons: buttons,
+    );
+    expect(voice.actionButtons, hasLength(3));
+    expect(voice.toJson()['actionButtons'], hasLength(3));
+  });
+
+  test('rejects ambiguous actions and excess navigation buttons', () {
     final button = CPButton(id: 'same', image: 'mic.png', onPress: () {});
     expect(
       () =>
           CPVoiceControlState(identifier: 'a', actionButtons: [button, button]),
       throwsArgumentError,
     );
-    expect(
-      () => CPVoiceControlState(
-        identifier: 'a',
-        actionButtons: List.generate(
-          3,
-          (_) => CPButton(image: 'mic.png', onPress: () {}),
-        ),
-      ),
-      throwsArgumentError,
-    );
+
     expect(
       () => CPVoiceControlTemplate(
         voiceControlStates: [state('a')],

@@ -185,8 +185,20 @@ final class FCPVoiceControlTemplate {
   }
 
   private static func buttons(_ obj: [String: Any], _ key: String) throws -> [[String: Any]] {
-    guard let buttons = obj[key] as? [[String: Any]], buttons.count <= 2 else {
-      throw invalid("\(key) must contain at most two buttons.")
+    guard let buttons = obj[key] as? [[String: Any]] else {
+      throw invalid("\(key) must contain an array of buttons.")
+    }
+    var maximum = 2 // CarPlay navigation bar limit per side.
+    if key == "actionButtons" && !buttons.isEmpty {
+      #if compiler(>=6.3)
+        guard #available(iOS 26.4, *) else { throw unsupportedControls() }
+        maximum = CPVoiceControlState.maximumActionButtonCount
+      #else
+        throw unsupportedControls()
+      #endif
+    }
+    guard buttons.count <= maximum else {
+      throw invalid("\(key) must contain at most \(maximum) buttons.")
     }
     return buttons
   }
