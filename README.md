@@ -1,1241 +1,1200 @@
-![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/banner.png)
+# Flutter CarPlay
 
-# CarPlay and Android Auto with Flutter 🚗
+<picture>
+  <source media="(max-width: 600px)" srcset="previews/banner-dashboard-mobile.webp">
+  <img src="previews/banner-dashboard.webp" alt="Flutter CarPlay on a physical dashboard, with the original Apple CarPlay and Android Auto compatibility badges.">
+</picture>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
-![Pub Version (including pre-releases)](https://img.shields.io/pub/v/flutter_carplay?include_prereleases)
-![Dart Pub Likes](https://badgen.net/pub/likes/flutter_carplay)
-![Dart Pub Multi-Platform](https://badgen.net/pub/flutter-platform/flutter_carplay)
-![DartPub Dart SDK](https://badgen.net/pub/sdk-version/flutter_carplay)
+**Your Flutter app, on Apple CarPlay and Android Auto.**
 
-Flutter Apps now on Apple CarPlay and Android Auto ! `flutter_carplay` aims to make it safe to use apps made with Flutter in the car by integrating with CarPlay and Android Auto. The package takes the things you want to do while driving and puts them on the car's built-in display.
+Add a native car experience to the Flutter app you already have. `flutter_carplay` brings your app's content and actions to the car's built-in display, with screens you define in Dart and callbacks that connect them to your app.
 
-**✨ New in v1.7.0**: CarPlay voice control templates, state activation and an optional conversational speech example. Conversational controls require iOS 26.4 and the approved app entitlement.
+CarPlay and Android Auto handle the native layouts and vehicle controls. You focus on what drivers can browse, choose and do, using each platform's templates rather than resizing your phone's Flutter UI.
 
-**✨ New in v1.1.0**: CarPlay apps can now launch automatically without requiring the Flutter app to be opened first, supporting true background launch capabilities.
+- **Build in Dart.** Create templates, handle selections, and update content through the same package import.
+- **Keep each platform native.** Build with CarPlay's `CP` models and Android Auto's `AA` models, while sharing your application's content and business logic.
+- **Go beyond a static menu.** Work with navigation, connection events, images, incremental updates, and CarPlay's modal voice states.
 
-> Apple announced some great features in iOS 14, one of which is users download CarPlay apps from the App Store and use them on iPhone like any other app. When an iPhone with a CarPlay app is connected to a CarPlay vehicle, the app icon appears on the CarPlay home screen. CarPlay apps are not separate apps—you add CarPlay support to an existing app.
->
-> Your app uses the CarPlay framework to present UI elements to the user. iOS manages the display of UI elements and handles the interface with the car. Your app does not need to manage the layout of UI elements for different screen resolutions, or support different input hardware such as touchscreens, knobs, or touch pads.
+[Get the package](https://pub.dev/packages/flutter_carplay) · [Try the example](#example-app) · [Explore templates](#templates) · [Read the wiki](https://github.com/oguzhnatly/flutter_carplay/wiki)
 
-CarPlay support requires **iOS 14.0+**. Android Auto support is described in the [Android setup guide](#android-auto-get-started). For general design guidance, see [Human Interface Guidelines for CarPlay Apps](https://developer.apple.com/design/human-interface-guidelines/carplay/overview/introduction/).
+**CarPlay voice control:** voice states, activation, action buttons and dismissal callbacks, with an optional conversational speech example for eligible iOS 26.4 apps. See the [voice catalogue entry](#carplay-voice-control).
 
-## 📚 Documentation
+Version **1.7.0+1** updates the documentation and images without changing package APIs. [Read the release notes](CHANGELOG.md).
 
-For detailed guides and examples, check out the **[Wiki](https://github.com/oguzhnatly/flutter_carplay/wiki)**:
+## Start with a native screen
 
-- [Getting Started](https://github.com/oguzhnatly/flutter_carplay/wiki/Getting-Started) — Installation and basic setup
-- [iOS Setup](https://github.com/oguzhnatly/flutter_carplay/wiki/iOS-Setup) — CarPlay entitlements and configuration
-- [Android Auto Setup](https://github.com/oguzhnatly/flutter_carplay/wiki/Android-Auto-Setup) — Android Auto configuration
-- [Templates](https://github.com/oguzhnatly/flutter_carplay/wiki/Templates) — All templates with code examples
-- [Troubleshooting](https://github.com/oguzhnatly/flutter_carplay/wiki/Troubleshooting) — Common issues and solutions
-- [FAQ](https://github.com/oguzhnatly/flutter_carplay/wiki/FAQ) — Frequently asked questions
-
-# Summary
-
-- [Overview](#overview)
-- [Template Overview](#template-overview)
-- [Supports](#supports)
-- [What's New in latest versions](#whats-new-in-latest-versions)
-- [Road Map](#road-map)
-- [Contributing](#contributing)
-- [Requesting the CarPlay Entitlements](#requesting-the-carplay-entitlements)
-- [Disclaimer Before The Installation](#disclaimer-before-the-installation)
-- [Get Started](#get-started)
-- [Android Auto vs Android Automotive OS](#android-auto-vs-android-automotive-os)
-- [Solve problems configuring your project](#solve-problems-configuring-your-project)
-- [Usage & Features](#usage--features)
-- [Templates](#templates)
-  - [CarPlay Templates](#carplay-templates)
-    - [Search Template](#search-template)
-    - [Voice Control Template](#voice-control-template)
-  - [Android Auto Templates](#android-auto-templates)
-- [LICENSE](#license)
-
-# Overview
-
-![Flutter CarPlay Introduction](https://user-images.githubusercontent.com/54781138/131184549-3cb62678-ad3f-4d67-85fb-1410bd05eaff.gif)
-
-Before you begin CarPlay integration, you must carefully read this section.
-
-[The official CarPlay Developer Guide](https://developer.apple.com/download/files/CarPlay-Developer-Guide.pdf) describes supported app categories, entitlements and template restrictions. Consult the current guide when choosing a category. If you are interested in a CarPlay System, [learn more about the MFi Program](https://mfi.apple.com/).
-
-# Template Overview
-
-## CarPlay Template Overview
-
-CarPlay apps are built from a fixed set of user interface templates that iOS renders on the CarPlay screen. Each CarPlay app category can only use a restricted number of templates. Your app entitlement determines your access to templates.
-
-![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/templates.png)
-
-## Android Auto Template Overview
-
-Android Auto apps built with the Android for Cars App Library are constructed using a fixed set of vehicle-optimized templates that the host renders on the car screen. Each Android Auto app category (e.g., Navigation, Point-of-Interest, IoT, etc.) can only use a restricted number of templates, and access to the Android for Cars App Library and its templates is generally restricted to supported app categories.
-
-https://developer.android.com/design/ui/cars/guides/templates/overview
-
-# Supports
-
-## Car Play Support
-
-`flutter_carplay` currently supports:
-
-- [x] Action Sheet Template
-- [x] Alert Template
-- [x] Grid Template
-- [x] List Template
-- [x] Tab Bar Template
-- [x] Information Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
-- [x] Point of Interest Template (contribution from [OSch11](https://github.com/OSch11/flutter_carplay))
-- [x] Search Template
-- [x] Voice Control Template, including conversational app support on iOS 26.4
-- [x] Now Playing Template (v1.1.0)
-
-By evaluating this information, you can request for the relevant entitlement from Apple.
-
-## Android Auto Support
-
-- [x] List Template (limited support)
-- [x] Grid Template
-- [x] Tab Bar Template (requires Car App API level 6+)
-- [x] Alert Template
-- [x] Message Template
-- [x] Long Message Template
-- [x] Pane Template
-- [x] Now Playing Template (Automatically handled by Android Auto system)
-
-# What's New in latest versions
-
-## v1.7.0
-
-- **CarPlay Voice Control**: Native modal voice states, state activation, action buttons and dismissal callbacks
-- **Conversational App Example**: Optional speech recognition and spoken responses, explicit microphone interaction and phone-only transcripts
-- **Template Documentation**: Search and Voice Control examples grouped with the other CarPlay templates
-
-## v1.5.0
-
-- **🚘 More Android Auto Templates**: Added alert, grid, and tab bar templates, including tab selection handling
-- **⚠️ Android Auto Alerts**: Added modal alert presentation and dismissal APIs for Android Auto flows
-- **🧾 Better Android Auto Lists**: Added loading messages and empty view title support for list templates
-
-## v1.4.0
-
-- **🔎 CarPlay Search Template**: Added `CPSearchTemplate` with search text, result selection, and search button callbacks
-- **🤖 More Android Auto Templates**: Added `AAMessageTemplate`, `AALongMessageTemplate`, and `AAPaneTemplate`, including update APIs
-- **🧾 Better Android Auto Lists**: Added stable IDs, section selection, toggles, browsable rows, and trailing images
-- **🖼️ Flutter Asset SVG Support**: Flutter asset SVGs are rasterized before reaching native CarPlay and Android Auto image fields
-- **📚 Android Auto Docs**: Clarified that Android Auto template rendering is different from Android Automotive OS apps
-
-## v1.3.0
-
-- **🖼️ CPListImageRowItem**: Added support for image row list items, including element based layouts on newer iOS versions
-- **🔄 Information Template Updates**: Added update methods for information items and actions without rebuilding the whole template, thanks to [@sINFdorako](https://github.com/sINFdorako)
-- **🧩 Better Tab Bar Configuration**: `tabTitle`, `systemIcon`, and `showsTabBadge` are now exposed consistently on templates
-- **🛠️ API Polish**: Added custom ids across models, convenient update helpers, and improved image loading reliability
-
-## v1.2.0
-
-- **🤖 Android Auto Support**: Initial support for Android Auto with limited
-  features (Thanks to [@EArminjon](https://github.com/EArminjon))
-
-## v1.1.0
-
-- **🚀 Background Launch Support**: CarPlay apps can now start automatically without requiring the Flutter app to be opened first (Thanks to [@vanlooverenkoen](https://github.com/vanlooverenkoen) and [@EArminjon](https://github.com/EArminjon))
-- **🎵 Now Playing Template**: Navigate to the shared instance of the Now Playing Template with `FlutterCarplay.showSharedNowPlaying()`
-- **🌐 Flexible Image Sources**: Load images from assets, local files (`file://`), or URLs (`https://`) (Thanks to [@vanlooverenkoen](https://github.com/vanlooverenkoen))
-- **🔧 Improved Completion Handlers**: Better reliability for list item interactions and template transitions
-- **📱 Flutter 3.32.x Compatibility**: Updated for the latest Flutter versions
-
-Special thanks to [@EArminjon](https://github.com/EArminjon), [@vanlooverenkoen](https://github.com/vanlooverenkoen), [@snipd-mikel](https://github.com/snipd-mikel), [@APIUM](https://github.com/APIUM), and all contributors who made this release possible!
-
-# Road Map
-
-Other templates will be supported in the future releases by `flutter_carplay`.
-
-## Car Play Road Map
-
-- [ ] Map Template
-- [x] Search Template
-- [x] Voice control indicator and state activation
-- [ ] Siri integration and hands free activation, separate from the voice control template
-- [ ] Contact Template
-
-## Android Auto Road Map
-- [ ] Action Sheet Template
-- [x] Information Template via Pane Template
-- [ ] Point of Interest Template
-- [ ] Map Template
-- [ ] Search Template
-- [ ] Voice Control & "Hey Google" for hands-free voice activation
-- [ ] Contact Template
-
-# Contributing
-
-- Pull Requests are always welcome.
-- Pull Request Reviews are even more welcome! I need help in testing.
-- If you are interested in contributing more actively, please contact me at info@oguzhanatalay.com Thanks!
-- If you want to help in coding, join [Discord Server](https://discord.gg/Xz6WVezFfh), so we can chat over there.
-
-# Requesting the CarPlay Entitlements
-
-> All CarPlay apps require a CarPlay app entitlement.
-
-If you want to build, run and publish your app on Apple with CarPlay compatibility or test or share the app with others through the TestfFlight or AdHoc, you must first request Apple to approve your Developer account for CarPlay access. The process can take from a few days to weeks or even months. It depends on the type of Entitlement you are requesting.
-
-To request a CarPlay app entitlement from Apple, go to https://developer.apple.com/contact/carplay and provide information about your app, including the CarPlay App Category. You must also agree to the CarPlay Entitlement Addendum.
-
-With this project, you can start developing and testing through Apple's CarPlay Simulator without waiting for CarPlay Entitlements. Apple will review your request. If your app meets the criteria for a CarPlay app, Apple will assign a CarPlay app entitlement to your Apple Developer Account and will notify you.
-
-Whether you are running the app through a simulator or developing it for distribution, you must ensure that the relevant entitlement key is added to the `Entitlements.plist` file. You must create an Entitlements.plist file if you do not already have one.
-
-## After you receive the CarPlay Entitlement
-
-After you receive the entitlement, you need to configure your Xcode project to use it, which involves several steps. You create and import a provisioning profile, and add an `Entitlements.plist` file. Your project’s code signing settings also require minor changes.
-
-For more detailed instructions about how to create and import the CarPlay Provisioning Profile and add an Entitlements File to Xcode Project, go to [Configure your CarPlay-enabled app with the entitlements it requires.](https://developer.apple.com/documentation/carplay/requesting_the_carplay_entitlements)
-
-Choose the CarPlay entitlement that matches the app category Apple approved for your project. The example app keeps `com.apple.developer.carplay-parking` so the Point of Interest demo remains available. If your app uses a different CarPlay category, replace it with the matching entitlement, for example `com.apple.developer.carplay-maps` for maps and navigation, `com.apple.developer.carplay-quick-ordering` for quick ordering, `com.apple.developer.carplay-charging` for EV charging, `com.apple.developer.carplay-fueling` for fuel stations, `com.apple.developer.carplay-driving-task` for driving tasks, `com.apple.developer.carplay-communication` for calling or messaging, or `com.apple.developer.carplay-audio` for audio playback.
-
-# Disclaimer Before The Installation
-
-You are about to make some minor changes to your Xcode project after installing this package. This is due to the fact that It requires bitcode compilation which is missing in Flutter. You will procedure that will relocate (we won't remove or edit) some Flutter and its package engines. If you're planning to add this package to a critical project for you, you should proceed cautiously.
-
-**Please check [THE EXAMPLE PROJECT](https://github.com/oguzhnatly/flutter_carplay/tree/master/example) before you begin to the installation.**
-
-THE INSTALLATION STEPS MAY BE DIFFICULT OR MAY NOT WORK PROPERLY WITH A FEW PACKAGES IN YOUR CURRENT PROJECT THAT COMMUNICATE WITH THE FLUTTER ENGINE. IF YOU ARE NOT COMPLETELY SURE WHAT YOU ARE DOING, PLEASE CREATE AN ISSUE, SO THAT I CAN HELP YOU TO SOLVE YOUR PROBLEM OR EXPLAIN WHAT YOU NEED TO.
-
-WHILE THE INSTALLATION PROGRESS, IF YOU TRY TO CHANGE ANYTHING (E.G. ANYTHING WORKS WITH FLUTTER ENGINE, ANYTHING IN GENERATED PLUGIN REGISTRANT SPECIFICALLY ITS LOCATION, ANY FILE NAME, ANY CLASS NAME, OR ANY OTHER FUNCTION THAT WORKS ON APPDELEGATE CLASS, TEMPLATE OR WINDOW APPLICATION DELEGATE SCENE NAMES USED IN INFO.PLIST, INCLUDED STORYBOARD NAMES, BUT NOT LIMITED TO THESE), YOU ARE MOST LIKELY TO ENCOUNTER IRREVERSIBLE ERRORS AND IT MAY DAMAGE TO YOUR PROJECT. I STRONGLY RECOMMEND THAT YOU SHOULD COPY YOUR EXISTING PROJECT BEFORE THE INSTALLATION.
-
-# Get Started
-
-## Car Play Get Started
-
-### Requirement Actions after Installation of the Package
-
-1. The iOS platform version must be set to 14.0. To make it global, navigate to `ios/Podfile` and copy the first two lines:
-
-```diff
-# Uncomment this line to define a global platform for your project
-+ platform :ios, '14.0'
-- # platform :ios, '9.0'
+```sh
+flutter pub add flutter_carplay
 ```
 
-After changing the platform version, execute the following command in your terminal to update your pod files:
+Create native content in Dart. Keep a controller alive to receive events, then prepare the root during your app's startup:
 
-```shell
-// For Apple Silicon M1 chips:
-$ cd ios && arch -x86_64 pod install --repo-update
+```dart
+import 'package:flutter_carplay/flutter_carplay.dart';
 
-// For Intel chips:
-$ cd ios && pod install --repo-update
+final carplay = FlutterCarplay();
+
+Future<void> prepareCarPlayHome() => FlutterCarplay.setRootTemplate(
+  rootTemplate: CPListTemplate(
+    title: 'My app',
+    sections: [
+      CPListSection(items: [
+        CPListItem(
+          text: 'Saved places',
+          detailText: 'Pick up where you left off',
+          onPress: (complete, item) async => complete(),
+        ),
+      ]),
+    ],
+  ),
+);
 ```
 
-2. Open `ios/Runner.xcworkspace` in Xcode. In your project navigator, open `AppDelegate.swift`.
+Complete the [platform setup](#installation-and-platform-setup) to connect the app to its car host. Android Auto uses its own `AA` models; the full example below selects the current mobile platform and keeps its event listener alive.
 
-   ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/step2.png)
+<details>
+<summary>Complete Flutter app for CarPlay and Android Auto</summary>
 
-   Delete the specified codes below from the application function in `AppDelegate.swift`, and change it with the code below:
+The phone UI remains a normal Flutter app.
 
-```diff
+```dart
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const DashboardApp());
+}
+
+class DashboardApp extends StatefulWidget {
+  const DashboardApp({super.key});
+
+  @override
+  State<DashboardApp> createState() => _DashboardAppState();
+}
+
+class _DashboardAppState extends State<DashboardApp> {
+  FlutterCarplay? _carplay;
+  FlutterAndroidAuto? _androidAuto;
+  String _status = ConnectionStatusTypes.unknown.name;
+
+  @override
+  void initState() {
+    super.initState();
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      _carplay = FlutterCarplay()
+        ..addListenerOnConnectionChange(_connectionChanged);
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      _androidAuto = FlutterAndroidAuto()
+        ..addListenerOnConnectionChange(_connectionChanged);
+    }
+    if (_carplay != null) {
+      unawaited(_installRoot());
+    } else if (_androidAuto != null &&
+        FlutterAndroidAuto.connectionStatus ==
+            ConnectionStatusTypes.connected.name) {
+      _connectionChanged(ConnectionStatusTypes.connected);
+    }
+  }
+
+  void _connectionChanged(ConnectionStatusTypes status) {
+    if (!mounted) return;
+    final newlyConnected = status == ConnectionStatusTypes.connected &&
+        _status != ConnectionStatusTypes.connected.name;
+    setState(() => _status = status.name);
+    if (_androidAuto != null && newlyConnected) {
+      unawaited(_installRoot());
+    }
+  }
+
+  Future<void> _installRoot() async {
+    try {
+      if (_carplay != null) {
+        await FlutterCarplay.setRootTemplate(
+          rootTemplate: CPListTemplate(
+            title: 'On the road',
+            sections: [
+              CPListSection(items: [
+                CPListItem(
+                  text: 'Welcome aboard',
+                  detailText: 'Tap to update this native row',
+                  onPress: (complete, item) async {
+                    try {
+                      item.setDetailText('Your Flutter app is connected');
+                    } finally {
+                      await complete();
+                    }
+                  },
+                ),
+              ]),
+            ],
+          ),
+        );
+      } else if (_androidAuto != null) {
+        await FlutterAndroidAuto.setRootTemplate(
+          template: AAListTemplate(
+            title: 'On the road',
+            sections: [
+              AAListSection(items: [
+                AAListItem(
+                  title: 'Welcome aboard',
+                  subtitle: 'A native Android Auto row',
+                  onPress: (complete, item) async {
+                    try {
+                      debugPrint('Selected ${item.title}');
+                    } finally {
+                      await complete();
+                    }
+                  },
+                ),
+              ]),
+            ],
+          ),
+        );
+      }
+    } on PlatformException catch (error) {
+      if (mounted) setState(() => _status = error.message ?? error.code);
+    }
+  }
+
+  @override
+  void dispose() {
+    _carplay?.removeListenerOnConnectionChange();
+    _carplay?.closeConnection();
+    _androidAuto?.removeListenerOnConnectionChange();
+    _androidAuto?.closeConnection();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(title: const Text('Dashboard companion')),
+      body: Center(child: Text('Car connection: $_status')),
+    ),
+  );
+}
+```
+
+The CarPlay root can be prepared before the car attaches. The Android Auto example waits for `connected` and resubmits its root on reconnect, without rebuilding twice for consecutive connected events. Native tabs and string-based raster artwork need the live Android car context when the template is built. A successful root setter has no Dart boolean result and does not mean a car screen is already visible. Native setup, a compatible host and the app's approved category still determine what can be presented.
+
+</details>
+
+## Find your way
+
+[Platform overview](#platform-overview) · [Installation](#installation-and-platform-setup) · [Usage](#usage) · [Images](#images-and-icons) · [Templates](#templates) · [Example](#example-app) · [Limitations and roadmap](#limitations-and-roadmap) · [Community](#community-and-support)
+
+## Platform overview
+
+![The example's authentic native dashboard interface](previews/banner-example.webp)
+
+One Flutter app can support both platforms. The template trees are separate because the native frameworks are separate.
+
+| | Apple CarPlay | Android Auto |
+| --- | --- | --- |
+| Dart controller | `FlutterCarplay` | `FlutterAndroidAuto` |
+| Template family | `CPTemplate` and `CP` models | `AATemplate` and `AA` models |
+| Renderer | Apple's CarPlay framework | Android for Cars App Library host |
+| Package deployment floor | iOS 14.0 | Android API 21; use the higher minimum required by your Flutter SDK |
+| Tabs | List, grid, information, and point-of-interest children | List and grid children; native tabs need Car App API level 6 or later |
+| Modal flows | Alerts, action sheets, voice control | Alerts use a full-screen message pushed onto the screen stack |
+| Voice | Native indicator and states; newer controls on iOS 26.4 | No voice-control template API |
+| Media screen | Opens CarPlay's shared Now Playing template | System-owned media UI; no working package method to open it |
+
+### Android Auto is not Android Automotive OS
+
+Android Auto projects an experience from an Android phone into a compatible car host. Android Automotive OS (AAOS) runs Android directly in the vehicle. Installing a Flutter APK on AAOS and opening its activity displays that app's Flutter UI; it does not make this plugin render Android Auto templates.
+
+Use this package for Android Auto template integration. A standalone AAOS app needs its own vehicle-app design and integration. See Google's [Android for Cars documentation](https://developer.android.com/training/cars/apps) for the distinction and supported app categories.
+
+### Native templates, not arbitrary widgets
+
+Car hosts decide how a template looks and which controls and content are available. Your entitlement or app category can further restrict the templates you may use. Design short, focused flows and handle content limits instead of relying on the phone layout being reproduced in the car.
+
+Apple requires approval for a CarPlay entitlement and matching signing configuration for device use and distribution. Google has category, quality, and distribution requirements for Android Auto apps. Installing the package does not approve an app for either platform.
+
+[Apple CarPlay Developer Guide](https://developer.apple.com/download/files/CarPlay-Developer-Guide.pdf) · [Apple design guidance](https://developer.apple.com/design/human-interface-guidelines/carplay) · [Android Auto template design](https://developer.android.com/design/ui/cars/guides/templates/overview)
+
+## Installation and platform setup
+
+### Add the dependency
+
+Use Flutter **3.44.0 or later** and Dart **3.12.0 or later, below 4.0.0**. The repository example and CI use Flutter 3.44.2.
+
+```sh
+flutter pub add flutter_carplay
+```
+
+To require this release or a compatible update:
+
+```yaml
+dependencies:
+  flutter_carplay: ^1.7.0+1
+```
+
+All public models and both controllers are available from `package:flutter_carplay/flutter_carplay.dart`. There is no speech-recognition or TTS dependency in the package itself.
+
+### CarPlay setup
+
+<img src="previews/carplay-icon.webp" width="40" alt="CarPlay" />
+
+CarPlay uses two scenes backed by one Flutter engine: a phone window and a native CarPlay scene. Follow the example's shared-engine arrangement so the car can launch your app without first opening its phone interface.
+
+#### 1. Set the deployment target
+
+Set the Runner target and relevant build configurations to **iOS 14.0 or later**. For CocoaPods, set this in `ios/Podfile`:
+
+```ruby
+platform :ios, '14.0'
+```
+
+After resolving Flutter dependencies, run CocoaPods normally:
+
+```sh
+flutter pub get
+cd ios
+pod install
+```
+
+The plugin also includes a [Swift Package Manager manifest](ios/flutter_carplay/Package.swift). Use Flutter's supported SwiftPM integration for your project; the plugin manifest expects the Flutter-generated `FlutterFramework` package. Do not independently add a second copy of the plugin alongside CocoaPods.
+
+The iOS deployment target is not the same as the SDK needed to compile newer APIs. Use an Xcode SDK containing the iOS 26 list-image element APIs used by the source. Voice action and navigation buttons specifically need **Xcode 26.4 or later** and **iOS 26.4 or later** at runtime.
+
+#### 2. Start and register the shared engine
+
+In `ios/Runner/AppDelegate.swift`, start the engine during application launch and register plugins against that engine. Adapt existing application hooks rather than registering the same plugins on two engines.
+
+<details>
+<summary>Complete shared-engine AppDelegate</summary>
+
+```swift
 import UIKit
 import Flutter
 
-let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadlessExecution: true)
+let flutterEngine = FlutterEngine(
+    name: "SharedEngine",
+    project: nil,
+    allowHeadlessExecution: true
+)
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
-    override func application( _ application: UIApplication,
-                            didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-+      flutterEngine.run()
-+      GeneratedPluginRegistrant.register(with: flutterEngine)
-       return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    override func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions:
+            [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        flutterEngine.run()
+        GeneratedPluginRegistrant.register(with: flutterEngine)
+        return super.application(
+            application,
+            didFinishLaunchingWithOptions: launchOptions
+        )
     }
 }
 ```
 
-3. Create a swift file named `SceneDelegate.swift` in the Runner folder (not in the xcode main project file) and add the code below:
+</details>
 
-   ```swift
-   @available(iOS 13.0, *)
-   class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-       var window: UIWindow?
+#### 3. Attach the phone window to that engine
 
-       func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-           guard let windowScene = scene as? UIWindowScene else { return }
+Add `SceneDelegate.swift` to the Runner target. The phone scene uses the existing engine, not a new engine that would isolate the car's Dart state.
 
-           window = UIWindow(windowScene: windowScene)
+<details>
+<summary>Complete phone SceneDelegate</summary>
 
-           let controller = FlutterViewController.init(engine: flutterEngine, nibName: nil, bundle: nil)
-           controller.loadDefaultSplashScreenView()
-           window?.rootViewController = controller
-           window?.makeKeyAndVisible()
-       }
-   }
-   ```
+```swift
+import UIKit
+import Flutter
 
-   ![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/step3.png)
+@available(iOS 13.0, *)
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
 
-4. One more step, open the `Info.plist` file whether in your favorite code editor or in the Xcode. I'm going to share the base code, so if you open in the Xcode, you can fill with the raw keys with the values.
-
-   ```xml
-   <key>UIApplicationSceneManifest</key>
-   <dict>
-     <key>UIApplicationSupportsMultipleScenes</key>
-     <false />
-     <key>UISceneConfigurations</key>
-     <dict>
-       <key>CPTemplateApplicationSceneSessionRoleApplication</key>
-       <array>
-         <dict>
-           <key>UISceneConfigurationName</key>
-           <string>CarPlay Configuration</string>
-           <key>UISceneDelegateClassName</key>
-           <string>flutter_carplay.FlutterCarPlaySceneDelegate</string>
-         </dict>
-       </array>
-       <key>UIWindowSceneSessionRoleApplication</key>
-       <array>
-         <dict>
-           <key>UISceneConfigurationName</key>
-           <string>Default Configuration</string>
-           <key>UISceneDelegateClassName</key>
-           <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-           <key>UISceneStoryboardFile</key>
-           <string>Main</string>
-         </dict>
-       </array>
-     </dict>
-   </dict>
-   ```
-
-### That's it, you're ready to build your first CarPlay app! 🚀 😎
-
-## Android Auto Get Started
-
-### Requirement Actions after Installation of the Package
-
-1. The Android platform version must be set to 21. Update your `android/app/build.gradle.kts` as below:
-
-```diff
-# Update to use at minimum api 21
-+ minSdk = 21
-- minSdk = 19
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        let phoneWindow = UIWindow(windowScene: windowScene)
+        let controller = FlutterViewController(
+            engine: flutterEngine,
+            nibName: nil,
+            bundle: nil
+        )
+        controller.loadDefaultSplashScreenView()
+        phoneWindow.rootViewController = controller
+        window = phoneWindow
+        phoneWindow.makeKeyAndVisible()
+    }
+}
 ```
 
-2. To setup Android Auto, you need to add a metadata tag in your `AndroidManifest.xml` file. Open `android/app/src/main/AndroidManifest.xml` and add the following : 
- 
- 
-Inside the `<manifest>` tag:
+</details>
+
+#### 4. Register both scenes
+
+Merge this `UIApplicationSceneManifest` into `ios/Runner/Info.plist`. The CarPlay delegate name is case-sensitive: **`flutter_carplay.FlutterCarPlaySceneDelegate`**.
+
+<details>
+<summary>Scene manifest</summary>
+
+```xml
+<key>UIApplicationSceneManifest</key>
+<dict>
+    <key>UIApplicationSupportsMultipleScenes</key>
+    <false/>
+    <key>UISceneConfigurations</key>
+    <dict>
+        <key>CPTemplateApplicationSceneSessionRoleApplication</key>
+        <array>
+            <dict>
+                <key>UISceneConfigurationName</key>
+                <string>CarPlay Configuration</string>
+                <key>UISceneDelegateClassName</key>
+                <string>flutter_carplay.FlutterCarPlaySceneDelegate</string>
+            </dict>
+        </array>
+        <key>UIWindowSceneSessionRoleApplication</key>
+        <array>
+            <dict>
+                <key>UISceneConfigurationName</key>
+                <string>Default Configuration</string>
+                <key>UISceneDelegateClassName</key>
+                <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+                <key>UISceneStoryboardFile</key>
+                <string>Main</string>
+            </dict>
+        </array>
+    </dict>
+</dict>
+```
+
+</details>
+
+Keep storyboard names aligned with your app. The example uses `Main` for the phone scene and `LaunchScreen` for launch UI. There is no need to relocate Flutter engine files or generated plugin registrants.
+
+#### 5. Choose the approved CarPlay category
+
+[Request CarPlay access from Apple](https://developer.apple.com/contact/carplay), then configure the entitlement, bundle identifier, provisioning profile, and Runner signing settings together. Apple Simulator development is useful before approval, but it does not replace device or distribution approval.
+
+The example's default `Runner.entitlements` uses parking so its point-of-interest demo remains available. Choose your own category; do not copy parking into every app.
+
+| App category | Entitlement key |
+| --- | --- |
+| Parking | `com.apple.developer.carplay-parking` |
+| Maps and navigation | `com.apple.developer.carplay-maps` |
+| Quick ordering | `com.apple.developer.carplay-quick-ordering` |
+| EV charging | `com.apple.developer.carplay-charging` |
+| Fueling | `com.apple.developer.carplay-fueling` |
+| Driving tasks | `com.apple.developer.carplay-driving-task` |
+| Calling or messaging | `com.apple.developer.carplay-communication` |
+| Audio | `com.apple.developer.carplay-audio` |
+| Voice-based conversation, iOS 26.4 | `com.apple.developer.carplay-voice-based-conversation` |
+
+This is a category-selection reference, not a promise that every category can use every package template. Check the [current CarPlay guide](https://developer.apple.com/download/files/CarPlay-Developer-Guide.pdf) and [entitlement configuration instructions](https://developer.apple.com/documentation/carplay/requesting-the-carplay-entitlements) before building your template tree. The conversational configuration is covered under [Voice Control](#carplay-voice-control).
+
+### Android Auto setup
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="previews/android-auto-wordmark-light.svg">
+  <img src="previews/android-auto-wordmark-dark.svg" width="160" alt="Android Auto">
+</picture>
+
+Android Auto launches a `CarAppService` that talks to a host-rendered screen. The service and phone activity should reuse the same cached Flutter engine.
+
+#### 1. Meet the Android build requirements
+
+The plugin has `minSdk = 21`, compiles against Android SDK 35, and depends on `androidx.car.app:app:1.7.0`. Your application must also satisfy the minimum required by Flutter; keep `flutter.minSdkVersion` when that is higher. The plugin does not apply the Kotlin Gradle Plugin itself. Do not add an extra Kotlin plugin application to the library to work around older build instructions.
+
+#### 2. Declare the car service and category
+
+Merge the following into the application's `android/app/src/main/AndroidManifest.xml`. This is the repository example's **media-template** configuration. Select the service category and permissions appropriate to your supported app type using Google's [Android Auto setup guide](https://developer.android.com/training/cars/apps/auto).
+
+<details>
+<summary>Android Auto manifest additions</summary>
 
 ```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    
     <uses-feature
-    android:name="android.software.car.app.library"
-    android:required="false" />
+        android:name="android.software.car.app.library"
+        android:required="false"/>
     <uses-permission android:name="androidx.car.app.MEDIA_TEMPLATES"/>
-    
+
+    <application>
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc"/>
+        <meta-data
+            android:name="androidx.car.app.minCarApiLevel"
+            android:value="1"/>
+        <service
+            android:name="com.oguzhnatly.flutter_android_auto.AndroidAutoService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService"/>
+                <category android:name="androidx.car.app.category.MEDIA"/>
+            </intent-filter>
+        </service>
+    </application>
 </manifest>
 ```
 
-Inside the `<application>` tag:
+</details>
+
+Keep your existing activity, application attributes, Flutter embedding metadata, and other permissions. This fragment is not a replacement for the whole application's manifest.
+
+Create `android/app/src/main/res/xml/automotive_app_desc.xml`:
 
 ```xml
-<application>
-
-    <meta-data
-            android:name="com.google.android.gms.car.application"
-            android:resource="@xml/automotive_app_desc" />
-    <meta-data
-            android:name="androidx.car.app.minCarApiLevel"
-            android:value="1" />
-    <service
-            android:name="com.oguzhnatly.flutter_android_auto.AndroidAutoService"
-            android:exported="true">
-
-        <intent-filter>
-            <action android:name="androidx.car.app.CarAppService" />
-            <category android:name="androidx.car.app.category.MEDIA"/>
-        </intent-filter>
-    </service>
-    
-</application>
+<automotiveApp xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses name="template"/>
+</automotiveApp>
 ```
 
-3. Create a new directory named `xml` inside `android/app/src/main/res/` if it doesn't already exist. Then, create a new XML file named `automotive_app_desc.xml` in the `res/xml/` directory and add the following content:
+A template service is not a media playback implementation. Add Google's media-app integration only if your app actually supplies a media service and session. If your app depends on native tabs without fallback, account for their Car App API level 6 requirement rather than relying on the example's minimum API level 1 declaration.
 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<automotiveApp xmlns:android="http://schemas.android.com/apk/res/android">
-    
-    <uses name="template" />
-    <uses name="media" />
-    
-</automotiveApp>
-``` 
+#### 3. Share the cached engine
 
-For others use, please check official [Android Auto documentation](https://developer.android.com/training/cars/apps/auto).
-
-4. In your `MainActivity.kt` file, make the necessary to resuse and cache the engine as follow :
-
-On Android Auto Service, use the same engine as the app if the app is already running, otherwise create a new one and cache using the id `FAAConstants.flutterEngineId`.
-To avoid creating multiple engines, you need to override the `provideFlutterEngine` and `configureFlutterEngine` methods as below :
+Use your own application package declaration in `MainActivity.kt`. This complete activity body matches the service's `FAAConstants.flutterEngineId` cache key:
 
 ```kotlin
 package com.example.flutter_carplay_example
 
 import android.content.Context
+import com.oguzhnatly.flutter_android_auto.FAAConstants
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
-import io.flutter.embedding.engine.dart.DartExecutor
-import com.oguzhnatly.flutter_android_auto.FAAConstants
 
 class MainActivity : FlutterActivity() {
-    override fun provideFlutterEngine(context: Context): FlutterEngine? {
-        // Use engine from cache if it has been started by Android Auto.
-        return FlutterEngineCache.getInstance().get(FAAConstants.flutterEngineId);
-    }
+    override fun provideFlutterEngine(context: Context): FlutterEngine? =
+        FlutterEngineCache.getInstance().get(FAAConstants.flutterEngineId)
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-        // Cache the engine to make it usable by Android Auto.
-        FlutterEngineCache.getInstance().put(FAAConstants.flutterEngineId, flutterEngine)
+        FlutterEngineCache.getInstance()
+            .put(FAAConstants.flutterEngineId, flutterEngine)
         super.configureFlutterEngine(flutterEngine)
     }
 }
 ```
 
-## Android Auto vs Android Automotive OS
+The car service starts and caches an engine with the default Dart entry point when no cached engine exists. If the phone activity starts first, its engine is cached for the service to reuse. Initialize car-facing application state from app startup, not from a phone-only button or navigation route. Submit Android roots when the connection listener reports `connected`; if a root was prepared earlier, submit it again so native tabs and raster artwork are rebuilt against the live car context.
 
-Android Auto and Android Automotive OS (AAOS) are different targets:
+**Host validation:** the bundled `AndroidAutoService` currently uses `HostValidator.ALLOW_ALL_HOSTS_VALIDATOR`. That is permissive, not a production host allowlist. Review Google's [host-validation guidance](https://developer.android.com/reference/androidx/car/app/validation/HostValidator) and your service configuration before distribution. This package does not currently expose a Dart host-validator configuration API.
 
-- **Android Auto** is a projected experience. The app runs on a phone, and the vehicle display is rendered by an Android Auto host using templates from the Android for Cars App Library. This is what `flutter_carplay` supports on Android.
-- **Android Automotive OS** is Android running directly in the vehicle. A Flutter app can be installed and launched on AAOS like any other Android app, but that opens the app's normal Android activity and shows the regular Flutter UI.
+## Usage
 
-`flutter_carplay` does not convert a Flutter app into a native AAOS app and does not render Android Auto templates when the app is opened normally on AAOS. The templates are rendered only by a compatible Android Auto host.
+### Own the controller lifecycle
 
-In practice:
+Static methods send commands. A retained controller instance subscribes to native events and dispatches selections, buttons, connection changes, and CarPlay dismissal callbacks. Keep one long-lived instance for the current platform and remove its listener and close its subscription when its owner is disposed.
 
-- Use this package for Android Auto template apps.
-- Do not expect additional behavior for a normal Flutter app installed on AAOS.
-- If you are building a full native AAOS app, build and test the Flutter Android app UI directly for the vehicle environment instead of relying on Android Auto templates.
+| Lifecycle API | Meaning |
+| --- | --- |
+| `addListenerOnConnectionChange(callback)` | Installs a connection callback on that controller instance; a later call replaces it |
+| `removeListenerOnConnectionChange()` | Removes the callback, but does not close the event subscription |
+| `pauseConnection()` / `resumeConnection()` | Pauses or resumes event delivery; does not disconnect the vehicle |
+| `closeConnection()` | Cancels the event subscription; resuming a cancelled subscription does not recreate it |
+| `connectionStatus` | Static **String** containing an enum name, not a `ConnectionStatusTypes` value |
+| `rootTemplate` | The Dart-side root retained in template history, not a query of the visible native screen |
 
-For Android Auto testing from a phone emulator or device, use the Android Auto Desktop Head Unit instructions in the official [Android Auto testing documentation](https://developer.android.com/training/cars/testing).
+Connection callbacks receive `ConnectionStatusTypes`. CarPlay reports `connected`, `background`, and `disconnected`; `unknown` is the initial Dart state. Android Auto's current session emits connected and disconnected events. The shared enum also contains `background`, but do not depend on Android emitting that state in this implementation.
 
-## Solve problems configuring your project
+Create only the matching platform controller if you intend to call its lifecycle methods. In particular, Android Auto's subscription methods assume its Android event subscription exists.
 
-Take a look at [this detailed issue reply](https://github.com/oguzhnatly/flutter_carplay/issues/3#issuecomment-926146126) if you got any error.
-
-## Usage & Features
-
-To see a complete example for both CarPlay and Android Auto, check the example project.
-
-[**See Full Example**](https://github.com/oguzhnatly/flutter_carplay/blob/master/example/lib/main.dart)
-
-### Basic Usage for Android Auto
-
-Import all the classes you need from a single file:
+<details>
+<summary>CarPlay connection listener and cleanup</summary>
 
 ```dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
-```
 
-Initialize the Android Auto controller and set a root template:
+class CarConnection {
+  final FlutterCarplay controller = FlutterCarplay();
 
-```dart
-final FlutterAndroidAuto _androidAuto = FlutterAndroidAuto();
+  CarConnection() {
+    controller.addListenerOnConnectionChange((status) {
+      debugPrint('CarPlay: ${status.name}');
+    });
+  }
 
-await FlutterAndroidAuto.setRootTemplate(
-  template: AATabBarTemplate(
-    tabs: [
-      AAListTemplate(
-        title: 'Home',
-        tabTitle: 'Home',
-        systemIcon: 'house.fill',
-        sections: [
-          AAListSection(
-            items: [
-              AAListItem(
-                title: 'Item 1',
-                subtitle: 'Detail Text',
-                onPress: (complete, self) {
-                  complete();
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    ],
-  ),
-);
-```
+  bool get connected =>
+      FlutterCarplay.connectionStatus == ConnectionStatusTypes.connected.name;
 
-> It is recommended to set the root template in the first `initState` of your app, after Android Auto is connected.
-
-### Listen Connection Changes for Android Auto
-
-```dart
-_androidAuto.addListenerOnConnectionChange(onAndroidAutoConnectionChange);
-
-void onAndroidAutoConnectionChange(ConnectionStatusTypes status) {
-  // ConnectionStatusTypes.connected
-  // ConnectionStatusTypes.disconnected
-  // ConnectionStatusTypes.unknown
+  void dispose() {
+    controller.removeListenerOnConnectionChange();
+    controller.closeConnection();
+  }
 }
-
-_androidAuto.removeListenerOnConnectionChange();
 ```
 
-### Android Auto API Methods
+</details>
 
-#### **FlutterAndroidAuto.setRootTemplate**
+### Navigation and return values
 
-Sets the root template of the navigation hierarchy. If one already exists, it replaces it entirely.
+Prepare the CarPlay root during startup. For Android Auto, submit or resubmit the root after `connected` so context-dependent tabs and raster artwork are built for the live host. Push screens only when the host is connected and a root exists. Keep flows shallow: CarPlay navigation is limited to five templates including the root, and the host/category may impose further restrictions.
 
-The template must be one of: **AATabBarTemplate**, **AAGridTemplate**, **AAListTemplate**, **AAPaneTemplate**, **AAMessageTemplate**, or **AALongMessageTemplate**.
+A returned `true` means what that particular operation reports, not that every asynchronous transition, download, or app action is finished. Native channel errors can throw `PlatformException`; catch them at your application boundary. Dart-side invalid model arguments may throw `ArgumentError`, `RangeError`, or assertions; an unsupported CarPlay root or push type throws `TypeError`.
 
-```dart
-await FlutterAndroidAuto.setRootTemplate(
-  template: /* Android Auto template */,
-);
-```
+#### CarPlay controller API
 
-#### **FlutterAndroidAuto.push**
+| Method | Dart result | Use |
+| --- | --- | --- |
+| `setRootTemplate(rootTemplate:, animated:)` | `Future<void>` | Replace/install a list, grid, tab bar, information, point-of-interest, or search root |
+| `push(template:, animated:)` | `Future<bool>` | Push list, grid, information, point-of-interest, or search; not tabs or modals |
+| `pop(animated:, count:)` | `Future<bool>` | Pop pushed screens; default count is 1; supply a positive count within the stack depth |
+| `popToRoot(animated:)` | `Future<bool>` | Return to the root |
+| `showAlert(template:, animated:)` | `Future<void>` | Request an alert; inspect the template's `onPresent(bool)` callback |
+| `showActionSheet(template:, animated:)` | `Future<void>` | Request an action sheet; no presentation boolean is exposed |
+| `showVoiceControl(template:, animated:)` | `Future<bool>` | Present a modal voice template with native presentation result |
+| `activateVoiceControlState(elementId:, identifier:)` | `Future<bool>` | Activate a state on the current voice modal |
+| `popModal(animated:)` | `Future<bool>` | Dismiss a modal, or cancel one that is still being prepared |
+| `showSharedNowPlaying(animated:)` | `Future<bool>` | Push the system's shared Now Playing instance if it is not already in the stack |
 
-Adds a template to the navigation hierarchy and displays it.
+The following are **instance** methods on `FlutterCarplay`:
 
-The template must be one of: **AAGridTemplate**, **AAListTemplate**, **AAPaneTemplate**, **AAMessageTemplate**, or **AALongMessageTemplate**.
+| Method | Dart result | Use |
+| --- | --- | --- |
+| `forceUpdateRootTemplate()` | `Future<void>` | Reapply the retained native root |
+| `updateListTemplateSections(elementId:, sections:)` | `Future<void>` | Replace a known list's sections |
+| `updateInformationTemplateItems(elementId:, items:)` | `Future<void>` | Replace a known information template's items |
+| `updateInformationTemplateActions(elementId:, actions:)` | `Future<void>` | Replace its text actions |
+| `updateTabBarTemplates(elementId:, templates:)` | `Future<void>` | Update a known tab bar's children without resetting the root |
 
-```dart
-await FlutterAndroidAuto.push(
-  template: /* Android Auto template */,
-);
-```
+`setRootTemplate` already requests a native root update, and the CarPlay scene installs the retained root when it connects. `forceUpdateRootTemplate` is available for an explicit refresh; it is not a compulsory second call after every setter. Avoid resetting the root repeatedly during modal presentation or connection callbacks.
 
-#### **FlutterAndroidAuto.showAlert**
+CarPlay `push`, `pop`, and `popToRoot` do not wait for an animation-completion callback. A push can return `false` if there is no connected interface or root, and pops can return `false` at the root. The void update methods also do not provide a per-update visible-render confirmation.
 
-Presents an `AAAlertTemplate` as a full-screen modal. Android Auto does not support true overlay modals, so the alert is pushed onto the navigation stack as a `MessageTemplate`.
+#### Android Auto controller API
 
-```dart
-await FlutterAndroidAuto.showAlert(template: alertTemplate);
-```
+| Method | Dart result | Use |
+| --- | --- | --- |
+| `setRootTemplate(template:)` | `Future<void>` | Install list, grid, tabs, pane, message, or long-message content |
+| `push(template:)` | `Future<bool>` | Push list, grid, pane, message, or long-message screens |
+| `pop()` / `popToRoot()` | `Future<bool>` | Pop screens using the host's screen manager |
+| `showAlert(template:)` | `Future<void>` | Push a full-screen alert message; `onPresent(bool)` reports its state |
+| `popModal()` | `Future<bool>` | Pop the currently managed alert screen |
+| `updateTabBarTemplates(template:)` | `Future<void>` | Rebuild tab content using the supplied tab bar |
+| `updatePaneTemplate(template:)` | `Future<bool>` | Replace pane content using the same template ID |
+| `showSharedNowPlaying()` | `Future<bool>` | Currently returns `false`; use your app's media integration instead |
+| `forceUpdateRootTemplate()` | `Future<void>` | Instance method that invalidates the current root screen |
+| `updateListTemplateSections(elementId:, sections:)` | `Future<void>` | Instance method that replaces a known list's sections |
 
-#### **FlutterAndroidAuto.popModal**
+Android Auto commands have no `animated` parameter. Native navigation can throw for a missing car context, popping at the root, or a missing alert instead of returning `false`. Root templates are built immediately: preparing one before a car session exists can select tab fallback content and skip string-based raster artwork. The connected screen reuses that built template, so submit the root again after `connected` if it was prepared early. `forceUpdateRootTemplate` only invalidates the screen; it does not rebuild those context-dependent fields. Pushing and alerts also need a live car context. Await channel calls and handle errors rather than treating completion of a void method as a presentation-success flag.
 
-Dismisses the currently presented `AAAlertTemplate`.
+<details>
+<summary>Complete push, pop, and return-to-root functions</summary>
 
-```dart
-await FlutterAndroidAuto.popModal();
-```
-
-#### **FlutterAndroidAuto.updateTabBarTemplates**
-
-Updates the tabs of the currently displayed `AATabBarTemplate` without rebuilding the root from Dart.
-
-```dart
-await FlutterAndroidAuto.updateTabBarTemplates(template: updatedTabBarTemplate);
-```
-
-#### **FlutterAndroidAuto.updatePaneTemplate**
-
-Updates an existing `AAPaneTemplate` and invalidates its Android Auto screen.
-
-```dart
-await FlutterAndroidAuto.updatePaneTemplate(template: paneTemplate);
-```
-
-### Flutter Asset SVG Images
-
-Flutter asset SVGs can be used in image fields such as `CPListItem.image`, `CPGridButton.image`, `CPPointOfInterest.image`, `CPListImageRowItem` image collections, `AAListItem.imageUrl`, and `AAPaneTemplate` image fields. The package rasterizes local `.svg` assets to PNG bytes before sending them to the native CarPlay or Android Auto layer. Remote SVG URLs and `file://` SVGs are not rasterized.
-
-### Basic Usage for Car Play
-
-- Import the all classes that you need from just one file:
+Call these from an app that retains the matching controller and already has a connected root.
 
 ```dart
 import 'package:flutter_carplay/flutter_carplay.dart';
-```
 
-- Initialize the CarPlay Controllers, set a root template for the CarPlay view hierarchy and ensure to well update the root template :
-
-```dart
-final FlutterCarplay _flutterCarplay = FlutterCarplay();
-
-await FlutterCarplay.setRootTemplate(
-  rootTemplate: CPTabBarTemplate(
-    templates: [
-      CPListTemplate(
-        sections: [
-          CPListSection(
-            items: [
-              CPListItem(
-                text: "Item 1",
-                detailText: "Detail Text",
-                accessoryImage: 'images/logo_flutter_1080px_clr.png',
-                onPress: (complete, self) {
-                  self.setDetailText("You can change the detail text.. 🚀");
-                  self.setAccessoryImage('images/logo_flutter_1080px_clr.png');
-                  Future.delayed(const Duration(seconds: 1), () {
-                    self.setDetailText("Customizable Detail Text");
-                    complete();
-                  });
-                },
-              ),
-            ],
-            header: "First Section",
-          ),
-        ],
-        title: "Home",
-        showsTabBadge: false,
-        systemIcon: "house.fill",
-      ),
-    ],
-  ),
-  animated: true,
-);
-_flutterCarplay.forceUpdateRootTemplate();
-```
-
-> You can set a root template without initializing the CarPlay Controllers, but some callback functions may not work or most likely you will get an error.
-
-> It's recommended that you should set the root template in the first initState of your app.
-
-### Android Auto List Affordances
-
-Android Auto row/list affordances follow the AndroidX Car App API names. Selectable lists render radio buttons on every row, `isBrowsable` renders the system navigation affordance, and `toggle` renders a switch in the row.
-
-```dart
-final FlutterAndroidAuto flutterAndroidAuto = FlutterAndroidAuto();
-
-await FlutterAndroidAuto.setRootTemplate(
-  template: AAListTemplate(
-    title: 'Home',
+Future<bool> openCarPlayDetails() => FlutterCarplay.push(
+  template: CPListTemplate(
+    title: 'Details',
     sections: [
-      AAListSection(
-        selectedIndex: 0,
-        onSelected: (selectedIndex, selectedItem) {
-          print('Selected $selectedIndex: ${selectedItem.title}');
-        },
-        items: [
-          AAListItem(title: 'Radio option 1'),
-          AAListItem(title: 'Radio option 2'),
-        ],
-      ),
-      AAListSection(
-        title: 'Rows',
-        items: [
-          AAListItem(
-            title: 'Open details',
-            isBrowsable: true,
-            onPress: (complete, item) {
-              complete();
-            },
-          ),
-          AAListItem(
-            title: 'Toggle item',
-            toggle: AAToggle(
-              isChecked: true,
-              onCheckedChange: (checked, item) {
-                print('${item.title}: $checked');
-              },
-            ),
-          ),
-        ],
-      ),
+      CPListSection(items: [CPListItem(text: 'Ready to explore')]),
+    ],
+  ),
+  animated: true,
+);
+
+Future<bool> backOnCarPlay() => FlutterCarplay.pop(animated: true, count: 1);
+Future<bool> homeOnCarPlay() => FlutterCarplay.popToRoot(animated: true);
+
+Future<bool> openAndroidDetails() => FlutterAndroidAuto.push(
+  template: AAListTemplate(
+    title: 'Details',
+    sections: [
+      AAListSection(items: [AAListItem(title: 'Ready to explore')]),
     ],
   ),
 );
-flutterAndroidAuto.forceUpdateRootTemplate();
+
+Future<bool> backOnAndroidAuto() => FlutterAndroidAuto.pop();
+Future<bool> homeOnAndroidAuto() => FlutterAndroidAuto.popToRoot();
 ```
 
-### Listen Connection Changes
+</details>
 
-You can detect connection changes, such as when CarPlay is connected to iPhone, is in the background, or is completely disconnected.
+### Finish selection callbacks
 
-```dart
-/// Add the listener
-_flutterCarplay.addListenerOnConnectionChange(onCarplayConnectionChange);
+`CPListItem`, CarPlay image-row selections, `AAListItem`, and `AAGridButton` callbacks receive a **completion function**. Call it when handling ends, including failed operations, so the host can stop its selection/loading state. Android Auto uses a temporary loading template during list and grid handling; `loadingMessage` provides its title.
 
-void onCarplayConnectionChange(ConnectionStatusTypes status) {
-  // Do things when carplay connection status is:
-  // - ConnectionStatusTypes.connected
-  // - ConnectionStatusTypes.background
-  // - ConnectionStatusTypes.disconnected
-  // - ConnectionStatusTypes.unknown
-}
+Use `try`/`finally` for asynchronous selection work. Do not block Dart's event loop with `sleep` or a busy loop. Simple CarPlay grid buttons, alert actions, text buttons, pane actions, voice buttons, toggles, and section-selection callbacks do not receive that same completion function.
 
-/// Remove the listener
-_flutterCarplay.removeListenerOnConnectionChange();
+Search has its own callback ordering: `onUpdatedSearchText(text, update)` supplies results; `onSelectedResult(item, complete)` finishes a chosen result. See [Search](#carplay-search).
+
+### Update content without rebuilding everything
+
+Keep template and item IDs stable when updating existing content. Many constructors accept `id:`; otherwise the package generates an ID. Read it with `uniqueId`. This is identity for native lookup and event routing, not an index or a visible label.
+
+For CarPlay rows, methods such as `setText`, `setDetailText`, `setImage`, `setImageTint`, `setTrailingImage`, `setAccessoryImage`, `setPlaybackProgress`, `setIsPlaying`, `setPlayingIndicatorLocation`, `setAccessoryType`, and `update` send item updates. They return `void`; they are not awaitable native acknowledgements. Progress setters accept values from 0.0 through 1.0.
+
+`CPListTemplate.updateSections`, `CPTabBarTemplate.updateTemplates`, and `CPInformationTemplate.updateInformationItems`/`updateActions` mutate the Dart models. To update an already installed native template, use the corresponding controller method. Android Auto follows the same distinction for `AAListTemplate.updateSections` and `AATabBarTemplate.updateTabs`; message models' asynchronous `update`, `setTitle`, and `setMessage` send native updates themselves.
+
+When creating replacements, retain callback-bearing models or supply the new callbacks as well as their stable IDs. Mutating plain Dart collections alone is not a host refresh. Android Auto has no equivalent per-row setter family; replace its list sections instead.
+
+## Images and icons
+
+Use Flutter assets for predictable offline artwork, and raster URLs or local files where the native field supports them. Declare assets in the **consuming app's** `pubspec.yaml`.
+
+The catalogue's asset-backed examples use files already bundled by this repository's example app:
+
+```yaml
+flutter:
+  assets:
+    - images/logo_flutter_1080px_clr.png
+    - images/svg_navigation.svg
+    - images/svg_media.svg
+    - images/svg_poi.svg
+    - images/svg_warning.svg
+    - images/svg_navigation_glyph.svg
+    - images/voice_microphone.svg
 ```
 
-### CarPlay API Methods
+If you copy a catalogue function into another app, copy and declare those assets too, or replace them with your own declared files. No image asset is required for the opening example.
 
-#### **CarPlay.setRootTemplate**
+| Source or field | Behavior |
+| --- | --- |
+| Raster Flutter assets | Native lookup using the asset key |
+| Local `file://` raster images | Available in native image-loader fields; ensure the file exists and is accessible |
+| HTTP/HTTPS raster images | Available in native image-loader fields; configure app network permissions and prefer HTTPS |
+| Local Flutter asset `.svg` files | Rasterized to PNG before supported image payloads reach the native bridge |
+| Remote SVG URLs | Not rasterized by the package; provide a raster image instead |
+| `file://` SVGs | Not a supported SVG-asset path; bundle as a Flutter asset or convert to raster first |
+| CarPlay POI pin image | Use a Flutter asset or asset SVG; this native path does not use the general URL/file loader |
+| Tab `systemIcon` | Not an SVG image field; CarPlay uses native SF Symbols, with image-source fallback on list/grid tabs |
+| Android tab `iconUrl` | Native raster image-source lookup; it is not included in the SVG rasterizer's handled keys |
 
-Sets the root template of the navigation hierarchy. If a navigation
-hierarchy already exists, CarPlay replaces the entire hierarchy.
+Supported SVG payloads include row images and trailing images, CarPlay grid buttons, POI pins, image-row image collections and elements, Android grid buttons and pane images, and nested voice-state/action images. Both controllers default `svgRasterSize` to 120 pixels; set it before creating image-bearing templates when you need a different raster resolution. A rasterized SVG is static even if the template offers an animation option.
 
-- rootTemplate is a template to use as the root of a new navigation hierarchy. If one exists,
-  it will replace the current rootTemplate. **Must be one of the type:**
-  **CPTabBarTemplate**, **CPGridTemplate**, **CPListTemplate**, **CPInformationTemplate**, **CPPointOfInterestTemplate**, or **CPSearchTemplate**. If not, it will throw a **TypeError**.
-- If animated is true, CarPlay animates the presentation of the template, but will be ignored
-  this flag when there isn’t an existing navigation hierarchy to replace.
+`AutoImageTint` supports `platform`, `primary`, `secondary`, named colors, and custom light/dark colors. Use it for glyphs rather than multicolored artwork. CarPlay pre-renders tinted images; Android uses native `CarColor` metadata, so the host still controls appearance. `selectedSafe` controls the CarPlay contrast treatment; it is not a guarantee of identical selected colors on both platforms.
 
-> CarPlay cannot have more than 5 templates on one screen.
+<details>
+<summary>Complete asset and tint example</summary>
 
 ```dart
-FlutterCarplay.setRootTemplate(
-  rootTemplate: /* CPTabBarTemplate, CPGridTemplate, CPListTemplate, CPInformationTemplate, CPPointOfInterestTemplate, or CPSearchTemplate */,
-  animated: true,
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+CPListItem makeNavigationRow() => CPListItem(
+  text: 'Saved places',
+  image: 'images/svg_navigation_glyph.svg',
+  imageTint: const AutoImageTint.custom(
+    color: UIColor(red: 20, green: 100, blue: 190),
+    darkColor: UIColor(red: 150, green: 205, blue: 255),
+  ),
+  accessoryType: CPListItemAccessoryType.disclosureIndicator,
+  onPress: (complete, item) async {
+    try {
+      item.setDetailText('Places ready');
+    } finally {
+      await complete();
+    }
+  },
 );
-// You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
 ```
 
-#### **CarPlay.push**
+</details>
 
-Adds a template to the navigation hierarchy and displays it.
-
-- template is to add to the navigation hierarchy. **Must be one of the type:** **CPGridTemplate**, **CPListTemplate**, **CPInformationTemplate**, **CPPointOfInterestTemplate**, or **CPSearchTemplate**. If not, it will throw a **TypeError**.
-- If animated is true, CarPlay animates the transition between templates.
-
-> There is a limit to the number of templates that you can push onto the screen. All apps are limited to pushing up to 5 templates in depth, including the root template.
-
-```dart
-FlutterCarplay.push(
-  template: /* CPGridTemplate, CPListTemplate, CPInformationTemplate, CPPointOfInterestTemplate, or CPSearchTemplate */,
-  animated: true,
-);
-```
-
-#### **CarPlay.pop**
-
-Removes the top-most template from the navigation hierarchy.
-
-- If animated is true, CarPlay animates the transition between templates.
-- count represents how many times this function will occur.
-
-```dart
-FlutterCarplay.pop();
-// OR
-FlutterCarplay.pop(animated: true, count: 1);
-```
-
-#### **CarPlay.popToRoot**
-
-Removes all of the templates from the navigation hierarchy except the root template.
-
-- If animated is true, CarPlay animates the presentation of the template.
-
-```dart
-FlutterCarplay.popToRoot(animated: true);
-```
-
-#### **CarPlay.popModal**
-
-Removes a modal template, including **CPAlertTemplate**, **CPActionSheetTemplate** and **CPVoiceControlTemplate**. For voice control, dismissal also cancels pending presentation and invokes `onDismiss` for cleanup. A failed native dismissal returns `false`.
-
-- If animated is true, CarPlay animates the transition between templates.
-
-```dart
-FlutterCarplay.popModal(animated: true);
-```
-
-#### **CarPlay.showSharedNowPlaying**
-
-Navigate to the shared instance of the Now Playing Template. This allows users to control media playback directly from CarPlay.
-
-- If animated is true, CarPlay animates the transition to the Now Playing template.
-
-```dart
-FlutterCarplay.showSharedNowPlaying(animated: true);
-```
-
-#### **CarPlay.connectionStatus**
-
-Getter for current CarPlay connection status. It will return one of **ConnectionStatusTypes** as String.
-
-```dart
-FlutterCarplay.connectionStatus
-```
+Most CarPlay list images can appear after their placeholder. Voice presentation is different: it waits for its images, and an image-loading failure rejects presentation. Keep voice images small and readily available. Host artwork limits still apply regardless of how an image was supplied.
 
 ## Templates
 
-### CarPlay Templates
+Start with the catalogue below, then build the platform-specific tree your app category permits. Each Dart block is a complete function or class with its imports. Presentation functions are intended to be called from your integrated app with the matching event controller alive; they do not replace native setup.
 
-CarPlay supports general purpose templates such as alerts, lists, and tab bars. They are used to display contents on the CarPlay screen from the app. [The Developer Guide](https://developer.apple.com/download/files/CarPlay-Developer-Guide.pdf) contains more information on the templates that Apple supports.
+### CarPlay templates
 
-> If you attempt to use a template not supported by your entitlement, an exception will occur at runtime.
+![CarPlay's native template overview](previews/templates.webp)
 
-#### Tab Bar Template
+| Template | Use | Placement |
+| --- | --- | --- |
+| [List](#carplay-list) | Content browsing and hierarchical menus | Root, push, tab child |
+| [Image row](#carplay-image-rows) | Artwork collections within a list | List item, not a standalone template |
+| [Grid](#carplay-grid) | A small set of visual choices | Root, push, tab child |
+| [Tabs](#carplay-tabs) | Top-level sections | Root; list, grid, information, and POI children |
+| [Information](#carplay-information) | Concise details and text actions | Root, push, tab child |
+| [Point of interest](#carplay-point-of-interest) | Places on a native map | Root, push, tab child |
+| [Alert](#carplay-alert) | A short status or decision | Modal |
+| [Action sheet](#carplay-action-sheet) | Contextual choices or confirmation | Modal |
+| [Search](#carplay-search) | Native search field and results | Root or push, not a tab child |
+| [Voice control](#carplay-voice-control) | Visual voice states and eligible voice controls | Modal only |
+| [Now Playing](#carplay-now-playing) | System media controls | Shared native instance through controller |
 
-![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/tabbar_template.png)
+#### CarPlay list
 
-The tab bar is a multi-purpose container for other templates, with each template occupying one tab in the tab bar.
+![Native CarPlay list](previews/list_template.webp)
 
-```dart
-final CPTabBarTemplate tabBarTemplate = CPTabBarTemplate(
-  templates: [
-    CPListTemplate(
-      sections: [
-        CPListSection(
-          items: [
-            CPListItem(
-              text: "Item 1",
-              detailText: "Detail Text",
-              onPress: (complete, self) {
-                // Returns the self class so that the item
-                // can be updated within self while loading
-                self.setDetailText("You can change the detail text.. 🚀");
-                // complete function stops the loading
-                complete();
-              },
-              // Supports three image formats (v1.1.0+):
-              // - Asset: 'images/logo_flutter_1080px_clr.png'
-              // - File:  'file:///path/to/local/image.png'
-              // - URL:   'https://example.com/image.png'
-              image: 'images/logo_flutter_1080px_clr.png',
-            ),
-            CPListItem(
-              text: "Item 2",
-              detailText: "Start progress bar",
-              isPlaying: false,
-              playbackProgress: 0,
-              // asset name defined in pubspec.yaml
-              image: 'images/logo_flutter_1080px_clr.png',
-              onPress: (complete, self) {
-                complete();
-              },
-            ),
-          ],
-          header: "First Section",
-        ),
-      ],
-      title: "Home",
-      showsTabBadge: false,
-      systemIcon: "house.fill",
-    ),
-    CPListTemplate(
-      sections: [],
-      title: "Settings",
-      // If there is no section in the list template,
-      // empty view title and subtitle variants will be shown
-      emptyViewTitleVariants: ["Settings"],
-      emptyViewSubtitleVariants: [
-        "No settings have been added here yet. You can start adding right away"
-      ],
-      showsTabBadge: false,
-      systemIcon: "gear",
-    ),
-  ],
-);
+Use `CPListTemplate` for rows organized into `CPListSection`s. Rows can carry detail text, artwork, an accessory/disclosure indicator, playback progress, and playing status. `sectionIndexEnabled` controls whether a section header participates in the index. Empty-title and subtitle variants provide a useful screen when no sections are present.
 
-FlutterCarplay.setRootTemplate(rootTemplate: tabBarTemplate, animated: true);
-```
+The vehicle can reduce how many rows are shown, including a 12-item limit on some hosts. Query `CPListTemplate.getMaximumItemCount()` and `getMaximumSectionCount()` where useful, and put essential content first. These return `Future<int?>`, not a promise that every vehicle presents your entire data set.
 
-#### Grid Template
-
-![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/grid_template.png)
-
-Grid Template is a specific style of menu that presents up to 8 items represented by an image and a title. Use the grid template to let people select from a fixed list of categories.
+<details>
+<summary>List with an updating row and back button</summary>
 
 ```dart
-final CPGridTemplate gridTemplate = CPGridTemplate(
-  title: "Grid Template",
-  buttons: [
-    for (var i = 1; i < 9; i++)
-      CPGridButton(
-        titleVariants: ["Item $i"],
-        image: 'images/logo_flutter_1080px_clr.png',
-        onPress: () {
-          print("Grid Button $i pressed");
-        },
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<bool> openCarPlayLibrary() => FlutterCarplay.push(
+  template: CPListTemplate(
+    title: 'Library',
+    emptyViewTitleVariants: ['Your library'],
+    emptyViewSubtitleVariants: ['Save an item on your phone to begin'],
+    backButton: CPBarButton(
+      title: 'Back',
+      buttonStyle: CPBarButtonStyle.none,
+      onPress: () => FlutterCarplay.pop(),
+    ),
+    sections: [
+      CPListSection(
+        header: 'Saved',
+        sectionIndexEnabled: false,
+        items: [
+          CPListItem(
+            id: 'library-featured',
+            text: 'Featured collection',
+            detailText: 'Available offline',
+            image: 'images/logo_flutter_1080px_clr.png',
+            playbackProgress: 0.25,
+            isPlaying: false,
+            playingIndicatorLocation: CPListItemPlayingIndicatorLocation.trailing,
+            accessoryType: CPListItemAccessoryType.disclosureIndicator,
+            onPress: (complete, item) async {
+              try {
+                item.update(detailText: 'Selected', isPlaying: true);
+              } finally {
+                await complete();
+              }
+            },
+          ),
+        ],
       ),
-  ],
-);
-
-FlutterCarplay.push(template: gridTemplate, animated: true);
-// OR
-FlutterCarplay.setRootTemplate(rootTemplate: gridTemplate, animated: true);
-// You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
-```
-
-#### Alert Template
-
-![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/alert_template.png)
-
-Alerts provide important information about your app's status. An alert consists of a title and one or more buttons, depending on the type.
-
-> If underlying conditions permit, alerts can be dismissed programatically.
-
-```dart
-final CPAlertTemplate alertTemplate = CPAlertTemplate(
-  titleVariants: ["Alert Title"],
-  actions: [
-    CPAlertAction(
-      title: "Okay",
-      style: CPAlertActionStyles.normal,
-      onPress: () {
-        print("Okay pressed");
-        FlutterCarplay.popModal(animated: true);
-      },
-    ),
-    CPAlertAction(
-      title: "Cancel",
-      style: CPAlertActionStyles.cancel,
-      onPress: () {
-        print("Cancel pressed");
-        FlutterCarplay.popModal(animated: true);
-      },
-    ),
-    CPAlertAction(
-      title: "Remove",
-      style: CPAlertActionStyles.destructive,
-      onPress: () {
-        print("Remove pressed");
-        FlutterCarplay.popModal(animated: true);
-      },
-    ),
-  ],
-),
-
-FlutterCarplay.showAlert(template: alertTemplate, animated: true);
-```
-
-#### Action Sheet Template
-
-![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/actionsheet_template.png)
-
-Action Sheet Template is a type of alert that appears when control or action is taken and gives a collection of options based on the current context.
-
-> Use action sheets to let people initiate tasks, or to request confirmation before performing a potentially destructive operation.
-
-```dart
-final CPActionSheetTemplate actionSheetTemplate = CPActionSheetTemplate(
-  title: "Action Sheet Template",
-  message: "This is an example message.",
-  actions: [
-    CPAlertAction(
-      title: "Cancel",
-      style: CPAlertActionStyles.cancel,
-      onPress: () {
-        print("Cancel pressed in action sheet");
-        FlutterCarplay.popModal(animated: true);
-      },
-    ),
-    CPAlertAction(
-      title: "Dismiss",
-      style: CPAlertActionStyles.destructive,
-      onPress: () {
-        print("Dismiss pressed in action sheet");
-        FlutterCarplay.popModal(animated: true);
-      },
-    ),
-    CPAlertAction(
-      title: "Ok",
-      style: CPAlertActionStyles.normal,
-      onPress: () {
-        print("Ok pressed in action sheet");
-        FlutterCarplay.popModal(animated: true);
-      },
-    ),
-  ],
-);
-
-FlutterCarplay.showActionSheet(template: actionSheetTemplate, animated: true);
-```
-
-#### List Template
-
-![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/list_template.png)
-
-A list presents data as a scrolling, single-column table of rows that can be divided into sections. Lists are ideal for text-based content, and can be used as a means of navigation for hierarchical information. Each item in a list can include attributes such as an icon, title, subtitle, disclosure indicator, progress indicator, playback status, or read status.
-
-> Some cars dynamically limit lists to a maximum of 12 items. You always need to be prepared to handle the case where only 12 items can be shown. Items beyond the maximum will not be shown.
-
-```dart
-final CPListTemplate listTemplate = CPListTemplate(
-  sections: [
-    CPListSection(
-      items: [
-        CPListItem(
-          text: "Item 1",
-          detailText: "Detail Text",
-          onPress: (complete, self) {
-            // Returns the self class so that the item
-            // can be updated within self while loading
-            self.setDetailText("You can change the detail text.. 🚀");
-            // complete function stops the loading
-            complete();
-          },
-          image: 'images/logo_flutter_1080px_clr.png',
-          accessoryImage: 'images/logo_flutter_1080px_clr.png',
-        ),
-        CPListItem(
-          text: "Item 2",
-          detailText: "Start progress bar",
-          isPlaying: false,
-          playbackProgress: 0,
-          // asset name defined in pubspec.yaml
-          image: 'images/logo_flutter_1080px_clr.png',
-          onPress: (complete, self) {
-            complete();
-          },
-        ),
-      ],
-      header: "First Section",
-    ),
-  ],
-  title: "Home",
-  showsTabBadge: false,
-  systemIcon: "house.fill",
-  // If there is no section in the list template,
-  // empty view title and subtitle variants will be shown
-  emptyViewTitleVariants: ["Home"],
-  emptyViewSubtitleVariants: [
-    "Nothing has added here yet. You can start adding right away"
-  ],
-);
-
-FlutterCarplay.push(template: listTemplate, animated: true);
-// OR
-FlutterCarplay.setRootTemplate(rootTemplate: listTemplate, animated: true);
-// You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
-```
-
-#### Information Template
-
-![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/information_template.png)
-
-An Information Template shows a list of items, and actions (max. three)) as array of text buttons.
-
-> The list is limited to 10 items. Items beyond the maximum will not be shown. Up to three actions are supported.
-
-```dart
-final CPInformationTemplate informationTemplate = CPInformationTemplate(
-  title: "Title",
-  layout: CPInformationTemplateLayout.twoColumn,
-  actions: [
-    CPTextButton(
-      title: "Button Title 1",
-      onPress: () {
-        print("Button 1");
-      }
-    ),
-    CPTextButton(
-      title: "Button Title 2",
-      onPress: () {
-        print("Button 2");
-       }
-    ),
-  ],
-  informationItems: [
-    CPInformationItem(title: "Title", detail: "Detail"),
-  ]
-);
-
-FlutterCarplay.push(template: informationTemplate, animated: true);
-// OR
-FlutterCarplay.setRootTemplate(rootTemplate: informationTemplate, animated: true);
-// You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
-```
-
-You can also update an existing `CPInformationTemplate` without rebuilding the full template.
-
-```dart
-await _flutterCarplay.updateInformationTemplateItems(
-  elementId: informationTemplate.uniqueId,
-  items: [
-    CPInformationItem(title: "Battery", detail: "85%"),
-    CPInformationItem(title: "Range", detail: "240 km"),
-  ],
-);
-
-await _flutterCarplay.updateInformationTemplateActions(
-  elementId: informationTemplate.uniqueId,
-  actions: [
-    CPTextButton(
-      title: "Refresh",
-      onPress: () {
-        print("Refresh tapped");
-      },
-    ),
-  ],
-);
-```
-
-#### List Image Row Item
-
-`CPListImageRowItem` lets you show a row of multiple images inside a `CPListTemplate` section.
-
-```dart
-final CPListTemplate listTemplate = CPListTemplate(
-  title: "Gallery",
-  sections: [
-    CPListSection(
-      items: [
-        CPListImageRowItem(
-          text: "Recently played",
-          gridImages: [
-            "https://picsum.photos/200/200?1",
-            "https://picsum.photos/200/200?2",
-            "https://picsum.photos/200/200?3",
-          ],
-          onPress: (complete, item) {
-            print(item.text);
-            complete();
-          },
-          onItemPress: (complete, item, index) {
-            print("Tapped image index: $index");
-            complete();
-          },
-        ),
-      ],
-    ),
-  ],
-);
-```
-
-Use `CPListImageRowItem.getMaximumNumberOfGridImages()` if you want to respect the host limit before building the row.
-
-#### Point Of Interest Template
-
-![Flutter CarPlay](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/point_of_interest_template.png)
-
-A Point Of Interest template shows multiple points of interest on a Map
-The map section is determined by the points of interest.
-
-> The Template is limited to 12 Points of Interest.
-
-```dart
- final CPPointOfInterestTemplate pointOfInterestTemplate =
-   CPPointOfInterestTemplate(title: "Title", poi: [
-     CPPointOfInterest(
-       latitude: 51.5052,
-       longitude: 7.4938,
-       title: "Title",
-       subtitle: "Subtitle",
-       summary: "Summary",
-       detailTitle: "DetailTitle",
-       detailSubtitle: "detailSubtitle",
-       detailSummary: "detailSummary",
-       image: "images/logo_flutter_1080px_clr.png",
-       primaryButton: CPTextButton(
-         title: "Primary",
-         onPress: () {
-           print("Primary button pressed");
-         }
-       ),
-       secondaryButton: CPTextButton(
-         title: "Secondary",
-         onPress: () {
-           print("Secondary button pressed");
-         }))
-    ]);
-
-    FlutterCarplay.push(template: pointOfInterestTemplate, animated: true);
-    // OR
-    FlutterCarplay.setRootTemplate(rootTemplate: pointOfInterestTemplate, animated: true);
-    // You need to call _flutterCarplay.forceUpdateRootTemplate(); after setting the root template
-```
-
-#### Now Playing Template
-
-The Now Playing template provides a standardized interface for media playback controls in CarPlay. It uses the system's shared instance and integrates with your app's media session.
-
-```dart
-// Navigate to the Now Playing template
-FlutterCarplay.showSharedNowPlaying(animated: true);
-```
-
-> **Note**: The Now Playing template displays information from your app's active media session. Make sure your app is properly configured with AVAudioSession and media playback controls for the best experience.
-
-> **Multiple Calls Safe**: The `showSharedNowPlaying()` method can be called multiple times safely without causing issues.
-
-#### Search Template
-
-![Flutter CarPlay Search Template](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/master/previews/search_template.png)
-
-Use `CPSearchTemplate` when your CarPlay app needs a native search screen. Your app's CarPlay entitlement controls which templates are available for its approved category. The example app keeps the parking entitlement for Point of Interest support; switch the entitlement in your app target if Apple approved a different category. Return result rows from `onUpdatedSearchText`, handle row selection in `onSelectedResult`, and call the provided completion callback after your app finishes handling the selected result.
-
-```dart
-await FlutterCarplay.push(
-  template: CPSearchTemplate(
-    onUpdatedSearchText: (searchText, update) {
-      update([
-        CPListItem(
-          text: 'Result for $searchText',
-          detailText: 'Tap to select',
-        ),
-      ]);
-    },
-    onSelectedResult: (selectedItem, complete) {
-      complete();
-    },
+    ],
   ),
 );
 ```
 
-#### Voice Control Template
+</details>
 
-`CPVoiceControlTemplate` provides native visual feedback for voice interaction. It is a modal template, presented with `showVoiceControl`. It cannot be a root template, a tab or a pushed screen. It does not capture audio, transcribe speech, activate Siri or grant microphone access.
+#### CarPlay image rows
 
-![Native CarPlay voice control with an explicit microphone action](previews/voice_control_template.png)
+`CPListImageRowItem` adds a horizontal image collection to a list section. `onPress(complete, item)` handles the row; `onItemPress(complete, item, index)` handles an image selection. Finish both kinds of selection with their completion callback.
 
-The June 2026 [CarPlay Developer Guide](https://developer.apple.com/download/files/CarPlay-Developer-Guide.pdf) includes voice based conversational apps with entitlement `com.apple.developer.carplay-voice-based-conversation`, available from iOS 26.4. This is a separate approved category from navigation. Navigation apps use `com.apple.developer.carplay-maps` when that category applies. The guide also lists voice template availability for driving task apps from iOS 26.4 and additional categories from iOS 27. Template availability does not grant recording permission: the guide's recording exception applies to navigation and conversational apps while the voice control template is visible. Use the category Apple approved and a matching provisioning profile.
+For the classic layout, use `gridImages`, optional per-image `gridImageTints`, and `imageTitles`. Image titles are used on iOS 17.4 or later. Query `CPListImageRowItem.getMaximumNumberOfGridImages()` before building a larger collection; the host can truncate the visible slots.
 
-The package minimum remains iOS 14. The basic voice indicator can be used by eligible navigation apps on that minimum. Action buttons and navigation bar buttons require iOS 26.4 and Xcode 26.4 or later. Native runtime and compiler guards reject those controls on older systems or SDKs with `PlatformException(code: 'unsupported_version')`, rather than silently removing them.
+On iOS 26, `elements` provides five native layouts:
 
-Create one to five states with distinct, nonempty identifiers. The first state appears on presentation. Supplied title variants must be nonempty. Collections are copied and immutable. The native host validates each state's `CPButton` action count against Apple's `CPVoiceControlState.maximumActionButtonCount`; exceeding the supported maximum is rejected rather than silently truncated. Dart preserves the supplied actions and rejects duplicate button identifiers without imposing a fixed platform limit. This image button wraps Apple's `CPButton`; `CPTextButton` is a different native type. Each side of the navigation bar supports at most two `CPBarButton` controls.
+| Dart element | Content |
+| --- | --- |
+| `CPListImageRowItemCardElement` | Image, optional title/subtitle, card presentation |
+| `CPListImageRowItemCondensedElement` | Image and title, optional subtitle/accessory, circular or rounded shape |
+| `CPListImageRowItemGridElement` | Image-only grid element |
+| `CPListImageRowItemImageGridElement` | Image and title, optional accessory, selectable shape |
+| `CPListImageRowItemRowElement` | Image with optional title and subtitle |
+
+Use **one element type per row**: the native initializer selects the layout from the first element and filters for that type. If older iOS versions must show the row, supply `gridImages` as a fallback as well as the newer `elements`. `setText` and `setElements` send row updates; element setters such as `setImage` and `setTitle` send updates on iOS 26. These methods return `void`.
+
+<details>
+<summary>Artwork row with an iOS 26 card layout and classic fallback</summary>
 
 ```dart
-final carplay = FlutterCarplay(); // Keep the event listener alive.
-final voice = CPVoiceControlTemplate(
-  voiceControlStates: [
-    CPVoiceControlState(
-      identifier: 'listening',
-      titleVariants: ['Listening'],
-      image: 'images/listening.svg',
-      repeats: false,
-    ),
-    CPVoiceControlState(
-      identifier: 'processing',
-      titleVariants: ['Processing'],
-    ),
-  ],
-  onDismiss: () {
-    // Stop your speech recognizer and speech playback here.
-  },
-);
+import 'package:flutter_carplay/flutter_carplay.dart';
 
-try {
-  final shown = await FlutterCarplay.showVoiceControl(template: voice);
-  if (shown) {
-    // Start an authorized voice operation only after presentation succeeds.
-    final activated = await voice.activateState('processing');
-    // False means the host did not confirm the requested state.
-    print('Processing state active: $activated');
-    await FlutterCarplay.popModal();
-  }
-} on PlatformException catch (error) {
-  // Import package:flutter/services.dart for PlatformException.
-  print(error.message);
+Future<bool> openCarPlayArtwork() => FlutterCarplay.push(
+  template: CPListTemplate(
+    title: 'Collections',
+    sections: [
+      CPListSection(items: [
+        CPListImageRowItem(
+          text: 'Pick a collection',
+          gridImages: [
+            'images/svg_navigation.svg',
+            'images/svg_media.svg',
+          ],
+          imageTitles: ['Places', 'Audio'],
+          elements: [
+            CPListImageRowItemCardElement(
+              image: 'images/svg_navigation.svg',
+              title: 'Places',
+              subtitle: 'Saved for later',
+            ),
+            CPListImageRowItemCardElement(
+              image: 'images/svg_media.svg',
+              title: 'Audio',
+              subtitle: 'Your collection',
+            ),
+          ],
+          onPress: (complete, item) async => complete(),
+          onItemPress: (complete, item, index) async => complete(),
+        ),
+      ]),
+    ],
+  ),
+);
+```
+
+</details>
+
+#### CarPlay grid
+
+![Native CarPlay grid](previews/grid_template.webp)
+
+`CPGridTemplate` presents a compact visual menu of up to eight `CPGridButton`s. Supply image assets and title variants. A CarPlay grid button uses `onPress()` without a selection-completion argument.
+
+<details>
+<summary>Two-choice grid</summary>
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<bool> openCarPlayChoices() => FlutterCarplay.push(
+  template: CPGridTemplate(
+    title: 'Explore',
+    buttons: [
+      CPGridButton(
+        titleVariants: ['Places'],
+        image: 'images/svg_navigation.svg',
+        onPress: () => debugPrint('Places selected'),
+      ),
+      CPGridButton(
+        titleVariants: ['Audio'],
+        image: 'images/svg_media.svg',
+        onPress: () => debugPrint('Audio selected'),
+      ),
+    ],
+  ),
+);
+```
+
+</details>
+
+In 1.7.0, Dart's CarPlay grid-button event lookup searches directly retained grid templates, not grid children inside a tab bar. Prefer a standalone root/pushed grid when you need its Dart button callback.
+
+#### CarPlay tabs
+
+![Native CarPlay tab bar](previews/tabbar_template.webp)
+
+`CPTabBarTemplate` groups top-level content. Its native parser accepts list, grid, information, and point-of-interest children, subject to your category. Search, voice control, alerts, and action sheets do not belong in this container. The plugin checks Apple's `maximumTabCount`; stay within that host limit, ordinarily up to five tabs.
+
+Child templates can set `tabTitle`, `systemIcon`, and `showsTabBadge`. To change the installed tabs, call the controller's `updateTabBarTemplates(elementId:, templates:)` with the existing tab bar ID. Do not confuse it with the model's local `updateTemplates` method. In this version, information and POI text-action dispatch also searches direct templates rather than those nested in tabs; use a root/pushed template for those actions.
+
+<details>
+<summary>Two list tabs and a native tab update</summary>
+
+```dart
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<void> installCarPlayTabs(FlutterCarplay controller) async {
+  final home = CPListTemplate(
+    title: 'Home',
+    tabTitle: 'Home',
+    systemIcon: 'house.fill',
+    sections: [
+      CPListSection(items: [
+        CPListItem(
+          text: 'Saved content',
+          onPress: (complete, item) async => complete(),
+        ),
+      ]),
+    ],
+  );
+  final settings = CPListTemplate(
+    title: 'Settings',
+    tabTitle: 'Settings',
+    systemIcon: 'gear',
+    sections: [],
+    emptyViewTitleVariants: ['Manage settings on your phone'],
+  );
+  final tabs = CPTabBarTemplate(templates: [home, settings]);
+  await FlutterCarplay.setRootTemplate(rootTemplate: tabs);
+  await controller.updateTabBarTemplates(
+    elementId: tabs.uniqueId,
+    templates: [home, settings],
+  );
 }
 ```
 
-Alternatively, use `FlutterCarplay.activateVoiceControlState(elementId: voice.uniqueId, identifier: 'processing')`. Unknown state or template IDs return `false`. Activation is accepted only for the currently presented voice template. CarPlay rate limits state changes and may ignore rapid requests. The result compares the native `activeStateIdentifier` with the requested identifier immediately after activation; it is not an acknowledgement from a speech service. Avoid rapid transitions and handle `false` without starting an operation that requires an unconfirmed indicator.
+</details>
 
-`showVoiceControl` returns the actual native presentation result. It returns `false` when disconnected, busy with another modal, or successfully cancelled before presentation completes. Invalid native payloads produce `invalid_argument`; native CarPlay presentation errors produce `carplay_error`. A category rejected by the host is reported through its presentation completion. Keep a `FlutterCarplay` instance listening to receive button, dismissal and connection events. `onDismiss` runs once for native user dismissal, successful programmatic dismissal or cancellation, or disconnect. Rejected presentation and failed dismissal do not invoke it. If cancellation fails and the template is still visible, its ownership and controls remain available, and dismissal can be retried. Stop audio immediately when your app initiates cancellation, and on background transitions as appropriate for your app.
+#### CarPlay information
 
-Images accept Flutter assets, file URLs and remote raster image URLs. Local asset SVGs are rasterized using the existing SVG pipeline, including nested action button images. Native presentation waits for all images; an image loading error fails presentation. Remote SVGs and file SVGs are not rasterized. Voice state images may be at most 150 by 150 points. `repeats` applies to an animated native image and does not animate a static PNG or rasterized SVG.
+![Native CarPlay information template](previews/information_template.webp)
 
-##### Optional speech example
+`CPInformationTemplate` displays up to ten concise information items and up to three `CPTextButton` actions. Choose `leading` or `twoColumn` layout. It is a details surface, not a general-purpose Flutter form.
 
-The package has no speech provider dependency. The example alone uses `speech_to_text` and `flutter_tts` to recognize a short question and speak a local response, such as the current time. The phone's Voice control button opens `example/lib/voice_control_example.dart` on iOS. Recording starts only after a microphone action, permission approval and successful voice template presentation. Errors and denied permissions are shown on the phone. Cancel, modal dismissal, background and disconnect stop recording and TTS. Recognition text and response text stay on the phone UI, never in the CarPlay template. Speech recognition may use the provider's remote services; this is not a promise of on device processing.
+<details>
+<summary>Information screen with native item and action updates</summary>
 
-For an approved conversational app, use the dedicated `example/lib/voice_control_main.dart` entry point. It opens the voice interface when CarPlay launches, with an explicit microphone action to begin capture. This follows the guide's voice as primary modality requirement while avoiding unsolicited recording. Responses are spoken; CarPlay displays only generic activity states. The default `main.dart` and parking entitlement retain the existing parking demo.
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
 
-The example includes `NSMicrophoneUsageDescription` and `NSSpeechRecognitionUsageDescription` in `Runner/Info.plist`. Grant these on iPhone before driving. The example controls require iOS 26.4. Select the approved conversational entitlement file using `CARPLAY_ENTITLEMENTS_FILE`. This build setting changes only the app target, not the embedded speech frameworks, and defaults to `Runner.entitlements` for the parking demo:
+Future<void> openCarPlayInformation(FlutterCarplay controller) async {
+  final information = CPInformationTemplate(
+    title: 'Collection',
+    layout: CPInformationTemplateLayout.twoColumn,
+    informationItems: [
+      CPInformationItem(title: 'Status', detail: 'Saved'),
+      CPInformationItem(title: 'Availability', detail: 'Offline'),
+    ],
+    actions: [
+      CPTextButton(
+        title: 'Open',
+        textstyle: CPTextButtonStyle.confirm,
+        onPress: () => debugPrint('Open selected'),
+      ),
+    ],
+  );
+  if (!await FlutterCarplay.push(template: information)) return;
+  await controller.updateInformationTemplateItems(
+    elementId: information.uniqueId,
+    items: [CPInformationItem(title: 'Status', detail: 'Ready')],
+  );
+  await controller.updateInformationTemplateActions(
+    elementId: information.uniqueId,
+    actions: [
+      CPTextButton(title: 'Done', onPress: () => FlutterCarplay.pop()),
+    ],
+  );
+}
+```
+
+</details>
+
+#### CarPlay point of interest
+
+![Native CarPlay point-of-interest template](previews/point_of_interest_template.webp)
+
+`CPPointOfInterestTemplate` combines a native map with a list of up to twelve places. Each `CPPointOfInterest` supplies coordinates, concise summary/detail text, an optional pin image, and primary/secondary text buttons. It is not a turn-by-turn navigation or custom map template.
+
+The example uses the parking entitlement for this flow. An available Dart constructor is not permission to use this template in every category. Pin artwork uses Flutter assets or asset SVGs; the native implementation fits oversized pins to 40 by 40 points.
+
+<details>
+<summary>A place with a details action</summary>
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<bool> openCarPlayPlaces() => FlutterCarplay.push(
+  template: CPPointOfInterestTemplate(
+    title: 'Saved places',
+    poi: [
+      CPPointOfInterest(
+        latitude: 51.5052,
+        longitude: 7.4938,
+        title: 'City parking',
+        subtitle: 'Saved place',
+        summary: 'View details',
+        detailTitle: 'City parking',
+        detailSubtitle: 'Your saved location',
+        detailSummary: 'Manage this place on your phone',
+        image: 'images/svg_poi.svg',
+        primaryButton: CPTextButton(
+          title: 'Select',
+          onPress: () => debugPrint('Place selected'),
+        ),
+      ),
+    ],
+  ),
+);
+```
+
+</details>
+
+#### CarPlay alert
+
+![Native CarPlay alert](previews/alert_template.webp)
+
+`CPAlertTemplate` is a modal for a brief status or decision. Actions use `CPAlertActionStyle.normal`, `cancel`, or `destructive`. `showAlert` returns `Future<void>`; use `onPresent(bool)` for its presentation result. Your action handler can call `popModal` to dismiss it.
+
+<details>
+<summary>Alert with a presentation callback</summary>
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<void> showCarPlayNotice() => FlutterCarplay.showAlert(
+  template: CPAlertTemplate(
+    titleVariants: ['Saved for your next trip'],
+    onPresent: (completed) => debugPrint('Alert presented: $completed'),
+    actions: [
+      CPAlertAction(
+        title: 'Done',
+        onPress: () => FlutterCarplay.popModal(),
+      ),
+    ],
+  ),
+);
+```
+
+</details>
+
+#### CarPlay action sheet
+
+![Native CarPlay action sheet](previews/actionsheet_template.webp)
+
+`CPActionSheetTemplate` adds context and a message to a small set of choices. It uses the same alert-action models, but `showActionSheet` does not expose a presentation boolean or an `onPresent` callback. CarPlay allows one modal at a time; a competing or pending modal can prevent the request from being presented.
+
+<details>
+<summary>Contextual choices</summary>
+
+```dart
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<void> showCarPlayChoices() => FlutterCarplay.showActionSheet(
+  template: CPActionSheetTemplate(
+    title: 'This collection',
+    message: 'Choose what to do next',
+    actions: [
+      CPAlertAction(
+        title: 'Keep',
+        onPress: () => FlutterCarplay.popModal(),
+      ),
+      CPAlertAction(
+        title: 'Cancel',
+        style: CPAlertActionStyle.cancel,
+        onPress: () => FlutterCarplay.popModal(),
+      ),
+    ],
+  ),
+);
+```
+
+</details>
+
+#### CarPlay search
+
+![Native CarPlay search](previews/search_template.webp)
+
+`CPSearchTemplate` gives you the native search UI. It can be the root or a pushed screen. Return rows through `onUpdatedSearchText(text, update)`, finish selections through `onSelectedResult(item, complete)`, and optionally handle `onSearchTemplateSearchButtonPressed`.
+
+Always supply results, including an empty list for no matches or an error, so the pending native search callback can finish. When querying a service asynchronously, keep the result tied to the latest query; the plugin stores a pending native completion rather than giving your app an independent completion for every overlapping request.
+
+<details>
+<summary>Complete local search root</summary>
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<void> installCarPlaySearch() async {
+  const places = ['City parking', 'Harbor parking', 'Station parking'];
+  await FlutterCarplay.setRootTemplate(
+    rootTemplate: CPSearchTemplate(
+      onUpdatedSearchText: (text, update) {
+        final query = text.trim().toLowerCase();
+        update([
+          for (final place in places)
+            if (query.isEmpty || place.toLowerCase().contains(query))
+              CPListItem(text: place, detailText: 'Saved place'),
+        ]);
+      },
+      onSelectedResult: (item, complete) {
+        try {
+          debugPrint('Selected ${item.text}');
+        } finally {
+          complete();
+        }
+      },
+      onSearchTemplateSearchButtonPressed: () => debugPrint('Search submitted'),
+    ),
+  );
+}
+```
+
+</details>
+
+#### CarPlay voice control
+
+![Native CarPlay voice control with an explicit microphone action](previews/voice_control_template.webp)
+
+`CPVoiceControlTemplate` gives a voice interaction a native visual presence: ready, listening, processing, speaking, or another state your app defines. Present it with `showVoiceControl`. It is **modal only**, never a root, pushed screen, or tab child.
+
+The template does not record audio, transcribe speech, request microphone permission, start Siri, or supply a speech service. Your application owns those operations and their consent, privacy, interruption, and cleanup behavior.
+
+**Category and version:** eligible navigation apps can use the basic indicator with the package's iOS 14 deployment floor. Voice-based conversational apps are a separate approved category from iOS 26.4, using `com.apple.developer.carplay-voice-based-conversation`. The CarPlay guide also describes other category/version combinations; follow the eligibility for your approved app, not just the presence of a Dart API. Its recording exception concerns eligible navigation/conversational use while the voice template is visible, not a blanket recording permission for any CarPlay app.
+
+Action buttons and navigation bar buttons need **iOS 26.4 and Xcode 26.4 or later**. The native bridge uses compiler and runtime guards; it rejects unsupported controls with `PlatformException(code: 'unsupported_version')` rather than removing them silently.
+
+| Contract | Requirement |
+| --- | --- |
+| States | One to five, with distinct nonempty identifiers; the first state is the initial presentation state |
+| Titles | Omit title variants or supply a nonempty list of nonempty strings |
+| Collections | States, title variants, and button collections are copied and immutable |
+| State actions | `CPButton` image controls, not `CPTextButton`; maximum validated against native `CPVoiceControlState.maximumActionButtonCount` |
+| Navigation controls | Up to two `CPBarButton`s per side, with distinct nonempty IDs and titles |
+| Shared actions | Reuse the same `CPButton` object across states if it represents the same action; do not give unrelated buttons the same ID |
+| State images | Fit within 150 by 150 points; native bridge scales down larger images |
+| `repeats` | Applies to an animated native image, not a static PNG or rasterized SVG |
+
+<details>
+<summary>Basic indicator with presentation and state results</summary>
+
+This function shows and changes the visual indicator only. It does not start audio.
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<bool> showCarPlayActivity() async {
+  var ownsPresentation = false;
+  final voice = CPVoiceControlTemplate(
+    voiceControlStates: [
+      CPVoiceControlState(identifier: 'ready', titleVariants: ['Ready']),
+      CPVoiceControlState(identifier: 'processing', titleVariants: ['Processing']),
+    ],
+    onDismiss: () {
+      ownsPresentation = false;
+      debugPrint('Voice indicator closed');
+    },
+  );
+  try {
+    if (!await FlutterCarplay.showVoiceControl(template: voice)) return false;
+    ownsPresentation = true;
+    final active = await voice.activateState('processing');
+    debugPrint('Processing indicator active: $active');
+    return active;
+  } on PlatformException catch (error) {
+    debugPrint('Voice presentation failed: ${error.code}: ${error.message}');
+    return false;
+  } finally {
+    if (ownsPresentation) await FlutterCarplay.popModal();
+  }
+}
+```
+
+</details>
+
+`voice.activateState(identifier)` is the instance convenience for `FlutterCarplay.activateVoiceControlState(elementId:, identifier:)`. Activation works only on the current presented template. Unknown state/template IDs return `false`. CarPlay rate-limits transitions and can ignore rapid requests. `true` means the native active identifier matches immediately after the call, not that speech capture, recognition, or playback succeeded. Do not start a voice operation whose necessary visual state was rejected.
+
+`showVoiceControl` returns the native presentation result. It returns `false` when disconnected, when another modal is open/pending, or when successfully cancelled before presentation finishes. Invalid native input produces `invalid_argument`; native presentation/image errors use `carplay_error` unless they are one of the explicit validation/version errors. A category rejection is reported through the host's presentation completion.
+
+Keep the event controller alive. `onDismiss` runs once for the owned voice request when the user dismisses it, programmatic dismissal/cancellation succeeds, or the car disconnects. A rejected presentation or failed dismissal does not invoke it. Failed dismissal preserves ownership so controls and a retry remain possible. Stop your audio immediately when initiating cancellation as well as in dismissal and connection cleanup; do not wait for a failed modal close to authorize stopping the microphone.
+
+Voice presentation waits for all state and action images. Use bundled assets where possible and handle loading failures. Asset SVGs, file raster images, and remote raster images are supported here; remote/file SVGs are not rasterized.
+
+##### Optional speech and conversational example
+
+The [voice example](example/lib/voice_control_example.dart) composes `speech_to_text` and `flutter_tts` **in the example app only**. It recognizes a short request and speaks a local response, such as the time. It is not an assistant backend, a Siri integration, or a promise of on-device speech processing. A speech provider may use remote services.
+
+Capture starts only after an explicit microphone action, permission approval, and successful native presentation or listening-state activation. CarPlay shows generic activity states; recognition text and response text are displayed only in the phone UI. Cancellation, modal dismissal, background, and disconnect stop the owned recognition and TTS operations. The example waits for native playback terminal events and releases the shared audio session before reuse; a method's speech-acceptance result is not playback completion.
+
+The default example keeps the parking demo. Its phone **Voice control** button opens the optional voice page, but using that page in CarPlay still needs an eligible category. For an approved conversational app, use the separate [voice-first entry point](example/lib/voice_control_main.dart), which presents voice control at CarPlay launch with a microphone action rather than recording automatically.
+
+<details>
+<summary>Build the conversational simulator configuration</summary>
+
+Use the repository example with Xcode 26.4 or later. The example's `Info.plist` already declares `NSMicrophoneUsageDescription` and `NSSpeechRecognitionUsageDescription`.
 
 ```sh
 cd example
@@ -1245,243 +1204,158 @@ cd ios
 pod install
 xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Debug \
   -sdk iphonesimulator FLUTTER_TARGET=lib/voice_control_main.dart \
-  CARPLAY_ENTITLEMENTS_FILE=Conversational.entitlements
+  CARPLAY_ENTITLEMENTS_FILE=Conversational.entitlements build
 ```
 
-For a device build, use an approved bundle identifier and provisioning profile containing the conversational entitlement. Only use a navigation entitlement override for an approved navigation app. Car microphone selection, Bluetooth or USB routing, audio interruption handling and audio session behavior belong to the selected speech provider and host integration. Validate those in a real vehicle; a simulator does not establish car microphone routing. Activate audio sessions only while voice features are in use.
+</details>
 
-### Android Auto Templates
+`CARPLAY_ENTITLEMENTS_FILE` is the example's app-target setting and defaults to `Runner.entitlements`. Do not override `CODE_SIGN_ENTITLEMENTS` globally, which would also affect embedded frameworks. Device builds require your approved bundle identifier and provisioning profile containing the conversational entitlement; use navigation entitlements only for an approved navigation app.
 
-Android Auto templates are built using the [Android for Cars App Library](https://developer.android.com/training/cars/apps). Each template is vehicle-optimized and rendered by the host application on the car screen.
+Configure microphone and speech permissions on the phone before driving. Car microphone selection, USB/Bluetooth routing, audio interruptions, other audio resumption, and audio-session ownership belong to the speech provider and your host integration. Test them in a real vehicle; simulator template presentation does not establish vehicle audio routing. See the [example's provider and teardown notes](example/README.md#voice-conversation) before adapting its speech lifecycle.
 
-#### Tab Bar Template (Android Auto)
+#### CarPlay Now Playing
 
-The Tab Bar Template is a container that displays multiple child templates as tabs. Rendered as `TabTemplate` from the Car App Library.
+`FlutterCarplay.showSharedNowPlaying()` opens Apple's shared `CPNowPlayingTemplate`. There is no package Dart constructor for a custom Now Playing template. Your app supplies the actual media session, playback, metadata, remote-command handling, and appropriate audio configuration.
 
-> Requires Car App API level 6+. On older hosts, the first tab's content is shown as a plain list. Supports between 2 and 4 tabs — extra tabs beyond the limit are discarded with a warning in logcat.
+<details>
+<summary>Open the shared media screen</summary>
 
 ```dart
-final AATabBarTemplate tabBarTemplate = AATabBarTemplate(
-  tabs: [
-    AAListTemplate(
-      title: "Home",
-      tabTitle: "Home",
-      systemIcon: "house.fill",
-      sections: [
-        AAListSection(
-          items: [
-            AAListItem(
-              title: "Item 1",
-              subtitle: "Detail Text",
-              image: 'images/logo_flutter_1080px_clr.png',
-              onPress: (complete, self) async {
-                await Future.delayed(const Duration(seconds: 1));
-                complete();
-              },
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<bool> openCarPlayNowPlaying() =>
+    FlutterCarplay.showSharedNowPlaying(animated: true);
+```
+
+</details>
+
+Repeated calls do not push duplicate shared instances. A `false` result can mean it is already in the stack, not only an error. The method does not create a player or start playback.
+
+### Android Auto templates
+
+These models map to the Android for Cars App Library, with host/category restrictions and Android-specific behavior. Native tabs support list/grid content; pane and message templates are standalone screens, not tab children in this package.
+
+| Template | Use | Notes |
+| --- | --- | --- |
+| [List](#android-auto-list) | Rows, browsable menus, toggles, radio selection | Selectable sections require a separate single-section list |
+| [Grid](#android-auto-grid) | Compact visual choices | Asynchronous button callback includes completion |
+| [Tabs](#android-auto-tabs) | Top-level list/grid destinations | Car App API level 6; fallback to active child content |
+| [Alert](#android-auto-alert) | A short decision or status | Full-screen `MessageTemplate` on the screen stack |
+| [Message](#android-auto-message) | Brief information/empty/error state | Supports asynchronous title/message updates |
+| [Long message](#android-auto-long-message) | Longer information | Host controls allowed presentation and parked-only restrictions |
+| [Pane](#android-auto-pane) | Informational rows and actions | Rows are not tappable; up to two actions |
+| Media UI | Playback controls from the app's media integration | Host-owned, not an implemented package Now Playing screen API |
+
+#### Android Auto list
+
+`AAListTemplate` contains `AAListSection`s and `AAListItem`s. A row can have a subtitle, leading/trailing images, a browsable affordance, or a toggle. `image:` is a constructor alias for `imageUrl:`; when both are supplied, `imageUrl` wins.
+
+- A browsable row needs `onPress` and cannot contain a toggle.
+- A toggle row cannot also use a row `onPress` handler.
+- A selectable section uses `selectedIndex` and/or `onSelected`; its items cannot contain row click handlers or toggles.
+- A selectable section must be the **only section** in its template and must have no title. Do not mix radio options into a sectioned browsing list.
+
+An empty list with `emptyViewTitleVariants` uses the first variant as a no-items message. Without that message, empty content is presented as loading. Content limits and host validation still apply.
+
+<details>
+<summary>Browse and toggle rows</summary>
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<bool> openAndroidBrowse() => FlutterAndroidAuto.push(
+  template: AAListTemplate(
+    title: 'Preferences',
+    emptyViewTitleVariants: ['No preferences available'],
+    sections: [
+      AAListSection(
+        title: 'On the road',
+        items: [
+          AAListItem(
+            title: 'Saved content',
+            subtitle: 'Browse your collection',
+            isBrowsable: true,
+            loadingMessage: 'Opening saved content',
+            onPress: (complete, item) async {
+              try {
+                debugPrint('Open ${item.title}');
+              } finally {
+                await complete();
+              }
+            },
+          ),
+          AAListItem(
+            title: 'Notifications',
+            toggle: AAToggle(
+              isChecked: true,
+              onCheckedChange: (checked, item) =>
+                  debugPrint('${item.title}: $checked'),
             ),
-          ],
-        ),
-      ],
-    ),
-    AAGridTemplate(
-      title: "Grid",
-      tabTitle: "Grid",
-      systemIcon: "square.grid.2x2",
-      buttons: [
-        AAGridButton(
-          titleVariants: ["Button 1"],
-          image: 'images/logo_flutter_1080px_clr.png',
-          onPress: (complete, self) async {
-            complete();
-          },
-        ),
-      ],
-    ),
-  ],
-);
-
-await FlutterAndroidAuto.setRootTemplate(template: tabBarTemplate);
-```
-
-To update the tabs dynamically without resetting the root:
-
-```dart
-tabBarTemplate.updateTabs([/* updated list of AATemplate */]);
-await FlutterAndroidAuto.updateTabBarTemplates(template: tabBarTemplate);
-```
-
-#### Grid Template (Android Auto)
-
-The Grid Template displays a grid of tappable cells, each with an image and a title. Use it to let users select from a fixed set of categories.
-
-> Android Auto recommends a maximum of 8 buttons per grid.
-
-```dart
-final AAGridTemplate gridTemplate = AAGridTemplate(
-  title: "Grid Template",
-  buttons: [
-    for (var i = 1; i <= 8; i++)
-      AAGridButton(
-        titleVariants: ["Item $i"],
-        image: 'images/logo_flutter_1080px_clr.png',
-        loadingMessage: "Loading...",
-        onPress: (complete, self) async {
-          await Future.delayed(const Duration(seconds: 1));
-          complete();
-        },
-      ),
-  ],
-  emptyViewTitleVariants: ["No items available"],
-);
-
-await FlutterAndroidAuto.push(template: gridTemplate);
-// OR
-await FlutterAndroidAuto.setRootTemplate(template: gridTemplate);
-```
-
-#### Alert Template (Android Auto)
-
-Alerts present important information as a full-screen message with one or more action buttons. Because Android Auto does not support true overlay modals, the alert is pushed onto the navigation stack as a `MessageTemplate`.
-
-> Only one alert can be presented at a time. Use `FlutterAndroidAuto.popModal()` to dismiss it programmatically.
-
-```dart
-final AAAlertTemplate alertTemplate = AAAlertTemplate(
-  title: "Alert Title",
-  message: "This is an example message.",
-  actions: [
-    AAAlertAction(
-      title: "Confirm",
-      style: AAAlertActionStyle.normal,
-      onPress: () {
-        print("Confirm pressed");
-        FlutterAndroidAuto.popModal();
-      },
-    ),
-    AAAlertAction(
-      title: "Cancel",
-      style: AAAlertActionStyle.cancel,
-      onPress: () {
-        print("Cancel pressed");
-        FlutterAndroidAuto.popModal();
-      },
-    ),
-    AAAlertAction(
-      title: "Delete",
-      style: AAAlertActionStyle.destructive,
-      onPress: () {
-        print("Delete pressed");
-        FlutterAndroidAuto.popModal();
-      },
-    ),
-  ],
-  onPresent: (bool completed) {
-    print("Alert presented: $completed");
-  },
-);
-
-await FlutterAndroidAuto.showAlert(template: alertTemplate);
-```
-
-#### List Template (Android Auto)
-
-A list presents data as a scrollable, single-column table divided into sections. Each item can include a title, subtitle, and an image.
-
-```dart
-final AAListTemplate listTemplate = AAListTemplate(
-  title: "Home",
-  sections: [
-    AAListSection(
-      title: "First Section",
-      items: [
-        AAListItem(
-          title: "Item 1",
-          subtitle: "Detail Text",
-          // Supports three image formats:
-          // - Asset: 'images/logo.png'
-          // - File:  'file:///path/to/image.png'
-          // - URL:   'https://example.com/image.png'
-          image: 'images/logo_flutter_1080px_clr.png',
-          loadingMessage: "Loading...",
-          onPress: (complete, self) async {
-            await Future.delayed(const Duration(seconds: 1));
-            complete();
-          },
-        ),
-        AAListItem(
-          title: "Item 2",
-          subtitle: "No image example",
-          onPress: (complete, self) async {
-            complete();
-          },
-        ),
-      ],
-    ),
-  ],
-  emptyViewTitleVariants: ["Nothing here yet"],
-);
-
-await FlutterAndroidAuto.push(template: listTemplate);
-// OR
-await FlutterAndroidAuto.setRootTemplate(template: listTemplate);
-```
-
-#### Message Template (Android Auto)
-
-Use `AAMessageTemplate` for simple empty states, errors, or informational screens.
-
-```dart
-final template = AAMessageTemplate(
-  title: 'No saved places',
-  message: 'Save places on your phone to access them here.',
-);
-
-await FlutterAndroidAuto.setRootTemplate(template: template);
-
-await template.update(
-  title: 'Saved places synced',
-  message: 'Your saved places are now available in Android Auto.',
-);
-```
-
-#### Long Message Template (Android Auto)
-
-Use `AALongMessageTemplate` for longer informational text that needs more room
-than a simple message template.
-
-```dart
-final template = AALongMessageTemplate(
-  title: 'Safety information',
-  message: 'Keep your attention on the road. This longer Android Auto message '
-      'template is intended for content that needs more space.',
-);
-
-await FlutterAndroidAuto.push(template: template);
-```
-
-#### Pane Template (Android Auto)
-
-Use `AAPaneTemplate` for compact informational screens on Android Auto. It maps to Android's native `PaneTemplate` and is the closest Android equivalent for CarPlay-style information screens.
-
-```dart
-await FlutterAndroidAuto.push(
-  template: AAPaneTemplate(
-    title: 'Vehicle Info',
-    items: [
-      AAPaneItem(title: 'Battery', detail: '82%'),
-      AAPaneItem(
-        title: 'Navigation',
-        detail: 'Route ready',
-        imageUrl: 'images/svg_navigation.svg',
-        imageTint: const AutoImageTint.platform(),
+          ),
+        ],
       ),
     ],
-    actions: [
-      AAPaneAction(
-        title: 'Refresh',
-        isPrimary: true,
-        onPress: () {
-          // Refresh content.
+  ),
+);
+```
+
+</details>
+
+<details>
+<summary>A separate valid radio-selection list</summary>
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<bool> openAndroidSelection() => FlutterAndroidAuto.push(
+  template: AAListTemplate(
+    title: 'Choose a collection',
+    sections: [
+      AAListSection(
+        selectedIndex: 0,
+        onSelected: (index, item) => debugPrint('Selected $index: ${item.title}'),
+        items: [
+          AAListItem(title: 'Saved'),
+          AAListItem(title: 'Recent'),
+        ],
+      ),
+    ],
+  ),
+);
+```
+
+</details>
+
+The event bridge updates the selected index and toggle state before calling your handler. Apply the choice to your own app state too. To replace installed content, call `controller.updateListTemplateSections(elementId: list.uniqueId, sections: newSections)`; section replacement is the native update path, not a per-row setter.
+
+#### Android Auto grid
+
+`AAGridTemplate` presents `AAGridButton`s. Keep the choices small, typically no more than eight, and follow the host's current grid constraints. Unlike CarPlay's grid callback, Android Auto's callback is asynchronous and receives `(complete, self)`.
+
+<details>
+<summary>Grid with a complete asynchronous handler</summary>
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<bool> openAndroidChoices() => FlutterAndroidAuto.push(
+  template: AAGridTemplate(
+    title: 'Explore',
+    emptyViewTitleVariants: ['No choices available'],
+    buttons: [
+      AAGridButton(
+        titleVariants: ['Places'],
+        image: 'images/svg_navigation.svg',
+        loadingMessage: 'Opening places',
+        onPress: (complete, button) async {
+          try {
+            debugPrint('Selected ${button.titleVariants.first}');
+          } finally {
+            await complete();
+          }
         },
       ),
     ],
@@ -1489,40 +1363,238 @@ await FlutterAndroidAuto.push(
 );
 ```
 
-Pane rows are informational on Android and cannot be tapped. Use pane actions for user interaction.
+</details>
 
-# Support
+#### Android Auto tabs
 
-If this package has been helpful, consider supporting its development:
+`AATabBarTemplate` creates native tabs on hosts with **Car App API level 6 or later**, with two to four tabs. This package serializes list and grid children only. Native code takes at most the first four tabs; keep the list within that limit yourself rather than depending on truncation.
 
-[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?logo=github)](https://github.com/sponsors/oguzhnatly)
+On an older host, or with fewer than two tabs, the native implementation displays the active child template without tab chrome. Initially that is the first child. It is not always a list: a grid child falls back to a grid. Native tab switching works, but `onTabBarItemSelected` is currently not exposed as a public Dart selection callback.
 
-Your support helps maintain and improve this package! ❤️
+Android `systemIcon` is not an SF Symbols renderer. The plugin recognizes a small set of names for native fallback icons. Use a declared raster asset through `iconUrl` for an explicit tab icon; an SVG in that field is not rasterized by the current payload pipeline.
 
-# Star History
+<details>
+<summary>Two tabs and a native tab update</summary>
 
-[![Star History Chart](https://star-history.dera.page/svg?repos=oguzhnatly/flutter_carplay&type=Date)](https://star-history.dera.page/#oguzhnatly/flutter_carplay&Date)
+```dart
+import 'package:flutter_carplay/flutter_carplay.dart';
 
-# LICENSE
+Future<void> installAndroidTabs() async {
+  final browse = AAListTemplate(
+    title: 'Browse',
+    tabTitle: 'Browse',
+    iconUrl: 'images/logo_flutter_1080px_clr.png',
+    sections: [
+      AAListSection(items: [AAListItem(title: 'Saved content')]),
+    ],
+  );
+  final recent = AAListTemplate(
+    title: 'Recent',
+    tabTitle: 'Recent',
+    iconUrl: 'images/logo_flutter_1080px_clr.png',
+    sections: [],
+    emptyViewTitleVariants: ['Nothing recent'],
+  );
+  final tabs = AATabBarTemplate(tabs: [browse, recent]);
+  await FlutterAndroidAuto.setRootTemplate(template: tabs);
+  tabs.updateTabs([browse, recent]);
+  await FlutterAndroidAuto.updateTabBarTemplates(template: tabs);
+}
+```
 
-[**MIT License**](https://github.com/oguzhnatly/flutter_carplay/blob/master/LICENSE)
+</details>
+
+#### Android Auto alert
+
+`AAAlertTemplate` is rendered as a full-screen native `MessageTemplate` pushed onto the screen stack, not as a CarPlay-style overlay. Keep one managed alert at a time and dismiss it with `popModal()` before opening another; 1.7.0's Android bridge does not reject every overlapping alert request on your behalf.
+
+Use `onPresent(bool)` to observe the request result and the subsequent `false` state when the alert screen is destroyed. It is a lifecycle callback, not an exactly-once completion notification. Actions use `AAAlertActionStyle` and do not receive a completion function. Follow the host's message-action count limits rather than copying three CarPlay alert actions into Android.
+
+<details>
+<summary>One-action alert</summary>
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<void> showAndroidNotice() => FlutterAndroidAuto.showAlert(
+  template: AAAlertTemplate(
+    title: 'Saved',
+    message: 'Your collection is ready',
+    onPresent: (presented) => debugPrint('Alert state: $presented'),
+    actions: [
+      AAAlertAction(
+        title: 'Done',
+        onPress: () => FlutterAndroidAuto.popModal(),
+      ),
+    ],
+  ),
+);
+```
+
+</details>
+
+Because dismissal pops the host's top screen, keep the alert topmost until it is closed. Do not navigate another screen above it and expect `popModal` to remove an arbitrary screen by ID.
+
+#### Android Auto message
+
+`AAMessageTemplate` is a simple title and nonempty body for status, empty, or error states. Its `update`, `setTitle`, and `setMessage` methods return `Future<void>` and send native updates. `updateTemplate` only changes local model values.
+
+<details>
+<summary>Message and native update</summary>
+
+```dart
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<void> openAndroidMessage() async {
+  final message = AAMessageTemplate(
+    title: 'Collection',
+    message: 'No saved content yet',
+  );
+  if (!await FlutterAndroidAuto.push(template: message)) return;
+  await message.update(
+    title: 'Collection ready',
+    message: 'Saved content is now available',
+  );
+}
+```
+
+</details>
+
+#### Android Auto long message
+
+`AALongMessageTemplate` exposes Android's long-message surface and the same asynchronous update API as `AAMessageTemplate`. The body must be nonempty. Longer text remains subject to the host's category, API, and parked-only restrictions; it is not permission to show lengthy content while driving.
+
+<details>
+<summary>Long message and native update</summary>
+
+```dart
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<void> openAndroidLongMessage() async {
+  final message = AALongMessageTemplate(
+    title: 'Before you begin',
+    message: 'Manage your saved content on the phone before your journey. '
+        'The car interface provides focused actions for the road.',
+  );
+  if (!await FlutterAndroidAuto.push(template: message)) return;
+  await message.setTitle('About this collection');
+}
+```
+
+</details>
+
+#### Android Auto pane
+
+`AAPaneTemplate` is a compact information screen, the closest supported Android counterpart to CarPlay's information template. It contains informational `AAPaneItem` rows, an optional larger image, and up to two `AAPaneAction`s, with at most one primary action. Rows cannot be tapped; actions handle interaction.
+
+A loading pane has `isLoading: true` and no items. A loaded pane has items and `isLoading: false`. For native updates, construct the replacement with the **same `id`**, then call `FlutterAndroidAuto.updatePaneTemplate`.
+
+<details>
+<summary>Loading pane replaced with content under the same ID</summary>
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
+
+Future<bool> openAndroidPane() async {
+  final loading = AAPaneTemplate(
+    title: 'Collection',
+    items: [],
+    isLoading: true,
+  );
+  if (!await FlutterAndroidAuto.push(template: loading)) return false;
+  return FlutterAndroidAuto.updatePaneTemplate(
+    template: AAPaneTemplate(
+      id: loading.uniqueId,
+      title: 'Collection',
+      items: [
+        AAPaneItem(title: 'Status', detail: 'Available offline'),
+        AAPaneItem(title: 'Source', detail: 'Saved on your phone'),
+      ],
+      actions: [
+        AAPaneAction(
+          title: 'Open',
+          isPrimary: true,
+          onPress: () => debugPrint('Open selected'),
+        ),
+      ],
+    ),
+  );
+}
+```
+
+</details>
+
+## Example app
+
+The [example project](example) is the fastest way to explore the integration. Its [default entry point](example/lib/main.dart) includes native list browsing, selectable Android lists, toggles, image/SVG/tint demonstrations, messages, panes, CarPlay search, information, and point-of-interest flows, alongside phone controls for the demo. Not every phone demo button has an Android implementation.
+
+```sh
+cd example
+flutter pub get
+flutter run
+```
+
+Running the app on the phone is only the first surface. For CarPlay, connect the simulator's CarPlay display or use Apple's CarPlay Simulator with the intended entitlement configuration. For Android Auto, follow Google's [Desktop Head Unit testing instructions](https://developer.android.com/training/cars/testing). A phone emulator showing Flutter widgets is not an Android Auto host.
+
+Check launch from the car, phone-first launch, reconnect, back navigation, selection completion, empty states, and your app's permitted templates. Test both appearance modes and different display sizes. Use a real vehicle for audio routing and vehicle-specific behavior.
+
+### More documentation
+
+| Guide | Covers |
+| --- | --- |
+| [Getting Started](https://github.com/oguzhnatly/flutter_carplay/wiki/Getting-Started) | Installation and first integration |
+| [iOS Setup](https://github.com/oguzhnatly/flutter_carplay/wiki/iOS-Setup) | Scene and entitlement setup |
+| [Android Auto Setup](https://github.com/oguzhnatly/flutter_carplay/wiki/Android-Auto-Setup) | Service and Android host setup |
+| [Templates](https://github.com/oguzhnatly/flutter_carplay/wiki/Templates) | Template-focused guides |
+| [Troubleshooting](https://github.com/oguzhnatly/flutter_carplay/wiki/Troubleshooting) | Setup and runtime diagnosis |
+| [FAQ](https://github.com/oguzhnatly/flutter_carplay/wiki/FAQ) | Common integration questions |
+| [API reference](https://pub.dev/documentation/flutter_carplay/latest/) | Public Dart API |
+| [Changelog](CHANGELOG.md) | Release history and migration notes |
+
+### When a screen does not appear
+
+| Symptom | First things to check |
+| --- | --- |
+| CarPlay scene does not connect | Exact scene delegate name, Runner target membership, shared engine registration, entitlement/profile match |
+| Root exists but a push fails | Connected host, installed root, legal template type, stack depth, approved category |
+| Row stays loading | Completion callback called on success and failure; current controller subscription still alive |
+| Android selectable list is rejected | One untitled selectable section only; no item clicks/toggles; selected index in range |
+| Android tab bar is absent | Host Car App API level, at least two valid list/grid children, fallback behavior |
+| Artwork is missing | Consuming-app asset declaration, valid raster URL/file, field-specific SVG support, network permission |
+| Voice controls are rejected | iOS/SDK version, approved category, control counts, image load, competing modal |
+
+For a setup problem, include a minimal example and the platform/host configuration in a [GitHub issue](https://github.com/oguzhnatly/flutter_carplay/issues/new). For vulnerabilities, use the [private reporting process](SECURITY.md), not a public issue.
+
+## Limitations and roadmap
+
+The package gives you native template integration, not automatic feature parity or a finished car app. Playback, navigation engines, network services, consent, and category compliance stay with your application.
+
+| Platform | Available today | Not implemented or still planned |
+| --- | --- | --- |
+| CarPlay | The catalogue above, including search and voice-state presentation | Map/navigation template, contact template, Siri integration and hands-free activation |
+| Android Auto | List, grid, tabs, alerts, message, long message, and pane | Action sheet, point-of-interest, map, search, voice-control/“Hey Google” activation, and contact templates |
+
+Android panes already cover the supported information-screen use case; that is not an unfinished CarPlay-style information port. Android's system media UI is also not a plugin-owned Now Playing implementation. Source-specific callback, image, and fallback limitations are noted at the relevant catalogue entries so you can choose a working composition.
+
+Roadmap items describe directions, not release commitments. See [open issues](https://github.com/oguzhnatly/flutter_carplay/issues) for discussion, and the [changelog](CHANGELOG.md) for what has actually shipped. Recent releases also added Android alerts/grid/tabs, stable list identities and selection/toggles, message/pane updates, SVG asset handling, and iOS SwiftPM support.
+
+## Community and support
+
+Questions, small fixes, native-host testing, and reviews all help this package move forward.
+
+- [Report an issue or request a feature](https://github.com/oguzhnatly/flutter_carplay/issues)
+- [Read the contribution guide](CONTRIBUTING.md)
+- [Join the Discord community](https://discord.gg/Xz6WVezFfh)
+- [Sponsor ongoing development](https://github.com/sponsors/oguzhnatly)
+- [See everyone who has contributed](https://github.com/oguzhnatly/flutter_carplay/graphs/contributors)
+- [View the project's star history](https://star-history.dera.page/#oguzhnatly/flutter_carplay&Date)
+
+For a more active contribution, contact [info@oguzhanatalay.com](mailto:info@oguzhanatalay.com). Thanks to the contributors who built and refined the native integrations, including [@EArminjon](https://github.com/EArminjon), [@vanlooverenkoen](https://github.com/vanlooverenkoen), [@snipd-mikel](https://github.com/snipd-mikel), [@APIUM](https://github.com/APIUM), [@sINFdorako](https://github.com/sINFdorako), [@Gabriellsp](https://github.com/Gabriellsp), [@JulianBissekkou](https://github.com/JulianBissekkou), [@pierrejean75](https://github.com/pierrejean75), and [@OSch11](https://github.com/OSch11).
+
+## License
+
+`flutter_carplay` is released under the [MIT License](LICENSE). See [Licensing](LICENSING.md) for a plain-language guide and the full original terms.
 
 Copyright (c) 2021 Oğuzhan Atalay
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.

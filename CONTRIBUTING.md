@@ -1,41 +1,80 @@
 # Contributing
 
-Contributions and reviews are welcome. Keep changes focused on an issue and include a runnable example for new public APIs.
+![Building native dashboard experiences together](previews/section-contributing.webp)
 
-## Dart checks
+**Help bring more Flutter apps to CarPlay and Android Auto.**
 
-Use a Flutter SDK satisfying `pubspec.yaml`, currently Flutter 3.44 or later with Dart 3.12. Resolve dependencies, format changed Dart files, analyze, and run the full package and example suites:
+`flutter_carplay` grows through focused fixes, thoughtful examples, native-host testing and careful reviews. You do not need to add a new template to make a valuable contribution: a reproducible report or a clearer setup step can help the next developer ship a better integration.
+
+## Start with the problem
+
+Check the [issue tracker](https://github.com/oguzhnatly/flutter_carplay/issues) before opening a report. Describe what you expected, what happened and the smallest example that reproduces it. Include the package version, Flutter version, phone OS, car host or simulator, and relevant app category.
+
+For a new API or template, discuss the use case and native requirements first. Explain which platform supports it, where it belongs in the template hierarchy and how it behaves on older hosts. Keep unrelated improvements in separate pull requests.
+
+Report vulnerabilities through the [security policy](SECURITY.md), not a public issue.
+
+## Get the example running
+
+Fork the repository and create a focused branch. Use Flutter 3.44 or later with Dart 3.12 or later, below Dart 4. Resolve both sets of dependencies:
 
 ```sh
 flutter pub get
+cd example
+flutter pub get
+flutter run
+```
+
+The phone app is the starting point. Use a CarPlay display or Android Auto Desktop Head Unit to check the native experience. Follow the README's category and entitlement guidance rather than assuming every example is available to every app.
+
+## Keep the bridge dependable
+
+Dart, Swift and Kotlin must agree on method names, field names, IDs, return types and event payloads. A public change should include an example, API documentation and regression coverage for the behavior it introduces.
+
+Test rejected input and failed native operations as well as the happy path. Complete native method results exactly once. Handle disconnect, dismissal, cancellation and late asynchronous completion without reopening a session that has already ended.
+
+Keep iOS sources in `ios/flutter_carplay/Sources/flutter_carplay`, which is shared by Swift Package Manager and CocoaPods. Check both integration paths when changing source placement or dependencies. Distinguish compiler SDK availability, runtime OS availability and the app's approved CarPlay category.
+
+For Android Auto, distinguish Android OS API levels from Car App API levels. Respect host validation, template restrictions and fallback behavior. Keep optional speech providers, permissions and audio ownership in the application or example rather than adding them to the template package.
+
+## Run the checks
+
+From the repository root:
+
+```sh
 dart format lib test example/lib example/test
 flutter analyze
 flutter test
 cd example
-flutter pub get
 flutter analyze
 flutter test
 ```
 
-Add regression coverage before fixing a defect. Test public exports, serialized field names, invalid input, rejected native operations and lifecycle transitions. Mock platform channels at the Flutter boundary when the host framework cannot run in a Dart test. Such tests do not establish native presentation or audio behavior.
-
-## Native code and platform contracts
-
-Place iOS Swift sources under `ios/flutter_carplay/Sources/flutter_carplay`. Swift Package Manager uses that directory, and the CocoaPods source glob includes it too. Keep both integration paths buildable. Match Dart method names, runtime type names, identifiers and event payloads exactly with Swift. Use safe input parsing and return a method result exactly once on every path.
-
-Check the current Apple guide, API documentation and SDK headers. Distinguish API availability from the app's approved CarPlay category. Use compiler guards for symbols missing from older SDKs and runtime guards for newer iOS behavior. Do not pass modal templates into root, tab or navigation stacks. Reject unsupported input instead of silently truncating it.
-
-Treat disconnect, dismissal, failed presentation and asynchronous work as normal states. Clear reservations on failure. Prevent stale image or service completions from reopening a closed session. Keep audio capture and speech provider dependencies out of the template package.
-
-From the example directory, build the native integrations affected by your change:
+Build the native integrations affected by your change from the example directory:
 
 ```sh
 flutter build ios --simulator --debug
 flutter build apk --debug
 ```
 
-For iOS, verify both the CocoaPods example and a Swift Package Manager consumer when changing source placement or native dependencies. Use the scheme, device and approved entitlements appropriate to the template. Confirm actual presentation, state changes, controls, dismissal and reconnect in CarPlay Simulator or a vehicle. For visual changes, include screenshots of the integrated example and describe the checked configuration. Verify light and dark appearance, long titles, different display sizes and accessibility settings. For audio changes, test permissions, interruptions, background transitions and the actual vehicle input and output route independently from template rendering.
+Automated model and channel tests do not establish native presentation or vehicle audio routing. Exercise the affected template, navigation, callbacks, updates, dismissal and reconnect on its host. For visual changes, check light and dark appearance, long content, focused controls and different display sizes. For speech or media changes, also check permissions, interruption, cancellation and the actual input and output route.
 
-## Documentation
+## Make review straightforward
 
-Document every public API, return value, error, lifecycle callback and platform requirement. Update README examples, the support list and CHANGELOG together. Keep example dependencies and permissions scoped to the example. Describe which behavior is verified by automated tests and which requires a native host or vehicle. Never put credentials, generated build output or local diagnostic files into a contribution.
+A good pull request explains the problem, the intended behavior and how to reproduce the result. Link the related issue, include relevant screenshots for visual changes and state the platform configuration actually checked.
+
+Before submitting:
+
+- [ ] The change is focused, with compatibility or breaking changes clearly described.
+- [ ] Regression tests and the relevant automated checks pass.
+- [ ] Affected native behavior has been exercised, or the missing check is explicitly identified.
+- [ ] Examples, public API documentation, support notes and the changelog match the implementation.
+- [ ] Credentials, personal recordings, generated builds and local diagnostic output are excluded.
+
+Reviews are welcome too. Specific feedback about behavior, compatibility and native integration is especially useful.
+
+## Join the conversation
+
+Ask questions in [Discord](https://discord.gg/Xz6WVezFfh), coordinate a larger contribution at [info@oguzhanatalay.com](mailto:info@oguzhanatalay.com), or help review an [open pull request](https://github.com/oguzhnatly/flutter_carplay/pulls).
+
+Thanks for helping improve `flutter_carplay`.
