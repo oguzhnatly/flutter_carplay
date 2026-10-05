@@ -92,11 +92,23 @@ class _DashboardAppState extends State<DashboardApp> {
       _androidAuto = FlutterAndroidAuto()
         ..addListenerOnConnectionChange(_connectionChanged);
     }
-    unawaited(_installRoot());
+    if (_carplay != null) {
+      unawaited(_installRoot());
+    } else if (_androidAuto != null &&
+        FlutterAndroidAuto.connectionStatus ==
+            ConnectionStatusTypes.connected.name) {
+      _connectionChanged(ConnectionStatusTypes.connected);
+    }
   }
 
   void _connectionChanged(ConnectionStatusTypes status) {
-    if (mounted) setState(() => _status = status.name);
+    if (!mounted) return;
+    final newlyConnected = status == ConnectionStatusTypes.connected &&
+        _status != ConnectionStatusTypes.connected.name;
+    setState(() => _status = status.name);
+    if (_androidAuto != null && newlyConnected) {
+      unawaited(_installRoot());
+    }
   }
 
   Future<void> _installRoot() async {
@@ -168,7 +180,7 @@ class _DashboardAppState extends State<DashboardApp> {
 }
 ```
 
-The root can be prepared before the car attaches. A successful root setter has no Dart boolean result, and does not mean a car screen is already visible. Native setup, a compatible host, and the app's approved category determine what can be presented.
+The CarPlay root can be prepared before the car attaches. The Android Auto example waits for `connected` and resubmits its root on reconnect, without rebuilding twice for consecutive connected events. Native tabs and string-based raster artwork need the live Android car context when the template is built. A successful root setter has no Dart boolean result and does not mean a car screen is already visible. Native setup, a compatible host and the app's approved category still determine what can be presented.
 
 </details>
 
@@ -472,7 +484,7 @@ class MainActivity : FlutterActivity() {
 }
 ```
 
-The car service starts and caches an engine with the default Dart entry point when no cached engine exists. If the phone activity starts first, its engine is cached for the service to reuse. Initialize car-facing state from app startup, not from a phone-only button or navigation route.
+The car service starts and caches an engine with the default Dart entry point when no cached engine exists. If the phone activity starts first, its engine is cached for the service to reuse. Initialize car-facing application state from app startup, not from a phone-only button or navigation route. Submit Android roots when the connection listener reports `connected`; if a root was prepared earlier, submit it again so native tabs and raster artwork are rebuilt against the live car context.
 
 **Host validation:** the bundled `AndroidAutoService` currently uses `HostValidator.ALLOW_ALL_HOSTS_VALIDATOR`. That is permissive, not a production host allowlist. Review Google's [host-validation guidance](https://developer.android.com/reference/androidx/car/app/validation/HostValidator) and your service configuration before distribution. This package does not currently expose a Dart host-validator configuration API.
 
@@ -525,7 +537,7 @@ class CarConnection {
 
 ### Navigation and return values
 
-Prepare the root during startup. Push screens when the host is connected and a root exists. Keep flows shallow: CarPlay navigation is limited to five templates including the root, and the host/category may impose further restrictions.
+Prepare the CarPlay root during startup. For Android Auto, submit or resubmit the root after `connected` so context-dependent tabs and raster artwork are built for the live host. Push screens only when the host is connected and a root exists. Keep flows shallow: CarPlay navigation is limited to five templates including the root, and the host/category may impose further restrictions.
 
 A returned `true` means what that particular operation reports, not that every asynchronous transition, download, or app action is finished. Native channel errors can throw `PlatformException`; catch them at your application boundary. Dart-side invalid model arguments may throw `ArgumentError`, `RangeError`, or assertions; an unsupported CarPlay root or push type throws `TypeError`.
 
@@ -573,7 +585,7 @@ CarPlay `push`, `pop`, and `popToRoot` do not wait for an animation-completion c
 | `forceUpdateRootTemplate()` | `Future<void>` | Instance method that invalidates the current root screen |
 | `updateListTemplateSections(elementId:, sections:)` | `Future<void>` | Instance method that replaces a known list's sections |
 
-Android Auto commands have no `animated` parameter. Native navigation can throw for a missing car context, popping at the root, or a missing alert instead of returning `false`. Root content can be stored before a screen attaches; pushing and alerts need a live car context. Await channel calls and handle errors rather than treating completion of a void method as a presentation-success flag.
+Android Auto commands have no `animated` parameter. Native navigation can throw for a missing car context, popping at the root, or a missing alert instead of returning `false`. Root templates are built immediately: preparing one before a car session exists can select tab fallback content and skip string-based raster artwork. The connected screen reuses that built template, so submit the root again after `connected` if it was prepared early. `forceUpdateRootTemplate` only invalidates the screen; it does not rebuild those context-dependent fields. Pushing and alerts also need a live car context. Await channel calls and handle errors rather than treating completion of a void method as a presentation-success flag.
 
 <details>
 <summary>Complete push, pop, and return-to-root functions</summary>
