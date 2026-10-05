@@ -1,8 +1,8 @@
 # Flutter CarPlay
 
 <picture>
-  <source media="(max-width: 600px)" srcset="previews/banner-dashboard-mobile.webp">
-  <img src="previews/banner-dashboard.webp" alt="Flutter CarPlay on a physical dashboard, with the original Apple CarPlay and Android Auto compatibility badges.">
+  <source media="(max-width: 600px)" srcset="https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/banner-dashboard-mobile.webp">
+  <img src="https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/banner-dashboard.webp" alt="Flutter CarPlay on a physical dashboard, with the original Apple CarPlay and Android Auto compatibility badges.">
 </picture>
 
 **Your Flutter app, on Apple CarPlay and Android Auto.**
@@ -19,7 +19,7 @@ CarPlay and Android Auto handle the native layouts and vehicle controls. You foc
 
 **CarPlay voice control:** voice states, activation, action buttons and dismissal callbacks, with an optional conversational speech example for eligible iOS 26.4 apps. See the [voice catalogue entry](#carplay-voice-control).
 
-Version **1.7.0+1** updates the documentation and images without changing package APIs. [Read the release notes](CHANGELOG.md).
+Version **1.7.0+2** fixes responsive documentation images on pub.dev without changing package APIs. [Read the release notes](CHANGELOG.md).
 
 ## Start with a native screen
 
@@ -190,7 +190,7 @@ The CarPlay root can be prepared before the car attaches. The Android Auto examp
 
 ## Platform overview
 
-![The example's authentic native dashboard interface](previews/banner-example.webp)
+![The example's authentic native dashboard interface](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/banner-example.webp)
 
 One Flutter app can support both platforms. The template trees are separate because the native frameworks are separate.
 
@@ -233,14 +233,14 @@ To require this release or a compatible update:
 
 ```yaml
 dependencies:
-  flutter_carplay: ^1.7.0+1
+  flutter_carplay: ^1.7.0+2
 ```
 
 All public models and both controllers are available from `package:flutter_carplay/flutter_carplay.dart`. There is no speech-recognition or TTS dependency in the package itself.
 
 ### CarPlay setup
 
-<img src="previews/carplay-icon.webp" width="40" alt="CarPlay" />
+<img src="https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/carplay-icon.webp" width="40" alt="CarPlay" />
 
 CarPlay uses two scenes backed by one Flutter engine: a phone window and a native CarPlay scene. Follow the example's shared-engine arrangement so the car can launch your app without first opening its phone interface.
 
@@ -402,8 +402,8 @@ This is a category-selection reference, not a promise that every category can us
 ### Android Auto setup
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="previews/android-auto-wordmark-light.svg">
-  <img src="previews/android-auto-wordmark-dark.svg" width="160" alt="Android Auto">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/android-auto-wordmark-light.svg">
+  <img src="https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/android-auto-wordmark-dark.svg" width="160" alt="Android Auto">
 </picture>
 
 Android Auto launches a `CarAppService` that talks to a host-rendered screen. The service and phone activity should reuse the same cached Flutter engine.
@@ -711,7 +711,7 @@ Start with the catalogue below, then build the platform-specific tree your app c
 
 ### CarPlay templates
 
-![CarPlay's native template overview](previews/templates.webp)
+![CarPlay's native template overview](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/templates.webp)
 
 | Template | Use | Placement |
 | --- | --- | --- |
@@ -729,7 +729,7 @@ Start with the catalogue below, then build the platform-specific tree your app c
 
 #### CarPlay list
 
-![Native CarPlay list](previews/list_template.webp)
+![Native CarPlay list](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/list_template.webp)
 
 Use `CPListTemplate` for rows organized into `CPListSection`s. Rows can carry detail text, artwork, an accessory/disclosure indicator, playback progress, and playing status. `sectionIndexEnabled` controls whether a section header participates in the index. Empty-title and subtitle variants provide a useful screen when no sections are present.
 
@@ -843,7 +843,7 @@ Future<bool> openCarPlayArtwork() => FlutterCarplay.push(
 
 #### CarPlay grid
 
-![Native CarPlay grid](previews/grid_template.webp)
+![Native CarPlay grid](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/grid_template.webp)
 
 `CPGridTemplate` presents a compact visual menu of up to eight `CPGridButton`s. Supply image assets and title variants. A CarPlay grid button uses `onPress()` without a selection-completion argument.
 
@@ -879,7 +879,7 @@ In 1.7.0, Dart's CarPlay grid-button event lookup searches directly retained gri
 
 #### CarPlay tabs
 
-![Native CarPlay tab bar](previews/tabbar_template.webp)
+![Native CarPlay tab bar](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/tabbar_template.webp)
 
 `CPTabBarTemplate` groups top-level content. Its native parser accepts list, grid, information, and point-of-interest children, subject to your category. Search, voice control, alerts, and action sheets do not belong in this container. The plugin checks Apple's `maximumTabCount`; stay within that host limit, ordinarily up to five tabs.
 
@@ -925,7 +925,7 @@ Future<void> installCarPlayTabs(FlutterCarplay controller) async {
 
 #### CarPlay information
 
-![Native CarPlay information template](previews/information_template.webp)
+![Native CarPlay information template](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/information_template.webp)
 
 `CPInformationTemplate` displays up to ten concise information items and up to three `CPTextButton` actions. Choose `leading` or `twoColumn` layout. It is a details surface, not a general-purpose Flutter form.
 
@@ -970,7 +970,7 @@ Future<void> openCarPlayInformation(FlutterCarplay controller) async {
 
 #### CarPlay point of interest
 
-![Native CarPlay point-of-interest template](previews/point_of_interest_template.webp)
+![Native CarPlay point-of-interest template](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/point_of_interest_template.webp)
 
 `CPPointOfInterestTemplate` combines a native map with a list of up to twelve places. Each `CPPointOfInterest` supplies coordinates, concise summary/detail text, an optional pin image, and primary/secondary text buttons. It is not a turn-by-turn navigation or custom map template.
 
@@ -1011,7 +1011,7 @@ Future<bool> openCarPlayPlaces() => FlutterCarplay.push(
 
 #### CarPlay alert
 
-![Native CarPlay alert](previews/alert_template.webp)
+![Native CarPlay alert](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/alert_template.webp)
 
 `CPAlertTemplate` is a modal for a brief status or decision. Actions use `CPAlertActionStyle.normal`, `cancel`, or `destructive`. `showAlert` returns `Future<void>`; use `onPresent(bool)` for its presentation result. Your action handler can call `popModal` to dismiss it.
 
@@ -1040,7 +1040,7 @@ Future<void> showCarPlayNotice() => FlutterCarplay.showAlert(
 
 #### CarPlay action sheet
 
-![Native CarPlay action sheet](previews/actionsheet_template.webp)
+![Native CarPlay action sheet](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/actionsheet_template.webp)
 
 `CPActionSheetTemplate` adds context and a message to a small set of choices. It uses the same alert-action models, but `showActionSheet` does not expose a presentation boolean or an `onPresent` callback. CarPlay allows one modal at a time; a competing or pending modal can prevent the request from being presented.
 
@@ -1073,7 +1073,7 @@ Future<void> showCarPlayChoices() => FlutterCarplay.showActionSheet(
 
 #### CarPlay search
 
-![Native CarPlay search](previews/search_template.webp)
+![Native CarPlay search](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/search_template.webp)
 
 `CPSearchTemplate` gives you the native search UI. It can be the root or a pushed screen. Return rows through `onUpdatedSearchText(text, update)`, finish selections through `onSelectedResult(item, complete)`, and optionally handle `onSearchTemplateSearchButtonPressed`.
 
@@ -1115,7 +1115,7 @@ Future<void> installCarPlaySearch() async {
 
 #### CarPlay voice control
 
-![Native CarPlay voice control with an explicit microphone action](previews/voice_control_template.webp)
+![Native CarPlay voice control with an explicit microphone action](https://raw.githubusercontent.com/oguzhnatly/flutter_carplay/fee3ac3be1905c5dc8b831b8c419b90ac7f9e00f/previews/voice_control_template.webp)
 
 `CPVoiceControlTemplate` gives a voice interaction a native visual presence: ready, listening, processing, speaking, or another state your app defines. Present it with `showVoiceControl`. It is **modal only**, never a root, pushed screen, or tab child.
 

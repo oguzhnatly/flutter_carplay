@@ -1,3 +1,9 @@
+## 1.7.0+2 - 2026-10-05
+
+* Fix the mobile README banner and dark appearance Android Auto wordmark on pub.dev.
+* Use immutable HTTPS links for README images, including responsive picture sources that pub.dev does not rewrite.
+* Preserve the existing artwork, original resolution and lossless WebP quality. Package APIs and native behavior are unchanged.
+
 ## 1.7.0+1 - 2026-10-05
 
 * Rewrite the README with a clearer introduction, platform setup, native template catalogue and expandable examples.
