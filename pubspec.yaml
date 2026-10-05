@@ -1,6 +1,6 @@
 name: flutter_carplay
 description: Build native Apple CarPlay and Android Auto interfaces from Flutter using platform templates, callbacks and shared app logic.
-version: 1.7.0+1
+version: 1.7.0+2
 homepage: https://github.com/oguzhnatly/flutter_carplay#readme
 repository: https://github.com/oguzhnatly/flutter_carplay
 issue_tracker: https://github.com/oguzhnatly/flutter_carplay/issues
