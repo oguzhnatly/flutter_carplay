@@ -1,3 +1,11 @@
+## 1.7.0+1 - 2026-10-05
+
+* Rewrite the README with a clearer introduction, platform setup, native template catalogue and expandable examples.
+* Add dashboard banners and original CarPlay and Android Auto branding, used selectively across the documentation.
+* Use lossless WebP images at their original resolution to reduce documentation download sizes.
+* Refresh contribution and security reporting guidance, and add an MIT licensing guide without changing the legal terms.
+* Update the package description. Dart APIs, native behavior and dependencies are unchanged.
+
 ## 1.7.0 - 2026-10-04
 
 * Add modal CarPlay voice control states, activation and dismissal callbacks (#140, #2).
