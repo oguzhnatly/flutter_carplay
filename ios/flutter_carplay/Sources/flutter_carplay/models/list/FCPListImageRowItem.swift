@@ -14,6 +14,7 @@ final class FCPListImageRowItem {
   private var gridImages: [String]?
   private var gridImageData: [FlutterStandardTypedData?]?
   private var gridImageTints: [FCPImageTint?]?
+  private var gridImageSizes: [FCPImageSize?]?
   private var imageTitles: [String]?
   private var allowsMultipleLines: Bool
   private var isOnPressListenerActive: Bool
@@ -30,6 +31,9 @@ final class FCPListImageRowItem {
     self.gridImageData = obj["gridImageData"] as? [FlutterStandardTypedData?]
     self.gridImageTints = (obj["gridImageTints"] as? [Any?])?.map { value in
       FCPImageTint(from: value as? [String: Any])
+    }
+    self.gridImageSizes = (obj["gridImageSizes"] as? [Any?])?.map { value in
+      (value as? [String: Any]).map { FCPImageSize(from: $0) }
     }
     self.imageTitles = obj["imageTitles"] as? [String]
     self.allowsMultipleLines = obj["allowsMultipleLines"] as? Bool ?? false
@@ -123,7 +127,9 @@ final class FCPListImageRowItem {
       }
     } else {
       let gridImages = self.gridImages ?? []
-      let placeholderImages = Array(repeating: makeSafeUIPlaceholder(), count: gridImages.count)
+      let defaultSlot = FCPImageSlot.legacyGridImage(FCPImageSize(from: nil))
+      let placeholderImages = Array(
+        repeating: makeSafeUIPlaceholder(slot: defaultSlot), count: gridImages.count)
       if #available(iOS 17.4, *), let imageTitles = imageTitles {
         listImageRowItem = CPListImageRowItem.init(
           text: text ?? "", images: placeholderImages, imageTitles: imageTitles)
@@ -134,28 +140,31 @@ final class FCPListImageRowItem {
       let maxCount = listImageRowItem.gridImages.count
       for (index, imagePath) in gridImages.prefix(maxCount).enumerated() {
         let imageTint = gridImageTints?.indices.contains(index) == true ? gridImageTints?[index] : nil
+        let imageSize =
+          (gridImageSizes?.indices.contains(index) == true ? gridImageSizes?[index] : nil)
+          ?? FCPImageSize(from: nil)
+        let slot = FCPImageSlot.legacyGridImage(imageSize)
+
+        func apply(_ image: UIImage) {
+          var currentImages = listImageRowItem.gridImages
+          guard currentImages.indices.contains(index) else { return }
+          currentImages[index] = image
+          listImageRowItem.update(currentImages)
+        }
+
         // Prefer rasterized SVG bytes (aligned by index with gridImages) when
-        // present; otherwise fall back to string-based async resolution.
+        // present; otherwise fall back to string-based async resolution. Both
+        // paths go through `preparedForCarPlay` so that the string fallback is
+        // sized identically to the bytes path.
         if let bytesData = gridImageData,
           bytesData.indices.contains(index),
           let bytesImage = makeUIImage(fromBytes: bytesData[index])
         {
-          var currentImages = listImageRowItem.gridImages
-          guard currentImages.indices.contains(index) else { continue }
-          currentImages[index] = bytesImage.applyingImageTint(imageTint)
-          listImageRowItem.update(currentImages)
+          apply(bytesImage.preparedForCarPlay(slot: slot, tint: imageTint))
           continue
         }
-        let imageSource = imagePath.toImageSource()
-        loadUIImageAsync(from: imageSource) { uiImage in
-          if let uiImage = uiImage {
-            var currentImages = listImageRowItem.gridImages
-            guard currentImages.indices.contains(index) else {
-              return
-            }
-            currentImages[index] = uiImage.applyingImageTint(imageTint)
-            listImageRowItem.update(currentImages)
-          }
+        loadUIImage(from: imagePath, bytes: nil, slot: slot, tint: imageTint) { uiImage in
+          apply(uiImage)
         }
       }
     }

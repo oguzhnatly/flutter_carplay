@@ -42,6 +42,11 @@ class FlutterCarPlayController {
     // SVG directly. Non-collection payloads pass through unchanged.
     await resolveSvgInPayload(data, size: FlutterCarplay.svgRasterSize);
 
+    if (data is Map) data = Map<dynamic, dynamic>.from(data);
+    applyDefaultImageSize(data, FlutterCarplay.iconSize);
+    if (data is Map && type != FCPChannelTypes.activateVoiceControlState) {
+      data['debugImageSizing'] = FlutterCarplay.debugImageSizing;
+    }
     if (isCurrent != null && !isCurrent()) return false;
     final value = await _methodChannel.invokeMethod<bool>(type.name, data);
     return value;

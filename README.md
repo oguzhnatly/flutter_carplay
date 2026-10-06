@@ -675,7 +675,27 @@ If you copy a catalogue function into another app, copy and declare those assets
 | Tab `systemIcon` | Not an SVG image field; CarPlay uses native SF Symbols, with image-source fallback on list/grid tabs |
 | Android tab `iconUrl` | Native raster image-source lookup; it is not included in the SVG rasterizer's handled keys |
 
-Supported SVG payloads include row images and trailing images, CarPlay grid buttons, POI pins, image-row image collections and elements, Android grid buttons and pane images, and nested voice-state/action images. Both controllers default `svgRasterSize` to 120 pixels; set it before creating image-bearing templates when you need a different raster resolution. A rasterized SVG is static even if the template offers an animation option.
+Supported SVG payloads include row images and trailing images, CarPlay grid buttons, POI pins, image-row image collections and elements, Android grid buttons and pane images, and nested voice-state/action images. Set the controller's `svgRasterSize` before creating image-bearing templates when you need a different SVG source resolution. Source resolution and native display size are separate settings. A rasterized SVG is static even if the template offers an animation option.
+
+### CarPlay image size
+
+CarPlay artwork is sized against the car display's traits and the image slot reserved by the native template. Use `AutoImageSize` to choose how much of that slot the artwork occupies, independently of the SVG source resolution.
+
+Set `FlutterCarplay.iconSize` for a global default, or use `imageSize` on an individual list item, grid button, POI pin or image-row element. List items also support `trailingImageSize`, and legacy image rows support `gridImageSizes` per entry.
+
+```dart
+FlutterCarplay.iconSize = const AutoImageSize.medium();
+
+final item = CPListItem(
+  text: 'Navigation',
+  image: 'images/svg_navigation.svg',
+  imageSize: const AutoImageSize.large(),
+);
+```
+
+The presets are `small` (0.5), `medium` (0.7, the default), `large` (0.85) and `max` (1.0). `AutoImageSize.fraction` accepts a custom fraction, clamped natively to 0.05 through 1.0. These size settings apply to CarPlay; Android Auto owns its native icon layout.
+
+Enable `FlutterCarplay.debugImageSizing` when diagnosing a particular car display. It logs the display scale, reserved slot sizes and rendered image dimensions without changing the chosen size.
 
 ### Custom SVG icons
 

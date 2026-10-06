@@ -44,6 +44,16 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    // Sizing diagnostics are stamped onto every payload by the Dart controller,
+    // so picking them up here covers all channel calls in one place.
+    if let args = call.arguments as? [String: Any],
+      let debugImageSizing = args["debugImageSizing"] as? Bool,
+      debugImageSizing != FCPImageDiagnostics.isEnabled
+    {
+      FCPImageDiagnostics.isEnabled = debugImageSizing
+      FCPImageDiagnostics.logEnvironment()
+    }
+
     switch call.method {
     case FCPChannelTypes.setRootTemplate:
       guard let args = call.arguments as? [String: Any] else {

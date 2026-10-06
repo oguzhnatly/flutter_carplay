@@ -334,13 +334,17 @@ void main() {
   });
 
   group('configurable raster size', () {
-    test('FlutterCarplay default is 120', () {
+    test('FlutterCarplay defaults to defaultSvgRasterSize', () {
       expect(FlutterCarplay.svgRasterSize, defaultSvgRasterSize);
-      expect(defaultSvgRasterSize, 120);
     });
 
-    test('FlutterAndroidAuto default is 120', () {
+    test('FlutterAndroidAuto defaults to defaultSvgRasterSize', () {
       expect(FlutterAndroidAuto.svgRasterSize, defaultSvgRasterSize);
+    });
+
+    test('the default covers max artwork in an 88pt grid slot at 3x', () {
+      // Older iOS versions use the 88pt fallback; max() fills that slot.
+      expect(defaultSvgRasterSize, greaterThanOrEqualTo(88 * 3));
     });
   });
 }

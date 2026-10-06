@@ -5,40 +5,56 @@
 //  Created by Oğuzhan Atalay on 21.08.2021.
 //
 
+import CarPlay
 import Flutter
 import UIKit
-
-private let fcpTintedImageCache = NSCache<NSString, UIImage>()
 
 // Creates a UIImage from raw PNG bytes sent over the MethodChannel.
 // Used for Flutter asset SVGs that are rasterized to PNG on the Dart side,
 // since UIImage cannot decode SVG directly. Returns nil when the data is
 // missing or cannot be decoded so callers can fall back to string resolution.
+//
+// The bytes are decoded at their natural pixel size. Sizing for CarPlay happens
+// later in `preparedForCarPlay(slot:tint:)`, which resamples against the car's
+// display scale — see FCPImageSizing.swift. This deliberately no longer re-tags
+// UIImage.scale to fake a point size; that trick is what made icons oversized.
 func makeUIImage(fromBytes data: FlutterStandardTypedData?) -> UIImage? {
   guard let data = data else { return nil }
   return UIImage(data: data.data)
 }
 
+/// Loads an image from `imageData` (rasterized SVG bytes) or `imagePath`, then
+/// renders it display-ready for `slot`.
+///
+/// Results are cached per source + slot + tint, including untinted images, since
+/// every image now goes through a resampling pass.
 @available(iOS 14.0, *)
 func loadUIImage(
   from imagePath: String,
   bytes imageData: FlutterStandardTypedData?,
+  slot: FCPImageSlot,
   tint imageTint: FCPImageTint? = nil,
   completion: @escaping (UIImage) -> Void
 ) {
-  let cacheKey = makeTintedImageCacheKey(imagePath: imagePath, imageData: imageData, tint: imageTint)
-  if let cacheKey = cacheKey,
-    let cachedImage = fcpTintedImageCache.object(forKey: cacheKey as NSString)
-  {
+  guard Thread.isMainThread else {
+    DispatchQueue.main.async {
+      loadUIImage(from: imagePath, bytes: imageData, slot: slot, tint: imageTint,
+                  completion: completion)
+    }
+    return
+  }
+  let cacheKey = fcpPreparedImageCacheKey(
+    imagePath: imagePath, imageData: imageData, slot: slot, tint: imageTint)
+  if let cachedImage = fcpPreparedImageCache.object(forKey: cacheKey as NSString) {
     completion(cachedImage)
     return
   }
 
   func complete(_ image: UIImage) {
-    let result = image.applyingImageTint(imageTint)
-    if let cacheKey = cacheKey {
-      fcpTintedImageCache.setObject(result, forKey: cacheKey as NSString)
-    }
+    let result = image.preparedForCarPlay(slot: slot, tint: imageTint)
+    FCPImageDiagnostics.log(
+      "loadUIImage", source: imagePath, before: image, after: result, slot: slot)
+    fcpPreparedImageCache.setObject(result, forKey: cacheKey as NSString)
     completion(result)
   }
 
@@ -50,18 +66,11 @@ func loadUIImage(
   loadUIImageAsync(from: imagePath.toImageSource()) { uiImage in
     if let uiImage = uiImage {
       complete(uiImage)
+    } else {
+      // A failed load must remain retryable, not cached as successful artwork.
+      completion(makeSafeUIPlaceholder(slot: slot))
     }
   }
-}
-
-private func makeTintedImageCacheKey(
-  imagePath: String,
-  imageData: FlutterStandardTypedData?,
-  tint imageTint: FCPImageTint?
-) -> String? {
-  guard let imageTint = imageTint else { return nil }
-  let bytesKey = imageData.map { "\($0.data.count):\($0.data.hashValue)" } ?? "nil"
-  return [imagePath, bytesKey, imageTint.cacheKey].joined(separator: "|")
 }
 
 // Image Source (no UIImage creation here)
@@ -84,19 +93,34 @@ extension String {
   }
 }
 
-func makeSafeUIPlaceholder() -> UIImage {
+/// A transparent stand-in shown while the real image loads asynchronously,
+/// sized to exactly the slot CarPlay reserves, at the car's display scale.
+///
+/// The size matters: CarPlay lays the row out from whatever image it is handed
+/// first. The previous flat 100x100pt placeholder made rows reserve space for a
+/// 100pt icon before the real artwork ever arrived.
+@available(iOS 14.0, *)
+func makeSafeUIPlaceholder(slot: FCPImageSlot) -> UIImage {
   if Thread.isMainThread {
-    return makeUIPlaceholder()
-  } else {
-    return DispatchQueue.main.sync {
-      makeUIPlaceholder()
-    }
+    return makeUIPlaceholder(size: slot.maxPt)
+  }
+  return DispatchQueue.main.sync {
+    makeUIPlaceholder(size: slot.maxPt)
   }
 }
 
-func makeUIPlaceholder() -> UIImage {
-  let size = CGSize(width: 100, height: 100)
-  let renderer = UIGraphicsImageRenderer(size: size)
+@available(iOS 14.0, *)
+func makeSafeUIPlaceholder() -> UIImage {
+  makeSafeUIPlaceholder(slot: .listItem(FCPImageSize(fraction: FCPImageSize.defaultFraction)))
+}
+
+@available(iOS 14.0, *)
+func makeUIPlaceholder(size: CGSize = CPListItem.maximumImageSize) -> UIImage {
+  let format = UIGraphicsImageRendererFormat()
+  format.scale = FCPCarTraits.displayScale
+  format.opaque = false
+
+  let renderer = UIGraphicsImageRenderer(size: size, format: format)
   return renderer.image { _ in
     UIColor.clear.setFill()
     UIRectFill(CGRect(origin: .zero, size: size))
@@ -176,7 +200,7 @@ func loadUIImageAsync(
       } catch {
         DispatchQueue.main.async {
           errorCallback?(error)
-          completion(makeUIPlaceholder())
+          completion(nil)
         }
       }
     }
@@ -194,7 +218,7 @@ func loadUIImageAsync(
       } catch {
         DispatchQueue.main.async {
           errorCallback?(error)
-          completion(makeUIPlaceholder())
+          completion(nil)
         }
       }
     }
@@ -221,78 +245,9 @@ func loadUIImageAsync(
         completion(image)
       } catch {
         errorCallback?(error)
-        completion(makeUIPlaceholder())
+        completion(nil)
       }
     }
-  }
-}
-
-//  UIImage utilities (safe, UI only)
-extension UIImage {
-  func resizeImageTo(size: CGSize) -> UIImage {
-    let renderer = UIGraphicsImageRenderer(size: size)
-    return renderer.image { _ in
-      draw(in: CGRect(origin: .zero, size: size))
-    }
-  }
-
-  func applyingImageTint(_ tint: FCPImageTint?) -> UIImage {
-    guard let tint = tint else { return self }
-
-    let lightTrait = UITraitCollection(userInterfaceStyle: .light)
-    let darkTrait = UITraitCollection(userInterfaceStyle: .dark)
-    let lightImage = tintedGlyph(
-      with: tint.color(for: .light).resolvedColor(with: lightTrait),
-      selectedSafe: tint.selectedSafe
-    )
-    let darkImage = tintedGlyph(
-      with: tint.color(for: .dark).resolvedColor(with: darkTrait),
-      selectedSafe: tint.selectedSafe
-    )
-
-    let imageAsset = UIImageAsset()
-    imageAsset.register(lightImage, with: lightTrait)
-    imageAsset.register(darkImage, with: darkTrait)
-    return imageAsset.image(with: UITraitCollection.current).withRenderingMode(.alwaysOriginal)
-  }
-
-  private func tintedGlyph(with color: UIColor, selectedSafe: Bool) -> UIImage {
-    let format = UIGraphicsImageRendererFormat()
-    format.scale = scale
-    format.opaque = false
-
-    let renderer = UIGraphicsImageRenderer(size: size, format: format)
-    let rect = CGRect(origin: .zero, size: size)
-    let glyph = renderer.image { _ in
-      color.setFill()
-      UIRectFill(rect)
-      draw(in: rect, blendMode: .destinationIn, alpha: 1)
-    }.withRenderingMode(.alwaysOriginal)
-
-    guard selectedSafe else { return glyph }
-
-    return renderer.image { context in
-      let shadowColor = contrastColor(for: color).cgColor
-      let blur = max(1, min(size.width, size.height) * 0.06)
-      context.cgContext.setShadow(offset: .zero, blur: blur, color: shadowColor)
-      glyph.draw(in: rect)
-      context.cgContext.setShadow(offset: .zero, blur: 0, color: nil)
-      glyph.draw(in: rect)
-    }.withRenderingMode(.alwaysOriginal)
-  }
-
-  private func contrastColor(for color: UIColor) -> UIColor {
-    var red: CGFloat = 0
-    var green: CGFloat = 0
-    var blue: CGFloat = 0
-    var alpha: CGFloat = 0
-    color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-
-    let luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue
-    if luminance > 0.55 {
-      return UIColor.black.withAlphaComponent(0.85)
-    }
-    return UIColor.white.withAlphaComponent(0.95)
   }
 }
 
