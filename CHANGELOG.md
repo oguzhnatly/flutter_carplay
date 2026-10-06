@@ -1,4 +1,4 @@
-## 1.7.0+3 - 2026-10-06
+## 1.7.1 - 2026-10-06
 
 * Restore the README star history chart and add a GitHub Sponsors badge above it.
 * Show contributor avatars beneath the chart at their natural size instead of listing individual contributors in prose.

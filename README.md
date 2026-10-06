@@ -19,7 +19,7 @@ CarPlay and Android Auto handle the native layouts and vehicle controls. You foc
 
 **CarPlay voice control:** voice states, activation, action buttons and dismissal callbacks, with an optional conversational speech example for eligible iOS 26.4 apps. See the [voice catalogue entry](#carplay-voice-control).
 
-Version **1.7.0+3** updates the community footer, fixes native CarPlay image sizing and grid callbacks, and improves Android Auto method completion. [Read the release notes](CHANGELOG.md).
+Version **1.7.1** updates the community footer, fixes native CarPlay image sizing and grid callbacks, and improves Android Auto method completion. [Read the release notes](CHANGELOG.md).
 
 ## Start with a native screen
 
@@ -233,7 +233,7 @@ To require this release or a compatible update:
 
 ```yaml
 dependencies:
-  flutter_carplay: ^1.7.0+3
+  flutter_carplay: ^1.7.1
 ```
 
 All public models and both controllers are available from `package:flutter_carplay/flutter_carplay.dart`. There is no speech-recognition or TTS dependency in the package itself.
