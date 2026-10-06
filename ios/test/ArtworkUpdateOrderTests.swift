@@ -148,11 +148,11 @@ final class ArtworkUpdateOrderTests: XCTestCase {
     let key = fcpPreparedImageCacheKey(imagePath: source, imageData: nil,
       slot: .element(kind.maxSize, FCPImageSize(fraction: CGFloat(fraction))),
       tint: FCPImageTint(from: tint))
-    // Also supports two completions sharing an identical cache identity.
-    fcpPreparedImageCache.removeObject(forKey: key as NSString)
+    let pending = fcpPreparedImageLoads[key]?.count ?? 0
+    XCTAssertGreaterThan(pending, 0)
     OrderedArtworkProtocol.finish(source, data: artwork(color).pngData()!, index: index)
-    awaitCondition("production renderer completed") {
-      fcpPreparedImageCache.object(forKey: key as NSString) != nil
+    awaitCondition("production renderer and completion finished") {
+      (fcpPreparedImageLoads[key]?.count ?? 0) == pending - 1
     }
   }
 
@@ -396,6 +396,44 @@ final class ArtworkUpdateOrderTests: XCTestCase {
     model = nil
     native.handler?(native) { completions += 1 }
     XCTAssertEqual(completions, 2, "A detached handler must still complete selection")
+  }
+
+  func testStaleCompletionsCannotReplaceCacheHitsForLaterNativeTargets() {
+    for kind in Kind.allCases {
+      let source = "https://artworkorder.invalid/\(UUID().uuidString).png"
+      let slot = FCPImageSlot.element(kind.maxSize, FCPImageSize(fraction: 1))
+      let oldFinished = expectation(description: "old request finished")
+      let latestFinished = expectation(description: "latest request finished")
+      loadUIImage(from: source, bytes: nil, slot: slot) { _ in oldFinished.fulfill() }
+      loadUIImage(from: source, bytes: nil, slot: slot) { _ in latestFinished.fulfill() }
+      awaitRequest(source, count: 2)
+      OrderedArtworkProtocol.finish(source, data: artwork(.green).pngData()!, index: 1)
+      wait(for: [latestFinished], timeout: 5)
+      let key = fcpPreparedImageCacheKey(imagePath: source, imageData: nil, slot: slot, tint: nil)
+      let newest = fcpPreparedImageCache.object(forKey: key as NSString)!.pngData()
+      OrderedArtworkProtocol.finish(source, data: artwork(.red).pngData()!)
+      wait(for: [oldFinished], timeout: 5)
+      XCTAssertEqual(fcpPreparedImageCache.object(forKey: key as NSString)!.pngData(), newest,
+                     "Stale request overwrote the shared cache for \(kind)")
+      let later = target(kind, payload(source))
+      XCTAssertGreaterThan(pixel(later.read()!)[1], 240, "Later target used stale cached artwork")
+      XCTAssertEqual(OrderedArtworkProtocol.count(source), 0)
+      XCTAssertNil(fcpPreparedImageLoads[key], "Completed requests must release bookkeeping")
+    }
+  }
+
+  func testClearingCacheInvalidatesPendingLoads() {
+    let source = "https://artworkorder.invalid/\(UUID().uuidString).png"
+    let slot = FCPImageSlot.listItem(FCPImageSize(fraction: 1))
+    let completed = expectation(description: "pending request completes")
+    loadUIImage(from: source, bytes: nil, slot: slot) { _ in completed.fulfill() }
+    awaitRequest(source)
+    fcpClearPreparedImageCache()
+    OrderedArtworkProtocol.finish(source, data: artwork(.green).pngData()!)
+    wait(for: [completed], timeout: 5)
+    let key = fcpPreparedImageCacheKey(imagePath: source, imageData: nil, slot: slot, tint: nil)
+    XCTAssertNil(fcpPreparedImageCache.object(forKey: key as NSString))
+    XCTAssertNil(fcpPreparedImageLoads[key])
   }
 
   func testBackgroundUpdatesApplyRealArtworkOnMainQueue() {
