@@ -86,6 +86,9 @@ class FCPTabBarTemplate {
   }
 
   public func updateTemplates(templates: [FCPTemplate]) {
+    for old in objcTemplates where !templates.contains(where: { $0.elementId == old.elementId }) {
+      SwiftFlutterCarplayPlugin.setGridVisibility(in: old, visible: false)
+    }
     let existingTemplatesById: [String: FCPTemplate] = Dictionary(
       uniqueKeysWithValues: self.objcTemplates.map { ($0.elementId, $0) })
     let existingCPTemplatesById = Dictionary(

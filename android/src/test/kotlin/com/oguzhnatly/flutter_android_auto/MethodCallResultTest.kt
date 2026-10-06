@@ -3,12 +3,58 @@ package com.oguzhnatly.flutter_android_auto
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MethodCallResultTest {
+    @Test
+    fun `call cancelled before dispatch completes exactly once`() = runBlocking {
+        val result = RecordingResult()
+        var ran = false
+        val job = CoroutineScope(coroutineContext).launchMethodCall(result) {
+            ran = true
+            true
+        }
+        job.cancel(CancellationException("Cancelled before dispatch"))
+        job.join()
+
+        assertTrue(!ran)
+        assertEquals(1, result.completionCount)
+        assertEquals("operation_cancelled", result.errors.single().code)
+    }
+
+    @Test
+    fun `call launched in a cancelled scope completes without running work`() = runBlocking {
+        val result = RecordingResult()
+        val parent = Job().apply { cancel() }
+        var ran = false
+        CoroutineScope(coroutineContext + parent).launchMethodCall(result) {
+            ran = true
+            true
+        }.join()
+
+        assertTrue(!ran)
+        assertEquals(1, result.completionCount)
+        assertEquals("operation_cancelled", result.errors.single().code)
+    }
+
+    @Test
+    fun `cancelled call cannot report success if work swallows cancellation`() = runBlocking {
+        val result = RecordingResult()
+        CoroutineScope(coroutineContext).launchMethodCall(result) {
+            currentCoroutineContext()[Job]!!.cancel()
+            true
+        }.join()
+
+        assertEquals(1, result.completionCount)
+        assertTrue(result.successes.isEmpty())
+        assertEquals("operation_cancelled", result.errors.single().code)
+    }
+
     @Test
     fun `successful call completes the result exactly once`() = runBlocking {
         val result = RecordingResult()

@@ -639,8 +639,10 @@ class _MyAppState extends State<MyApp> {
                 1 => 'images/icon.svg',
                 _ => 'images/logo_flutter_1080px_clr.png',
               },
-              onPress: () {
+              loadingImage: 'images/svg_media.svg',
+              onPressWithCompletion: (complete, self) async {
                 print('Grid Button $i pressed');
+                await complete();
               },
             ),
         ],

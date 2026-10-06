@@ -10,6 +10,8 @@ import 'package:flutter_carplay/models/common/image_size.dart';
 const autoImageSizeKeys = <String, String>{
   'image': 'imageSize',
   'imageUrl': 'imageSize',
+  'loadingImage': 'imageSize',
+  'iconUrl': 'imageSize',
   'accessoryImage': 'trailingImageSize',
   'trailingImage': 'trailingImageSize',
 };

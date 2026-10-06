@@ -41,6 +41,7 @@ enum FCPChannelTypes {
   static let showNowPlaying = "showNowPlaying"
   static let closePresent = "closePresent"
   static let onGridButtonPressed = "onGridButtonPressed"
+  static let onGridButtonPressedComplete = "onGridButtonPressedComplete"
   static let setActionSheet = "setActionSheet"
   static let onBarButtonPressed = "onBarButtonPressed"
   static let onTextButtonPressed = "onTextButtonPressed"

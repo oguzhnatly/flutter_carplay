@@ -131,6 +131,7 @@ class FlutterCarplay {
             case FCPChannelTypes.onGridButtonPressed:
               _carPlayController.processFCPGridButtonPressed(
                 event['data']['elementId'],
+                pressId: event['data']['pressId'] as String?,
               );
               break;
             case FCPChannelTypes.onBarButtonPressed:

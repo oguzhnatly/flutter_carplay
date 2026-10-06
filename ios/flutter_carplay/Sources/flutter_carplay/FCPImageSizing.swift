@@ -170,6 +170,13 @@ func fcpPreparedImageCacheKey(
 
 @available(iOS 14.0, *)
 extension UIImage {
+  func resizeImageTo(size: CGSize) -> UIImage {
+    let renderer = UIGraphicsImageRenderer(size: size)
+    return renderer.image { _ in
+      draw(in: CGRect(origin: .zero, size: size))
+    }
+  }
+
   /// Returns a display-ready CarPlay image for `slot`.
   ///
   /// The artwork is aspect-fit to `slot.fraction` of the slot's edge length and

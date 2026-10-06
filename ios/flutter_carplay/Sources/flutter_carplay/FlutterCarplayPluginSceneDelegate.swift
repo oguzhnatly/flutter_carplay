@@ -112,6 +112,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 
   // Fired when just before the carplay become active
   func sceneDidBecomeActive(_ scene: UIScene) {
+    if let top = Self.interfaceController?.topTemplate { templateDidAppear(top, animated: false) }
     SwiftFlutterCarplayPlugin.onCarplayConnectionChange(status: FCPConnectionTypes.connected)
   }
 
@@ -150,6 +151,18 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     return false
   }
 
+  func templateWillDisappear(_ template: CPTemplate, animated: Bool) {
+    if let id = template.elementId, let wrapper = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: id) {
+      SwiftFlutterCarplayPlugin.setGridVisibility(in: wrapper, visible: false)
+    }
+  }
+
+  func templateDidAppear(_ template: CPTemplate, animated: Bool) {
+    if let id = template.elementId, let wrapper = SwiftFlutterCarplayPlugin.getTemplateFromHistory(elementId: id) {
+      SwiftFlutterCarplayPlugin.setGridVisibility(in: wrapper, visible: true)
+    }
+  }
+
   func templateDidDisappear(_ template: CPTemplate, animated: Bool) {
     Self.modals.didDisappear(template)
     guard let interfaceController = FlutterCarPlaySceneDelegate.interfaceController else { return }
@@ -158,6 +171,7 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
 
     SwiftFlutterCarplayPlugin.templateStack.removeAll { stackTemplate in
       if !currentTemplates.contains(where: { $0.elementId == stackTemplate.elementId }) {
+        SwiftFlutterCarplayPlugin.setGridVisibility(in: stackTemplate, visible: false)
         SwiftFlutterCarplayPlugin.sendOnScreenBackButtonPressed(elementId: stackTemplate.elementId)
         return true
       }

@@ -19,7 +19,7 @@ CarPlay and Android Auto handle the native layouts and vehicle controls. You foc
 
 **CarPlay voice control:** voice states, activation, action buttons and dismissal callbacks, with an optional conversational speech example for eligible iOS 26.4 apps. See the [voice catalogue entry](#carplay-voice-control).
 
-Version **1.7.0+2** is the latest published release. **1.7.0+3** is in development with the updated community footer. [Read the changelog](CHANGELOG.md).
+Version **1.7.0+3** updates the community footer, fixes native CarPlay image sizing and grid callbacks, and improves Android Auto method completion. [Read the release notes](CHANGELOG.md).
 
 ## Start with a native screen
 
@@ -229,11 +229,11 @@ Use Flutter **3.44.0 or later** and Dart **3.12.0 or later, below 4.0.0**. The r
 flutter pub add flutter_carplay
 ```
 
-To use the latest published release or a compatible update:
+To require this release or a compatible update:
 
 ```yaml
 dependencies:
-  flutter_carplay: ^1.7.0+2
+  flutter_carplay: ^1.7.0+3
 ```
 
 All public models and both controllers are available from `package:flutter_carplay/flutter_carplay.dart`. There is no speech-recognition or TTS dependency in the package itself.
@@ -696,6 +696,14 @@ final item = CPListItem(
 The presets are `small` (0.5), `medium` (0.7, the default), `large` (0.85) and `max` (1.0). `AutoImageSize.fraction` accepts a custom fraction, clamped natively to 0.05 through 1.0. These size settings apply to CarPlay; Android Auto owns its native icon layout.
 
 Enable `FlutterCarplay.debugImageSizing` when diagnosing a particular car display. It logs the display scale, reserved slot sizes and rendered image dimensions without changing the chosen size.
+
+### Grid button loading
+
+Existing CarPlay `CPGridButton.onPress` callbacks keep their zero argument signature, including buttons inside a `CPTabBarTemplate`. For optional loading feedback, use `onPressWithCompletion` instead and call its awaitable `complete()` callback when the work finishes. Do not supply both callbacks.
+
+`loadingImage` and `loadingImageTint` customize the image shown during that interaction. CarPlay loading image rotation requires iOS 26 or later; older systems still dispatch the callback but cannot update the grid image in place. Native completion tokens prevent a late completion from stopping a newer press.
+
+Android Auto uses its host loading spinner in the selected grid cell and does not animate custom images. Its `AAGridButton.onPress` callback already receives `complete` and the button; call `complete()` after handling the action. A blank loading message leaves the loading header untitled. Loading uses already resolved images rather than reloading assets or network URLs on the UI thread.
 
 ### Custom SVG icons
 
