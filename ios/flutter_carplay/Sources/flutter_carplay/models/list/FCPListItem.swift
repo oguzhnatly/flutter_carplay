@@ -20,11 +20,13 @@ final class FCPListItem {
   private var imageData: FlutterStandardTypedData?
   private var imageTint: FCPImageTint?
   private var imageSize: FCPImageSize
+  private var imageRequestID = UUID()
   private var accessoryImage: String?
   private var trailingImage: String?
   private var trailingImageData: FlutterStandardTypedData?
   private var trailingImageTint: FCPImageTint?
   private var trailingImageSize: FCPImageSize
+  private var trailingImageRequestID = UUID()
   private var playbackProgress: CGFloat?
   private var isPlaying: Bool?
   private var playingIndicatorLocation: CPListItemPlayingIndicatorLocation?
@@ -54,10 +56,11 @@ final class FCPListItem {
     if isOnPressListenerActive {
       completeHandler = complete
 
+      let elementId = self.elementId
       DispatchQueue.main.async {
         FCPStreamHandlerPlugin.sendEvent(
           type: FCPChannelTypes.onListItemSelected,
-          data: ["elementId": self.elementId]
+          data: ["elementId": elementId]
         )
       }
     } else {
@@ -66,12 +69,22 @@ final class FCPListItem {
   }
 
   var get: CPListTemplateItem {
+    guard Thread.isMainThread else { return DispatchQueue.main.sync { self.get } }
     let listItem = CPListItem.init(text: text, detailText: detailText)
-    listItem.handler = self.handler
+    self._super = listItem
+    imageRequestID = UUID()
+    trailingImageRequestID = UUID()
+    listItem.handler = { [weak self] selectedItem, complete in
+      guard let self = self else { complete(); return }
+      self.handler(selectedItem: selectedItem, complete: complete)
+    }
     if image != nil {
       let slot = FCPImageSlot.listItem(imageSize)
       listItem.setImage(makeSafeUIPlaceholder(slot: slot))
-      loadUIImage(from: image!, bytes: imageData, slot: slot, tint: imageTint) { uiImage in
+      let requestID = imageRequestID
+      loadUIImage(from: image!, bytes: imageData, slot: slot, tint: imageTint) { [weak self, weak listItem] uiImage in
+        guard let self = self, let listItem = listItem,
+          self.imageRequestID == requestID, self._super === listItem else { return }
         listItem.setImage(uiImage)
       }
     }
@@ -80,9 +93,12 @@ final class FCPListItem {
     if accessorySource != nil {
       let slot = FCPImageSlot.listItem(trailingImageSize)
       listItem.setAccessoryImage(makeSafeUIPlaceholder(slot: slot))
+      let requestID = trailingImageRequestID
       loadUIImage(
         from: accessorySource!, bytes: trailingImageData, slot: slot, tint: trailingImageTint
-      ) { uiImage in
+      ) { [weak self, weak listItem] uiImage in
+        guard let self = self, let listItem = listItem,
+          self.trailingImageRequestID == requestID, self._super === listItem else { return }
         listItem.setAccessoryImage(uiImage)
       }
     }
@@ -99,7 +115,6 @@ final class FCPListItem {
     if accessoryType != nil && accessorySource == nil {
       listItem.accessoryType = accessoryType!
     }
-    self._super = listItem
     return listItem
   }
 
@@ -112,6 +127,10 @@ final class FCPListItem {
   }
 
   public func update(args: [String: Any]) {
+    guard Thread.isMainThread else {
+      DispatchQueue.main.async { [weak self] in self?.update(args: args) }
+      return
+    }
     let text = args["text"] as? String
     let detailText = args["detailText"] as? String
     let image = args["image"] as? String
@@ -139,17 +158,24 @@ final class FCPListItem {
 
     let imageTintChanged = imageTint != self.imageTint
     let imageSizeChanged = imageSize.fraction != self.imageSize.fraction
-    if let image = image, image != self.image || imageTintChanged || imageSizeChanged {
+    if let image = image, image != self.image || imageData?.data != self.imageData?.data
+      || imageTintChanged || imageSizeChanged
+    {
       let slot = FCPImageSlot.listItem(imageSize)
-      self._super?.setImage(makeSafeUIPlaceholder(slot: slot))
-      loadUIImage(from: image, bytes: imageData, slot: slot, tint: imageTint) { uiImage in
-        self._super?.setImage(uiImage)
-      }
       self.image = image
       self.imageData = imageData
       self.imageTint = imageTint
       self.imageSize = imageSize
+      imageRequestID = UUID()
+      let requestID = imageRequestID
+      self._super?.setImage(makeSafeUIPlaceholder(slot: slot))
+      loadUIImage(from: image, bytes: imageData, slot: slot, tint: imageTint) { [weak self, weak listItem = self._super] uiImage in
+        guard let self = self, let listItem = listItem,
+          self.imageRequestID == requestID, self._super === listItem else { return }
+        listItem.setImage(uiImage)
+      }
     } else if image == nil && args.keys.contains("image") {
+      imageRequestID = UUID()
       self.image = nil
       self.imageData = nil
       self.imageTint = nil
@@ -161,27 +187,33 @@ final class FCPListItem {
     let trailingImageTintChanged = trailingImageTint != self.trailingImageTint
     let trailingImageSizeChanged = trailingImageSize.fraction != self.trailingImageSize.fraction
     if let requestedAccessoryImage = requestedAccessoryImage,
-      requestedAccessoryImage != currentAccessoryImage || trailingImageTintChanged
+      requestedAccessoryImage != currentAccessoryImage
+        || trailingImageData?.data != self.trailingImageData?.data || trailingImageTintChanged
         || trailingImageSizeChanged
     {
       let slot = FCPImageSlot.listItem(trailingImageSize)
+      self.accessoryImage = accessoryImage
+      self.trailingImage = trailingImage
+      self.trailingImageData = trailingImageData
+      self.trailingImageTint = trailingImageTint
+      self.trailingImageSize = trailingImageSize
+      trailingImageRequestID = UUID()
+      let requestID = trailingImageRequestID
       self._super?.setAccessoryImage(makeSafeUIPlaceholder(slot: slot))
       loadUIImage(
         from: requestedAccessoryImage,
         bytes: trailingImageData,
         slot: slot,
         tint: trailingImageTint
-      ) { uiImage in
-        self._super?.setAccessoryImage(uiImage)
+      ) { [weak self, weak listItem = self._super] uiImage in
+        guard let self = self, let listItem = listItem,
+          self.trailingImageRequestID == requestID, self._super === listItem else { return }
+        listItem.setAccessoryImage(uiImage)
       }
-      self.accessoryImage = accessoryImage
-      self.trailingImage = trailingImage
-      self.trailingImageData = trailingImageData
-      self.trailingImageTint = trailingImageTint
-      self.trailingImageSize = trailingImageSize
     } else if requestedAccessoryImage == nil
       && (args.keys.contains("accessoryImage") || args.keys.contains("trailingImage"))
     {
+      trailingImageRequestID = UUID()
       self.accessoryImage = nil
       self.trailingImage = nil
       self.trailingImageData = nil

@@ -14,6 +14,7 @@ final class FCPListImageRowItemCardElement {
   private var imageData: FlutterStandardTypedData?
   private var imageTint: FCPImageTint?
   private var imageSize: FCPImageSize
+  private var imageRequestID = UUID()
   var title: String?
   var subtitle: String?
   var tintColor: UIColor?
@@ -36,8 +37,9 @@ final class FCPListImageRowItemCardElement {
   }
 
   var get: CPListImageRowItemElement {
+    guard Thread.isMainThread else { return DispatchQueue.main.sync { self.get } }
     let slot = FCPImageSlot.element(CPListImageRowItemCardElement.maximumImageSize, imageSize)
-    var listImageRowItemElement = CPListImageRowItemCardElement.init(
+    let listImageRowItemElement = CPListImageRowItemCardElement.init(
       image: makeSafeUIPlaceholder(slot: slot),
       showsImageFullHeight: showsImageFullHeight,
       title: title,
@@ -45,15 +47,22 @@ final class FCPListImageRowItemCardElement {
       tintColor: tintColor,
     )
 
-    loadUIImage(from: image, bytes: imageData, slot: slot, tint: imageTint) { uiImage in
-      listImageRowItemElement.image = uiImage
-    }
-
     self._super = listImageRowItemElement
+    imageRequestID = UUID()
+    let requestID = imageRequestID
+    loadUIImage(from: image, bytes: imageData, slot: slot, tint: imageTint) { [weak self, weak listImageRowItemElement] uiImage in
+      guard let self = self, let element = listImageRowItemElement,
+        self.imageRequestID == requestID, self._super === element else { return }
+      element.image = uiImage
+    }
     return listImageRowItemElement
   }
 
   public func update(args: [String: Any]) {
+    guard Thread.isMainThread else {
+      DispatchQueue.main.async { [weak self] in self?.update(args: args) }
+      return
+    }
     let image = args["image"] as? String
     let imageData = args["imageData"] as? FlutterStandardTypedData
     let imageTint = FCPImageTint(from: args["imageTint"] as? [String: Any])
@@ -64,16 +73,22 @@ final class FCPListImageRowItemCardElement {
 
     let imageTintChanged = imageTint != self.imageTint
     let imageSizeChanged = imageSize.fraction != self.imageSize.fraction
-    if let image = image, image != self.image || imageTintChanged || imageSizeChanged {
+    if let image = image, image != self.image || imageData?.data != self.imageData?.data
+      || imageTintChanged || imageSizeChanged
+    {
       let slot = FCPImageSlot.element(CPListImageRowItemCardElement.maximumImageSize, imageSize)
-      self._super?.image = makeSafeUIPlaceholder(slot: slot)
-      loadUIImage(from: image, bytes: imageData, slot: slot, tint: imageTint) { uiImage in
-        self._super?.image = uiImage
-      }
       self.image = image
       self.imageData = imageData
       self.imageTint = imageTint
       self.imageSize = imageSize
+      imageRequestID = UUID()
+      let requestID = imageRequestID
+      self._super?.image = makeSafeUIPlaceholder(slot: slot)
+      loadUIImage(from: image, bytes: imageData, slot: slot, tint: imageTint) { [weak self, weak element = self._super] uiImage in
+        guard let self = self, let element = element,
+          self.imageRequestID == requestID, self._super === element else { return }
+        element.image = uiImage
+      }
     }
 
     if let title = title {

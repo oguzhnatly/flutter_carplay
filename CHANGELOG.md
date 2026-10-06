@@ -6,6 +6,7 @@
 * Restore grid button callbacks inside CarPlay tabs and add optional loading feedback without breaking existing zero argument callbacks (#137).
 * Clarify bundled custom SVG icons and require Car App API level 8 for the media example (#130, #131).
 * Complete cancelled Android Auto method calls when the Flutter engine detaches, while retaining native exception reporting (#133).
+* Ignore stale CarPlay artwork after overlapping size, tint and source updates, including changed image bytes for the same path.
 
 ## 1.7.0+2 - 2026-10-05
 
