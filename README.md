@@ -432,7 +432,7 @@ Merge the following into the application's `android/app/src/main/AndroidManifest
             android:resource="@xml/automotive_app_desc"/>
         <meta-data
             android:name="androidx.car.app.minCarApiLevel"
-            android:value="1"/>
+            android:value="8"/>
         <service
             android:name="com.oguzhnatly.flutter_android_auto.AndroidAutoService"
             android:exported="true">
@@ -457,7 +457,9 @@ Create `android/app/src/main/res/xml/automotive_app_desc.xml`:
 </automotiveApp>
 ```
 
-A template service is not a media playback implementation. Add Google's media-app integration only if your app actually supplies a media service and session. If your app depends on native tabs without fallback, account for their Car App API level 6 requirement rather than relying on the example's minimum API level 1 declaration.
+The `MEDIA` configuration above requires `minCarApiLevel` **8 or later**, as specified by Google's [templated media app requirements](https://developer.android.com/training/cars/apps/media#min-car-api). This is a category requirement, not the device's Android SDK version. For another supported app category, choose the minimum Car App API level required by that category and the templates you actually use; do not raise every application to 8 just because this example uses `MEDIA`.
+
+A template service is not a media playback implementation. Add Google's media-app integration only if your app actually supplies a media service and session. Native tabs require Car App API level 6 when used without fallback; the media example's minimum of 8 already covers that requirement.
 
 #### 3. Share the cached engine
 
@@ -674,6 +676,14 @@ If you copy a catalogue function into another app, copy and declare those assets
 | Android tab `iconUrl` | Native raster image-source lookup; it is not included in the SVG rasterizer's handled keys |
 
 Supported SVG payloads include row images and trailing images, CarPlay grid buttons, POI pins, image-row image collections and elements, Android grid buttons and pane images, and nested voice-state/action images. Both controllers default `svgRasterSize` to 120 pixels; set it before creating image-bearing templates when you need a different raster resolution. A rasterized SVG is static even if the template offers an animation option.
+
+### Custom SVG icons
+
+Custom icon sets such as Lucide work as bundled SVG assets. Export the icon as a `.svg` file, declare its path in the consuming app's `pubspec.yaml`, and pass that asset path to a supported image field: for example, `CPListItem.image`, `CPGridButton.image` or `AAListItem.imageUrl`.
+
+An `Icon`, `IconData` or `SvgPicture` widget from an icon package is not a native image source. Use the exported SVG file rather than passing the Flutter widget or an icon-font code point. The package rasterizes the asset before sending it to CarPlay or Android Auto. Remote SVG URLs must first be bundled as assets or converted to raster images.
+
+For a monochrome Lucide glyph, use `imageTint: const AutoImageTint.platform()` so it remains readable against the host's background and selection state. Leave tint unset for multicolored artwork when you want its original colors preserved.
 
 `AutoImageTint` supports `platform`, `primary`, `secondary`, named colors, and custom light/dark colors. Use it for glyphs rather than multicolored artwork. CarPlay pre-renders tinted images; Android uses native `CarColor` metadata, so the host still controls appearance. `selectedSafe` controls the CarPlay contrast treatment; it is not a guarantee of identical selected colors on both platforms.
 
