@@ -19,7 +19,7 @@ CarPlay and Android Auto handle the native layouts and vehicle controls. You foc
 
 **CarPlay voice control:** voice states, activation, action buttons and dismissal callbacks, with an optional conversational speech example for eligible iOS 26.4 apps. See the [voice catalogue entry](#carplay-voice-control).
 
-Version **1.7.0+2** fixes responsive documentation images on pub.dev without changing package APIs. [Read the release notes](CHANGELOG.md).
+Version **1.7.0+2** is the latest published release. **1.7.0+3** is in development with the updated community footer. [Read the changelog](CHANGELOG.md).
 
 ## Start with a native screen
 
@@ -229,7 +229,7 @@ Use Flutter **3.44.0 or later** and Dart **3.12.0 or later, below 4.0.0**. The r
 flutter pub add flutter_carplay
 ```
 
-To require this release or a compatible update:
+To use the latest published release or a compatible update:
 
 ```yaml
 dependencies:
@@ -1589,9 +1589,16 @@ Questions, small fixes, native-host testing, and reviews all help this package m
 - [Join the Discord community](https://discord.gg/Xz6WVezFfh)
 - [Sponsor ongoing development](https://github.com/sponsors/oguzhnatly)
 - [See everyone who has contributed](https://github.com/oguzhnatly/flutter_carplay/graphs/contributors)
-- [View the project's star history](https://star-history.dera.page/#oguzhnatly/flutter_carplay&Date)
 
-For a more active contribution, contact [info@oguzhanatalay.com](mailto:info@oguzhanatalay.com). Thanks to the contributors who built and refined the native integrations, including [@EArminjon](https://github.com/EArminjon), [@vanlooverenkoen](https://github.com/vanlooverenkoen), [@snipd-mikel](https://github.com/snipd-mikel), [@APIUM](https://github.com/APIUM), [@sINFdorako](https://github.com/sINFdorako), [@Gabriellsp](https://github.com/Gabriellsp), [@JulianBissekkou](https://github.com/JulianBissekkou), [@pierrejean75](https://github.com/pierrejean75), and [@OSch11](https://github.com/OSch11).
+For a more active contribution, contact [info@oguzhanatalay.com](mailto:info@oguzhanatalay.com).
+
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?logo=github)](https://github.com/sponsors/oguzhnatly)
+
+## Star history
+
+[![Star History Chart](https://star-history.dera.page/svg?repos=oguzhnatly/flutter_carplay&type=Date)](https://star-history.dera.page/#oguzhnatly/flutter_carplay&Date)
+
+![Contributors](https://contrib.rocks/image?repo=oguzhnatly/flutter_carplay)
 
 ## License
 

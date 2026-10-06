@@ -1,3 +1,9 @@
+## 1.7.0+3 - Unreleased
+
+* Restore the README star history chart and add a GitHub Sponsors badge above it.
+* Show contributor avatars beneath the chart at their natural size instead of listing individual contributors in prose.
+* Keep package APIs, native behavior and dependencies unchanged.
+
 ## 1.7.0+2 - 2026-10-05
 
 * Fix the mobile README banner and dark appearance Android Auto wordmark on pub.dev.
