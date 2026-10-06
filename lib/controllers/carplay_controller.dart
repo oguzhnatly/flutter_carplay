@@ -42,6 +42,21 @@ class FlutterCarPlayController {
     // SVG directly. Non-collection payloads pass through unchanged.
     await resolveSvgInPayload(data, size: FlutterCarplay.svgRasterSize);
 
+    if (data is Map) data = Map<dynamic, dynamic>.from(data);
+    applyDefaultImageSize(data, FlutterCarplay.iconSize);
+    if (data is Map &&
+        data.keys.any(
+          (key) =>
+              key == 'rootTemplate' ||
+              key == 'template' ||
+              key == 'sections' ||
+              key == 'elements' ||
+              key == 'searchResults' ||
+              autoImageSizeKeys.containsKey(key) ||
+              autoImageSizeListKeys.containsKey(key),
+        )) {
+      data['debugImageSizing'] = FlutterCarplay.debugImageSizing;
+    }
     if (isCurrent != null && !isCurrent()) return false;
     final value = await _methodChannel.invokeMethod<bool>(type.name, data);
     return value;
@@ -404,12 +419,27 @@ class FlutterCarPlayController {
     if (template is CPAlertTemplate) template.onPresent?.call(completed);
   }
 
-  void processFCPGridButtonPressed(String elementId) {
+  Future<void> processFCPGridButtonPressed(
+    String elementId, {
+    String? pressId,
+  }) async {
     CPGridButton? gridButton;
     l1:
     for (var t in templateHistory) {
-      if (t is CPGridTemplate) {
-        for (var b in t.buttons) {
+      // Grid templates can live at top level OR as children of a
+      // CPTabBarTemplate, so search both.
+      final List<CPGridTemplate> gridTemplates = [];
+      if (t is CPTabBarTemplate) {
+        for (var template in t.templates) {
+          if (template is CPGridTemplate) {
+            gridTemplates.add(template);
+          }
+        }
+      } else if (t is CPGridTemplate) {
+        gridTemplates.add(t);
+      }
+      for (var g in gridTemplates) {
+        for (var b in g.buttons) {
           if (b.uniqueId == elementId) {
             gridButton = b;
             break l1;
@@ -417,7 +447,25 @@ class FlutterCarPlayController {
         }
       }
     }
-    gridButton?.onPress?.call();
+    Future<void>? completion;
+    Future<void> complete() => completion ??= flutterToNativeModule(
+      FCPChannelTypes.onGridButtonPressedComplete,
+      pressId == null
+          ? elementId
+          : <String, dynamic>{'elementId': elementId, 'pressId': pressId},
+    ).then((_) {});
+
+    try {
+      final loadingHandler = gridButton?.onPressWithCompletion;
+      if (loadingHandler != null) {
+        await Future.sync(() => loadingHandler(complete, gridButton!));
+      } else {
+        await Future.sync(() => gridButton?.onPress?.call());
+        await complete();
+      }
+    } catch (_) {
+      await complete();
+    }
   }
 
   void processFCPBarButtonPressed(String elementId) {

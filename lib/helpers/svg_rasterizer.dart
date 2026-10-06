@@ -8,10 +8,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// Default raster size (in logical pixels, square) used when an SVG asset is
 /// rasterized to PNG bytes for native consumption.
 ///
+/// This is a *source* resolution only. Native code resamples the bytes to the
+/// car screen's display scale (see `FCPImageSizing.swift`), so this value no
+/// longer participates in any point-size calculation — it only needs enough
+/// pixels for that downsampling step to stay sharp. 264 covers max artwork in
+/// the 88pt grid fallback at 3x. Larger image-row slots may need an override.
+///
 /// This can be overridden globally via [FlutterCarplay.svgRasterSize] /
 /// [FlutterAndroidAuto.svgRasterSize], which are forwarded to
 /// [resolveSvgInPayload].
-const defaultSvgRasterSize = 120;
+const defaultSvgRasterSize = 264;
 
 /// In-memory cache of rasterized SVG assets keyed by `assetPath|size`.
 final _svgRasterCache = <String, Uint8List>{};
@@ -137,6 +143,8 @@ Future<Uint8List?> _rasterize(
 /// - `image`     -> CPListItem, CPGridButton, CPPointOfInterest, and all
 ///                  CPListImageRowItem*Element subtypes. Bytes are attached
 ///                  under `imageData`.
+/// - `loadingImage` -> CPGridButton loading-state image. Bytes are attached
+///                  under `loadingImageData`.
 /// - `imageUrl`  -> AAListItem (Android Auto). The native contract expects the
 ///                  bytes under `imageData`.
 /// - `accessoryImage` / `trailingImage` -> CPListItem trailing/accessory image.
@@ -146,7 +154,9 @@ Future<Uint8List?> _rasterize(
 @visibleForTesting
 const svgImageDataKeys = <String, String>{
   'image': 'imageData',
+  'loadingImage': 'loadingImageData',
   'imageUrl': 'imageData',
+  'iconUrl': 'iconData', // 新增：AAListTemplate/AAGridTemplate 的 tab 图标
   'accessoryImage': 'trailingImageData',
   'trailingImage': 'trailingImageData',
   'gridImages': 'gridImageData',
@@ -163,6 +173,8 @@ const svgListImageKeys = <String>{'gridImages'};
 /// - `imageTitles` -> CPListImageRowItem labels (text, not images).
 /// - `imageTint`/`trailingImageTint`/`gridImageTints` -> tint metadata, not
 ///   image references.
+/// - `imageSize`/`trailingImageSize`/`gridImageSizes` -> size metadata, not
+///   image references. See `image_size_resolver.dart`.
 @visibleForTesting
 const svgIgnoredKeys = <String>{
   'systemIcon',
@@ -170,6 +182,9 @@ const svgIgnoredKeys = <String>{
   'imageTint',
   'trailingImageTint',
   'gridImageTints',
+  'imageSize',
+  'trailingImageSize',
+  'gridImageSizes',
 };
 
 /// The sibling keys under which the walker attaches rasterized bytes (e.g.

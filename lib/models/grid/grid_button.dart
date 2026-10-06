@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:uuid/uuid.dart';
 
 import '../common/image_tint.dart';
+import '../common/image_size.dart';
 
 /// A menu item button displayed on a grid template.
 /// https://developer.apple.com/documentation/carplay/cpgridbutton
@@ -34,25 +37,64 @@ class CPGridButton {
   /// Optional tint applied to [image].
   final AutoImageTint? imageTint;
 
+  final AutoImageSize? imageSize;
+
+  /// Optional image swapped in while the button is in its loading state
+  /// (after the user taps and before [onPressWithCompletion]'s `complete` is called).
+  ///
+  /// While loading, this image rotates clockwise on the CarPlay display.
+  /// When omitted, the button rotates its normal [image] instead.
+  ///
+  /// Accepts the same formats as [image] (asset path, SVG asset, `file://`
+  /// path, or network URL). **In-place image updates require iOS 26.0+** —
+  /// on earlier systems the loading rotation is skipped natively.
+  final String? loadingImage;
+
+  /// Optional tint applied to [loadingImage] while it is displayed.
+  final AutoImageTint? loadingImageTint;
+
   /// The block invoked after the user taps the button.
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   final Function()? onPress;
+
+  /// A loading-aware alternative to [onPress]. Call `complete()` to stop loading.
+  /// Returning from this handler does not complete the interaction; throwing
+  /// completes it automatically. The completion is idempotent and awaitable.
+  /// Specify only one callback. Loading image rotation requires iOS 26 or later.
+  final FutureOr<void> Function(
+    Future<void> Function() complete,
+    CPGridButton self,
+  )?
+  onPressWithCompletion;
 
   /// Creates [CPGridButton]
   CPGridButton({
     required this.titleVariants,
     required this.image,
     this.imageTint,
+    this.imageSize,
+    this.loadingImage,
+    this.loadingImageTint,
     this.onPress,
+    this.onPressWithCompletion,
     String? id,
-  }) : _elementId = id ?? const Uuid().v4();
+  }) : _elementId = id ?? const Uuid().v4() {
+    if (onPress != null && onPressWithCompletion != null) {
+      throw ArgumentError('Specify onPress or onPressWithCompletion, not both');
+    }
+  }
 
   Map<String, dynamic> toJson() => {
     '_elementId': _elementId,
     'titleVariants': titleVariants,
     'image': image,
     'imageTint': imageTint?.toJson(),
-    'onPress': onPress != null ? true : false,
+    'imageSize': imageSize?.toJson(),
+    if (loadingImage != null) 'loadingImage': loadingImage,
+    if (loadingImageTint != null)
+      'loadingImageTint': loadingImageTint!.toJson(),
+    'onPress': onPress != null || onPressWithCompletion != null,
+    'usesLoading': onPressWithCompletion != null,
     'runtimeType': 'FCPGridButton',
   };
 

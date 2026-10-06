@@ -13,6 +13,7 @@ final class FCPListImageRowItemRowElement {
   private(set) var image: String
   private var imageData: FlutterStandardTypedData?
   private var imageTint: FCPImageTint?
+  private var imageSize: FCPImageSize
   var title: String?
   var subtitle: String?
 
@@ -21,18 +22,20 @@ final class FCPListImageRowItemRowElement {
     self.image = obj["image"] as! String
     self.imageData = obj["imageData"] as? FlutterStandardTypedData
     self.imageTint = FCPImageTint(from: obj["imageTint"] as? [String: Any])
+    self.imageSize = FCPImageSize(from: obj["imageSize"] as? [String: Any])
     self.title = obj["title"] as? String
     self.subtitle = obj["subtitle"] as? String
   }
 
   var get: CPListImageRowItemElement {
+    let slot = FCPImageSlot.element(CPListImageRowItemRowElement.maximumImageSize, imageSize)
     var listImageRowItemElement = CPListImageRowItemRowElement.init(
-      image: makeSafeUIPlaceholder(),
+      image: makeSafeUIPlaceholder(slot: slot),
       title: title,
       subtitle: subtitle,
     )
 
-    loadUIImage(from: image, bytes: imageData, tint: imageTint) { uiImage in
+    loadUIImage(from: image, bytes: imageData, slot: slot, tint: imageTint) { uiImage in
       listImageRowItemElement.image = uiImage
     }
 
@@ -44,18 +47,22 @@ final class FCPListImageRowItemRowElement {
     let image = args["image"] as? String
     let imageData = args["imageData"] as? FlutterStandardTypedData
     let imageTint = FCPImageTint(from: args["imageTint"] as? [String: Any])
+    let imageSize = FCPImageSize(from: args["imageSize"] as? [String: Any])
     let title = args["title"] as? String
     let subtitle = args["subtitle"] as? String
 
     let imageTintChanged = imageTint != self.imageTint
-    if let image = image, image != self.image || imageTintChanged {
-      self._super?.image = makeSafeUIPlaceholder()
-      loadUIImage(from: image, bytes: imageData, tint: imageTint) { uiImage in
+    let imageSizeChanged = imageSize.fraction != self.imageSize.fraction
+    if let image = image, image != self.image || imageTintChanged || imageSizeChanged {
+      let slot = FCPImageSlot.element(CPListImageRowItemRowElement.maximumImageSize, imageSize)
+      self._super?.image = makeSafeUIPlaceholder(slot: slot)
+      loadUIImage(from: image, bytes: imageData, slot: slot, tint: imageTint) { uiImage in
         self._super?.image = uiImage
       }
       self.image = image
       self.imageData = imageData
       self.imageTint = imageTint
+      self.imageSize = imageSize
     }
 
     if let title = title {

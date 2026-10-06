@@ -61,6 +61,11 @@ jobs:
           FLUTTER_TARGET=lib/voice_control_main.dart
           CARPLAY_ENTITLEMENTS_FILE=Conversational.entitlements build
         working-directory: example
+      - name: Run native CarPlay regressions
+        run: |
+          gem install xcodeproj --user-install --no-document
+          DEVICE=$(xcrun simctl list devices available --json | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(x["udid"] for runtime,rows in d["devices"].items() for x in rows if "iOS-26-" in runtime and "iPhone" in x["name"]))')
+          ruby ios/test/run_tests.rb "$RUNNER_TEMP/carplay_tests" "$DEVICE"
 
   android:
     name: Android example release build
@@ -81,3 +86,6 @@ jobs:
         working-directory: example
       - run: flutter build apk --release
         working-directory: example
+      - name: Run native Android regressions
+        run: ./gradlew :flutter_carplay:testDebugUnitTest --console=plain
+        working-directory: example/android

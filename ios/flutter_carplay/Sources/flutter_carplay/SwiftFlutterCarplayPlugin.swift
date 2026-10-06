@@ -44,6 +44,16 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    // Sizing diagnostics are stamped onto every payload by the Dart controller,
+    // so picking them up here covers all channel calls in one place.
+    if let args = call.arguments as? [String: Any],
+      let debugImageSizing = args["debugImageSizing"] as? Bool,
+      debugImageSizing != FCPImageDiagnostics.isEnabled
+    {
+      FCPImageDiagnostics.isEnabled = debugImageSizing
+      FCPImageDiagnostics.logEnvironment()
+    }
+
     switch call.method {
     case FCPChannelTypes.setRootTemplate:
       guard let args = call.arguments as? [String: Any] else {
@@ -93,12 +103,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         return
       }
 
+      Self.templateStack.forEach { Self.setGridVisibility(in: $0, visible: false) }
       SwiftFlutterCarplayPlugin.rootTemplate = rootTemplate!.get
-      if !(SwiftFlutterCarplayPlugin.templateStack.isEmpty ?? true) {
-        SwiftFlutterCarplayPlugin.templateStack[0] = rootTemplate!
-      } else {
-        SwiftFlutterCarplayPlugin.templateStack = [rootTemplate!]
-      }
+      SwiftFlutterCarplayPlugin.templateStack = [rootTemplate!]
       SwiftFlutterCarplayPlugin.objcRootTemplate = rootTemplate!
       let animated = args["animated"] as! Bool
       SwiftFlutterCarplayPlugin.animated = animated
@@ -207,6 +214,20 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
           }
         })
       result(true)
+      break
+
+    case FCPChannelTypes.onGridButtonPressedComplete:
+      // Dart finished handling a grid button press; stop the loading
+      // rotation and restore the button's original image.
+      guard let args = call.arguments as? [String: Any],
+        let elementId = args["elementId"] as? String,
+        let pressId = args["pressId"] as? String
+      else { result(false); return }
+      var completed = false
+      Self.findGridButton(elementId: elementId) { button in
+        completed = button.completePress(pressId: pressId)
+      }
+      result(completed)
       break
 
     case FCPChannelTypes.updateListImageRowItemElement:
@@ -444,7 +465,18 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     return eventChannel
   }
 
+  static func setGridVisibility(in template: FCPTemplate, visible: Bool) {
+    if let grid = template as? FCPGridTemplate {
+      grid.getFCPGridButtons().forEach { $0.setVisible(visible) }
+    } else if let tab = template as? FCPTabBarTemplate {
+      tab.getFCPTemplates().forEach { setGridVisibility(in: $0, visible: visible) }
+    }
+  }
+
   static func onCarplayConnectionChange(status: String) {
+    if status == FCPConnectionTypes.disconnected || status == FCPConnectionTypes.background {
+      templateStack.forEach { setGridVisibility(in: $0, visible: false) }
+    }
     connectionStatus = status
     FCPStreamHandlerPlugin.sendEvent(
       type: FCPChannelTypes.onCarplayConnectionChange,
@@ -490,6 +522,39 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
     if !found {
       NSLog("FCP: FCPListTemplateItem not found with elementId: \(elementId)")
     }
+  }
+
+  /// Locates a grid button by its `elementId` and hands it to
+  /// [actionWhenFound].
+  ///
+  /// Grid templates can be the root template or a child of a
+  /// `CPTabBarTemplate`, so both positions are searched — mirroring what
+  /// `getTemplateFromHistory(elementId:)` does for templates.
+  static func findGridButton(
+    elementId: String, actionWhenFound: (_ button: FCPGridButton) -> Void
+  ) {
+    var gridTemplates: [FCPGridTemplate] = []
+
+    for template in SwiftFlutterCarplayPlugin.templateStack {
+      if let tabBar = template as? FCPTabBarTemplate {
+        for child in tabBar.getFCPTemplates() {
+          if let grid = child as? FCPGridTemplate {
+            gridTemplates.append(grid)
+          }
+        }
+      } else if let grid = template as? FCPGridTemplate {
+        gridTemplates.append(grid)
+      }
+    }
+
+    for grid in gridTemplates {
+      for button in grid.getFCPGridButtons() where button.elementId == elementId {
+        actionWhenFound(button)
+        return
+      }
+    }
+
+    NSLog("FCP: FCPGridButton not found with elementId: \(elementId)")
   }
 
   @available(iOS 26.0, *)
