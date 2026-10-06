@@ -30,7 +30,7 @@ class FlutterCarplay {
   /// The size (in logical pixels, square) used when rasterizing Flutter asset
   /// SVGs referenced by image fields (e.g. `CPListItem.image`,
   /// `CPGridButton.image`, `CPPoi.image`) before they are sent to the native
-  /// side. Defaults to [defaultSvgRasterSize] (180).
+  /// side. Defaults to [defaultSvgRasterSize] (264).
   ///
   /// This is a source resolution, not a display size. To change how large icons
   /// appear on the CarPlay screen, use [iconSize].

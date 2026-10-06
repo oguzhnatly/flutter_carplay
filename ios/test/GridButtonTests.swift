@@ -117,6 +117,22 @@ final class GridButtonTests: XCTestCase {
     SwiftFlutterCarplayPlugin.templateStack = []
   }
 
+  func testSameIdGridReplacementCancelsOldPressAndUsesNewButtons() {
+    let old = FCPGridTemplate(obj: ["_elementId": "grid", "title": "Grid", "showsTabBadge": false, "buttons": [payload()]])
+    let tab = FCPTabBarTemplate(obj: ["_elementId": "tab", "showsTabBadge": false, "templates": []])
+    _ = tab.get
+    tab.updateTemplates(templates: [old])
+    let oldButton = old.getFCPGridButtons().first!
+    oldButton.handlePress()
+    var data = payload()
+    data["_elementId"] = "replacement"
+    let replacement = FCPGridTemplate(obj: ["_elementId": "grid", "title": "Updated", "showsTabBadge": false, "buttons": [data]])
+    tab.updateTemplates(templates: [replacement])
+    XCTAssertNil(oldButton.activePressId)
+    XCTAssertTrue((tab.getFCPTemplates().first as? FCPGridTemplate) === replacement)
+    XCTAssertEqual((tab.getFCPTemplates().first as! FCPGridTemplate).getFCPGridButtons().first!.elementId, "replacement")
+  }
+
   func testRemovedTabCancelsItsGridPress() {
     let grid = FCPGridTemplate(obj: ["_elementId": "grid", "title": "Grid", "showsTabBadge": false, "buttons": [payload()]])
     let tab = FCPTabBarTemplate(obj: ["_elementId": "tab", "showsTabBadge": false, "templates": []])

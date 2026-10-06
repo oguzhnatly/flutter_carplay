@@ -69,8 +69,8 @@ class FCPPointOfInterest {
     let location = MKMapItem(
       placemark: MKPlacemark(
         coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)))
-    // Pin artwork is sized against CPButton.maximumImageSize, the SDK constant
-    // for button artwork, rather than a hardcoded point value.
+    // Pin artwork uses CPPointOfInterest.pinImageSize on supported systems,
+    // with the older system fallback provided by FCPImageSlot.poiPin.
     let slot = FCPImageSlot.poiPin(imageSize)
     var pinImage: UIImage? = nil
 

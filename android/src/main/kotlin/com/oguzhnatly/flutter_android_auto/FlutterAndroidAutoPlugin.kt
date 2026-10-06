@@ -566,7 +566,9 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
     ): Template {
         val data = templateDataByElementId[tab.elementId] ?: tab.templateData
         val runtimeType = templateRuntimeTypes[tab.elementId] ?: tab.runtimeType
-        return buildTemplateForType(runtimeType, data, addBackButton, currentScreen)
+        val template = buildTemplateForType(runtimeType, data, addBackButton, currentScreen)
+        templatesByElementId[tab.elementId] = template
+        return template
     }
 
     private fun resolveTabTitle(tab: FAATabBarItem): String {
@@ -977,7 +979,12 @@ class FlutterAndroidAutoPlugin : FlutterPlugin, EventChannel.StreamHandler {
         }
 
         if (currentTabBarData != null && currentTabBarData!!.tabs.any { it.elementId == templateElementId }) {
-            currentTemplate = loading
+            val tabbed = currentTemplate as? TabTemplate
+            currentTemplate = if (tabbed != null) {
+                TabTemplate.Builder(tabbed).setTabContents(TabContents.Builder(loading).build()).build()
+            } else {
+                loading
+            }
             currentScreen?.invalidate()
             return
         }

@@ -97,6 +97,10 @@ class FCPTabBarTemplate {
     /// Update actual template or create new one if missing
     self.objcTemplates = templates.map { template in
       if let existing = existingTemplatesById[template.elementId] {
+        if existing is FCPGridTemplate {
+          SwiftFlutterCarplayPlugin.setGridVisibility(in: existing, visible: false)
+          return template
+        }
         existing.update(with: template)
         return existing  // Reuse existing FCP template with updated content
       } else {
@@ -104,6 +108,7 @@ class FCPTabBarTemplate {
       }
     }
     self.templates = templates.map { template in
+      if template is FCPGridTemplate { return template.get }
       if let existing = existingCPTemplatesById[template.elementId] {
         return existing  // Reuse existing CP template
       } else {

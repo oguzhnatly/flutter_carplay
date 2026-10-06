@@ -171,6 +171,29 @@ class FlutterAndroidAutoMethodChannelTest {
     }
 
     @Test
+    fun `tabbed grid keeps resolved images and tabs while a cell loads`() {
+        val grid = mapOf(
+            "elementId" to "grid", "runtimeType" to "FAAGridTemplate",
+            "template" to mapOf("_elementId" to "grid", "title" to "Grid",
+                "buttons" to listOf(mapOf("_elementId" to "grid-button", "titleVariants" to listOf("One"), "image" to "", "onPress" to true))),
+        )
+        invoke("setRootTemplate", mapOf("runtimeType" to "FAATabBarTemplate",
+            "template" to mapOf("_elementId" to "root", "tabs" to listOf(grid, messageTab())))).assertSuccess()
+        val stored = FlutterAndroidAutoPlugin::class.java.getDeclaredField("templatesByElementId").apply { isAccessible = true }.get(null) as Map<*, *>
+        assertTrue(stored["grid"] is androidx.car.app.model.GridTemplate)
+        val method = FlutterAndroidAutoPlugin::class.java.getDeclaredMethod("showLoadingForTemplate",
+            String::class.java, String::class.java, String::class.java, String::class.java).apply { isAccessible = true }
+        method.invoke(plugin, "grid", "FAAGridTemplate", null, "grid-button")
+        val current = FlutterAndroidAutoPlugin.currentTemplate as androidx.car.app.model.TabTemplate
+        assertEquals(2, current.tabs.size)
+        val loading = current.tabContents.template as androidx.car.app.model.GridTemplate
+        assertTrue((loading.singleList!!.items.single() as androidx.car.app.model.GridItem).isLoading)
+        invoke("onGridButtonSelectedComplete").assertSuccess()
+        val restored = FlutterAndroidAutoPlugin.currentTemplate as androidx.car.app.model.TabTemplate
+        assertTrue(!(restored.tabContents.template as androidx.car.app.model.GridTemplate).isLoading)
+    }
+
+    @Test
     fun `missing template arguments complete without launching work`() {
         for (method in listOf("setAlert", "updateTabBarTemplates", "pushTemplate", "setRootTemplate")) {
             invoke(method).assertError("Missing template")
