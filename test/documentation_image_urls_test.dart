@@ -64,6 +64,13 @@ void main() {
     expect(
       readme,
       contains(
+        '[![Star History Chart]($_starHistoryImage)]'
+        '(https://star-history.dera.page/#oguzhnatly/flutter_carplay&Date)',
+      ),
+    );
+    expect(
+      readme,
+      contains(
         '[![Sponsor on GitHub]($_sponsorImage)]'
         '(https://github.com/sponsors/oguzhnatly)',
       ),
