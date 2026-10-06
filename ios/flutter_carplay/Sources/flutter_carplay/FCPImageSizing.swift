@@ -151,9 +151,22 @@ struct FCPImageSlot {
 /// Unlike the previous cache this also holds untinted images, because every
 /// image is now resampled and that work is worth caching regardless of tint.
 let fcpPreparedImageCache = NSCache<NSString, UIImage>()
+// Only pending loads have records; every completion releases its entry.
+struct FCPPreparedImageLoad {
+  var latestID: UUID?
+  var count: Int
+}
+var fcpPreparedImageLoads: [String: FCPPreparedImageLoad] = [:]
 
 @available(iOS 14.0, *)
 func fcpClearPreparedImageCache() {
+  guard Thread.isMainThread else {
+    DispatchQueue.main.sync { fcpClearPreparedImageCache() }
+    return
+  }
+  for key in fcpPreparedImageLoads.keys {
+    fcpPreparedImageLoads[key]?.latestID = nil
+  }
   fcpPreparedImageCache.removeAllObjects()
 }
 

@@ -46,15 +46,34 @@ func loadUIImage(
   let cacheKey = fcpPreparedImageCacheKey(
     imagePath: imagePath, imageData: imageData, slot: slot, tint: imageTint)
   if let cachedImage = fcpPreparedImageCache.object(forKey: cacheKey as NSString) {
+    fcpPreparedImageLoads[cacheKey]?.latestID = nil
     completion(cachedImage)
     return
   }
+  let loadID = UUID()
+  var pending = fcpPreparedImageLoads[cacheKey] ?? FCPPreparedImageLoad(latestID: nil, count: 0)
+  pending.latestID = loadID
+  pending.count += 1
+  fcpPreparedImageLoads[cacheKey] = pending
+
+  func releaseLoad() {
+    guard var pending = fcpPreparedImageLoads[cacheKey] else { return }
+    pending.count -= 1
+    if pending.count == 0 {
+      fcpPreparedImageLoads.removeValue(forKey: cacheKey)
+    } else {
+      fcpPreparedImageLoads[cacheKey] = pending
+    }
+  }
 
   func complete(_ image: UIImage) {
+    defer { releaseLoad() }
     let result = image.preparedForCarPlay(slot: slot, tint: imageTint)
     FCPImageDiagnostics.log(
       "loadUIImage", source: imagePath, before: image, after: result, slot: slot)
-    fcpPreparedImageCache.setObject(result, forKey: cacheKey as NSString)
+    if fcpPreparedImageLoads[cacheKey]?.latestID == loadID {
+      fcpPreparedImageCache.setObject(result, forKey: cacheKey as NSString)
+    }
     completion(result)
   }
 
@@ -67,6 +86,7 @@ func loadUIImage(
     if let uiImage = uiImage {
       complete(uiImage)
     } else {
+      defer { releaseLoad() }
       // A failed load must remain retryable, not cached as successful artwork.
       completion(makeSafeUIPlaceholder(slot: slot))
     }
