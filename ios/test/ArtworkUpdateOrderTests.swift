@@ -398,6 +398,20 @@ final class ArtworkUpdateOrderTests: XCTestCase {
     XCTAssertEqual(completions, 2, "A detached handler must still complete selection")
   }
 
+  func testReleasingAnActiveSelectionCompletesItsPendingHandler() {
+    var model: FCPListItem? = FCPListItem(obj: ["_elementId": "selection", "onPress": true])
+    weak var owner = model
+    let native = model!.get as! CPListItem
+    var completions = 0
+    native.handler?(native) { completions += 1 }
+    XCTAssertEqual(completions, 0)
+    model = nil
+    XCTAssertNil(owner)
+    XCTAssertEqual(completions, 1, "Released selection must complete without a Dart reply")
+    native.handler?(native) { completions += 1 }
+    XCTAssertEqual(completions, 2)
+  }
+
   func testStaleCompletionsCannotReplaceCacheHitsForLaterNativeTargets() {
     for kind in Kind.allCases {
       let source = "https://artworkorder.invalid/\(UUID().uuidString).png"

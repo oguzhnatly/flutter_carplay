@@ -52,6 +52,16 @@ final class FCPListItem {
     self.setAccessoryType(fromString: obj["accessoryType"] as? String)
   }
 
+  deinit {
+    if let complete = completeHandler {
+      if Thread.isMainThread {
+        complete()
+      } else {
+        DispatchQueue.main.async { complete() }
+      }
+    }
+  }
+
   private func handler(selectedItem: CPSelectableListItem, complete: @escaping () -> Void) {
     if isOnPressListenerActive {
       completeHandler = complete
@@ -122,8 +132,9 @@ final class FCPListItem {
     guard self.completeHandler != nil else {
       return
     }
-    self.completeHandler!()
+    let complete = self.completeHandler!
     self.completeHandler = nil
+    complete()
   }
 
   public func update(args: [String: Any]) {
