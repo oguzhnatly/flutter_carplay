@@ -41,6 +41,8 @@ enum FCPChannelTypes {
   onSearchButtonPressed,
   updateSearchResults,
   onSearchResultSelectedComplete,
+  updateNowPlayingTemplate,
+  onNowPlayingUpNextButtonPressed,
 }
 
 enum FAAChannelTypes {

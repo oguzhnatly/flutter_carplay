@@ -28,3 +28,13 @@ extension FCPSharedNowPlayingTemplate: FCPTemplate {
     return "FCPSharedNowPlayingTemplate"
   }
 }
+
+@available(iOS 14.0, *)
+class FCPNowPlayingObserver: NSObject, CPNowPlayingTemplateObserver {
+  static let shared = FCPNowPlayingObserver()
+
+  func nowPlayingTemplateUpNextButtonTapped(_ nowPlayingTemplate: CPNowPlayingTemplate) {
+    FCPStreamHandlerPlugin.sendEvent(
+      type: FCPChannelTypes.onNowPlayingUpNextButtonPressed, data: [:])
+  }
+}

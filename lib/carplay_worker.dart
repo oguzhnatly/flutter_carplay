@@ -63,6 +63,8 @@ class FlutterCarplay {
   /// the current connection status.
   Function(ConnectionStatusTypes status)? _onCarplayConnectionChange;
 
+  VoidCallback? _onNowPlayingUpNextButtonPressed;
+
   /// Creates an [FlutterCarplay] and starts the connection.
   FlutterCarplay() {
     if (defaultTargetPlatform != TargetPlatform.iOS) return;
@@ -172,6 +174,9 @@ class FlutterCarplay {
                 (item) => item.uniqueId == elementId,
               );
               break;
+            case FCPChannelTypes.onNowPlayingUpNextButtonPressed:
+              _onNowPlayingUpNextButtonPressed?.call();
+              break;
             default:
               break;
           }
@@ -212,6 +217,16 @@ class FlutterCarplay {
   /// on CarPlay connection status changed.
   void removeListenerOnConnectionChange() {
     _onCarplayConnectionChange = null;
+  }
+
+  void addListenerOnNowPlayingUpNextButtonPressed(
+    VoidCallback onNowPlayingUpNextButtonPressed,
+  ) {
+    _onNowPlayingUpNextButtonPressed = onNowPlayingUpNextButtonPressed;
+  }
+
+  void removeListenerOnNowPlayingUpNextButtonPressed() {
+    _onNowPlayingUpNextButtonPressed = null;
   }
 
   /// Current CarPlay connection status. It will return one of [ConnectionStatusTypes] as String.
@@ -535,6 +550,21 @@ class FlutterCarplay {
         await FlutterCarPlayController.flutterToNativeModule(
           FCPChannelTypes.showNowPlaying,
           animated,
+        );
+    return isCompleted ?? false;
+  }
+
+  static Future<bool> updateSharedNowPlaying({
+    bool? isUpNextButtonEnabled,
+    String? upNextTitle,
+  }) async {
+    final bool? isCompleted =
+        await FlutterCarPlayController.flutterToNativeModule(
+          FCPChannelTypes.updateNowPlayingTemplate,
+          <String, dynamic>{
+            'isUpNextButtonEnabled': isUpNextButtonEnabled,
+            'upNextTitle': upNextTitle,
+          },
         );
     return isCompleted ?? false;
   }

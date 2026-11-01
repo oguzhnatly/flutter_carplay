@@ -30,6 +30,11 @@ linter:
     prefer_const_constructors: true
     avoid_print: true
     prefer_single_quotes: true
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
