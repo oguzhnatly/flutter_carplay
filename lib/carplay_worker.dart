@@ -177,6 +177,13 @@ class FlutterCarplay {
             case FCPChannelTypes.onNowPlayingUpNextButtonPressed:
               _onNowPlayingUpNextButtonPressed?.call();
               break;
+            case FCPChannelTypes.onNowPlayingButtonPressed:
+              final String elementId = event['data']['elementId'];
+              FlutterCarPlayController.nowPlayingButtons
+                  .where((button) => button.uniqueId == elementId)
+                  .firstOrNull
+                  ?.onPress();
+              break;
             default:
               break;
           }
@@ -557,6 +564,7 @@ class FlutterCarplay {
   static Future<bool> updateSharedNowPlaying({
     bool? isUpNextButtonEnabled,
     String? upNextTitle,
+    List<CPNowPlayingImageButton>? nowPlayingButtons,
   }) async {
     final bool? isCompleted =
         await FlutterCarPlayController.flutterToNativeModule(
@@ -564,8 +572,14 @@ class FlutterCarplay {
           <String, dynamic>{
             'isUpNextButtonEnabled': isUpNextButtonEnabled,
             'upNextTitle': upNextTitle,
+            'nowPlayingButtons': nowPlayingButtons
+                ?.map((button) => button.toJson())
+                .toList(),
           },
         );
+    if (isCompleted == true && nowPlayingButtons != null) {
+      FlutterCarPlayController.nowPlayingButtons = nowPlayingButtons;
+    }
     return isCompleted ?? false;
   }
 }

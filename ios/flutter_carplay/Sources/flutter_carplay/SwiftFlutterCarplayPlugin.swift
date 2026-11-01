@@ -358,6 +358,10 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       if let upNextTitle = args["upNextTitle"] as? String {
         nowPlayingTemplate.upNextTitle = upNextTitle
       }
+      if let nowPlayingButtons = args["nowPlayingButtons"] as? [[String: Any]] {
+        nowPlayingTemplate.updateNowPlayingButtons(
+          nowPlayingButtons.map { FCPNowPlayingImageButton(obj: $0).get })
+      }
       result(true)
       break
     case FCPChannelTypes.showNowPlaying:
