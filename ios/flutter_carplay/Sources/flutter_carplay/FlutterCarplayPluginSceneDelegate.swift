@@ -170,6 +170,9 @@ class FlutterCarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     let currentTemplates = interfaceController.templates
 
     SwiftFlutterCarplayPlugin.templateStack.removeAll { stackTemplate in
+      if stackTemplate.elementId == SwiftFlutterCarplayPlugin.rootTemplate?.elementId {
+        return false
+      }
       if !currentTemplates.contains(where: { $0.elementId == stackTemplate.elementId }) {
         SwiftFlutterCarplayPlugin.setGridVisibility(in: stackTemplate, visible: false)
         SwiftFlutterCarplayPlugin.sendOnScreenBackButtonPressed(elementId: stackTemplate.elementId)
