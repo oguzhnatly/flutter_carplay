@@ -564,7 +564,7 @@ class FlutterCarplay {
   static Future<bool> updateSharedNowPlaying({
     bool? isUpNextButtonEnabled,
     String? upNextTitle,
-    List<CPNowPlayingImageButton>? nowPlayingButtons,
+    List<CPNowPlayingButton>? nowPlayingButtons,
   }) async {
     final bool? isCompleted =
         await FlutterCarPlayController.flutterToNativeModule(

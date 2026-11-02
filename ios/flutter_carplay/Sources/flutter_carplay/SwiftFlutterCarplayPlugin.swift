@@ -360,7 +360,14 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
       }
       if let nowPlayingButtons = args["nowPlayingButtons"] as? [[String: Any]] {
         nowPlayingTemplate.updateNowPlayingButtons(
-          nowPlayingButtons.map { FCPNowPlayingImageButton(obj: $0).get })
+          nowPlayingButtons.map { obj -> FCPNowPlayingButton in
+            switch obj["runtimeType"] as? String {
+            case "FCPNowPlayingPlaybackRateButton":
+              return FCPNowPlayingPlaybackRateButton(obj: obj)
+            default:
+              return FCPNowPlayingImageButton(obj: obj)
+            }
+          }.map { $0.get })
       }
       result(true)
       break

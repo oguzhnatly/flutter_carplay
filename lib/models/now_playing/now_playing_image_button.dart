@@ -1,33 +1,20 @@
-import 'package:flutter/foundation.dart';
-import 'package:uuid/uuid.dart';
+import 'now_playing_button.dart';
 
-class CPNowPlayingImageButton {
-  final String _elementId;
-
+class CPNowPlayingImageButton extends CPNowPlayingButton {
   final String image;
-
-  final bool isEnabled;
-
-  final bool isSelected;
-
-  final VoidCallback onPress;
 
   CPNowPlayingImageButton({
     required this.image,
-    this.isEnabled = true,
-    this.isSelected = false,
-    required this.onPress,
-    String? id,
-  }) : _elementId = id ?? const Uuid().v4();
+    super.isEnabled,
+    super.isSelected,
+    required super.onPress,
+    super.id,
+  });
 
+  @override
   Map<String, dynamic> toJson() => {
-    '_elementId': _elementId,
+    ...super.toJson(),
+    'runtimeType': 'FCPNowPlayingImageButton',
     'image': image,
-    'isEnabled': isEnabled,
-    'isSelected': isSelected,
   };
-
-  String get uniqueId {
-    return _elementId;
-  }
 }
