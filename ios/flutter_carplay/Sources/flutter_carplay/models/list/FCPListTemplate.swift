@@ -21,6 +21,7 @@ class FCPListTemplate {
   private var showsTabBadge: Bool = false
   private var objcBackButton: FCPBarButton?
   private var backButton: CPBarButton?
+  private var assistantCellConfiguration: [String: Any]?
 
   init(obj: [String: Any]) {
     self.elementId = obj["_elementId"] as! String
@@ -40,10 +41,17 @@ class FCPListTemplate {
       self.objcBackButton = FCPBarButton(obj: backButtonData)
       self.backButton = self.objcBackButton!.get
     }
+    self.assistantCellConfiguration = obj["assistantCellConfiguration"] as? [String: Any]
   }
 
   var get: CPTemplate {
-    let listTemplate = CPListTemplate.init(title: title, sections: sections)
+    let listTemplate: CPListTemplate
+    if #available(iOS 15.0, *), let assistantCell = makeAssistantCellConfiguration() {
+      listTemplate = CPListTemplate.init(
+        title: title, sections: sections, assistantCellConfiguration: assistantCell)
+    } else {
+      listTemplate = CPListTemplate.init(title: title, sections: sections)
+    }
     listTemplate.emptyViewTitleVariants = emptyViewTitleVariants
     listTemplate.emptyViewSubtitleVariants = emptyViewSubtitleVariants
     listTemplate.tabTitle = tabTitle
@@ -57,6 +65,27 @@ class FCPListTemplate {
     listTemplate.elementId = self.elementId
     self._super = listTemplate
     return listTemplate
+  }
+
+  @available(iOS 15.0, *)
+  private func makeAssistantCellConfiguration() -> CPAssistantCellConfiguration? {
+    guard let config = assistantCellConfiguration else { return nil }
+
+    let position: CPListItem.AssistantCellPosition =
+      config["position"] as? String == "bottom" ? .bottom : .top
+
+    let visibility: CPListItem.AssistantCellVisibility
+    switch config["visibility"] as? String {
+    case "off": visibility = .off
+    case "whileLimitedUIActive": visibility = .whileLimitedUIActive
+    default: visibility = .always
+    }
+
+    let action: CPAssistantCellActionType =
+      config["action"] as? String == "startCall" ? .startCall : .playMedia
+
+    return CPAssistantCellConfiguration(
+      position: position, visibility: visibility, assistantAction: action)
   }
 
   public func getFCPListSections() -> [FCPListSection] {

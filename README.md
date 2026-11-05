@@ -773,6 +773,21 @@ Use `CPListTemplate` for rows organized into `CPListSection`s. Rows can carry de
 
 The vehicle can reduce how many rows are shown, including a 12-item limit on some hosts. Query `CPListTemplate.getMaximumItemCount()` and `getMaximumSectionCount()` where useful, and put essential content first. These return `Future<int?>`, not a promise that every vehicle presents your entire data set.
 
+Audio and communication apps can show the Siri assistant cell at the top or bottom of a list on iOS 15 and later. Selecting it starts Siri for your app. Your app must ship an Intents extension that handles `INPlayMediaIntent` for `playMedia` or `INStartCallIntent` for `startCall`; App Intents and custom intents do not drive the cell. Older iOS versions show the list without it.
+
+```dart
+CPListTemplate(
+  title: 'Browse',
+  systemIcon: 'music.note',
+  assistantCellConfiguration: const CPAssistantCellConfiguration(
+    action: CPAssistantCellActionType.playMedia,
+    position: CPAssistantCellPosition.top,
+    visibility: CPAssistantCellVisibility.always,
+  ),
+  sections: sections,
+);
+```
+
 <details>
 <summary>List with an updating row and back button</summary>
 

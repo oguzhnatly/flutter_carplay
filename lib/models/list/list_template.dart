@@ -1,4 +1,5 @@
 import 'package:flutter_carplay/models/button/bar_button.dart';
+import 'package:flutter_carplay/models/list/assistant_cell_configuration.dart';
 import 'package:flutter_carplay/models/list/list_section.dart';
 import 'package:uuid/uuid.dart';
 
@@ -34,6 +35,10 @@ class CPListTemplate extends CPTemplate {
   /// iOS 12.0+ | iPadOS 12.0+ | Mac Catalyst 13.1+
   final CPBarButton? backButton;
 
+  /// The Siri assistant cell shown in the list, for audio and communication apps.
+  /// iOS 15.0+ | iPadOS 15.0+ | Mac Catalyst 15.0+
+  final CPAssistantCellConfiguration? assistantCellConfiguration;
+
   /// Creates [CPListTemplate] to display a list of items, grouped into one or more sections.
   /// Each section contains an array of list items — objects that is [CPListItem]
   ///
@@ -48,6 +53,7 @@ class CPListTemplate extends CPTemplate {
     super.systemIcon,
     super.onPop,
     this.backButton,
+    this.assistantCellConfiguration,
     String? id,
   }) : _elementId = id ?? const Uuid().v4();
 
@@ -62,6 +68,7 @@ class CPListTemplate extends CPTemplate {
     'showsTabBadge': showsTabBadge,
     'systemIcon': systemIcon,
     'backButton': backButton?.toJson(),
+    'assistantCellConfiguration': assistantCellConfiguration?.toJson(),
     'runtimeType': 'FCPListTemplate',
   };
 

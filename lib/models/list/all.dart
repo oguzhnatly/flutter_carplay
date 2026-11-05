@@ -1,3 +1,4 @@
+export 'assistant_cell_configuration.dart';
 export 'list_constants.dart';
 export 'list_image_row_item.dart';
 export 'list_image_row_item/all.dart';
