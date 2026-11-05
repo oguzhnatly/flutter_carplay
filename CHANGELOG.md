@@ -1,3 +1,7 @@
+## Unreleased
+
+* Add `CPListTemplate.assistantCellConfiguration` so CarPlay audio and communication apps can show the Siri assistant cell (`CPAssistantCellConfiguration`, iOS 15+).
+
 ## 1.7.1 - 2026-10-06
 
 * Restore the README star history chart and add a GitHub Sponsors badge above it.
